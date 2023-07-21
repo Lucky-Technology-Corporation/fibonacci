@@ -190,10 +190,20 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
       noSyntaxValidation: false,
     });
     
+
+    //Add all files to the model
+    // monaco.editor.createModel(file1, 'typescript', monaco.Uri.parse(modelUri1));
+
     // Compiler options
     monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.Latest,
       allowNonTsExtensions: true,
+      //For multiple files
+      // moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      // module: monaco.languages.typescript.ModuleKind.CommonJS,   
+      // alwaysStrict: true,  // Enable strict mode
+      // noEmit: true,  // Don't output any .d.ts files
+      // typeRoots: ['node_modules/@types'] // Set typeRoots     
     });
     
 

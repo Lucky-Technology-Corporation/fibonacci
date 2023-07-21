@@ -3,6 +3,7 @@ import Checkbox from "../Utilities/Checkbox";
 import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
 import RequestInfo from "./Sections/RequestInfo";
+import toast from "react-hot-toast";
 
 const functionContent = `if(user == null){
     return status(401, "Unauthorized")
@@ -50,6 +51,22 @@ export default function RightSidebar({setPrependCode, setDidDeploy}: {setPrepend
             setDeployProgress(0)
         }, 3500)
     }
+
+    //Command-S deploy trigger
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if ((window.navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey) && event.key === 's') {
+                event.preventDefault();
+                toast("Deploying...", {icon: "⏳"})
+                runDeploy()
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        // Clean up the effect
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     return (
         <div className='w-[200px]'>

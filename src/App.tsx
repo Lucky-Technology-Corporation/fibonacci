@@ -6,49 +6,21 @@ import EditorHeader from './EditorHeader'
 import RightSidebar from './RightSidebar/RightSidebar'
 import { Toaster, toast } from 'react-hot-toast'
 import LeftSidebar from './LeftSidebar/LeftSidebar'
+import { Page } from './Utilities/Page'
 
 function App() {
   //Auth checkbox handler
   const [prepndCode, setPrependCode] = useState("")
+  //Deploy state handler
   const [didDeploy, setDidDeploy] = useState(false)
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((window.navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey) && event.key === 's') {
-        event.preventDefault();
-        toast.success("Miramount autosaves your work!")
-      }
-    };
-  
-    window.addEventListener('keydown', handleKeyDown);
-
-    setTimeout(() => {
-      toast("Try typing '/' and asking for something", {
-        icon: '🔮',
-        duration: 2000
-      })
-    }, 1000)
-  
-    // Clean up the effect
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-
-
-
-  }, []);
-  
+  //Content handler
+  const [selectedTab, setSelectedTab] = useState<Page>(Page.Apis)
 
   return (
     <>
       <div><Toaster/></div>
       <div className="grid grid-cols-[auto,1fr,auto] gap-0">
-
-        <div className='min-w-[200px] border-r border-[#4C4F6B]'>
-          <div className='flex flex-col items-center mt-4 h-screen'>
-            <LeftSidebar />
-          </div>
-        </div>
+        <LeftSidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
 
         <div className="m-4 ml-0 text-sm whitespace-pre-line">
           <EditorHeader method={Method.GET} path="/" didDeploy={didDeploy} />

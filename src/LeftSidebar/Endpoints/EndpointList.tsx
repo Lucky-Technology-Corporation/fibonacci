@@ -4,7 +4,7 @@ import EndpointItem from "./EndpointItem";
 import NewItem from "./NewItem";
 import { Method } from "../../Utilities/Method";
 
-export default function EndpointList() {
+export default function EndpointList({active}: {active: boolean}) {
     const [lastClickedPlusButton, setLastClickedPlusButton] = useState<HTMLDivElement | undefined>(undefined);
     
     const didClickPlusButton = (e: React.MouseEvent<HTMLDivElement>) => {
