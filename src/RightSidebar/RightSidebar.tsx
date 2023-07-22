@@ -4,6 +4,7 @@ import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
 import RequestInfo from "./Sections/RequestInfo";
 import toast from "react-hot-toast";
+import Button from "../Utilities/Button";
 
 const functionContent = `if(user == null){
     return status(401, "Unauthorized")
@@ -94,6 +95,11 @@ export default function RightSidebar({setPrependCode, setDidDeploy}: {setPrepend
             <div className='text-left w-full space-y-2'>
               <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
               <DBInfo show={isDBChecked} />
+            </div>
+            <div className='text-left w-full space-y-2'>
+              <div className="font-bold flex justify-between"><div>Test</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer">+</div></div>
+              <div className="underline cursor-pointer text-sm">My first request</div>
+              <div className="underline cursor-pointer text-sm">My second request</div>
             </div>
           </div>
         </div>

@@ -16,7 +16,7 @@ export default function EndpointList({active}: {active: boolean}) {
     
     //Fetch from backend and populate it here.
     return(
-        <div className="flex-col w-full mt-2 px-2 text-sm">
+        <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"}`} style={{marginTop: "-10px"}}>
             <EndpointHeader path="" level={0} didClickPlusButton={didClickPlusButton} />
             <EndpointItem level={0} method={Method.GET} active={true} />
             <EndpointHeader path=":id" level={1} didClickPlusButton={didClickPlusButton} />

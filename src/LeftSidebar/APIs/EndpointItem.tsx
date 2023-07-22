@@ -19,7 +19,7 @@ export default function EndpointItem({active = false, level = 0, method}: {activ
 
     return(
         <>
-            <div className={`font-mono flex-1 p-2 font-bold ${methodToColor(method)} ${active ? "bg-[#85869833]" : "hover:bg-[#85869833]"} cursor-pointer rounded`} style={{marginLeft: (level*8)+"px"}}>
+            <div className={`font-mono flex-1 p-1 pl-2 mt-0.5 font-bold ${methodToColor(method)} ${active ? "bg-[#85869833]" : "hover:bg-[#85869833]"} cursor-pointer rounded`} style={{marginLeft: (level*8)+"px"}}>
                 {method}
             </div>
         </>

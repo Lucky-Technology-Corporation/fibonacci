@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "github-oauth-popup": "^1.2.0",
     "monaco-editor": "^0.38.0",
     "react": "^18.2.0",
+    "react-auth-kit": "^2.12.4",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-monaco-editor": "^0.53.0"

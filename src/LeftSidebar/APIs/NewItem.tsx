@@ -39,13 +39,13 @@ export default function NewItem({triggerElement}: {triggerElement?: HTMLDivEleme
                 <tbody className="divide-y divide-[#85869833]">
                     <tr onClick={createFunction}>
                         <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
-                            <img src="/public/gear.svg" alt="function" className='w-3 h-3 m-auto mr-2'/>
-                            <div className=''>Endpoint</div>
+                            <img src="/cloud.svg" alt="function" className='w-3 h-3 m-auto mx-0 mr-2'/>
+                            <div className=''>API</div>
                         </td>
                     </tr>
                     <tr onClick={createPath}>
                         <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
-                            <img src="/public/folder.svg" alt="function" className='w-3 h- m-auto mr-2'/>
+                            <img src="/folder.svg" alt="function" className='w-3 h-3 m-auto mx-0 mr-2'/>
                             <div className=''>Subpath</div>
                         </td>
                     </tr>

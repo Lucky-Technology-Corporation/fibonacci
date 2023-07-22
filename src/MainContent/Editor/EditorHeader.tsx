@@ -1,5 +1,5 @@
-import Dot from "./Utilities/Dot";
-import { Method } from "./Utilities/Method";
+import Dot from "../../Utilities/Dot";
+import { Method } from "../../Utilities/Method";
 
 export default function EndpointItem({method, path, didDeploy}: {method: Method, path: string, didDeploy: boolean}) {
 

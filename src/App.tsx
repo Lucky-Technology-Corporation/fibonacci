@@ -1,36 +1,18 @@
-import { useEffect, useState } from 'react'
 import './App.css'
-import { Method } from './Utilities/Method'
-import Editor from './Editor'
-import EditorHeader from './EditorHeader'
-import RightSidebar from './RightSidebar/RightSidebar'
-import { Toaster, toast } from 'react-hot-toast'
-import LeftSidebar from './LeftSidebar/LeftSidebar'
-import { Page } from './Utilities/Page'
+import { AuthProvider } from 'react-auth-kit'
+import Dashboard from './Dashboard'
 
 function App() {
-  //Auth checkbox handler
-  const [prepndCode, setPrependCode] = useState("")
-  //Deploy state handler
-  const [didDeploy, setDidDeploy] = useState(false)
-  //Content handler
-  const [selectedTab, setSelectedTab] = useState<Page>(Page.Apis)
 
   return (
-    <>
-      <div><Toaster/></div>
-      <div className="grid grid-cols-[auto,1fr,auto] gap-0">
-        <LeftSidebar selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+    <AuthProvider authType = {'cookie'}
+      authName={'_auth'}
+      cookieDomain={window.location.hostname}
+      cookieSecure={window.location.protocol === "https:"}>
 
-        <div className="m-4 ml-0 text-sm whitespace-pre-line">
-          <EditorHeader method={Method.GET} path="/" didDeploy={didDeploy} />
-          <Editor prepend={prepndCode} setDidDeploy={setDidDeploy} />
-        </div>
+      <Dashboard />
 
-        <RightSidebar setPrependCode={setPrependCode} setDidDeploy={setDidDeploy} />
-        
-      </div>
-    </>
+    </AuthProvider>
   )
 }
 

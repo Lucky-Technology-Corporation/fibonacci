@@ -14,10 +14,10 @@ export default function SectionHeader({icon, text, active, onClick}: {icon: stri
     }
 
     return(
-    <div className="w-full font-semibold px-2 py-2 mt-4 text-sm flex align-middle cursor-pointer" onClick={onClick} onMouseEnter={teaseChevron} onMouseLeave={resetChevron}>
-        <img src={icon} className="inline-block w-4 h-4 mr-2 m-auto ml-0" />
+    <div className="w-full font-semibold px-2 py-2 mt-2 text-sm flex align-middle cursor-pointer hover:text-white" onClick={onClick} onMouseEnter={teaseChevron} onMouseLeave={resetChevron}>
+        <img src={icon} className="inline-block w-4 h-4 mr-1.5 m-auto ml-0" />
         {text}
-        <div className="mt-0.5 ml-auto"><Chevron size={18} active={active} tease={isHovering} /></div>
+        <div className="mt-0.5 ml-auto"><Chevron size={14} active={active} tease={isHovering} /></div>
     </div>
     )
 }
