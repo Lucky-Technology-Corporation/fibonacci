@@ -1,15 +1,28 @@
 
-import { Dispatch, Fragment, SetStateAction, useState } from 'react'
+import { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import useApi from './API/DatabaseAPI'
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
 export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProjectCreatorOpen: Dispatch<SetStateAction<boolean>>}){
-    const projects = [{name: "First Project", id: "00000"}]
-    const [selected, setSelected] = useState(projects[0].name)
+    const [projects, setProjects] = useState([]);
+
+    const { getProjects } = useApi();
+
+    useEffect(() => {  
+        getProjects().then((data) => {
+            setProjects(data);
+            setSelected(data[0].name)
+        })
+    }, [])
+
+    const [selected, setSelected] = useState()
+
+    if(projects.length == 0) return (<div className='text-sm mt-3'>Loading...</div>)
 
     return (
         <Menu as="div" className="relative inline-block text-left mt-2">
@@ -31,8 +44,8 @@ export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProject
         >
         <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
-                {projects.map((project) => (
-                    <Menu.Item>
+                {projects.map((project: any) => (
+                    <Menu.Item key={project.id}>
                     {({ active }) => (
                         <a
                             href="#"
@@ -49,7 +62,7 @@ export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProject
                     )}
                     </Menu.Item>
             ))}
-            <Menu.Item>
+            <Menu.Item key={"_create_new_project"}>
                 {({ active }) => (
                 <a
                     href="#"

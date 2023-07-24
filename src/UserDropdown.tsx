@@ -31,7 +31,7 @@ export default function UserDropdown(){
             leaveFrom="transform opacity-100 scale-100"
             leaveTo="transform opacity-0 scale-95"
         >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
+        <Menu.Items className="absolute left-0 bottom-8 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
                 <Menu.Item>
                      {({ active }) => (

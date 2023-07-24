@@ -9,8 +9,11 @@ import useApi from "../../API/DatabaseAPI";
 const PAGE_SIZE = 10;
 
 export default function DatabaseView(){
-    const { getDocuments, updateDocument } = useApi(); 
 
+    const searchExamples = [
+        
+    ]
+    const { getDocuments, updateDocument } = useApi(); 
     const [parentIsEditing, setParentIsEditing] = useState(false);
     const [keys, setKeys] = useState<string[]>([]);
     const [sortByKey, setSortByKey] = useState<string>("");

@@ -9,9 +9,9 @@ export default function CollectionList({active}: {active: boolean}) {
     const [activeCollection, setActiveCollection] = useState<string>("");
 
     useEffect(() => {
-        if(collections.length == 0){
+        if(collections.length > 0){
             getCollections().then((data) => {
-                setCollections(data.collections);
+                // setCollections(data.collections);
             })
         }
     }, [])

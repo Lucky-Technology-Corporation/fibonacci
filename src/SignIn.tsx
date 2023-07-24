@@ -1,15 +1,21 @@
 import { useSignIn } from 'react-auth-kit'
 import toast from 'react-hot-toast';
+import jwt_decode from 'jwt-decode';
 
 export default function SignIn(){
     const signIn = useSignIn()
+
+    const getNameFromJWT = (token: string) => {
+        let decoded = jwt_decode(token) as any;
+        return decoded.github_user || decoded.name;
+    }
 
     const signInWithJWT = (jwt: string) => {
         if(signIn(
             {
                 token: jwt,
                 expiresIn: 10080,
-                authState: { isAuthenticated: true },
+                authState: { isAuthenticated: true, user: getNameFromJWT(jwt) },
                 tokenType: "Bearer",
             }
         )){
