@@ -7,14 +7,14 @@ export default function useApi() {
     const authHeader = useAuthHeader();
 
     const getCollections = async () => {
-        // const projectId = localStorage.getItem("projectId");
-        // if(!projectId) throw new Error("No project id");
-        // const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections`, {
-        //     headers: {
-        //         Authorization: authHeader(), 
-        //     },
-        // });
-        // return response.data;
+        const projectId = localStorage.getItem("projectId");
+        if(!projectId) throw new Error("No project id");
+        const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections`, {
+            headers: {
+                Authorization: authHeader(), 
+            },
+        });
+        return response.data;
     };
   
     const getDocuments = async (page: number, sortByKey: string = "") => {

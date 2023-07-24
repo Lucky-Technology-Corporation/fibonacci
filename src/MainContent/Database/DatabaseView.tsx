@@ -11,12 +11,79 @@ const PAGE_SIZE = 10;
 export default function DatabaseView(){
 
     const searchExamples = [
-        
-    ]
+        {
+          "pages": [
+            {
+              "_id": "60f0b8b8a6b7a3a0a4f1b0a1",
+              "name": "Mccarthy",
+              "email": "jmacarthy@gmail.com",
+              "age": 30,
+              "address": "1234 Main St",
+              "city": "San Francisco",
+              "state": "CA",
+              "zip": "94123"
+            },
+            {
+              "_id": "60f0b8b8a6b7a3a0a4f1b0a2",
+              "name": "Smith",
+              "email": "jsmith@gmail.com",
+              "age": 35,
+              "address": "4567 Park Ave",
+              "city": "Los Angeles",
+              "state": "CA",
+              "zip": "90001"
+            }
+          ],
+          "nextPage": 2
+        },
+        {
+          "pages": [
+            {
+              "_id": "60f0b8b8a6b7a3a0a4f1b0a3",
+              "name": "Johnson",
+              "email": "jjohnson@gmail.com",
+              "age": 40,
+              "address": "8910 Elm St",
+              "city": "San Diego",
+              "state": "CA",
+              "zip": "92101"
+            },
+            {
+              "_id": "60f0b8b8a6b7a3a0a4f1b0a4",
+              "name": "Williams",
+              "email": "rwilliams@gmail.com",
+              "age": 45,
+              "address": "1213 Pine St",
+              "city": "Sacramento",
+              "state": "CA",
+              "zip": "94203"
+            }
+          ],
+          "nextPage": 3
+        },
+        {
+          "pages": [
+            {
+              "_id": "60f0b8b8a6b7a3a0a4f1b0a5",
+              "name": "Brown",
+              "email": "dbrown@gmail.com",
+              "age": 50,
+              "address": "1415 Oak St",
+              "city": "San Jose",
+              "state": "CA",
+              "zip": "95110"
+            }
+          ],
+          "nextPage": null
+        }
+      ]
+
+      
     const { getDocuments, updateDocument } = useApi(); 
+    const [sortByKey, setSortByKey] = useState<string>(""); //unused right now
+
     const [parentIsEditing, setParentIsEditing] = useState(false);
-    const [keys, setKeys] = useState<string[]>([]);
-    const [sortByKey, setSortByKey] = useState<string>("");
+    const [keys, setKeys] = useState<string[]>(["name", "email", "age", "address", "city", "state", "zip"]);
     
     const { data, error } = useSWRInfinite((index: number) =>
         getDocuments(index + 1, sortByKey)
@@ -29,7 +96,7 @@ export default function DatabaseView(){
     }, [data])
 
     if (error) return <div className="w-full text-center mt-4">Error loading data</div>
-    if (!data) return <div className="w-full text-center mt-4">Loading...</div>
+    // if (!data) return <div className="w-full text-center mt-4">Loading...</div>
 
 
     return (
@@ -57,8 +124,8 @@ export default function DatabaseView(){
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-[#85869833]'>
-                        {data.docs.map((pageData: any[], pageIndex: number) =>
-                            pageData.map((row: any, rowIndex: number) => (
+                        {(data || searchExamples).map((pageData: any[], pageIndex: number) =>
+                            pageData.pages.map((row: any, rowIndex: number) => (
                                 <DatabaseRow
                                 key={`page-${pageIndex}-row-${rowIndex}`}
                                 keys={keys}
@@ -68,11 +135,6 @@ export default function DatabaseView(){
                                 />
                             ))
                         )}
-                        {/* <DatabaseRow keys={keys} data={exampleDocument} index={0} setParentIsEditing={setParentIsEditing} />
-                        <DatabaseRow keys={keys} data={exampleDocument} index={1} setParentIsEditing={setParentIsEditing} />
-
-                        <DatabaseRow keys={keys} data={exampleDocument} index={2} setParentIsEditing={setParentIsEditing} />
-                        <DatabaseRow keys={keys} data={exampleDocument} index={3} setParentIsEditing={setParentIsEditing} /> */}
                     </tbody>
                 </table>                                        
             </div>

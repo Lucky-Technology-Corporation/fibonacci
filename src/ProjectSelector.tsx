@@ -10,17 +10,23 @@ function classNames(...classes: string[]) {
 
 export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProjectCreatorOpen: Dispatch<SetStateAction<boolean>>}){
     const [projects, setProjects] = useState([]);
+    const [selected, setSelected] = useState()
 
     const { getProjects } = useApi();
 
     useEffect(() => {  
         getProjects().then((data) => {
             setProjects(data);
-            setSelected(data[0].name)
+            const projectId = localStorage.getItem("projectId")
+            if(projectId){
+                setSelected(data.find((project: any) => project.id == projectId).name)
+            }else{
+                setSelected(data[0].name)
+                localStorage.setItem("projectId", data[0].id)
+            }
         })
     }, [])
 
-    const [selected, setSelected] = useState()
 
     if(projects.length == 0) return (<div className='text-sm mt-3'>Loading...</div>)
 
