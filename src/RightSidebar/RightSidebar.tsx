@@ -5,12 +5,13 @@ import DBInfo from "./Sections/DBInfo";
 import RequestInfo from "./Sections/RequestInfo";
 import toast from "react-hot-toast";
 import Button from "../Utilities/Button";
+import { Page } from "../Utilities/Page";
 
 const functionContent = `if(user == null){
     return status(401, "Unauthorized")
 }
 `
-export default function RightSidebar({setPrependCode, setDidDeploy}: {setPrependCode: (code: string) => void, setDidDeploy: (didDeploy: boolean) => void}){
+export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}: {selectedTab: Page, setPrependCode: (code: string) => void, setDidDeploy: (didDeploy: boolean) => void}){
     const [deployProgress, setDeployProgress] = useState(0);
     const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
 
@@ -70,7 +71,7 @@ export default function RightSidebar({setPrependCode, setDidDeploy}: {setPrepend
     }, []);
 
     return (
-        <div className='w-[200px]'>
+        <div className={`w-[200px] ${selectedTab == Page.Db ? "hidden" : ""}`}>
           <div className='flex flex-col items-center mt-4 h-screen pr-4 space-y-6'>
             <div className="relative w-full">
                 <div

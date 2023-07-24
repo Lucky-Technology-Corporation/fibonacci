@@ -79,8 +79,8 @@
 .glow-green {
   box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 30px #3b83f6e1, 0 0 40px #3b83f6e5;
 }
-.glow-orange {
-  box-shadow: 0 0 10px #F7D358, 0 0 20px #f7d258db, 0 0 30px #f7d258c5, 0 0 40px #f7d2587b;
+.glow-yellow {
+  box-shadow: 0 0 5px #ffe692, 0 0 20px #ffe692dd;
 }
 
 /* Editor */

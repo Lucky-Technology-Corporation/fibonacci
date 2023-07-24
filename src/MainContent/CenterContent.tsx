@@ -2,7 +2,7 @@ import Editor from "./Editor/Editor";
 import EditorHeader from "./Editor/EditorHeader";
 import { Method } from "../Utilities/Method";
 import { Page } from "../Utilities/Page";
-import DatabaseView from "./DatabaseView";
+import DatabaseView from "./Database/DatabaseView";
 
 export default function CenterContent({selectedTab, prependCode, didDeploy, setDidDeploy}: {selectedTab: Page, prependCode: string, didDeploy: boolean, setDidDeploy: (didDeploy: boolean) => void}){
     if(selectedTab === Page.Apis){

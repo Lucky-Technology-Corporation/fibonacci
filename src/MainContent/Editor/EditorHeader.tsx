@@ -21,7 +21,7 @@ export default function EndpointItem({method, path, didDeploy}: {method: Method,
     return(
         <>  
             <div className={`flex-1 ml-8 mb-2 text-lg font-bold font-mono`}>
-                <div className="flex"><div className="w-2 h-2 m-auto mr-4 ml-0"><Dot color={didDeploy ? "green": "orange"} /></div>
+                <div className="flex"><div className="w-2 h-2 m-auto mr-4 ml-0"><Dot color={didDeploy ? "green": "yellow"} /></div>
                 <span className={`${methodToColor(method)} mr-2`}>{method}</span> {path}</div>
             </div>
         </>
