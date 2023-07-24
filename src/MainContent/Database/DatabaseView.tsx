@@ -128,7 +128,7 @@ export default function DatabaseView(){
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-[#85869833]'>
-                        {(data || searchExamples).map((pageData: any[], pageIndex: number) =>
+                        {(data || searchExamples).map((pageData: {pages: any[]}, pageIndex: number) =>
                             pageData.pages.map((row: any, rowIndex: number) => (
                                 <DatabaseRow
                                 key={`page-${pageIndex}-row-${rowIndex}`}

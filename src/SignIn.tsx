@@ -6,23 +6,27 @@ export default function SignIn(){
     const signIn = useSignIn()
 
     const getNameFromJWT = (token: string) => {
-        let decoded = jwt_decode(token) as any;
-        return decoded.github_user || decoded.name;
+        try{
+            let decoded = jwt_decode(token) as any;
+            return decoded.github_user || decoded.name;
+        } catch(e){
+            console.log(e)
+            console.log("Couldn't get name from JWT")
+            return "Anonymous"
+        }
     }
 
     const signInWithJWT = (jwt: string) => {
-        if(signIn(
-            {
-                token: jwt,
-                expiresIn: 10080,
-                authState: { isAuthenticated: true, user: getNameFromJWT(jwt) },
-                tokenType: "Bearer",
-            }
-        )){
+        if(signIn({
+            token: jwt,
+            expiresIn: 10080,
+            authState: { isAuthenticated: true, user: getNameFromJWT(jwt) },
+            tokenType: "Bearer",
+        })){
             // toast.success("Signed in!")
             console.log("Signed in!")
             window.history.replaceState({}, document.title, window.location.pathname);
-        }else {
+        } else {
             console.log("Couldn't sign in")
             toast.error("Couldn't sign in")
         }
