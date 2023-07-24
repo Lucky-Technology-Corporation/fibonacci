@@ -4,83 +4,85 @@ import DatabaseEditorHint from "./DatabaseEditorHint";
 import DatabaseRow from "./DatabaseRow";
 import useSWRInfinite from 'swr'
 import useApi from "../../API/DatabaseAPI";
+import useTypingEffect from "./TypingEffect";
 
 
 const PAGE_SIZE = 10;
+const searchExamples = [
+    {
+      "pages": [
+        {
+          "_id": "60f0b8b8a6b7a3a0a4f1b0a1",
+          "name": "Mccarthy",
+          "email": "jmacarthy@gmail.com",
+          "age": 30,
+          "address": "1234 Main St",
+          "city": "San Francisco",
+          "state": "CA",
+          "zip": "94123"
+        },
+        {
+          "_id": "60f0b8b8a6b7a3a0a4f1b0a2",
+          "name": "Smith",
+          "email": "jsmith@gmail.com",
+          "age": 35,
+          "address": "4567 Park Ave",
+          "city": "Los Angeles",
+          "state": "CA",
+          "zip": "90001"
+        }
+      ],
+      "nextPage": 2
+    },
+    {
+      "pages": [
+        {
+          "_id": "60f0b8b8a6b7a3a0a4f1b0a3",
+          "name": "Johnson",
+          "email": "jjohnson@gmail.com",
+          "age": 40,
+          "address": "8910 Elm St",
+          "city": "San Diego",
+          "state": "CA",
+          "zip": "92101"
+        },
+        {
+          "_id": "60f0b8b8a6b7a3a0a4f1b0a4",
+          "name": "Williams",
+          "email": "rwilliams@gmail.com",
+          "age": 45,
+          "address": "1213 Pine St",
+          "city": "Sacramento",
+          "state": "CA",
+          "zip": "94203"
+        }
+      ],
+      "nextPage": 3
+    },
+    {
+      "pages": [
+        {
+          "_id": "60f0b8b8a6b7a3a0a4f1b0a5",
+          "name": "Brown",
+          "email": "dbrown@gmail.com",
+          "age": 50,
+          "address": "1415 Oak St",
+          "city": "San Jose",
+          "state": "CA",
+          "zip": "95110"
+        }
+      ],
+      "nextPage": null
+    }
+  ]
 
 export default function DatabaseView(){
 
-    const searchExamples = [
-        {
-          "pages": [
-            {
-              "_id": "60f0b8b8a6b7a3a0a4f1b0a1",
-              "name": "Mccarthy",
-              "email": "jmacarthy@gmail.com",
-              "age": 30,
-              "address": "1234 Main St",
-              "city": "San Francisco",
-              "state": "CA",
-              "zip": "94123"
-            },
-            {
-              "_id": "60f0b8b8a6b7a3a0a4f1b0a2",
-              "name": "Smith",
-              "email": "jsmith@gmail.com",
-              "age": 35,
-              "address": "4567 Park Ave",
-              "city": "Los Angeles",
-              "state": "CA",
-              "zip": "90001"
-            }
-          ],
-          "nextPage": 2
-        },
-        {
-          "pages": [
-            {
-              "_id": "60f0b8b8a6b7a3a0a4f1b0a3",
-              "name": "Johnson",
-              "email": "jjohnson@gmail.com",
-              "age": 40,
-              "address": "8910 Elm St",
-              "city": "San Diego",
-              "state": "CA",
-              "zip": "92101"
-            },
-            {
-              "_id": "60f0b8b8a6b7a3a0a4f1b0a4",
-              "name": "Williams",
-              "email": "rwilliams@gmail.com",
-              "age": 45,
-              "address": "1213 Pine St",
-              "city": "Sacramento",
-              "state": "CA",
-              "zip": "94203"
-            }
-          ],
-          "nextPage": 3
-        },
-        {
-          "pages": [
-            {
-              "_id": "60f0b8b8a6b7a3a0a4f1b0a5",
-              "name": "Brown",
-              "email": "dbrown@gmail.com",
-              "age": 50,
-              "address": "1415 Oak St",
-              "city": "San Jose",
-              "state": "CA",
-              "zip": "95110"
-            }
-          ],
-          "nextPage": null
-        }
-      ]
-
-      
     const { getDocuments, updateDocument } = useApi(); 
     const [sortByKey, setSortByKey] = useState<string>(""); //unused right now
+
+    const [searchPlaceholder, setSearchPlaceholder] = useState<string>("")
+    useTypingEffect(setSearchPlaceholder);
 
     const [parentIsEditing, setParentIsEditing] = useState(false);
     const [keys, setKeys] = useState<string[]>(["name", "email", "age", "address", "city", "state", "zip"]);
@@ -111,7 +113,7 @@ export default function DatabaseView(){
                 </div>
             </div>
             <div className="flex">
-                <input type="text" className="flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]" placeholder="Search" />
+                <input type="text" className="flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]" placeholder={searchPlaceholder} />
                 <Button text="Search" />
             </div>
             <div className="flex">
