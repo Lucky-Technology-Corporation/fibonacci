@@ -84,6 +84,8 @@ export default function DatabaseView(){
     const [searchPlaceholder, setSearchPlaceholder] = useState<string>("")
     useTypingEffect(setSearchPlaceholder);
 
+    const [isValidMongoQuery, setIsValidMongoQuery] = useState<boolean>(true);
+
     const [parentIsEditing, setParentIsEditing] = useState(false);
     const [keys, setKeys] = useState<string[]>(["name", "email", "age", "address", "city", "state", "zip"]);
     
