@@ -4,6 +4,7 @@ import SectionHeader from "./SectionHeader";
 import CollectionList from "./Database/CollectionList";
 import ProjectSelector from "../ProjectSelector";
 import UserDropdown from "../UserDropdown";
+import EndpointList from "./APIs/EndpointList";
 
 export default function LeftSidebar({selectedTab, setSelectedTab, setIsProjectCreatorOpen}: {selectedTab: Page, setSelectedTab: Dispatch<SetStateAction<Page>>, setIsProjectCreatorOpen: Dispatch<SetStateAction<boolean>>}){
     return (
@@ -20,8 +21,8 @@ export default function LeftSidebar({selectedTab, setSelectedTab, setIsProjectCr
                 
                 {/* <SectionHeader icon="gear.svg" text="Functions" active={selectedTab == Page.Functions} onClick={() => {setSelectedTab(Page.Functions)}} /> */}
                 
-                {/* <SectionHeader icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
-                <EndpointList active={selectedTab == Page.Apis} /> */}
+                <SectionHeader icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
+                <EndpointList active={selectedTab == Page.Apis} />
                 <UserDropdown />
             </div>
         </div>

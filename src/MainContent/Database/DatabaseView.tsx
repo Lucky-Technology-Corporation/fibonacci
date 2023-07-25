@@ -5,6 +5,7 @@ import DatabaseRow from "./DatabaseRow";
 import useSWRInfinite from 'swr'
 import useApi from "../../API/DatabaseAPI";
 import useTypingEffect from "./TypingEffect";
+import RowDetail from "./RowDetail";
 
 
 const PAGE_SIZE = 10;
@@ -79,18 +80,23 @@ const searchExamples = [
 export default function DatabaseView(){
 
     const { getDocuments, updateDocument } = useApi(); 
-    const [sortByKey, setSortByKey] = useState<string>(""); //unused right now
 
     const [searchPlaceholder, setSearchPlaceholder] = useState<string>("")
     useTypingEffect(setSearchPlaceholder);
 
     const [isValidMongoQuery, setIsValidMongoQuery] = useState<boolean>(true);
+    const [searchQuery, setSearchQuery] = useState<string>("")
 
     const [parentIsEditing, setParentIsEditing] = useState(false);
+
+    const [rowDetailData, setRowDetailData] = useState<any>({})
+    const [clickPosition, setClickPosition] = useState<{x: number, y: number}>({x: 0, y: 0})
+
+    //TODO: replace with actual keys
     const [keys, setKeys] = useState<string[]>(["name", "email", "age", "address", "city", "state", "zip"]);
     
     const { data, error } = useSWRInfinite((index: number) =>
-        getDocuments(index + 1, sortByKey)
+        getDocuments(index + 1)
     );
 
     useEffect(() => {
@@ -99,6 +105,30 @@ export default function DatabaseView(){
         }
     }, [data])
 
+    useEffect(() => {
+        const regex = /^(\w+)\(\{.*\}\)$/;
+        const isValid = regex.test(searchQuery);
+        setIsValidMongoQuery(isValid);
+    }, [searchQuery])
+
+    const runSearch = () => {
+        if(isValidMongoQuery){
+            return () => {
+                // run search
+            }
+        }else{
+            return () => {
+                // run query
+            }
+        }
+    }
+
+    const showDetailView = (rowData: any, x: number, y: number) => {
+        setRowDetailData(rowData);
+        setClickPosition({x: x, y: y});
+    }
+
+    
     if (error) return <div className="w-full text-center mt-4">Error loading data</div>
     // if (!data) return <div className="w-full text-center mt-4">Loading...</div>
 
@@ -113,17 +143,32 @@ export default function DatabaseView(){
                 <div className="text-sm w-20">
                     <DatabaseEditorHint isOpen={parentIsEditing} />
                 </div>
+                <div className={`flex h-10 mt-1 mr-[-16px] text-sm ${parentIsEditing ? "hidden" : ""}`}>
+                    <Button text="+ New Document" onClick={() => {}} />
+                </div>
             </div>
             <div className="flex">
-                <input type="text" className="flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]" placeholder={searchPlaceholder} />
-                <Button text="Search" />
+                <input 
+                    type="text" 
+                    className="font-mono flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]" 
+                    placeholder={searchPlaceholder}
+                    value={searchQuery} 
+                    onChange={(e) => {setSearchQuery(e.target.value)}}
+                    onKeyDown={(event) => {
+                        if(event.key == "Enter"){
+                            runSearch()
+                        }
+                    }}
+                />
+                <Button text={isValidMongoQuery ? "Run" : "Search"} onClick={runSearch}  />
             </div>
             <div className="flex">
                 <table className='table-auto flex-grow my-4 ml-4'>
                     <thead className="bg-[#85869833]">
                         <tr>
-                            {keys.map((key) => (
-                                <th className='text-left p-1'>{key}</th>
+                        <th className='text-left p-1' key={0}></th>
+                            {keys.map((key, index) => (
+                                <th className='text-left p-1' key={index+1}>{key}</th>
                             ))}
                         </tr>
                     </thead>
@@ -131,16 +176,17 @@ export default function DatabaseView(){
                         {(data || searchExamples).map((pageData: {pages: any[]}, pageIndex: number) =>
                             pageData.pages.map((row: any, rowIndex: number) => (
                                 <DatabaseRow
-                                key={`page-${pageIndex}-row-${rowIndex}`}
-                                keys={keys}
-                                data={row}
-                                index={pageIndex * PAGE_SIZE + rowIndex}
-                                setParentIsEditing={setParentIsEditing}
+                                    rowKey={`page-${pageIndex}-row-${rowIndex}`}
+                                    keys={keys}
+                                    data={row}
+                                    setParentIsEditing={setParentIsEditing}
+                                    showDetailView={(e: React.MouseEvent<HTMLButtonElement>) => {showDetailView(row, e.clientX, e.clientY)}}
                                 />
                             ))
                         )}
                     </tbody>
-                </table>                                        
+                </table>
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} />                                        
             </div>
         </div>
     )

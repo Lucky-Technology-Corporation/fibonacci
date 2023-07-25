@@ -6,12 +6,12 @@ const pauseTime = 2000; // pause time between phrases in milliseconds
 
 const phrases = [
     "Use natural language or a MongoDB query...", 
-    "'find all where phone_number contains 510'", 
-    `db.contacts.find({ "phone_number": { $regex: '510' } })`, 
-    "'update every user without an email with a new field is_anonymous: true'", 
-    `db.accounts.updateMany({ "email": { "$exists": false } }, { "$set": { "is_anonymous": true } })`,
+    "find all where phone_number contains 510", 
+    `find({ "phone_number": { $regex: '510' } })`, 
+    "update every user without an email with a new field is_anonymous: true", 
+    `updateMany({ "email": { "$exists": false } }, { "$set": { "is_anonymous": true } })`,
     "delete every user where state is CA", 
-    `db.people.deleteMany({ "state": "CA" })`];
+    `deleteMany({ "state": "CA" })`];
 
 const useTypingEffect = (setSearchPlaceholder: React.Dispatch<React.SetStateAction<string>>) => {
   let phraseIndex = 0;
