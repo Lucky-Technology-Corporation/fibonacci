@@ -1,6 +1,7 @@
 import { useSignIn } from 'react-auth-kit'
 import toast from 'react-hot-toast';
 import jwt_decode from 'jwt-decode';
+import { useEffect } from 'react';
 
 export default function SignIn(){
     const signIn = useSignIn()
@@ -17,10 +18,11 @@ export default function SignIn(){
     }
 
     const signInWithJWT = (jwt: string) => {
+        const userName = getNameFromJWT(jwt)
         if(signIn({
             token: jwt,
             expiresIn: 10080,
-            authState: { isAuthenticated: true, user: getNameFromJWT(jwt) },
+            authState: { isAuthenticated: true, user: userName },
             tokenType: "Bearer",
         })){
             // toast.success("Signed in!")
@@ -33,11 +35,13 @@ export default function SignIn(){
     }
 
     //check if there's a jwt query param
-    const urlParams = new URLSearchParams(window.location.search);
-    const jwt = urlParams.get('jwt');
-    if(jwt && jwt.length > 0){
-        signInWithJWT(jwt)
-    }
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const jwt = urlParams.get('jwt');
+        if(jwt && jwt.length > 0){
+            signInWithJWT(jwt)
+        }
+    }, [])
 
     return (
         <>

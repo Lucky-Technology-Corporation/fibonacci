@@ -109,7 +109,6 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
 
     // Run and close the AI assistant on enter
     if (e.changes[0].text === "\n" && this.state.isAssistantOpen && this.editor) {
-      console.log("Returned on assistant")
       const model = this.editor.getModel();
       if (model) {
         const lineNumber = e.changes[0].range.startLineNumber;

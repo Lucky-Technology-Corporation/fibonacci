@@ -38,7 +38,6 @@ export default function RowDetail({data, clickPosition}: {data: any, clickPositi
     }, []);
 
     useEffect(() => {
-        console.log(clickPosition)
         if(clickPosition.x > 0 && clickPosition.y > 0) {
             setIsHintWindowVisible(true)
         }

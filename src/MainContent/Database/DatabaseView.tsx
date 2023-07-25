@@ -176,7 +176,8 @@ export default function DatabaseView(){
                         {(data || searchExamples).map((pageData: {pages: any[]}, pageIndex: number) =>
                             pageData.pages.map((row: any, rowIndex: number) => (
                                 <DatabaseRow
-                                    rowKey={`page-${pageIndex}-row-${rowIndex}`}
+                                    key={`page-${pageIndex}-row-${rowIndex}`}
+                                    rowKey={row._id}
                                     keys={keys}
                                     data={row}
                                     setParentIsEditing={setParentIsEditing}

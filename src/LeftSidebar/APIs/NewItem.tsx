@@ -27,7 +27,6 @@ export default function NewItem({triggerElement}: {triggerElement?: HTMLDivEleme
     }, []);
 
     useEffect(() => {
-        console.log(triggerElement)
         if(triggerElement) {
             setIsHintWindowVisible(true)
         }
