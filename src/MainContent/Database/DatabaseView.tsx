@@ -8,76 +8,7 @@ import useTypingEffect from "./TypingEffect";
 import RowDetail from "./RowDetail";
 
 
-const PAGE_SIZE = 10;
-const searchExamples = [
-    {
-      "pages": [
-        {
-          "_id": "60f0b8b8a6b7a3a0a4f1b0a1",
-          "name": "Mccarthy",
-          "email": "jmacarthy@gmail.com",
-          "age": 30,
-          "address": "1234 Main St",
-          "city": "San Francisco",
-          "state": "CA",
-          "zip": "94123"
-        },
-        {
-          "_id": "60f0b8b8a6b7a3a0a4f1b0a2",
-          "name": "Smith",
-          "email": "jsmith@gmail.com",
-          "age": 35,
-          "address": "4567 Park Ave",
-          "city": "Los Angeles",
-          "state": "CA",
-          "zip": "90001"
-        }
-      ],
-      "nextPage": 2
-    },
-    {
-      "pages": [
-        {
-          "_id": "60f0b8b8a6b7a3a0a4f1b0a3",
-          "name": "Johnson",
-          "email": "jjohnson@gmail.com",
-          "age": 40,
-          "address": "8910 Elm St",
-          "city": "San Diego",
-          "state": "CA",
-          "zip": "92101"
-        },
-        {
-          "_id": "60f0b8b8a6b7a3a0a4f1b0a4",
-          "name": "Williams",
-          "email": "rwilliams@gmail.com",
-          "age": 45,
-          "address": "1213 Pine St",
-          "city": "Sacramento",
-          "state": "CA",
-          "zip": "94203"
-        }
-      ],
-      "nextPage": 3
-    },
-    {
-      "pages": [
-        {
-          "_id": "60f0b8b8a6b7a3a0a4f1b0a5",
-          "name": "Brown",
-          "email": "dbrown@gmail.com",
-          "age": 50,
-          "address": "1415 Oak St",
-          "city": "San Jose",
-          "state": "CA",
-          "zip": "95110"
-        }
-      ],
-      "nextPage": null
-    }
-  ]
-
-export default function DatabaseView(){
+export default function DatabaseView({activeCollection}: {activeCollection: string}){
 
     const { getDocuments, updateDocument } = useApi(); 
 
@@ -93,17 +24,34 @@ export default function DatabaseView(){
     const [clickPosition, setClickPosition] = useState<{x: number, y: number}>({x: 0, y: 0})
 
     //TODO: replace with actual keys
-    const [keys, setKeys] = useState<string[]>(["name", "email", "age", "address", "city", "state", "zip"]);
+    const [keys, setKeys] = useState<string[]>([]); //["name", "email", "age", "address", "city", "state", "zip"]
+    const [data, setData] = useState<any>();
+    const [error, setError] = useState<any>(null);
     
-    const { data, error } = useSWRInfinite((index: number) =>
-        getDocuments(index + 1)
-    );
+    // const { data, error } = useSWRInfinite(
+    //     (index: number) => getDocuments(activeCollection),
+    //     (data: any) => {
+    //         if (data.error) {
+    //             console.log("error"")
+    //             return null; // stop retrying on error
+    //         }
+    //         return data;
+    //     }
+    // );
 
     useEffect(() => {
-        if(data){
-            setKeys(data.keys);
-        }
-    }, [data])
+        if(!activeCollection || activeCollection == "") return;
+        getDocuments(activeCollection)
+            .then((data) => {
+                console.log(data)
+                setData(data.documents || [])
+                setKeys(data.keys || [])
+            })
+            .catch((e) => {
+                console.log(e)
+                setError(e)
+            })
+    }, [activeCollection])
 
     useEffect(() => {
         const regex = /^(\w+)\(\{.*\}\)$/;
@@ -130,7 +78,7 @@ export default function DatabaseView(){
 
     
     if (error) return <div className="w-full text-center mt-4">Error loading data</div>
-    // if (!data) return <div className="w-full text-center mt-4">Loading...</div>
+    if (!data) return <div className="w-full text-center mt-4">Loading...</div>
 
 
     return (
@@ -173,7 +121,7 @@ export default function DatabaseView(){
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-[#85869833]'>
-                        {(data || searchExamples).map((pageData: {pages: any[]}, pageIndex: number) =>
+                        {data.map((pageData: {pages: any[]}, pageIndex: number) =>
                             pageData.pages.map((row: any, rowIndex: number) => (
                                 <DatabaseRow
                                     key={`page-${pageIndex}-row-${rowIndex}`}

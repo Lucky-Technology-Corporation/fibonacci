@@ -4,7 +4,15 @@ import { Method } from "../Utilities/Method";
 import { Page } from "../Utilities/Page";
 import DatabaseView from "./Database/DatabaseView";
 
-export default function CenterContent({selectedTab, prependCode, didDeploy, setDidDeploy}: {selectedTab: Page, prependCode: string, didDeploy: boolean, setDidDeploy: (didDeploy: boolean) => void}){
+type CenterContentProps = {
+    selectedTab: Page, 
+    prependCode: string, 
+    didDeploy: boolean, 
+    setDidDeploy: (didDeploy: boolean) => void
+    activeCollection: string
+}
+
+export default function CenterContent({selectedTab, prependCode, didDeploy, setDidDeploy, activeCollection} : CenterContentProps){
     if(selectedTab === Page.Apis){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
@@ -17,7 +25,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
     } else if(selectedTab == Page.Db){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
-                <DatabaseView />
+                <DatabaseView activeCollection={activeCollection} />
             </div>
         )
     } else if(selectedTab == Page.Logs){

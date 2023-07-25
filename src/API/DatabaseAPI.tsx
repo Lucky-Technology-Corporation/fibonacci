@@ -17,15 +17,20 @@ export default function useApi() {
         return response.data;
     };
   
-    const getDocuments = async (page: number, sortByKey: string = "") => {
-        // const projectId = localStorage.getItem("projectId");
-        // if(!projectId) throw new Error("No project id");
-        // const response = await axios.get(`${BASE_URL}/projects/${projectId}/db?page=${page}&sort=${sortByKey}`, {
-        //     headers: {
-        //         Authorization: authHeader(), 
-        //     },
-        // });
-        // return response.data;
+    const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "") => {
+        const projectId = localStorage.getItem("projectId");
+        try{
+            if(!projectId) throw new Error("No project id");
+            const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
+                headers: {
+                    Authorization: authHeader(), 
+                },
+            });
+            return response.data;
+        } catch(e: any){
+            throw e;
+            return {error: true, message: e.message}
+        }
     };
 
     const updateDocument = async (id: string, data: any) => {

@@ -10,7 +10,7 @@ function classNames(...classes: string[]) {
 
 export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProjectCreatorOpen: Dispatch<SetStateAction<boolean>>}){
     const [projects, setProjects] = useState([]);
-    const [selected, setSelected] = useState()
+    const [selected, setSelected] = useState<string>()
 
     const { getProjects } = useApi();
 
@@ -19,9 +19,9 @@ export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProject
             setProjects(data);
             const projectId = localStorage.getItem("projectId")
             if(projectId){
-                setSelected(data.find((project: any) => project.id == projectId).name)
+                setSelected(projectId)
             }else{
-                setSelected(data[0].name)
+                setSelected(data[0].id)
                 localStorage.setItem("projectId", data[0].id)
             }
         })
@@ -34,7 +34,7 @@ export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProject
         <Menu as="div" className="relative inline-block text-left mt-2">
         <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
-            {selected}
+            {(projects.find((project: any) => project.id == selected) || {"name": "Loading..."}).name}
             <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
         </div>
@@ -60,8 +60,9 @@ export default function ProjectSelector({setIsProjectCreatorOpen}: {setIsProject
                                 'block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]'
                             )}
                             onClick={() => {
-                                setSelected(project.name)
+                                setSelected(project.id)
                                 localStorage.setItem("projectId", project.id)
+                                location.reload()
                             }}>
                          {project.name}
                      </a>

@@ -6,7 +6,15 @@ import ProjectSelector from "../ProjectSelector";
 import UserDropdown from "../UserDropdown";
 import EndpointList from "./APIs/EndpointList";
 
-export default function LeftSidebar({selectedTab, setSelectedTab, setIsProjectCreatorOpen}: {selectedTab: Page, setSelectedTab: Dispatch<SetStateAction<Page>>, setIsProjectCreatorOpen: Dispatch<SetStateAction<boolean>>}){
+type LeftSidebarProps = {
+    selectedTab: Page
+    setSelectedTab: Dispatch<SetStateAction<Page>>
+    setIsProjectCreatorOpen: Dispatch<SetStateAction<boolean>>
+    activeCollection: string
+    setActiveCollection: Dispatch<SetStateAction<string>>
+}
+
+export default function LeftSidebar({selectedTab, setSelectedTab, setIsProjectCreatorOpen, activeCollection, setActiveCollection} : LeftSidebarProps){
     return (
         <div className='min-w-[220px] border-r border-[#4C4F6B] bg-[#191A23]'>
             <div className='flex flex-col items-center mt-4 h-screen'>
@@ -17,7 +25,7 @@ export default function LeftSidebar({selectedTab, setSelectedTab, setIsProjectCr
                 {/* <SectionHeader icon="logs.svg" text="Logs" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} /> */}
                 
                 <SectionHeader icon="database.svg" text="Database" active={selectedTab == Page.Db} onClick={() => {setSelectedTab(Page.Db)}} />
-                <CollectionList active={selectedTab == Page.Db}/>
+                <CollectionList active={selectedTab == Page.Db} activeCollection={activeCollection} setActiveCollection={setActiveCollection}/>
                 
                 {/* <SectionHeader icon="gear.svg" text="Functions" active={selectedTab == Page.Functions} onClick={() => {setSelectedTab(Page.Functions)}} /> */}
                 
