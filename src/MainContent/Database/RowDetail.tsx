@@ -1,12 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { castValues } from "../../Utilities/DataCaster";
 
 export default function RowDetail({data, clickPosition}: {data: any, clickPosition: {x: number, y: number}}){
     
     const copyJSON = () => {
         clickPosition = {x:0, y:0};
         setIsHintWindowVisible(false)
-        navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+        var niceData = data;
+        delete niceData._id;
+        niceData = castValues(niceData)
+        navigator.clipboard.writeText(JSON.stringify(niceData, null, 2));
         toast.success("Copied JSON to clipboard!")
     }
     const deleteDocument = () => {

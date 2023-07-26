@@ -12,8 +12,8 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
 
     const { getDocuments, updateDocument } = useApi(); 
 
-    const [searchPlaceholder, setSearchPlaceholder] = useState<string>("")
-    useTypingEffect(setSearchPlaceholder);
+    const [searchPlaceholder, setSearchPlaceholder] = useState<string>("remove the phone_number everyone whose age is greater than 30")
+    // useTypingEffect(setSearchPlaceholder);
 
     const [isValidMongoQuery, setIsValidMongoQuery] = useState<boolean>(true);
     const [searchQuery, setSearchQuery] = useState<string>("")
@@ -115,24 +115,23 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                     <thead className="bg-[#85869833]">
                         <tr>
                         <th className='text-left p-1' key={0}></th>
-                            {keys.map((key, index) => (
+                            {keys.filter(k => k != "_id").map((key, index) => (
                                 <th className='text-left p-1' key={index+1}>{key}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-[#85869833]'>
-                        {data.map((pageData: {pages: any[]}, pageIndex: number) =>
-                            pageData.pages.map((row: any, rowIndex: number) => (
-                                <DatabaseRow
-                                    key={`page-${pageIndex}-row-${rowIndex}`}
-                                    rowKey={row._id}
-                                    keys={keys}
-                                    data={row}
-                                    setParentIsEditing={setParentIsEditing}
-                                    showDetailView={(e: React.MouseEvent<HTMLButtonElement>) => {showDetailView(row, e.clientX, e.clientY)}}
-                                />
-                            ))
-                        )}
+                        {data.map((row: any, rowIndex: number) => (
+                            <DatabaseRow
+                                collection={activeCollection}
+                                key={`row-${rowIndex}`}
+                                rowKey={row._id}
+                                keys={keys}
+                                data={row}
+                                setParentIsEditing={setParentIsEditing}
+                                showDetailView={(e: React.MouseEvent<HTMLButtonElement>) => {showDetailView(row, e.clientX, e.clientY)}}
+                            />
+                        ))}
                     </tbody>
                 </table>
                 <RowDetail data={rowDetailData} clickPosition={clickPosition} />                                        

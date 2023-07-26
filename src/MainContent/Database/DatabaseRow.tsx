@@ -1,11 +1,13 @@
 import { MouseEventHandler, useEffect, useRef, useState } from "react"
 import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
+import useApi from "../../API/DatabaseAPI";
 
-export default function DatabaseRow({keys, data, rowKey, setParentIsEditing, showDetailView}: {keys: string[], data: any, rowKey: string, setParentIsEditing: (isEditing: boolean) => void, showDetailView: MouseEventHandler<HTMLButtonElement>}){
+export default function DatabaseRow({collection, keys, data, rowKey, setParentIsEditing, showDetailView}: {collection: string, keys: string[], data: any, rowKey: string, setParentIsEditing: (isEditing: boolean) => void, showDetailView: MouseEventHandler<HTMLButtonElement>}){
     const [editing, setEditing] = useState("")
     const [rowValues, setRowValues] = useState(data);
     const [pendingInputValue, setPendingInputValue] = useState("");
+    const { updateDocument } = useApi() 
 
     const setupEditing = (key: string) => {
         setEditing(key);
@@ -35,6 +37,18 @@ export default function DatabaseRow({keys, data, rowKey, setParentIsEditing, sho
       };
     }, []);
 
+    const saveNewValues = (key: string, value: string) => {
+        var document = rowValues
+        document[key] = value
+        setRowValues({...rowValues, [key]: pendingInputValue});
+        toast.promise(updateDocument(collection, document._id, document), {
+            loading: "Updating document...",
+            success: "Updated document!",
+            error: "Failed to update document"
+        })
+        endEditing()
+    }
+
     return (
         <tr className="hover:bg-[#85869822]" ref={modalRef} key={rowKey}>
             <td className={`font-mono p-1 border-none`} key={`${rowKey}-${0}`}>
@@ -42,7 +56,7 @@ export default function DatabaseRow({keys, data, rowKey, setParentIsEditing, sho
                     <EllipsisVerticalIcon className="mt-1 h-4 w-4 text-[#D9D9D9]" />
                 </button>
             </td>
-            {keys.map((key, index) => (
+            {keys.filter(k => k != "_id").map((key, index) => (
                 <td className={`font-mono p-1 border-none ${(editing == key) ? "bg-[#383842]" : ""}`} key={`${rowKey}-${index+1}`}>
                     <input 
                         type="text" 
@@ -52,9 +66,7 @@ export default function DatabaseRow({keys, data, rowKey, setParentIsEditing, sho
                         onChange={(event) => setPendingInputValue(event.target.value)}
                         onKeyDown={(event) => {
                             if(event.key == "Enter"){
-                                setRowValues({...rowValues, [key]: pendingInputValue});
-                                toast.success("Updated document!") //convert to a promise
-                                endEditing()
+                                saveNewValues(key, pendingInputValue)
                             } else if(event.key == "Escape"){
                                 endEditing()
                             }

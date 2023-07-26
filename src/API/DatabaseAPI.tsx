@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {useAuthHeader} from 'react-auth-kit'
 
-const BASE_URL = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1';
+// const BASE_URL = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1';
+const BASE_URL = 'http://localhost:4000/api/v1'
 
 export default function useApi() {
     const authHeader = useAuthHeader();
@@ -26,22 +27,29 @@ export default function useApi() {
                     Authorization: authHeader(), 
                 },
             });
+            console.log(response.data)
             return response.data;
         } catch(e: any){
+            console.log(e)
             throw e;
-            return {error: true, message: e.message}
         }
     };
 
-    const updateDocument = async (id: string, data: any) => {
-        // const projectId = localStorage.getItem("projectId");
-        // if(!projectId) throw new Error("No project id");
-        // const response = await axios.put(`${BASE_URL}/projects/${projectId}/db/${id}`, data, {
-        //     headers: {
-        //         Authorization: authHeader(),
-        //     },
-        // });
-        // return response.data;
+    const updateDocument = async (activeCollection: string, id: string, data: any) => {
+        var newDocument = data;
+        delete newDocument._id;
+        const projectId = localStorage.getItem("projectId");
+        try{
+            if(!projectId) throw new Error("No project id");
+            const response = await axios.patch(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {document: data}, {
+                headers: {
+                    Authorization: authHeader(), 
+                },
+            });
+            return response.data;
+        } catch(e: any){
+            throw e;
+        }
     }
 
     const createProject = async (name: string) => {
@@ -64,3 +72,4 @@ export default function useApi() {
   
     return { getDocuments, updateDocument, createProject, getProjects, getCollections };
 }
+
