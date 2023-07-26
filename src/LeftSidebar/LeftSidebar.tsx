@@ -23,6 +23,7 @@ export default function LeftSidebar({selectedTab, setSelectedTab, activeCollecti
 
                 {/* <SectionHeader icon="logs.svg" text="Logs" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} /> */}
                 {/* <SectionHeader icon="gear.svg" text="Functions" active={selectedTab == Page.Functions} onClick={() => {setSelectedTab(Page.Functions)}} /> */}
+                <SectionHeader icon="auth.svg" text="Auth" active={selectedTab == Page.Auth} onClick={() => {setSelectedTab(Page.Auth)}} />
 
                 <SectionHeader icon="database.svg" text="Database" active={selectedTab == Page.Db} onClick={() => {setSelectedTab(Page.Db)}} />
                 <CollectionList active={selectedTab == Page.Db} activeCollection={activeCollection} setActiveCollection={setActiveCollection} />

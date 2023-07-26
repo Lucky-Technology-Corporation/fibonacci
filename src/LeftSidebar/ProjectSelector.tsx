@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import useApi from '../API/DatabaseAPI'
 import Dropdown from '../Utilities/Dropdown'
-import NewProjectInput from '../NewProjectInput';
+import NewProjectInput from '../NewResourceModals/NewProjectInput';
 
 
 export default function ProjectSelector(){

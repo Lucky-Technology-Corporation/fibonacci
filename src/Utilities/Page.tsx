@@ -3,4 +3,5 @@ export enum Page {
     Db = "db",
     Functions = "functions",
     Apis = "apis",
+    Auth = "auth"
 }

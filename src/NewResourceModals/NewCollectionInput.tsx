@@ -1,20 +1,20 @@
 import toast from "react-hot-toast";
-import useApi from "./API/DatabaseAPI"
+import useApi from "../API/DatabaseAPI"
 
-export default function NewAPIInput({isVisible, setIsVisible}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void}) {
+export default function NewCollectionInput({isVisible, setIsVisible}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void}) {
     const { createCollection } = useApi();
 
     const createNewCollection = async () => {
-        const apiName = (document.getElementById("api-name") as HTMLInputElement).value
+        const collectionName = (document.getElementById("collection-name") as HTMLInputElement).value
         toast.promise(
-            createCollection(apiName),
+            createCollection(collectionName),
             {
-                loading: "Creating API...",
+                loading: "Creating collection...",
                 success: () => {
                     window.location.reload()
-                    return "Created API!"
+                    return "Created collection!"
                 },
-                error: <b>Failed to create API</b>
+                error: <b>Failed to create collection</b>
             }
         );
         setIsVisible(false)
@@ -29,15 +29,15 @@ export default function NewAPIInput({isVisible, setIsVisible}: {isVisible: boole
                     <div className="bg-[#32333b] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <div className="mt-3 text-center sm:mt-0 sm:text-left">
                                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                                    New API
+                                    New collection
                                 </h3>
                                 <div className="mt-1">
                                     <p className="text-sm text-[#D9D9D9]">
-                                        Enter the path to your new API. Use <span className="font-bold font-mono">:variable</span> to create a variable in your path.
+                                        Enter a name with no spaces or special characters
                                     </p>
                                 </div>
                                 <div className="mt-3 mb-2">
-                                    <input type="text" id="api-name" className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder="/path/:variable" />
+                                    <input type="text" id="collection-name" className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder="collection_name" />
                                 </div>
                             </div>
                     </div>

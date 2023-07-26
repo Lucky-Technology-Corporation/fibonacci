@@ -72,7 +72,7 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
     }, []);
 
     return (
-        <div className={`w-[200px] text-sm ${selectedTab == Page.Db ? "hidden" : ""}`}>
+        <div className={`w-[200px] text-sm ${selectedTab == Page.Apis ? "" : "hidden"}`}>
           <div className='flex flex-col items-center mt-4 h-screen pr-4 space-y-4'>
             <div className="relative w-full mb-2">
                 <div

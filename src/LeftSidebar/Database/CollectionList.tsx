@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CollectionHeader from "./CollectionHeader";
 import CollectionItem from "./CollectionItem";
 import useApi from "../../API/DatabaseAPI";
-import NewCollectionInput from "../../NewCollectionInput";
+import NewCollectionInput from "../../NewResourceModals/NewCollectionInput";
 
 export default function CollectionList({active, activeCollection, setActiveCollection}: {active: boolean, activeCollection: string, setActiveCollection: Dispatch<SetStateAction<string>>}) {
     const { getCollections } = useApi(); 

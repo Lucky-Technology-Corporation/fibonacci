@@ -6,9 +6,6 @@ import { Page } from "./Utilities/Page";
 import {useIsAuthenticated} from 'react-auth-kit';
 import SignIn from "./SignIn";
 import CenterContent from "./MainContent/CenterContent";
-import UserDropdown from "./UserDropdown";
-import NewProjectInput from "./NewProjectInput";
-import NewCollectionInput from "./NewCollectionInput";
 
 export default function Dashboard(){
     const isAuthenticated = useIsAuthenticated()
