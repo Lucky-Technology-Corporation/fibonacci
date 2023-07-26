@@ -124,12 +124,16 @@ export default function useApi() {
     }
 
     const getProjects = async () => {
-        const response = await axios.get(`${BASE_URL}/projects`, {
-            headers: {
-                Authorization: authHeader(),
-            },
-        });
-        return response.data;
+        try {
+            const response = await axios.get(`${BASE_URL}/projects`, {
+                headers: {
+                    Authorization: authHeader(),
+                },
+            });
+            return response.data;
+        } catch(e: any){
+            return [];
+        }
     }
   
     return { getDocuments, updateDocument, createProject, getProjects, getCollections, deleteDocument, createCollection, createDocument, deleteCollection };

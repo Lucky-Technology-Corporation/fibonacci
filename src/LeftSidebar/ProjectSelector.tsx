@@ -12,6 +12,11 @@ export default function ProjectSelector(){
 
     useEffect(() => {  
         getProjects().then((data) => {
+            if(data.length == 0){
+                setIsProjectCreatorOpen(true)
+                setProjects([])
+                return
+            }
             var flexibleData = data
             const projectId = localStorage.getItem("projectId")
             if(projectId){

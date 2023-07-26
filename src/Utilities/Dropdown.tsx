@@ -20,7 +20,9 @@ export default function Dropdown({children, lastChild, onSelect, lastOnSelect, c
     const [selected, setSelected] = useState<string>()
 
     useEffect(() => {
-        setSelected(children[0].id)
+        if(children.length > 0){
+            setSelected(children[0].id)
+        }
     }, [children])
 
     return (
