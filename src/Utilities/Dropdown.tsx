@@ -22,7 +22,6 @@ export default function Dropdown({children, lastChild, onSelect, lastOnSelect, c
     useEffect(() => {
         if(children.length > 0){
             setSelected(children[0].id)
-            localStorage.setItem("projectId", children[0].id)
         }
     }, [children])
 

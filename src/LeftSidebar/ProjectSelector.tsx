@@ -2,18 +2,19 @@
 import { useEffect, useState } from 'react'
 import useApi from '../API/DatabaseAPI'
 import Dropdown from '../Utilities/Dropdown'
-import NewProjectInput from '../NewResourceModals/NewProjectInput';
+import toast from 'react-hot-toast';
+import FullPageModal from '../Utilities/FullPageModal';
 
 
 export default function ProjectSelector(){
-    const [projects, setProjects] = useState(null);
-    const [isProjectCreatorOpen, setIsProjectCreatorOpen] = useState(false);
-    const { getProjects } = useApi();
+    const [projects, setProjects] = useState<any[] | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const { getProjects, createProject } = useApi();
 
     useEffect(() => {  
         getProjects().then((data) => {
             if(data.length == 0){
-                setIsProjectCreatorOpen(true)
+                setIsVisible(true)
                 setProjects([])
                 return
             }
@@ -28,8 +29,26 @@ export default function ProjectSelector(){
                 }
             }
             setProjects(flexibleData);
+        }).catch((e) => {
+            toast.error("Error fetching projects")
+            console.log(e)
+            //TODO: decide if we should sign out here...
         })
     }, [])
+
+    const createNewProject = (projectName: string) => {
+        toast.promise(
+            createProject(projectName),
+            {
+                loading: "Creating project...",
+                success: () => {
+                    window.location.reload()
+                    return "Created project!"
+                },
+                error: "Failed to create project"
+            }
+        );
+    }
 
 
     if(projects == null) return (<div className='text-sm mt-3'>Loading...</div>)
@@ -40,10 +59,16 @@ export default function ProjectSelector(){
                 children={projects} 
                 onSelect={(id: string) => {localStorage.setItem("projectId", id); location.reload(); }} 
                 lastChild={{id: "_create_new_project", name: "+ New Project"}} 
-                lastOnSelect={() => {setIsProjectCreatorOpen(true)}} 
+                lastOnSelect={() => {setIsVisible(true)}} 
                 className="mt-2" 
             />
-            <NewProjectInput isVisible={isProjectCreatorOpen} setIsVisible={setIsProjectCreatorOpen} />
+            <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
+                title:  "New project",
+                description: <>Enter a name for your project</>,
+                placeholder: "My awesome project",
+                confirmText: "Create",
+                confirmHandler: createNewProject
+            }} />
         </>
     )
 }

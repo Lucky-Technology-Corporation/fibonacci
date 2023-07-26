@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import Checkbox from "../Utilities/Checkbox";
 import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
-import RequestInfo from "./Sections/RequestInfo";
 import toast from "react-hot-toast";
-import Button from "../Utilities/Button";
 import { Page } from "../Utilities/Page";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 

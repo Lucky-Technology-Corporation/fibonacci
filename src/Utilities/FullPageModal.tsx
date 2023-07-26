@@ -1,22 +1,18 @@
-import toast from "react-hot-toast";
-import useApi from "../API/DatabaseAPI"
+import { ReactNode, useState } from "react"
 
-export default function NewAPIInput({isVisible, setIsVisible}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void}) {
-    const { createCollection } = useApi();
+interface ModalDetails {
+    title: string,
+    description: ReactNode,
+    placeholder: string,
+    confirmText: string,
+    confirmHandler: (input: string) => void
+}
 
-    const createNewCollection = async () => {
-        const apiName = (document.getElementById("api-name") as HTMLInputElement).value
-        toast.promise(
-            createCollection(apiName),
-            {
-                loading: "Creating API...",
-                success: () => {
-                    window.location.reload()
-                    return "Created API!"
-                },
-                error: <b>Failed to create API</b>
-            }
-        );
+export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails}) {
+    const [inputValue, setInputValue] = useState('');
+
+    const confirmHandlerInternal = async () => {
+        modalDetails.confirmHandler(inputValue)
         setIsVisible(false)
     }
     
@@ -29,21 +25,30 @@ export default function NewAPIInput({isVisible, setIsVisible}: {isVisible: boole
                     <div className="bg-[#32333b] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <div className="mt-3 text-center sm:mt-0 sm:text-left">
                                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                                    New API
+                                    {modalDetails.title}
                                 </h3>
                                 <div className="mt-1">
                                     <p className="text-sm text-[#D9D9D9]">
-                                        Enter the path to your new API. Use <span className="font-bold font-mono">:variable</span> to create a variable in your path.
+                                        {modalDetails.description}
                                     </p>
                                 </div>
                                 <div className="mt-3 mb-2">
-                                    <input type="text" id="api-name" className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder="/path/:variable" />
+                                    <input type="text" 
+                                        value={inputValue}
+                                        onChange={e => setInputValue(e.target.value)}
+                                        className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder={modalDetails.placeholder} 
+                                        onKeyDown={(event: any) => {
+                                            if(event.key == "Enter"){
+                                                confirmHandlerInternal()
+                                            }
+                                        }
+                                    } />
                                 </div>
                             </div>
                     </div>
                     <div className="bg-[#32333b] px-4 py-3 pt-0 px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" onClick={() => {createNewCollection()}} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm">
-                            Create
+                        <button type="button" onClick={() => {confirmHandlerInternal()}} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm">
+                            {modalDetails.confirmText}
                         </button>
                         <button type="button" onClick={() => {setIsVisible(false)}} className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                             Cancel

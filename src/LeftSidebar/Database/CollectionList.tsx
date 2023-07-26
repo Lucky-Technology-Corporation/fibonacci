@@ -1,13 +1,15 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import CollectionHeader from "./CollectionHeader";
 import CollectionItem from "./CollectionItem";
 import useApi from "../../API/DatabaseAPI";
-import NewCollectionInput from "../../NewResourceModals/NewCollectionInput";
+import SectionAction from "../SectionAction";
+import FullPageModal from "../../Utilities/FullPageModal";
+import toast from "react-hot-toast";
 
 export default function CollectionList({active, activeCollection, setActiveCollection}: {active: boolean, activeCollection: string, setActiveCollection: Dispatch<SetStateAction<string>>}) {
     const { getCollections } = useApi(); 
-    const [isNewCollectionOpen, setIsNewCollectionOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
     const [collections, setCollections] = useState<string[]>([]);
+    const { createCollection } = useApi();
 
     const refreshCollections = () => {
         getCollections().then((data) => {
@@ -16,17 +18,38 @@ export default function CollectionList({active, activeCollection, setActiveColle
         })
     }
 
+    const createNewCollection = (collectionName: string) => {
+        console.log(collectionName)
+        toast.promise(
+            createCollection(collectionName),
+            {
+                loading: "Creating collection...",
+                success: () => {
+                    window.location.reload()
+                    return "Created collection!"
+                },
+                error: <b>Failed to create collection</b>
+            }
+        );
+    }
+
     useEffect(() => {
         refreshCollections();
     }, [])
 
     return(
         <div className={`flex-col w-full mt-1 px-2 ${active ? "" : "hidden"}`}>
-            <CollectionHeader didClickPlusButton={() => {setIsNewCollectionOpen(true)}} />
+            <SectionAction text="+ New Collection" onClick={() => {setIsVisible(true)}} />
             {collections.map((collection, index) => (
                 <CollectionItem key={index} name={collection} active={activeCollection == collection} onClick={() => {setActiveCollection(collection)}} />
             ))}
-            <NewCollectionInput isVisible={isNewCollectionOpen} setIsVisible={setIsNewCollectionOpen} />
+            <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
+                title:  "New collection",
+                description: <>Enter a name with no spaces or special characters</>,
+                placeholder: "collection_name",
+                confirmText: "Create",
+                confirmHandler: createNewCollection
+            }} />
         </div>
     )
 }

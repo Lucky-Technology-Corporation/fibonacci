@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Page } from "../Utilities/Page";
-import SectionHeader from "./SectionHeader";
+import SectionTitle from "./SectionTitle";
 import CollectionList from "./Database/CollectionList";
 import ProjectSelector from "./ProjectSelector";
 import UserDropdown from "../UserDropdown";
@@ -21,13 +21,12 @@ export default function LeftSidebar({selectedTab, setSelectedTab, activeCollecti
                 <div className="flex"><img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" /><h1 className="font-bold text-md">Swizzle</h1></div>
                 <div className="flex"><ProjectSelector /></div>
 
-                {/* <SectionHeader icon="logs.svg" text="Logs" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} /> */}
-                {/* <SectionHeader icon="gear.svg" text="Functions" active={selectedTab == Page.Functions} onClick={() => {setSelectedTab(Page.Functions)}} /> */}
-                <SectionHeader icon="auth.svg" text="Auth" active={selectedTab == Page.Auth} onClick={() => {setSelectedTab(Page.Auth)}} />
+                <SectionTitle icon="auth.svg" text="Auth" active={selectedTab == Page.Auth} onClick={() => {setSelectedTab(Page.Auth)}} />
 
-                <SectionHeader icon="database.svg" text="Database" active={selectedTab == Page.Db} onClick={() => {setSelectedTab(Page.Db)}} />
+                <SectionTitle icon="database.svg" text="Database" active={selectedTab == Page.Db} onClick={() => {setSelectedTab(Page.Db)}} />
                 <CollectionList active={selectedTab == Page.Db} activeCollection={activeCollection} setActiveCollection={setActiveCollection} />
-                <SectionHeader icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
+                
+                <SectionTitle icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
                 <EndpointList active={selectedTab == Page.Apis} />
                 <UserDropdown />
             </div>

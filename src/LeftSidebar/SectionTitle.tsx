@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Chevron from "../Utilities/Chevron";
 
-export default function SectionHeader({icon, text, active, onClick}: {icon: string, text: string, active: boolean, onClick: () => void}) {
+export default function SectionTitle({icon, text, active, onClick}: {icon: string, text: string, active: boolean, onClick: () => void}) {
     const [isHovering, setIsHovering] = useState(false)
     
     const teaseChevron = () => {

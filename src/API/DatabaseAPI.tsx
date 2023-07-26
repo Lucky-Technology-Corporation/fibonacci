@@ -132,7 +132,7 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            return [];
+            throw e;
         }
     }
   
