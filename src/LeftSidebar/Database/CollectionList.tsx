@@ -2,31 +2,31 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import CollectionHeader from "./CollectionHeader";
 import CollectionItem from "./CollectionItem";
 import useApi from "../../API/DatabaseAPI";
+import NewCollectionInput from "../../NewCollectionInput";
 
 export default function CollectionList({active, activeCollection, setActiveCollection}: {active: boolean, activeCollection: string, setActiveCollection: Dispatch<SetStateAction<string>>}) {
     const { getCollections } = useApi(); 
+    const [isNewCollectionOpen, setIsNewCollectionOpen] = useState(false);
     const [collections, setCollections] = useState<string[]>([]);
 
-    useEffect(() => {
+    const refreshCollections = () => {
         getCollections().then((data) => {
             setCollections(data.collections);
             setActiveCollection(data.collections[0])
         })
-    }, [])
-
-    const [lastClickedPlusButton, setLastClickedPlusButton] = useState<HTMLDivElement | undefined>(undefined);
-    const didClickPlusButton = (e: React.MouseEvent<HTMLDivElement>) => {
-        setLastClickedPlusButton(e.currentTarget);
-        setTimeout(() => {
-            setLastClickedPlusButton(undefined)
-        }, 100)
     }
 
+    useEffect(() => {
+        refreshCollections();
+    }, [])
+
     return(
-        <div className={`flex-col w-full mt-2 px-2 text-sm ${active ? "" : "hidden"}`}>
-            {collections.map((collection) => (
-                <CollectionItem name={collection} active={activeCollection == collection} onClick={() => {setActiveCollection(collection)}} />
+        <div className={`flex-col w-full mt-1 px-2 ${active ? "" : "hidden"}`}>
+            <CollectionHeader didClickPlusButton={() => {setIsNewCollectionOpen(true)}} />
+            {collections.map((collection, index) => (
+                <CollectionItem key={index} name={collection} active={activeCollection == collection} onClick={() => {setActiveCollection(collection)}} />
             ))}
+            <NewCollectionInput isVisible={isNewCollectionOpen} setIsVisible={setIsNewCollectionOpen} />
         </div>
     )
 }

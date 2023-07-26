@@ -1,4 +1,4 @@
-export default function DatabaseEditorHint({isOpen}: {isOpen: boolean}) {
+export default function DatabaseEditorHint({isVisible}: {isVisible: boolean}) {
 
     const ReturnKey = () => {
         return (
@@ -12,7 +12,7 @@ export default function DatabaseEditorHint({isOpen}: {isOpen: boolean}) {
     }
     return (
         <>
-            <div className={`flex flex-col bg-[#181922] p-1 mt-[-6px] absolute right-0 mr-4 w-50 ${isOpen ? "" : "hidden"}`}>
+            <div className={`flex flex-col bg-[#181922] p-1 mt-[-6px] absolute right-0 mr-4 w-50 ${isVisible ? "" : "hidden"}`}>
                 <div className="flex mb-2"><ReturnKey /> to save</div>
                 <div className="flex"><EscKey /> to discard changes</div>
             </div>

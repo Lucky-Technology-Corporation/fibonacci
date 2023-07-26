@@ -3,19 +3,26 @@ import { toast } from "react-hot-toast";
 import { castValues } from "../../Utilities/DataCaster";
 import useApi from "../../API/DatabaseAPI";
 
-export default function RowDetail({collection, data, clickPosition, addHiddenRow}: {collection: string, data: any, clickPosition: {x: number, y: number}, addHiddenRow: (row: string) => void}){
+export default function RowDetail({collection, data, clickPosition, addHiddenRow, editObjectHandler}: {collection: string, data: any, clickPosition: {x: number, y: number}, addHiddenRow: (row: string) => void, editObjectHandler: (data: any) => void}){
     
     const { deleteDocument } = useApi();
     
     const copyJSON = () => {
         clickPosition = {x:0, y:0};
         setIsHintWindowVisible(false)
-        var niceData = data;
+        var niceData = {...data};
         delete niceData._id;
         niceData = castValues(niceData)
         navigator.clipboard.writeText(JSON.stringify(niceData, null, 2));
         toast.success("Copied JSON to clipboard!")
     }
+
+    const editJSON = () => {
+        clickPosition = {x:0, y:0};
+        setIsHintWindowVisible(false)
+        editObjectHandler({...data})
+    }
+
     const runDeleteDocument = () => {
         clickPosition = {x:0, y:0};
         setIsHintWindowVisible(false)
@@ -65,6 +72,11 @@ export default function RowDetail({collection, data, clickPosition, addHiddenRow
                             <div className=''>Copy JSON</div>
                         </td>
                     </tr>
+                    {/* <tr onClick={editJSON}>
+                        <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
+                            <div className=''>Edit JSON</div>
+                        </td>
+                    </tr> */}
                     <tr onClick={runDeleteDocument}>
                         <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
                             <div className=''>Delete Document</div>

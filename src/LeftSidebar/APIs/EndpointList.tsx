@@ -3,30 +3,25 @@ import EndpointHeader from "./EndpointHeader";
 import EndpointItem from "./EndpointItem";
 import NewItem from "./NewItem";
 import { Method } from "../../Utilities/Method";
+import NewAPIInput from "../../NewAPIInput";
 
 export default function EndpointList({active}: {active: boolean}) {
+    const [isVisible, setIsVisible] = useState<boolean>(false);
     const [lastClickedPlusButton, setLastClickedPlusButton] = useState<HTMLDivElement | undefined>(undefined);
     
     const didClickPlusButton = (e: React.MouseEvent<HTMLDivElement>) => {
-        setLastClickedPlusButton(e.currentTarget);
-        setTimeout(() => {
-            setLastClickedPlusButton(undefined)
-        }, 100)
+        setIsVisible(true)
     }
     
     //Fetch from backend and populate it here.
     return(
-        <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"}`} style={{marginTop: "-10px"}}>
-            <EndpointHeader path="" level={0} didClickPlusButton={didClickPlusButton} />
-            <EndpointItem level={0} method={Method.GET} active={true} />
-            <EndpointHeader path=":id" level={1} didClickPlusButton={didClickPlusButton} />
-            <EndpointItem level={1} method={Method.POST} />
-            <EndpointHeader path="admin" level={2} didClickPlusButton={didClickPlusButton} />
-            <EndpointItem level={2} method={Method.GET} />
-            <EndpointItem level={2} method={Method.PATCH} />
-            <EndpointHeader path="edit" level={3} didClickPlusButton={didClickPlusButton} />
-            <EndpointHeader path=":admin_id" level={4} didClickPlusButton={didClickPlusButton} />
-            <NewItem triggerElement={lastClickedPlusButton} />
+        <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"}`} >
+            <EndpointHeader didClickPlusButton={didClickPlusButton} />
+            <EndpointItem path={"/"} method={Method.GET} active={true} />
+            <EndpointItem path={"/"} method={Method.POST} active={false} />
+            <EndpointItem path={"/admin"} method={Method.GET} active={false} />
+            <EndpointItem path={"/admin/:id"} method={Method.GET} active={false} />
+            <NewAPIInput isVisible={isVisible} setIsVisible={setIsVisible}/>
         </div>
     )
 }

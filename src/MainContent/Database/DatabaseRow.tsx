@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useApi from "../../API/DatabaseAPI";
 
-export default function DatabaseRow({collection, keys, data, rowKey, setParentIsEditing, showDetailView, style}: {collection: string, keys: string[], data: any, rowKey: string, setParentIsEditing: (isEditing: boolean) => void, showDetailView: MouseEventHandler<HTMLButtonElement>, style?: any}){
+export default function DatabaseRow({collection, keys, data, rowKey, setShouldShowSaveHint, showDetailView, style}: {collection: string, keys: string[], data: any, rowKey: string, setShouldShowSaveHint: (isEditing: boolean) => void, showDetailView: MouseEventHandler<SVGSVGElement>, style?: any}){
     const [editing, setEditing] = useState("")
     const [rowValues, setRowValues] = useState(data);
     const [pendingInputValue, setPendingInputValue] = useState("");
@@ -11,7 +11,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setParentIs
 
     const setupEditing = (key: string) => {
         setEditing(key);
-        setParentIsEditing(true);
+        setShouldShowSaveHint(true);
         setPendingInputValue(rowValues[key]);
     }
 
@@ -21,7 +21,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setParentIs
             'input'
         );
         focusableElements.forEach((element) => element.blur());
-        setParentIsEditing(false);
+        setShouldShowSaveHint(false);
     }
 
     const modalRef = useRef<HTMLTableRowElement | null>(null);
@@ -38,7 +38,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setParentIs
     }, []);
 
     const saveNewValues = (key: string, value: string) => {
-        var document = rowValues
+        var document = {...rowValues}
         document[key] = value
         setRowValues({...rowValues, [key]: pendingInputValue});
         toast.promise(updateDocument(collection, document._id, document), {
@@ -51,16 +51,14 @@ export default function DatabaseRow({collection, keys, data, rowKey, setParentIs
 
     return (
         <tr className="hover:bg-[#85869822]" ref={modalRef} key={rowKey} style={style}>
-            <td className={`font-mono p-1 border-none`} key={`${rowKey}-${0}`}>
-                <button onClick={showDetailView} >
-                    <EllipsisVerticalIcon className="mt-1 h-4 w-4 text-[#D9D9D9]" />
-                </button>
+            <td className={`font-mono border-none`} key={`${rowKey}-${0}`}>
+                <EllipsisVerticalIcon onClick={showDetailView} className="h-5 m-auto py-0.5 cursor-pointer text-[#D9D9D9]" />
             </td>
             {keys.filter(k => k != "_id").map((key, index) => (
                 <td className={`font-mono p-1 border-none ${(editing == key) ? "bg-[#383842]" : ""}`} key={`${rowKey}-${index+1}`}>
                     <input 
                         type="text" 
-                        className="w-full bg-transparent border-0 outline-0" 
+                        className="w-full bg-transparent border-0 outline-0 text-xs" 
                         onFocus={() => setupEditing(key)}
                         value={(editing == key) ? pendingInputValue : rowValues[key]}
                         onChange={(event) => setPendingInputValue(event.target.value)}

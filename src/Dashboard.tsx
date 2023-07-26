@@ -8,6 +8,7 @@ import SignIn from "./SignIn";
 import CenterContent from "./MainContent/CenterContent";
 import UserDropdown from "./UserDropdown";
 import NewProjectInput from "./NewProjectInput";
+import NewCollectionInput from "./NewCollectionInput";
 
 export default function Dashboard(){
     const isAuthenticated = useIsAuthenticated()
@@ -20,8 +21,6 @@ export default function Dashboard(){
     //Active collection handler
     const [activeCollection, setActiveCollection] = useState<string>("");
 
-    const [isProjectCreatorOpen, setIsProjectCreatorOpen] = useState(false)
-
     if(isAuthenticated()){
         return (
             <>
@@ -30,7 +29,6 @@ export default function Dashboard(){
                     <LeftSidebar 
                         selectedTab={selectedTab} 
                         setSelectedTab={setSelectedTab} 
-                        setIsProjectCreatorOpen={setIsProjectCreatorOpen}
                         activeCollection={activeCollection}
                         setActiveCollection={setActiveCollection} />
 
@@ -46,7 +44,6 @@ export default function Dashboard(){
                         setPrependCode={setPrependCode} 
                         setDidDeploy={setDidDeploy} />
                 </div>
-                <NewProjectInput isVisible={isProjectCreatorOpen} setIsVisible={setIsProjectCreatorOpen} />
             </>
         )
     } else {

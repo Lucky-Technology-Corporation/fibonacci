@@ -1,6 +1,6 @@
 import { Method } from "../../Utilities/Method";
 
-export default function EndpointItem({active = false, level = 0, method}: {active?: boolean, level: number, method: Method}) {
+export default function EndpointItem({active = false, path, method}: {active?: boolean, path: string, method: Method}) {
 
     const methodToColor = (method: Method) => {
         switch(method) {
@@ -19,8 +19,8 @@ export default function EndpointItem({active = false, level = 0, method}: {activ
 
     return(
         <>
-            <div className={`font-mono flex-1 p-1 pl-2 mt-0.5 font-bold ${methodToColor(method)} ${active ? "bg-[#85869833]" : "hover:bg-[#85869833]"} cursor-pointer rounded`} style={{marginLeft: (level*8)+"px"}}>
-                {method}
+            <div className={`font-mono text-xs flex-1 p-1.5 py-2 my-1 font-bold ${active ? "bg-[#85869822]" : ""} hover:bg-[#85869833] cursor-pointer rounded`}>
+                <span className={methodToColor(method)}>{method}</span> {path}
             </div>
         </>
     )
