@@ -52,6 +52,21 @@ export default function useApi() {
         }
     }
 
+    const deleteDocument = async (activeCollection: string, id: string) => {
+        const projectId = localStorage.getItem("projectId");
+        try{
+            if(!projectId) throw new Error("No project id");
+            const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {
+                headers: {
+                    Authorization: authHeader(), 
+                },
+            });
+            return response.data;
+        } catch(e: any){
+            throw e;
+        }
+    }
+
     const createProject = async (name: string) => {
         const response = await axios.post(`${BASE_URL}/projects`, {name}, {
             headers: {
@@ -70,6 +85,6 @@ export default function useApi() {
         return response.data;
     }
   
-    return { getDocuments, updateDocument, createProject, getProjects, getCollections };
+    return { getDocuments, updateDocument, createProject, getProjects, getCollections, deleteDocument };
 }
 

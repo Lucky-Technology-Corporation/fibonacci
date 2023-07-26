@@ -1,8 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { castValues } from "../../Utilities/DataCaster";
+import useApi from "../../API/DatabaseAPI";
 
-export default function RowDetail({data, clickPosition}: {data: any, clickPosition: {x: number, y: number}}){
+export default function RowDetail({collection, data, clickPosition, addHiddenRow}: {collection: string, data: any, clickPosition: {x: number, y: number}, addHiddenRow: (row: string) => void}){
+    
+    const { deleteDocument } = useApi();
     
     const copyJSON = () => {
         clickPosition = {x:0, y:0};
@@ -13,13 +16,19 @@ export default function RowDetail({data, clickPosition}: {data: any, clickPositi
         navigator.clipboard.writeText(JSON.stringify(niceData, null, 2));
         toast.success("Copied JSON to clipboard!")
     }
-    const deleteDocument = () => {
+    const runDeleteDocument = () => {
         clickPosition = {x:0, y:0};
         setIsHintWindowVisible(false)
         const c = confirm("Are you sure you want to delete this document? This cannot be undone.");
         if(c){
-            // TODO: delete document
-            toast.success("Deleted document!")
+            toast.promise(deleteDocument(collection, data._id), {
+                loading: "Deleting document...",
+                success: () => {
+                    addHiddenRow(data._id)
+                    return "Deleted document!"
+                },
+                error: "Failed to delete document"
+            })
         }
     }
     
@@ -56,7 +65,7 @@ export default function RowDetail({data, clickPosition}: {data: any, clickPositi
                             <div className=''>Copy JSON</div>
                         </td>
                     </tr>
-                    <tr onClick={deleteDocument}>
+                    <tr onClick={runDeleteDocument}>
                         <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
                             <div className=''>Delete Document</div>
                         </td>

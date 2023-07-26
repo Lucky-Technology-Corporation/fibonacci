@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import Button from "../../Utilities/Button";
 import DatabaseEditorHint from "./DatabaseEditorHint";
 import DatabaseRow from "./DatabaseRow";
-import useSWRInfinite from 'swr'
 import useApi from "../../API/DatabaseAPI";
-import useTypingEffect from "./TypingEffect";
 import RowDetail from "./RowDetail";
 
 
 export default function DatabaseView({activeCollection}: {activeCollection: string}){
 
-    const { getDocuments, updateDocument } = useApi(); 
+    const { getDocuments } = useApi(); 
 
     const [searchPlaceholder, setSearchPlaceholder] = useState<string>("remove the phone_number everyone whose age is greater than 30")
     // useTypingEffect(setSearchPlaceholder);
@@ -28,16 +26,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     const [data, setData] = useState<any>();
     const [error, setError] = useState<any>(null);
     
-    // const { data, error } = useSWRInfinite(
-    //     (index: number) => getDocuments(activeCollection),
-    //     (data: any) => {
-    //         if (data.error) {
-    //             console.log("error"")
-    //             return null; // stop retrying on error
-    //         }
-    //         return data;
-    //     }
-    // );
+    const [hiddenRows, setHiddenRows] = useState<string[]>([]);
 
     useEffect(() => {
         if(!activeCollection || activeCollection == "") return;
@@ -74,6 +63,10 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     const showDetailView = (rowData: any, x: number, y: number) => {
         setRowDetailData(rowData);
         setClickPosition({x: x, y: y});
+    }
+
+    const addHiddenRow = (row: string) => {
+        setHiddenRows([...hiddenRows, row])
     }
 
     
@@ -123,6 +116,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                     <tbody className='divide-y divide-[#85869833]'>
                         {data.map((row: any, rowIndex: number) => (
                             <DatabaseRow
+                                style={{display: hiddenRows.includes(row._id) ? "none" : "table-row"}}
                                 collection={activeCollection}
                                 key={`row-${rowIndex}`}
                                 rowKey={row._id}
@@ -134,7 +128,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         ))}
                     </tbody>
                 </table>
-                <RowDetail data={rowDetailData} clickPosition={clickPosition} />                                        
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} />                                        
             </div>
         </div>
     )

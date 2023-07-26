@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useApi from "../../API/DatabaseAPI";
 
-export default function DatabaseRow({collection, keys, data, rowKey, setParentIsEditing, showDetailView}: {collection: string, keys: string[], data: any, rowKey: string, setParentIsEditing: (isEditing: boolean) => void, showDetailView: MouseEventHandler<HTMLButtonElement>}){
+export default function DatabaseRow({collection, keys, data, rowKey, setParentIsEditing, showDetailView, style}: {collection: string, keys: string[], data: any, rowKey: string, setParentIsEditing: (isEditing: boolean) => void, showDetailView: MouseEventHandler<HTMLButtonElement>, style?: any}){
     const [editing, setEditing] = useState("")
     const [rowValues, setRowValues] = useState(data);
     const [pendingInputValue, setPendingInputValue] = useState("");
@@ -50,7 +50,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setParentIs
     }
 
     return (
-        <tr className="hover:bg-[#85869822]" ref={modalRef} key={rowKey}>
+        <tr className="hover:bg-[#85869822]" ref={modalRef} key={rowKey} style={style}>
             <td className={`font-mono p-1 border-none`} key={`${rowKey}-${0}`}>
                 <button onClick={showDetailView} >
                     <EllipsisVerticalIcon className="mt-1 h-4 w-4 text-[#D9D9D9]" />
