@@ -6,7 +6,7 @@ import NewProjectInput from '../NewResourceModals/NewProjectInput';
 
 
 export default function ProjectSelector(){
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState(null);
     const [isProjectCreatorOpen, setIsProjectCreatorOpen] = useState(false);
     const { getProjects } = useApi();
 
@@ -27,7 +27,7 @@ export default function ProjectSelector(){
     }, [])
 
 
-    if(projects.length == 0) return (<div className='text-sm mt-3'>Loading...</div>)
+    if(projects == null) return (<div className='text-sm mt-3'>Loading...</div>)
 
     return (
         <>
