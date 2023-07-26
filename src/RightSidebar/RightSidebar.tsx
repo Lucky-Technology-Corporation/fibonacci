@@ -6,6 +6,7 @@ import RequestInfo from "./Sections/RequestInfo";
 import toast from "react-hot-toast";
 import Button from "../Utilities/Button";
 import { Page } from "../Utilities/Page";
+import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
 const functionContent = `if(user == null){
     return status(401, "Unauthorized")
@@ -71,9 +72,9 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
     }, []);
 
     return (
-        <div className={`w-[200px] ${selectedTab == Page.Db ? "hidden" : ""}`}>
-          <div className='flex flex-col items-center mt-4 h-screen pr-4 space-y-6'>
-            <div className="relative w-full">
+        <div className={`w-[200px] text-sm ${selectedTab == Page.Db ? "hidden" : ""}`}>
+          <div className='flex flex-col items-center mt-4 h-screen pr-4 space-y-4'>
+            <div className="relative w-full mb-2">
                 <div
                     id="deploy-progress-bar"
                     className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
@@ -85,10 +86,10 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
                 </button>
             </div>
             
-            <div className='text-left w-full space-y-2'>
+            {/* <div className='text-left w-full space-y-2'>
               <span className="font-bold">Request Info</span>
               <RequestInfo show={true} />
-            </div>
+            </div> */}
             <div className='text-left w-full space-y-2'>
               <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
               <AuthInfo show={isAuthChecked} />
@@ -98,9 +99,15 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
               <DBInfo show={isDBChecked} />
             </div>
             <div className='text-left w-full space-y-2'>
-              <div className="font-bold flex justify-between"><div>Test</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer">+</div></div>
-              <div className="underline cursor-pointer text-sm">My first request</div>
-              <div className="underline cursor-pointer text-sm">My second request</div>
+              <div className="font-bold flex justify-between"><div>Recent requests</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer"></div></div>
+              <div className="flex justify-between opacity-70"><div>Today</div></div>
+              <div className="flex justify-between"><div>2:32:12pm</div> <div className="flex space-x-2"><img src="/logs.svg" className="w-4 h-4 m-auto cursor-pointer" /><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div></div>
+              <div className="flex justify-between"><div className="text-red-400">2:32:07pm<br/><div className="text-xs underline cursor-pointer">Error info</div></div> <div className="flex space-x-2"><img src="/logs.svg" className="w-4 h-4 m-auto cursor-pointer" /><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div></div>
+              <div className="flex justify-between opacity-70"><div>July 12</div></div>
+              <div className="flex justify-between"><div>2:31:47pm</div><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div>
+              <div className="flex justify-between"><div>2:31:42pm</div><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div>
+              <div className="flex justify-between"><div>2:30:33pm</div><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div>
+
             </div>
           </div>
         </div>

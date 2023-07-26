@@ -195,7 +195,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         </tr>
                     </thead>
                     <tbody className='divide-y divide-[#85869833]'>
-                        {data.map((row: any, rowIndex: number) => (
+                        {data.map((row: any, _: number) => (
                             <DatabaseRow
                                 style={{display: hiddenRows.includes(row._id) ? "none" : "table-row"}}
                                 collection={activeCollection}
