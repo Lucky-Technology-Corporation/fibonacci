@@ -1,5 +1,5 @@
 
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
@@ -9,12 +9,12 @@ function classNames(...classes: string[]) {
 
 
 export default function KeySelector({keys}: {keys: string[]}){
-    const [selected, setSelected] = useState(keys[0])
+    // const [selected, setSelected] = useState(keys[0])
     return (
         <Menu as="div" className="relative inline-block text-left">
         <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
-            {selected}
+            {keys[0]}
             <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
         </div>
