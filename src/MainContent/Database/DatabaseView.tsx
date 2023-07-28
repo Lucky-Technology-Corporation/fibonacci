@@ -177,7 +177,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                 <div className="font-bold mt-1.5">💡 Ask for anything you need</div>
                 <div className="text-sm ml-5 my-1">You can do things like: 
                     <ul className="list-disc my-1 mb-2 ml-5">
-                        <li>"Get everything with a SKU containing vendor-1"</li>
+                        <li>"Get everything with a SKU containing vendor-001"</li>
                         <li>"Add a field 'recent' to everyone who signed up this week"</li>
                         <li>"Append today to everyone's date array, or create the array if necessary"</li>
                     </ul>

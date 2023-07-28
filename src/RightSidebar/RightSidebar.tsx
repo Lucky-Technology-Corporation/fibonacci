@@ -6,24 +6,25 @@ import toast from "react-hot-toast";
 import { Page } from "../Utilities/Page";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 
-const functionContent = `if(user == null){
+const authContent = `if(request.user == null){
     return status(401, "Unauthorized")
 }
 `
+const dbContent = `const db = getDb()
+`
+
 export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}: {selectedTab: Page, setPrependCode: (code: string) => void, setDidDeploy: (didDeploy: boolean) => void}){
     const [deployProgress, setDeployProgress] = useState(0);
     const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
 
     const [isAuthChecked, setIsAuthChecked] = useState(false)
     const [isDBChecked, setIsDBChecked] = useState(false)
-
+    
     useEffect(() => {
-        if(isAuthChecked) {
-            setPrependCode(functionContent)
-        } else {
-            setPrependCode("")
-        }
-    }, [isAuthChecked])
+        var newPrependCode = isAuthChecked ? authContent : ""
+        newPrependCode += isDBChecked ? dbContent : ""
+        setPrependCode(newPrependCode)
+    }, [isAuthChecked, isDBChecked])
 
     const teaseDeploy = () => {
         if(!isDeploymentInProgress){ setDeployProgress(8) }
