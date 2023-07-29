@@ -10,6 +10,7 @@ import EditorAssistant from './EditorAssistant';
 
 interface MiramountState {
   code: string;
+  lastPrepend: string;
   setDidDeploy: (didDeploy: boolean) => void;
   caretPosition: { top: number, left: number };
   isAssistantOpen: boolean;
@@ -28,6 +29,7 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
     super(props);
     this.state = {
       code: props.prepend || '',
+      lastPrepend: props.prepend || '',
       setDidDeploy: props.setDidDeploy,
       caretPosition: { top: 0, left: 0 },
       isAssistantOpen: false,
@@ -38,15 +40,22 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
   }
 
   componentDidUpdate(prevProps: MiramountProps) {
-    if (this.props.prepend && prevProps.prepend !== this.props.prepend) {
-      // Only prepend if the prepend text doesn't exist in the code state
-      if (!this.state.code.includes(this.props.prepend)) {
-        this.setState({ code: this.props.prepend + this.state.code });
+    if (prevProps.prepend !== this.props.prepend) {
+      let newCode = this.state.code;
+  
+      // Remove the last prepended text if it exists
+      if (this.state.lastPrepend && newCode.startsWith(this.state.lastPrepend)) {
+        newCode = newCode.substring(this.state.lastPrepend.length);
       }
-    } else if (this.props.prepend === '' && prevProps.prepend && this.state.code.includes(prevProps.prepend)) {
-      // Remove the previous prepend text if prepend is empty
-      this.setState({ code: this.state.code.replace(prevProps.prepend, '') });
-    }
+  
+      // Prepend the new text if it's not empty
+      if (this.props.prepend) {
+        newCode = this.props.prepend + newCode;
+      }
+  
+      // Update both the code and lastPrepend states
+      this.setState({ code: newCode, lastPrepend: this.props.prepend || '' });
+    }  
   }
 
   editorDidMount: EditorDidMount = (editor, monaco) => {

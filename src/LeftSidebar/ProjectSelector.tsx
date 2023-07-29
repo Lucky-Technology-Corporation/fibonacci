@@ -50,6 +50,13 @@ export default function ProjectSelector(){
         );
     }
 
+    useEffect(() => {
+        const projectId = localStorage.getItem("projectId")
+        if(projectId == null && projects != null && projects.length > 0){
+            localStorage.setItem("projectId", projects[0].id)
+            location.reload()
+        }
+    }, [projects])        
 
     if(projects == null) return (<div className='text-sm mt-3'>Loading...</div>)
 
