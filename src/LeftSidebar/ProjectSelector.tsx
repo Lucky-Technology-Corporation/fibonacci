@@ -54,6 +54,7 @@ export default function ProjectSelector(){
         const projectId = localStorage.getItem("projectId")
         if(projectId == null && projects != null && projects.length > 0){
             localStorage.setItem("projectId", projects[0].id)
+            localStorage.setItem("projectName", projects[0].name)
             location.reload()
         }
     }, [projects])        
@@ -64,7 +65,7 @@ export default function ProjectSelector(){
         <>
             <Dropdown 
                 children={projects} 
-                onSelect={(id: string) => {localStorage.setItem("projectId", id); location.reload(); }} 
+                onSelect={(id: string) => {localStorage.setItem("projectId", id); localStorage.setItem("projectName", projects[0].name); location.reload(); }} 
                 lastChild={{id: "_create_new_project", name: "+ New Project"}} 
                 lastOnSelect={() => {setIsVisible(true)}} 
                 className="mt-2" 

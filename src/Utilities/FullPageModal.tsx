@@ -35,7 +35,7 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {
                                 <div className="mt-3 mb-2">
                                     <input type="text" 
                                         value={inputValue}
-                                        onChange={e => setInputValue(e.target.value)}
+                                        onChange={e => setInputValue(e.target.value.trim())}
                                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder={modalDetails.placeholder} 
                                         onKeyDown={(event: any) => {
                                             if(event.key == "Enter"){

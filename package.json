@@ -4,19 +4,21 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "start": "webpack serve --mode development",
+    "build": "tsc && webpack --mode production --display=verbose",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "webpack serve"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.18",
+    "@types/express": "^4.17.17",
     "@uiw/react-textarea-code-editor": "^2.1.7",
     "axios": "^1.4.0",
     "github-oauth-popup": "^1.2.0",
     "jwt-decode": "^3.1.2",
     "monaco-editor": "^0.38.0",
+    "monaco-editor-webpack-plugin": "^7.1.0",
     "react": "^18.2.0",
     "react-auth-kit": "^2.12.4",
     "react-dom": "^18.2.0",
@@ -25,18 +27,30 @@
     "swr": "^2.2.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.22.9",
+    "@babel/preset-env": "^7.22.9",
+    "@babel/preset-react": "^7.22.5",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
-    "@vitejs/plugin-react": "^4.0.1",
     "autoprefixer": "^10.4.14",
+    "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.8.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
-    "postcss": "^8.4.26",
+    "html-webpack-plugin": "^5.5.3",
+    "postcss": "^8.4.27",
+    "postcss-loader": "^7.3.3",
+    "style-loader": "^3.3.3",
     "tailwindcss": "^3.3.3",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.0"
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "worker-loader": "^3.0.8"
   }
 }

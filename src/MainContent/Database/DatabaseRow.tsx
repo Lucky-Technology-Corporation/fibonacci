@@ -3,13 +3,14 @@ import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useApi from "../../API/DatabaseAPI";
 
-export default function DatabaseRow({collection, keys, data, rowKey, setShouldShowSaveHint, showDetailView, style}: {collection: string, keys: string[], data: any, rowKey: string, setShouldShowSaveHint: (isEditing: boolean) => void, showDetailView: MouseEventHandler<SVGSVGElement>, style?: any}){
+export default function DatabaseRow({collection, keys, data, rowKey, setShouldShowSaveHint, showDetailView, style, shouldHideId = true, shouldBlockEdits = false, shouldShowStrikethrough = false}: {collection: string, keys: string[], data: any, rowKey: string, setShouldShowSaveHint: (isEditing: boolean) => void, showDetailView: MouseEventHandler<SVGSVGElement>, style?: any, shouldHideId?: boolean, shouldBlockEdits?: boolean, shouldShowStrikethrough?: boolean}){
     const [editing, setEditing] = useState("")
     const [rowValues, setRowValues] = useState(data);
     const [pendingInputValue, setPendingInputValue] = useState("");
     const { updateDocument } = useApi() 
 
     const setupEditing = (key: string) => {
+        if(shouldBlockEdits) return;
         setEditing(key);
         setShouldShowSaveHint(true);
         setPendingInputValue(rowValues[key]);
@@ -54,11 +55,11 @@ export default function DatabaseRow({collection, keys, data, rowKey, setShouldSh
             <td className={`font-mono border-none`} key={`${rowKey}-${0}`}>
                 <EllipsisVerticalIcon onClick={showDetailView} className="h-5 m-auto py-0.5 cursor-pointer text-[#D9D9D9]" />
             </td>
-            {keys.filter(k => k != "_id").map((key, index) => (
+            {(shouldHideId ? keys.filter(k => k != "_id") : keys.filter(k => k != "_deactivated")).map((key, index) => (
                 <td className={`font-mono p-1 border-none ${(editing == key) ? "bg-[#383842]" : ""}`} key={`${rowKey}-${index+1}`}>
                     <input 
                         type="text" 
-                        className="w-full bg-transparent border-0 outline-0 text-xs" 
+                        className={`w-full bg-transparent border-0 outline-0 text-xs ${shouldShowStrikethrough ? "line-through" : ""}`} 
                         onFocus={() => setupEditing(key)}
                         value={(editing == key) ? pendingInputValue : rowValues[key]}
                         onChange={(event) => setPendingInputValue(event.target.value)}

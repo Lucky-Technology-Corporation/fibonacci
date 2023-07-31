@@ -46,13 +46,13 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             // create new row
         }
     }
-    const editObjectHandler = (docData: any) => {
-        var newDocument = {...docData};
-        setEditingDocumentId(newDocument._id)
-        delete newDocument._id;
-        setJSONEditorData(newDocument)
-        setIsJSONEditorVisible(true)
-    }
+    // const editObjectHandler = (docData: any) => {
+    //     var newDocument = {...docData};
+    //     setEditingDocumentId(newDocument._id)
+    //     delete newDocument._id;
+    //     setJSONEditorData(newDocument)
+    //     setIsJSONEditorVisible(true)
+    // }
 
     const onJSONChangeHandler = (newData: any) => {
         if(editingDocumentId){ //not ready yet
@@ -142,8 +142,8 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
                 <div>
                     <div className={`font-bold text-base`}>{activeCollection}</div>
-                    <div className={`text-sm mt-0.5`}>Browse and search the <span className={`font-bold`}>{activeCollection}</span> collection in your MongoDB instance</div>
-                </div>
+                    <div className={`text-sm mt-0.5`}>Connect <a href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4" target="_blank" rel="nofollow" className="underline decoration-dotted text-[#d2d3e0] hover:text-white">directly from your app</a> or via APIs</div>
+                </div> 
                 <div className="text-sm w-20">
                     <DatabaseEditorHint isVisible={shouldShowSaveHint} />
                 </div>
@@ -209,7 +209,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         ))}
                     </tbody>
                 </table>
-                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} editObjectHandler={editObjectHandler} /> 
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} /> 
                 <DocumentJSON document={jsonEditorData} collection={activeCollection} isVisible={isJSONEditorVisible} setIsVisible={setIsJSONEditorVisible} id={editingDocumentId} onChange={onJSONChangeHandler} />                                       
             </div>
             {data.length == 0 && (

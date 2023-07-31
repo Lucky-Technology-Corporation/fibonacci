@@ -1,11 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import MonacoEditor, { EditorDidMount, MonacoEditorProps } from 'react-monaco-editor';
 import * as monaco from 'monaco-editor';
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import EditorAssistant from './EditorAssistant';
 
 interface MiramountState {
@@ -39,7 +34,51 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
     this.editorDidMount = this.editorDidMount.bind(this);
   }
 
+
+  // initModel = async () => {
+  //   // Load the required language-specific workers
+  //   await Promise.all([
+  //     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+  //       target: monaco.languages.typescript.ScriptTarget.ESNext,
+  //       module: monaco.languages.typescript.ModuleKind.ESNext,
+  //     }),
+  //     monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true),
+  //     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+  //       noSemanticValidation: false,
+  //       noSyntaxValidation: false,
+  //     }),
+  //   ]);
+  
+  //   try{
+  //     // Check if the model already exists
+  //     const expressModelUri = monaco.Uri.parse('inmemory://model/expressModelId');
+  //     const expressModel = monaco.editor.getModel(expressModelUri);
+        
+  //     if (!expressModel) {
+  //       console.log("creating")
+  //       monaco.editor.createModel(
+  //         "import express from 'express';\nconst app = express();", 
+  //         "typescript",
+  //         expressModelUri
+  //       );
+  //       const testModel = monaco.editor.getModel(expressModelUri);
+  
+  //       if (testModel) {
+  //         console.log('Model successfully created and retrieved!');
+  //       } else {
+  //         console.log('Model creation or retrieval failed!');
+  //       }
+      
+  //     } else{
+  //       console.log("already created")
+  //     }
+  //   } catch(e){
+  //     console.error(e)
+  //   }
+  // }
+
   componentDidUpdate(prevProps: MiramountProps) {
+
     if (prevProps.prepend !== this.props.prepend) {
       let newCode = this.state.code;
   
@@ -56,6 +95,7 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
       // Update both the code and lastPrepend states
       this.setState({ code: newCode, lastPrepend: this.props.prepend || '' });
     }  
+  
   }
 
   editorDidMount: EditorDidMount = (editor, monaco) => {
@@ -166,7 +206,6 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
     }
   }
 
-
   render() {
     const options = {
       selectOnLineNumbers: true,
@@ -174,45 +213,67 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
       fontSize: 14
     };
 
-    self.MonacoEnvironment = {
-      getWorker(_, label) {
-        if (label === 'json') {
-          return new jsonWorker()
-        }
-        if (label === 'css' || label === 'scss' || label === 'less') {
-          return new cssWorker()
-        }
-        if (label === 'html' || label === 'handlebars' || label === 'razor') {
-          return new htmlWorker()
-        }
-        if (label === 'typescript' || label === 'javascript') {
-          return new tsWorker()
-        }
-        return new editorWorker()
-      }
-    }
-    
+    // self.MonacoEnvironment = {
+    //   getWorker: function (moduleId, label) {
+    //     if (label === 'json') {
+    //       return new jsonWorker();
+    //     }
+    //     if (label === 'css' || label === 'scss' || label === 'less') {
+    //       return new cssWorker();
+    //     }
+    //     if (label === 'html' || label === 'handlebars' || label === 'razor') {
+    //       return new htmlWorker();
+    //     }
+    //     if (label === 'typescript' || label === 'javascript') {
+    //       return new tsWorker();
+    //     }
+    //     return new editorWorker();
+    //   }
+    // };
+        
     // Validation settings
-    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: false,
-      noSyntaxValidation: false,
-    });
+    // monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+    //   noSemanticValidation: false,
+    //   noSyntaxValidation: false,
+    // });
     
 
     //Add all files to the model
     // monaco.editor.createModel(file1, 'typescript', monaco.Uri.parse(modelUri1));
+    
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+    })
+    monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+    })
+
+    // const expressModelUri = monaco.Uri.parse('file:///expressModelId.ts');
+    // const modelPath = expressModelUri.path;
+    //   const expressModel = monaco.editor.getModel(expressModelUri);
+    // if(!expressModel){
+    //   let model = monaco.editor.createModel(
+    //     "import express from 'express';\nconst app = express();", 
+    //     "typescript",
+    //     expressModelUri
+    //   );
+    // }
+    // console.log(monaco.editor.getModel(expressModelUri))
 
     // Compiler options
-    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.Latest,
-      allowNonTsExtensions: true,
-      //For multiple files
-      // moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      // module: monaco.languages.typescript.ModuleKind.CommonJS,   
-      // alwaysStrict: true,  // Enable strict mode
-      // noEmit: true,  // Don't output any .d.ts files
-      // typeRoots: ['node_modules/@types'] // Set typeRoots     
-    });
+    // monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+    //   target: monaco.languages.typescript.ScriptTarget.Latest,
+    //   allowNonTsExtensions: true,
+    //   //For multiple files
+    //   // moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+    //   // module: monaco.languages.typescript.ModuleKind.CommonJS,   
+    //   // alwaysStrict: true,  // Enable strict mode
+    //   // noEmit: true,  // Don't output any .d.ts files
+    //   // typeRoots: ['node_modules/@types'] // Set typeRoots     
+    // });
     
 
     monaco.editor.defineTheme('miramount', {

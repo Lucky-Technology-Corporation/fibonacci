@@ -3,6 +3,7 @@ import EditorHeader from "./Editor/EditorHeader";
 import { Method } from "../Utilities/Method";
 import { Page } from "../Utilities/Page";
 import DatabaseView from "./Database/DatabaseView";
+import UserTableView from "./Auth/UserTableView";
 
 type CenterContentProps = {
     selectedTab: Page, 
@@ -20,8 +21,12 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
                 <Editor prepend={prependCode} setDidDeploy={setDidDeploy} />
             </div>
         )
-    } else if(selectedTab == Page.Functions){
-        return (<>Functions Editor</>)
+    } else if(selectedTab == Page.Auth){
+        return (
+            <div className="m-4 ml-0 text-sm whitespace-pre-line">
+                <UserTableView activeCollection={"_swizzle_users"} />
+            </div>
+        )
     } else if(selectedTab == Page.Db){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
