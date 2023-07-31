@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "webpack serve --mode development",
-    "build": "tsc && webpack --mode production --display=verbose",
+    "build": "tsc && webpack --mode production",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "webpack serve"
   },
