@@ -4,6 +4,7 @@ import { Method } from "../Utilities/Method";
 import { Page } from "../Utilities/Page";
 import DatabaseView from "./Database/DatabaseView";
 import UserTableView from "./Auth/UserTableView";
+import ObjectTableView from "./Storage/ObjectTableView";
 
 type CenterContentProps = {
     selectedTab: Page, 
@@ -31,6 +32,12 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
                 <DatabaseView activeCollection={activeCollection} />
+            </div>
+        )
+    } else if(selectedTab == Page.Storage){
+        return (
+            <div className="m-4 ml-0 text-sm whitespace-pre-line">
+                <ObjectTableView activeCollection={"_swizzle_storage"} />
             </div>
         )
     } else if(selectedTab == Page.Logs){

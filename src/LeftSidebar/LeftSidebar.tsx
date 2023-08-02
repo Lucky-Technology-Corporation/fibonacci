@@ -5,6 +5,7 @@ import CollectionList from "./Database/CollectionList";
 import ProjectSelector from "./ProjectSelector";
 import UserDropdown from "../UserDropdown";
 import EndpointList from "./APIs/EndpointList";
+import AuthSettings from "./Auth/AuthSettings";
 
 type LeftSidebarProps = {
     selectedTab: Page
@@ -20,14 +21,18 @@ export default function LeftSidebar({selectedTab, setSelectedTab, activeCollecti
                 
                 <div className="flex"><img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" /><h1 className="font-bold text-md">Swizzle</h1></div>
                 <div className="flex"><ProjectSelector /></div>
+                
+                <SectionTitle icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
+                <EndpointList active={selectedTab == Page.Apis} />
 
                 <SectionTitle icon="auth.svg" text="Auth" active={selectedTab == Page.Auth} onClick={() => {setSelectedTab(Page.Auth)}} />
+                {/* <AuthSettings active={selectedTab == Page.Auth} /> */}
 
                 <SectionTitle icon="database.svg" text="Database" active={selectedTab == Page.Db} onClick={() => {setSelectedTab(Page.Db)}} />
                 <CollectionList active={selectedTab == Page.Db} activeCollection={activeCollection} setActiveCollection={setActiveCollection} />
                 
-                <SectionTitle icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
-                <EndpointList active={selectedTab == Page.Apis} />
+                <SectionTitle icon="files.svg" text="Storage" active={selectedTab == Page.Storage} onClick={() => {setSelectedTab(Page.Storage)}} />
+
                 <UserDropdown />
             </div>
 

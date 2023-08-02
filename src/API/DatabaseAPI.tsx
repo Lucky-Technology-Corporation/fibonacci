@@ -113,6 +113,44 @@ export default function useApi() {
         }
     }
     
+    const runEnglishSearchQuery = async (query: string, exampleDoc: string) => {
+        try{
+            const response = await axios.post(`${BASE_URL}/ai`, {"english_description": query, "example_doc": exampleDoc}, {
+                headers: {
+                    Authorization: authHeader(), 
+                },
+            });
+            return response.data;
+        } catch(e: any){
+            throw e;
+        }
+    }  
+
+    const runQuery = async (query: string, queryType: string, collectionName: string) => {
+        const projectId = localStorage.getItem("projectId");
+        try{
+            if(!projectId) throw new Error("No project id");
+            var queryObject = {"mongo_query": query, "mongo_function": queryType}
+            var lowercasedQueryType = queryType.toLowerCase();
+
+            if(lowercasedQueryType === "updateone"){
+                lowercasedQueryType = "update";
+            } else if(lowercasedQueryType === "updatemany"){
+                lowercasedQueryType = "update";
+            }
+            
+            var url = `${BASE_URL}/projects/${projectId}/collections/${collectionName}/${lowercasedQueryType}`
+
+            const response = await axios.post(url, queryObject, {
+                headers: {
+                    Authorization: authHeader(), 
+                },
+            });
+            return response.data;
+        } catch(e: any){
+            throw e;
+        }
+    }
 
     const createProject = async (name: string) => {
         const response = await axios.post(`${BASE_URL}/projects`, {name}, {
@@ -136,6 +174,6 @@ export default function useApi() {
         }
     }
   
-    return { getDocuments, updateDocument, createProject, getProjects, getCollections, deleteDocument, createCollection, createDocument, deleteCollection };
+    return { getDocuments, updateDocument, createProject, getProjects, getCollections, deleteDocument, createCollection, createDocument, deleteCollection, runEnglishSearchQuery, runQuery };
 }
 

@@ -11,10 +11,12 @@ import { toast } from "react-hot-toast";
 
 export default function DatabaseView({activeCollection}: {activeCollection: string}){
 
-    const { getDocuments, deleteCollection } = useApi(); 
+    const { getDocuments, deleteCollection, runEnglishSearchQuery, runQuery } = useApi(); 
 
     const [isValidMongoQuery, setIsValidMongoQuery] = useState<boolean>(true);
     const [searchQuery, setSearchQuery] = useState<string>("")
+    const [queryType, setQueryType] = useState<string>("")
+    const [queryDescription, setQueryDescription] = useState<string>("")
 
     const [shouldShowSearchHint, setShouldShowSearchHint] = useState<boolean>(false);
     const [shouldShowSaveHint, setShouldShowSaveHint] = useState(false);
@@ -46,13 +48,6 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             // create new row
         }
     }
-    // const editObjectHandler = (docData: any) => {
-    //     var newDocument = {...docData};
-    //     setEditingDocumentId(newDocument._id)
-    //     delete newDocument._id;
-    //     setJSONEditorData(newDocument)
-    //     setIsJSONEditorVisible(true)
-    // }
 
     const onJSONChangeHandler = (newData: any) => {
         if(editingDocumentId){ //not ready yet
@@ -94,7 +89,6 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
         if(!activeCollection || activeCollection == "") return;
         getDocuments(activeCollection)
             .then((data) => {
-                console.log("refreshed")
                 setData(data.documents || [])
                 setKeys(data.keys.sort() || [])
             })
@@ -106,19 +100,51 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
 
     //This changes the button to "run" if the query is a mongo query
     useEffect(() => {
-        const regex = /^(\w+)\(\{.*\}\)$/;
+        const regex = /^(Find|Aggregate|UpdateMany|UpdateOne)\(\s*\{.*\}\s*\)$/;
         const isValid = regex.test(searchQuery);
         setIsValidMongoQuery(isValid);
+        if(!isValid){
+            setQueryDescription("")
+        }
     }, [searchQuery])
 
-    const runSearch = () => {
+    const runSearch = async () => {
+        setSearchQuery("Loading...")
         if(isValidMongoQuery){
-            return () => {
-                // run search
+            const query = searchQuery.replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "").replace(/\)$/, "");
+            const results = await runQuery(query, queryType, activeCollection);
+            if(results.documents){
+                console.log("1")
+                console.log(results.documents)
+                setData(results.documents)
+                setKeys(results.keys.sort())
+                setHiddenRows([])
+            } else if(results.modified_count){
+                console.log("2")
+                toast.success("Updated " + results.modified_count + " documents")
+                
+                const docObject = await getDocuments(activeCollection)
+                console.log(docObject.documents)
+                setData(docObject.documents || [])
+                setKeys(docObject.keys.sort() || [])
+                setHiddenRows([])
+
+            } else{
+                toast.error("Something went wrong with that query. No documents were updated.")
             }
+            setSearchQuery("")
+
         }else{
-            return () => {
-                // run query
+            const exampleDoc = JSON.stringify(data[0]);
+            const newMongoQuery = await runEnglishSearchQuery(searchQuery, exampleDoc)
+            if(newMongoQuery){
+                const mongoFunction = newMongoQuery.mongo_function;
+                const englishDescription = newMongoQuery.english_description;
+                const mongioQuery = newMongoQuery.mongo_query;
+
+                setSearchQuery(mongoFunction+"(" + mongioQuery + ")")
+                setQueryType(mongoFunction)
+                setQueryDescription(englishDescription)
             }
         }
     }
@@ -159,7 +185,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
                 <input 
                     type="text" 
-                    className="text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]" 
+                    className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${isValidMongoQuery ? "font-mono text-xs" : ""}`} 
                     placeholder={"What do you need?"}
                     value={searchQuery} 
                     onChange={(e) => {setSearchQuery(e.target.value)}}
@@ -174,6 +200,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                 <Button text={isValidMongoQuery ? "Execute" : "Go"} onClick={runSearch}  />
             </div>
             <div className={`absolute z-40 ml-6 mt-2 border-[#525363] border rounded bg-[#181922] p-2 max-w-40 ${shouldShowSearchHint ? "opacity-100": "opacity-0 pointer-events-none"}`} style={{transition: "opacity 0.2s"}}>
+                {!isValidMongoQuery ? (<>
                 <div className="font-bold mt-1.5">💡 Ask for anything you need</div>
                 <div className="text-sm ml-5 my-1">You can do things like: 
                     <ul className="list-disc my-1 mb-2 ml-5">
@@ -183,6 +210,11 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                     </ul>
                     Don't worry, you'll be able to confirm before running anything.
                 </div>
+                </>) : (<>
+                <div className="font-bold mt-1.5">🚦 Confirm</div>
+                <div className="text-sm ml-5 my-1">{queryDescription} Click Execute or press enter again to confirm.
+                </div>
+                </>)}
             </div>
             <div className="flex">
                 <table className='table-auto flex-grow my-4 ml-4'>

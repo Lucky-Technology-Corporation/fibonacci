@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { castValues } from "../../Utilities/DataCaster";
 import useApi from "../../API/DatabaseAPI";
 
-export default function RowDetail({collection, data, clickPosition, addHiddenRow, deleteAction = "delete"}: {collection: string, data: any, clickPosition: {x: number, y: number}, addHiddenRow: (row: string) => void, deleteAction?: "delete" | "deactivate"}){
+export default function RowDetail({collection, data, clickPosition, addHiddenRow, deleteAction = "delete", shouldHideCopy = false}: {collection: string, data: any, clickPosition: {x: number, y: number}, addHiddenRow: (row: string) => void, deleteAction?: "delete" | "deactivate", shouldHideCopy?: boolean}){
     
     const { deleteDocument, updateDocument } = useApi();
     
@@ -110,16 +110,13 @@ export default function RowDetail({collection, data, clickPosition, addHiddenRow
         <div ref={modalRef} className={`cursor-pointer z-50 absolute bg-[#191A23] border border-[#525363] rounded shadow-lg ${isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`} style={{transition: "opacity 0.15s", top: clickPosition.y + "px", left: clickPosition.x + "px"}}>
             <table>
                 <tbody className="divide-y divide-[#85869833]">
-                    <tr onClick={copyJSON}>
-                        <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
-                            <div className=''>Copy JSON</div>
-                        </td>
-                    </tr>
-                    {/* <tr onClick={editJSON}>
-                        <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
-                            <div className=''>Edit JSON</div>
-                        </td>
-                    </tr> */}
+                    {shouldHideCopy &&
+                        <tr onClick={copyJSON}>
+                            <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
+                                <div className=''>Copy JSON</div>
+                            </td>
+                        </tr>
+                    }
                     <tr onClick={runDeleteDocument}>
                         <td className='px-4 py-2 p-1 flex hover:bg-[#85869833]'>
                             <div className=''>{getAction()}</div>
