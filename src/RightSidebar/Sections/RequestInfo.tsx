@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
 import ToastWindow from '../ToastWindow';
 import InfoItem from '../InfoItem';
+import { copyText } from '../../Utilities/Copyable';
 
 //TODO: redesign this to be less shitty
 export default function RequestInfo({show}: {show: boolean}) {
@@ -71,7 +72,27 @@ export default function RequestInfo({show}: {show: boolean}) {
                 showHintWindowIfOpen={showHintWindowIfOpen}
                 hideHintWindow={hideHintWindow}
                 title={"request"}
-                content={<div className='text-gray-400'>Description of the last request</div>}
+                isLarge={true}
+                content={<div className='text-gray-400'>Access request info using the following syntax:
+                    <table className='table-auto min-w-full my-4'>
+                        <thead className="bg-[#85869833]">
+                            <tr>
+                                <th className='text-left'>Value</th><th className='text-left'>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody className='divide-y divide-[#85869833]'>
+                            <tr>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.query.myQueryVariable")}}>request.query.myQueryVariable</td><td>Query variables (?myQueryVariable=myValue)</td>
+                            </tr>
+                            <tr>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.params.myPathVariable")}}>request.params.myPathVariable</td><td>Path variables (/api/:myPathVariable)</td>
+                            </tr>
+                            <tr>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.body")}}>request.body</td><td>Body object (whatever is sent in the body)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>}
             />
            <InfoItem
                 title={"response"}
@@ -83,7 +104,27 @@ export default function RequestInfo({show}: {show: boolean}) {
                 showHintWindowIfOpen={showResponseHintWindowIfOpen}
                 hideHintWindow={hideResponseHintWindow}
                 title={"response"}
-                content={<div className='text-gray-400'>Description of the last response</div>}
+                isLarge={true}
+                content={<div className='text-gray-400'>Send your response with the following syntax:
+                    <table className='table-auto min-w-full my-4'>
+                        <thead className="bg-[#85869833]">
+                            <tr>
+                                <th className='text-left'>Value</th><th className='text-left'>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody className='divide-y divide-[#85869833]'>
+                            <tr>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("return response.send(object)")}}>return response.send(object)</td><td>Send an object back to the frontend</td>
+                            </tr>
+                            <tr>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("return response.status(400).send(object)")}}>return response.status(400).send(object)</td><td>Define the status code sent back to the frontend</td>
+                            </tr>
+                            <tr>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("return response.redirect(url)")}}>return response.redirect(url)</td><td>Redirect to another url</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>}
             />
         </div>
 

@@ -10,7 +10,7 @@ import CenterContent from "./MainContent/CenterContent";
 export default function Dashboard(){
     const isAuthenticated = useIsAuthenticated()
     //Content handler
-    const [selectedTab, setSelectedTab] = useState<Page>(Page.Db)
+    const [selectedTab, setSelectedTab] = useState<Page>(Page.Apis)
     //Auth checkbox handler
     const [prepndCode, setPrependCode] = useState("")
     //Deploy state handler

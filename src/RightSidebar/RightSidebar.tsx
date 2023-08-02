@@ -5,10 +5,12 @@ import DBInfo from "./Sections/DBInfo";
 import toast from "react-hot-toast";
 import { Page } from "../Utilities/Page";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
+import RequestInfo from "./Sections/RequestInfo";
 
 const authContent = `if(request.user == null){
-    return status(401, "Unauthorized")
+    return response.send(401, "Unauthorized")
 }
+const userId = UID(request.user)
 `
 const dbContent = `const db = getDb()
 `
@@ -85,10 +87,10 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
                 </button>
             </div>
             
-            {/* <div className='text-left w-full space-y-2'>
+            <div className='text-left w-full space-y-2'>
               <span className="font-bold">Request Info</span>
               <RequestInfo show={true} />
-            </div> */}
+            </div>
             <div className='text-left w-full space-y-2'>
               <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
               <AuthInfo show={isAuthChecked} />

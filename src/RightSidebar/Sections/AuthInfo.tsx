@@ -54,13 +54,13 @@ export default function AuthInfo({show}: {show: boolean}) {
                         </thead>
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.id")}}>user.id</td><td>uuid</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("UID(request.user)")}}>UID(request.user)</td><td>Swizzle UID</td>
                             </tr>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.created_at")}}>user.created_at</td><td>Date</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.created_at")}}>user.createdAt</td><td>Date</td>
                             </tr>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.is_anonymous")}}>user.is_anonymous</td><td>boolean</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.is_anonymous")}}>user.isAnonymous</td><td>boolean</td>
                             </tr>
                         </tbody>
                     </table>
@@ -79,10 +79,7 @@ export default function AuthInfo({show}: {show: boolean}) {
                                 <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.email")}}>user.email</td><td>string</td>
                             </tr>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.phone_number")}}>user.phone_number</td><td>string (E.164)</td>
-                            </tr>
-                            <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.metadata")}}>user.metadata</td><td>object</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("user.phone_number")}}>user.phoneNumber</td><td>string (E.164)</td>
                             </tr>
                         </tbody>
                     </table>

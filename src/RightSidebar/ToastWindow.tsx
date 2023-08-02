@@ -1,6 +1,6 @@
-export default function ToastWindow({isHintWindowVisible, showHintWindowIfOpen, hideHintWindow, title, content}: {isHintWindowVisible: boolean, showHintWindowIfOpen: () => void, hideHintWindow: () => void, title: string, content: JSX.Element}) {
+export default function ToastWindow({isHintWindowVisible, showHintWindowIfOpen, hideHintWindow, title, content, isLarge = false}: {isHintWindowVisible: boolean, showHintWindowIfOpen: () => void, hideHintWindow: () => void, title: string, content: JSX.Element, isLarge?: boolean}) {
     return (
-        <div className={`z-50 absolute ml-[-308px] mt-[-28px] w-[300px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg ${isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`} style={{transition: "opacity 0.1s"}}
+        <div className={`z-50 absolute mt-[-28px] ${isLarge ? "w-[600px] ml-[-608px]" : "w-[300px] ml-[-308px]"} bg-[#191A23] border border-[#525363] rounded-lg shadow-lg ${isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`} style={{transition: "opacity 0.1s"}}
                 onMouseEnter={showHintWindowIfOpen}
                 onMouseLeave={hideHintWindow}
         >
