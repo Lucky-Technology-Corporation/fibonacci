@@ -199,7 +199,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                 />
                 <Button text={isValidMongoQuery ? "Execute" : "Go"} onClick={runSearch}  />
             </div>
-            <div className={`absolute z-40 ml-6 mt-2 border-[#525363] border rounded bg-[#181922] p-2 max-w-40 ${shouldShowSearchHint ? "opacity-100": "opacity-0 pointer-events-none"}`} style={{transition: "opacity 0.2s"}}>
+            <div className={`absolute z-40 ml-6 mt-2 max-w-1/4 border-[#525363] border rounded bg-[#181922] p-2 max-w-40 ${shouldShowSearchHint ? "opacity-100": "opacity-0 pointer-events-none"}`} style={{transition: "opacity 0.2s"}}>
                 {!isValidMongoQuery ? (<>
                 <div className="font-bold mt-1.5">💡 Ask for anything you need</div>
                 <div className="text-sm ml-5 my-1">You can do things like: 
