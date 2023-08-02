@@ -9,7 +9,7 @@ export default function useApi() {
 
     const getCollections = async () => {
         const projectId = localStorage.getItem("projectId");
-        if(!projectId) throw new Error("No project id");
+        if(!projectId) return
         const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections`, {
             headers: {
                 Authorization: authHeader(), 
@@ -21,7 +21,7 @@ export default function useApi() {
     const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "") => {
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
                 headers: {
                     Authorization: authHeader(), 
@@ -39,7 +39,7 @@ export default function useApi() {
         delete newDocument._id;
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             const response = await axios.patch(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {document: data}, {
                 headers: {
                     Authorization: authHeader(), 
@@ -56,7 +56,7 @@ export default function useApi() {
         delete newDocument._id;
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}`, {document: data}, {
                 headers: {
                     Authorization: authHeader(), 
@@ -71,7 +71,7 @@ export default function useApi() {
     const deleteDocument = async (activeCollection: string, id: string) => {
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {
                 headers: {
                     Authorization: authHeader(), 
@@ -86,7 +86,7 @@ export default function useApi() {
     const createCollection = async (name: string) => {
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections`, {name: name}, {
                 headers: {
                     Authorization: authHeader(), 
@@ -101,7 +101,7 @@ export default function useApi() {
     const deleteCollection = async (name: string) => {
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${name}`, {
                 headers: {
                     Authorization: authHeader(), 
@@ -129,7 +129,7 @@ export default function useApi() {
     const runQuery = async (query: string, queryType: string, collectionName: string) => {
         const projectId = localStorage.getItem("projectId");
         try{
-            if(!projectId) throw new Error("No project id");
+            if(!projectId) return
             var queryObject = {"mongo_query": query, "mongo_function": queryType}
             var lowercasedQueryType = queryType.toLowerCase();
 
