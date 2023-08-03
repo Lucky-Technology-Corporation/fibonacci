@@ -41,7 +41,7 @@ export default function UserDropdown(){
                          active ? '' : 'text-[#D9D9D9] ',
                          'block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]'
                          )}
-                         onClick={() => {localStorage.clear(); signOut()}}>
+                         onClick={() => {sessionStorage.clear(); signOut()}}>
                          Sign Out
                      </a>
                      )}

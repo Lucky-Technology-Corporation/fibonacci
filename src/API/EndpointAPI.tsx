@@ -17,7 +17,7 @@ export default function useApi() {
         return true
         // const zippedCode = await zlib.gzip(code)
 
-        // const projectId = localStorage.getItem("projectId");
+        // const projectId = sessionStorage.getItem("projectId");
         // if(!projectId) throw new Error("No project id");
 
         // const response = await axios.post(`DEV_SERVER_API_ENDPOINT/${endpointName}`, zippedCode, {

@@ -8,7 +8,7 @@ export default function useApi() {
     const authHeader = useAuthHeader();
 
     const getCollections = async () => {
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         if(!projectId) return
         const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections`, {
             headers: {
@@ -19,7 +19,7 @@ export default function useApi() {
     };
   
     const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "") => {
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
@@ -37,7 +37,7 @@ export default function useApi() {
     const updateDocument = async (activeCollection: string, id: string, data: any) => {
         var newDocument = data;
         delete newDocument._id;
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             const response = await axios.patch(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {document: data}, {
@@ -54,7 +54,7 @@ export default function useApi() {
     const createDocument = async (activeCollection: string, data: any) => {
         var newDocument = data;
         delete newDocument._id;
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}`, {document: data}, {
@@ -69,7 +69,7 @@ export default function useApi() {
     }
 
     const deleteDocument = async (activeCollection: string, id: string) => {
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {
@@ -84,7 +84,7 @@ export default function useApi() {
     }
 
     const createCollection = async (name: string) => {
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections`, {name: name}, {
@@ -99,7 +99,7 @@ export default function useApi() {
     }
 
     const deleteCollection = async (name: string) => {
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${name}`, {
@@ -127,7 +127,7 @@ export default function useApi() {
     }  
 
     const runQuery = async (query: string, queryType: string, collectionName: string) => {
-        const projectId = localStorage.getItem("projectId");
+        const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             var queryObject = {"mongo_query": query, "mongo_function": queryType}
@@ -157,6 +157,7 @@ export default function useApi() {
             headers: {
                 Authorization: authHeader(),
             },
+            timeout: 180000,
         });
         return response.data;
     }

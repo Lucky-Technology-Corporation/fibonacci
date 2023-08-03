@@ -19,7 +19,7 @@ export default function ProjectSelector(){
                 return
             }
             var flexibleData = data
-            const projectId = localStorage.getItem("projectId")
+            const projectId = sessionStorage.getItem("projectId")
             if(projectId){
                 const projectIndex = flexibleData.findIndex((project: any) => project.id == projectId)
                 if(projectIndex != -1){
@@ -51,10 +51,10 @@ export default function ProjectSelector(){
     }
 
     useEffect(() => {
-        const projectId = localStorage.getItem("projectId")
+        const projectId = sessionStorage.getItem("projectId")
         if(projectId == null && projects != null && projects.length > 0){
-            localStorage.setItem("projectId", projects[0].id)
-            localStorage.setItem("projectName", projects[0].name)
+            sessionStorage.setItem("projectId", projects[0].id)
+            sessionStorage.setItem("projectName", projects[0].name)
             location.reload()
         }
     }, [projects])        
@@ -65,7 +65,7 @@ export default function ProjectSelector(){
         <>
             <Dropdown 
                 children={projects} 
-                onSelect={(id: string) => {localStorage.setItem("projectId", id); localStorage.setItem("projectName", projects[0].name); location.reload(); }} 
+                onSelect={(id: string) => {sessionStorage.setItem("projectId", id); sessionStorage.setItem("projectName", projects[0].name); location.reload(); }} 
                 lastChild={{id: "_create_new_project", name: "+ New Project"}} 
                 lastOnSelect={() => {setIsVisible(true)}} 
                 className="mt-2" 
