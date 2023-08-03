@@ -120,7 +120,7 @@ export default function ObjectTableView({activeCollection}: {activeCollection: s
                         ))}
                     </tbody>
                 </table>
-                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} /> 
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} shouldHideCopy={true} /> 
             </div>
             {data.length == 0 && (
                 <div className="flex-grow flex flex-col items-center justify-center">

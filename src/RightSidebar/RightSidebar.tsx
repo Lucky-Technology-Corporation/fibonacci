@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { Page } from "../Utilities/Page";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import RequestInfo from "./Sections/RequestInfo";
+import SecretInfo from "./Sections/SecretInfo";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -21,6 +22,7 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
 
     const [isAuthChecked, setIsAuthChecked] = useState(false)
     const [isDBChecked, setIsDBChecked] = useState(false)
+    const [isSecretsChecked, setIsSecretsChecked] = useState(false)
 
     useEffect(() => {
         var newPrependCode = isAuthChecked ? authContent : ""
@@ -88,7 +90,7 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
             </div>
             
             <div className='text-left w-full space-y-2'>
-              <span className="font-bold">Request Info</span>
+              <Checkbox id="requests" label="Request" isChecked={true} setIsChecked={() => {}} />
               <RequestInfo show={true} />
             </div>
             <div className='text-left w-full space-y-2'>
@@ -98,6 +100,10 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
             <div className='text-left w-full space-y-2'>
               <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
               <DBInfo show={isDBChecked} />
+            </div>
+            <div className='text-left w-full space-y-2'>
+              <Checkbox id="secrets" label="Secrets" isChecked={isSecretsChecked} setIsChecked={setIsSecretsChecked} />
+              <SecretInfo show={isSecretsChecked} />
             </div>
             {/* <div className='text-left w-full space-y-2'>
               <div className="font-bold flex justify-between"><div>Recent requests</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer"></div></div>

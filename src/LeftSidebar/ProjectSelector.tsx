@@ -13,6 +13,7 @@ export default function ProjectSelector(){
 
     useEffect(() => {  
         getProjects().then((data) => {
+            console.log(data)
             if(data.length == 0){
                 setIsVisible(true)
                 setProjects([])
@@ -71,11 +72,12 @@ export default function ProjectSelector(){
                 className="mt-2" 
             />
             <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
-                title:  "New project",
+                title:  "🥋 New project",
                 description: <>Enter a name for your project</>,
                 placeholder: "My awesome project",
                 confirmText: "Create",
-                confirmHandler: createNewProject
+                confirmHandler: createNewProject,
+                shouldShowInput: true
             }} />
         </>
     )

@@ -5,6 +5,7 @@ import SectionAction from "../SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 import toast from "react-hot-toast";
 import useApi from "../../API/EndpointAPI";
+import APIWizard from "./APIWizard";
 
 export default function EndpointList({active}: {active: boolean}) {
     const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -33,13 +34,7 @@ export default function EndpointList({active}: {active: boolean}) {
             <EndpointItem path={"/"} method={Method.POST} active={false} />
             <EndpointItem path={"/admin"} method={Method.GET} active={false} />
             <EndpointItem path={"/admin/:id"} method={Method.GET} active={false} />
-            <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
-                title:  "New API",
-                description: <>Enter the path to your new API. Use <span className="font-bold font-mono">:variable</span> to create a variable in your path.</>,
-                placeholder: "/path/:variable",
-                confirmText: "Create",
-                confirmHandler: createNewAPI
-            }} />
+            <APIWizard isVisible={isVisible} setIsVisible={setIsVisible} />
         </div>
     )
 }

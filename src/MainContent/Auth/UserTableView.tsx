@@ -138,7 +138,7 @@ export default function UserTableView({activeCollection}: {activeCollection: str
                         ))}
                     </tbody>
                 </table>
-                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} deleteAction="deactivate"/> 
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} shouldHideCopy={true} deleteAction="deactivate"/> 
             </div>
             {data.length == 0 && (
                 <div className="flex-grow flex flex-col items-center justify-center">

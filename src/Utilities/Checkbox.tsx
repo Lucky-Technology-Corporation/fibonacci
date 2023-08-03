@@ -4,7 +4,7 @@ export default function Checkbox({ id, label, isChecked, setIsChecked }: { id: s
     
     return (
     <>
-    <input id={id} className="inp-cbx" type="checkbox" style={{display: "none"}} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setIsChecked(e.target.checked)}} />
+    <input id={id} className="inp-cbx" type="checkbox" style={{display: "none"}} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setIsChecked(e.target.checked)}} checked={isChecked}/>
     <label className="cbx" htmlFor={id}>
       <span>
         <svg width="12px" height="10px" viewBox="0 0 12 10">

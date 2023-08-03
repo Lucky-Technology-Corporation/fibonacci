@@ -44,11 +44,12 @@ export default function CollectionList({active, activeCollection, setActiveColle
                 <CollectionItem key={index} name={collection} active={activeCollection == collection} onClick={() => {setActiveCollection(collection)}} />
             ))}
             <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
-                title:  "New collection",
+                title:  "🗂️ New collection",
                 description: <>Enter a name with no spaces or special characters</>,
                 placeholder: "collection_name",
                 confirmText: "Create",
-                confirmHandler: createNewCollection
+                confirmHandler: createNewCollection,
+                shouldShowInput: true
             }} />
         </div>
     )

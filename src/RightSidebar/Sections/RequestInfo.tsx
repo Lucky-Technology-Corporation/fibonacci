@@ -82,10 +82,10 @@ export default function RequestInfo({show}: {show: boolean}) {
                         </thead>
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.query.myQueryVariable")}}>request.query.myQueryVariable</td><td>Query variables (?myQueryVariable=myValue)</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.query.queryVariable")}}>request.query.queryVariable</td><td>Query variables (?queryVariable=value)</td>
                             </tr>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.params.myPathVariable")}}>request.params.myPathVariable</td><td>Path variables (/api/:myPathVariable)</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.params.pathVariable")}}>request.params.pathVariable</td><td>Path variables (/api/:pathVariable)</td>
                             </tr>
                             <tr>
                                 <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.body")}}>request.body</td><td>Body object (whatever is sent in the body)</td>
@@ -114,13 +114,13 @@ export default function RequestInfo({show}: {show: boolean}) {
                         </thead>
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("return response.send(object)")}}>return response.send(object)</td><td>Send an object back to the frontend</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("response.send({})")}}>{`response.send({})`}</td><td>Send an object back to the frontend</td>
                             </tr>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("return response.status(400).send(object)")}}>return response.status(400).send(object)</td><td>Define the status code sent back to the frontend</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("response.status(400).send({})")}}>{`response.status(400).send({})`}</td><td>Define the status code sent back to the frontend</td>
                             </tr>
                             <tr>
-                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("return response.redirect(url)")}}>return response.redirect(url)</td><td>Redirect to another url</td>
+                                <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("response.redirect(url)")}}>response.redirect(url)</td><td>Redirect to another url</td>
                             </tr>
                         </tbody>
                     </table>

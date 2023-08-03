@@ -6,6 +6,7 @@ interface ModalDetails {
     placeholder: string,
     confirmText: string,
     confirmHandler: (input: string) => void
+    shouldShowInput?: boolean
 }
 
 export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails}) {
@@ -32,7 +33,7 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {
                                         {modalDetails.description}
                                     </p>
                                 </div>
-                                <div className="mt-3 mb-2">
+                                <div className={`mt-3 mb-2 ${(modalDetails.shouldShowInput) ? "" : "hidden"}`}>
                                     <input type="text" 
                                         value={inputValue}
                                         onChange={e => setInputValue(e.target.value.trim())}

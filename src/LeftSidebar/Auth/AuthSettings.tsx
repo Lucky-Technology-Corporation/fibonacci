@@ -33,7 +33,8 @@ export default function AuthSettings({active}: {active: boolean}) {
                 description: <>Auth settings are not ready for use yet.</>,
                 placeholder: "Nothing to do here...",
                 confirmText: "Okay",
-                confirmHandler: () => {}
+                confirmHandler: () => {},
+                shouldShowInput: true
             }} />
         </div>
     )
