@@ -1,18 +1,21 @@
 
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import useApi from '../API/DatabaseAPI'
 import Dropdown from '../Utilities/Dropdown'
 import toast from 'react-hot-toast';
 import FullPageModal from '../Utilities/FullPageModal';
+import { SwizzleContext } from '../Utilities/GlobalContext';
 
 
 export default function ProjectSelector(){
-    const [projects, setProjects] = useState<any[] | null>(null);
     const [isVisible, setIsVisible] = useState(false);
     const { getProjects, createProject } = useApi();
+    const { projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName } = useContext(SwizzleContext);
 
     useEffect(() => {  
+        console.log("Getting projects...")
         getProjects().then((data) => {
+            console.log("projects")
             console.log(data)
             if(data.length == 0){
                 setIsVisible(true)
@@ -20,9 +23,8 @@ export default function ProjectSelector(){
                 return
             }
             var flexibleData = data
-            const projectId = sessionStorage.getItem("projectId")
-            if(projectId){
-                const projectIndex = flexibleData.findIndex((project: any) => project.id == projectId)
+            if(activeProject){
+                const projectIndex = flexibleData.findIndex((project: any) => project.id == activeProject)
                 if(projectIndex != -1){
                     const project = flexibleData[projectIndex]
                     flexibleData.splice(projectIndex, 1)
@@ -52,11 +54,10 @@ export default function ProjectSelector(){
     }
 
     useEffect(() => {
-        const projectId = sessionStorage.getItem("projectId")
-        if(projectId == null && projects != null && projects.length > 0){
-            sessionStorage.setItem("projectId", projects[0].id)
-            sessionStorage.setItem("projectName", projects[0].name)
-            location.reload()
+        console.log("setting project")
+        if(activeProject == "" && projects.length > 0){
+            setActiveProject(projects[0].id)
+            setActiveProjectName(projects[0].name)
         }
     }, [projects])        
 
@@ -66,7 +67,7 @@ export default function ProjectSelector(){
         <>
             <Dropdown 
                 children={projects} 
-                onSelect={(id: string) => {sessionStorage.setItem("projectId", id); sessionStorage.setItem("projectName", projects[0].name); location.reload(); }} 
+                onSelect={(id: string) => {setActiveProject(id); setActiveProjectName(projects.filter(p => p.id == id)[0].name) }} 
                 lastChild={{id: "_create_new_project", name: "+ New Project"}} 
                 lastOnSelect={() => {setIsVisible(true)}} 
                 className="mt-2" 

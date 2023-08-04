@@ -111,8 +111,8 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     const runSearch = async () => {
         if(isValidMongoQuery){
             const query = searchQuery.replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "").replace(/\)$/, "");
-            const results = await runQuery(query, queryType, activeCollection, sortedByColumn);
             setSearchQuery("Loading...")
+            const results = await runQuery(query, queryType, activeCollection, sortedByColumn);
             if(results.documents){
                 setData(results.documents)
                 setKeys(results.keys.sort())
@@ -125,6 +125,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                 setHiddenRows([])
 
             } else{
+                console.log(results)
                 toast.error("Something went wrong with that query. No documents were updated.")
             }
             setSearchQuery("")
@@ -132,7 +133,9 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
         }else{
             try{
                 const exampleDoc = JSON.stringify(data[0]);
-                const newMongoQuery = await runEnglishSearchQuery(searchQuery, exampleDoc)
+                const query = searchQuery
+                setSearchQuery("Loading...")
+                const newMongoQuery = await runEnglishSearchQuery(query, exampleDoc)
                 if(newMongoQuery){
                     const mongoFunction = newMongoQuery.mongo_function;
                     const englishDescription = newMongoQuery.english_description;

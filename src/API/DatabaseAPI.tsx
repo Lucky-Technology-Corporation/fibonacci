@@ -1,16 +1,18 @@
 import axios from 'axios';
 import {useAuthHeader} from 'react-auth-kit'
+import { SwizzleContext } from '../Utilities/GlobalContext';
+import { useContext } from 'react';
 
 // const B ASE_URL = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1';
 const BASE_URL = 'http://localhost:4000/api/v1'
 
 export default function useApi() {
     const authHeader = useAuthHeader();
+    const { activeProject } = useContext(SwizzleContext);
 
     const getCollections = async () => {
-        const projectId = sessionStorage.getItem("projectId");
-        if(!projectId) return
-        const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections`, {
+        if(activeProject == "") return
+        const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections`, {
             headers: {
                 Authorization: authHeader(), 
             },
@@ -19,11 +21,10 @@ export default function useApi() {
     };
   
     const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "") => {
-        const projectId = sessionStorage.getItem("projectId");
         try{
-            if(!projectId) return
+            if(activeProject == "") return
             if(activeCollection == "") return
-            const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
+            const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -38,11 +39,10 @@ export default function useApi() {
     const updateDocument = async (activeCollection: string, id: string, data: any) => {
         var newDocument = data;
         delete newDocument._id;
-        const projectId = sessionStorage.getItem("projectId");
+        if(activeProject == "") return
         if(activeCollection == "") return
         try{
-            if(!projectId) return
-            const response = await axios.patch(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {document: data}, {
+            const response = await axios.patch(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`, {document: data}, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -56,11 +56,10 @@ export default function useApi() {
     const createDocument = async (activeCollection: string, data: any) => {
         var newDocument = data;
         delete newDocument._id;
-        const projectId = sessionStorage.getItem("projectId");
         try{
-            if(!projectId) return
+            if(activeProject == "") return
             if(activeCollection == "") return
-            const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}`, {document: data}, {
+            const response = await axios.post(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}`, {document: data}, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -71,13 +70,11 @@ export default function useApi() {
         }
     }
 
-    const deleteDocument = async (activeCollection: string, id: string) => {
-        const projectId = sessionStorage.getItem("projectId");
-        
+    const deleteDocument = async (activeCollection: string, id: string) => {        
         try{
-            if(!projectId) return
+            if(activeProject == "") return
             if(activeCollection == "") return
-            const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {
+            const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -89,10 +86,9 @@ export default function useApi() {
     }
 
     const createCollection = async (name: string) => {
-        const projectId = sessionStorage.getItem("projectId");
         try{
-            if(!projectId) return
-            const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections`, {name: name}, {
+            if(activeProject == "") return
+            const response = await axios.post(`${BASE_URL}/projects/${activeProject}/collections`, {name: name}, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -104,10 +100,9 @@ export default function useApi() {
     }
 
     const deleteCollection = async (name: string) => {
-        const projectId = sessionStorage.getItem("projectId");
         try{
-            if(!projectId) return
-            const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${name}`, {
+            if(activeProject == "") return
+            const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/collections/${name}`, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -132,9 +127,8 @@ export default function useApi() {
     }  
 
     const runQuery = async (query: string, queryType: string, collectionName: string, sortByKey: string = "") => {
-        const projectId = sessionStorage.getItem("projectId");
         try{
-            if(!projectId) return
+            if(activeProject == "") return
             var queryObject = {"mongo_query": query, "mongo_function": queryType}
             if(sortByKey !== ""){
                 queryObject["sort"] = sortByKey
@@ -148,7 +142,7 @@ export default function useApi() {
                 lowercasedQueryType = "update";
             }
             
-            var url = `${BASE_URL}/projects/${projectId}/collections/${collectionName}/${lowercasedQueryType}`
+            var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/${lowercasedQueryType}`
 
             const response = await axios.post(url, queryObject, {
                 headers: {

@@ -1,8 +1,9 @@
 
-import { Fragment } from 'react'
+import { Fragment, useContext } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useSignOut, useAuthUser } from 'react-auth-kit'
+import { SwizzleContext } from './Utilities/GlobalContext'
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -12,6 +13,7 @@ function classNames(...classes: string[]) {
 export default function UserDropdown(){
     const signOut = useSignOut()
     const auth = useAuthUser()
+    const {setActiveProject, setActiveProjectName} = useContext(SwizzleContext);
 
     return (
         <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
@@ -41,7 +43,7 @@ export default function UserDropdown(){
                          active ? '' : 'text-[#D9D9D9] ',
                          'block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]'
                          )}
-                         onClick={() => {sessionStorage.clear(); signOut()}}>
+                         onClick={() => {setActiveProject(""); setActiveProjectName(""); signOut()}}>
                          Sign Out
                      </a>
                      )}
