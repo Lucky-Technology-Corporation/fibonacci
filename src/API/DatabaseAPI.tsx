@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {useAuthHeader} from 'react-auth-kit'
 
-const BASE_URL = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1';
-// const BASE_URL = 'http://localhost:4000/api/v1'
+// const BASE_URL = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1';
+const BASE_URL = 'http://localhost:4000/api/v1'
 
 export default function useApi() {
     const authHeader = useAuthHeader();
@@ -22,6 +22,7 @@ export default function useApi() {
         const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
+            if(activeCollection == "") return
             const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
                 headers: {
                     Authorization: authHeader(), 
@@ -38,6 +39,7 @@ export default function useApi() {
         var newDocument = data;
         delete newDocument._id;
         const projectId = sessionStorage.getItem("projectId");
+        if(activeCollection == "") return
         try{
             if(!projectId) return
             const response = await axios.patch(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {document: data}, {
@@ -57,6 +59,7 @@ export default function useApi() {
         const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
+            if(activeCollection == "") return
             const response = await axios.post(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}`, {document: data}, {
                 headers: {
                     Authorization: authHeader(), 
@@ -70,8 +73,10 @@ export default function useApi() {
 
     const deleteDocument = async (activeCollection: string, id: string) => {
         const projectId = sessionStorage.getItem("projectId");
+        
         try{
             if(!projectId) return
+            if(activeCollection == "") return
             const response = await axios.delete(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}/${id}`, {
                 headers: {
                     Authorization: authHeader(), 
@@ -134,7 +139,7 @@ export default function useApi() {
             if(sortByKey !== ""){
                 queryObject["sort"] = sortByKey
             }
-            
+
             var lowercasedQueryType = queryType.toLowerCase();
 
             if(lowercasedQueryType === "updateone"){
