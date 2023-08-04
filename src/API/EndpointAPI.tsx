@@ -15,19 +15,7 @@ export default function useApi() {
     
     const updateEndpoint = async (endpointName: string, code: string) => {
         return true
-        // const zippedCode = await zlib.gzip(code)
-
-        // const projectId = sessionStorage.getItem("projectId");
-        // if(!projectId) throw new Error("No project id");
-
-        // const response = await axios.post(`DEV_SERVER_API_ENDPOINT/${endpointName}`, zippedCode, {
-        //     headers: {
-        //         Authorization: authHeader(), 
-        //         'Content-Encoding': 'gzip'
-        //     },
-        // });
-
-        // return response.data;
+        
     }
   
     return { createAPI, updateEndpoint };

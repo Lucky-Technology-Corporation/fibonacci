@@ -1,6 +1,8 @@
 import './App.css'
 import { AuthProvider } from 'react-auth-kit'
 import Dashboard from './Dashboard'
+import { GlobalContextProvider } from './Utilities/GlobalContext'
+
 
 function App() {
 
@@ -10,7 +12,9 @@ function App() {
       cookieDomain={window.location.hostname}
       cookieSecure={window.location.protocol === "https:"}>
 
-      <Dashboard />
+      <GlobalContextProvider>
+        <Dashboard />
+      </GlobalContextProvider>
 
     </AuthProvider>
   )

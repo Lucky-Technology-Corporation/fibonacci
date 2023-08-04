@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../../Utilities/Button";
 import DatabaseRow from "../Database/DatabaseRow";
 import useApi from "../../API/DatabaseAPI";
 import RowDetail from "../Database/RowDetail";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 
 export default function UserTableView({activeCollection}: {activeCollection: string}){
 
     const { getDocuments } = useApi(); 
 
+    const { activeProjectName } = useContext(SwizzleContext);
+    
     const [searchQuery, setSearchQuery] = useState<string>("")
 
     const [rowDetailData, setRowDetailData] = useState<any>({})
@@ -84,7 +87,7 @@ export default function UserTableView({activeCollection}: {activeCollection: str
         <div>
             <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
                 <div>
-                    <div className={`font-bold text-base`}>{sessionStorage.getItem("projectName")} users</div>
+                    <div className={`font-bold text-base`}>{activeProjectName} users</div>
                     <div className={`text-sm mt-0.5`}>Create users <a href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4" target="_blank" rel="nofollow" className="underline decoration-dotted text-[#d2d3e0] hover:text-white">from your app</a>. These records cannot be edited.</div>
                 </div> 
                 {/* <div className={`flex h-10 mt-1 mr-[-16px] text-sm`}>
