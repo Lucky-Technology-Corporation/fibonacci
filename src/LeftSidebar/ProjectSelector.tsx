@@ -77,7 +77,8 @@ export default function ProjectSelector(){
                 placeholder: "My awesome project",
                 confirmText: "Create",
                 confirmHandler: createNewProject,
-                shouldShowInput: true
+                shouldShowInput: true,
+                shouldHideCancel: (projects.length == 0)
             }} />
         </>
     )
