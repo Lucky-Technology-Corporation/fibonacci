@@ -21,12 +21,10 @@ export default function useApi() {
     };
   
     const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "", sortDirection: string = "asc") => {
-        const projectId = sessionStorage.getItem("projectId");
-    const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "") => {
         try{
             if(activeProject == "") return
             if(activeCollection == "") return
-            const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
+            const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}?page=${page}&sort=${sortByKey}&sortDirection=${sortDirection}`, {
                 headers: {
                     Authorization: authHeader(), 
                 },
@@ -128,8 +126,7 @@ export default function useApi() {
         }
     }  
 
-    const runQuery = async (query: string, queryType: string, collectionName: string, sortByKey: string = "") => {
-        const projectId = sessionStorage.getItem("projectId");
+    const runQuery = async (query: string, queryType: string, collectionName: string, sortByKey: string = "", sortDirection: string = "asc") => {
         try{
             if(activeProject == "") return
             var queryObject = {"mongo_query": query, "mongo_function": queryType}

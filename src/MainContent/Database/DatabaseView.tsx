@@ -8,7 +8,6 @@ import Dropdown from "../../Utilities/Dropdown";
 import DocumentJSON from "./DocumentJSON";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -172,7 +171,6 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
               prevSortDirection === "asc" ? "desc" : "asc"
             );
           } else {
-            // If clicking a different column, set the sort direction to ascending
             setSortDirection("asc");
           }
 
@@ -182,7 +180,6 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     useEffect(() => {
         if(sortedByColumn == "") return;
         if(!activeCollection || activeCollection == "") return;
-        console.log("getting new documents")
 
         const query = searchQuery.replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "").replace(/\)$/, "");
         if(query != ""){
@@ -192,6 +189,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
 
         getDocuments(activeCollection, 0, sortedByColumn, sortDirection)
             .then((data) => {
+                console.log(data.documents)
                 setData(data.documents || [])
                 setKeys(data.keys.sort() || [])
             })
@@ -273,11 +271,11 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                             {keys.filter(k => k != "_id").map((key, index) => (
                                 <th className={`cursor-pointer text-left py-1.5 ${index == (keys.length - 2) ? "rounded-tr-md" : ""}`} key={index+1} onClick={() => didClickSortColumn(key)}>{key}
                                 {sortedByColumn === key && (
-                      <FontAwesomeIcon
-                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
-                        className="ml-5"
-                      />
-                    )}
+                                    <FontAwesomeIcon
+                                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
+                                        className="ml-5"
+                                    />
+                                )}
                                 </th>
                             ))}
                         </tr>
