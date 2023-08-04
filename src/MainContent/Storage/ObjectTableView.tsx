@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../../Utilities/Button";
 import DatabaseRow from "../Database/DatabaseRow";
 import useApi from "../../API/DatabaseAPI";
 import RowDetail from "../Database/RowDetail";
 import Dropdown from "../../Utilities/Dropdown";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 
-export default function ObjectTableView({activeCollection}: {activeCollection: string}){
+export default function ObjectTableView(){
 
     const { getDocuments } = useApi(); 
 
+    const { activeProject, activeProjectName } = useContext(SwizzleContext);
     const [searchQuery, setSearchQuery] = useState<string>("")
 
     const [rowDetailData, setRowDetailData] = useState<any>({})
@@ -24,8 +26,7 @@ export default function ObjectTableView({activeCollection}: {activeCollection: s
 
     //This refreshes the data when the active collection changes. In the future, we should use a context provider
     useEffect(() => {
-        if(!activeCollection || activeCollection == "") return;
-        getDocuments(activeCollection)
+        getDocuments("_swizzle_storage")
             .then((data) => {
                 console.log("refreshed")
                 setData(data.documents || [])
@@ -35,7 +36,7 @@ export default function ObjectTableView({activeCollection}: {activeCollection: s
                 console.log(e)
                 setError(e)
             })
-    }, [activeCollection])
+    }, [activeProject])
 
   
     const runSearch = () => {
@@ -105,7 +106,7 @@ export default function ObjectTableView({activeCollection}: {activeCollection: s
                         {data.map((row: any, _: number) => (
                             <DatabaseRow
                                 // style={{display: hiddenRows.includes(row._id) ? "none" : "table-row"}}
-                                collection={activeCollection}
+                                collection={"_swizzle_storage"}
                                 key={row._id}
                                 rowKey={row._id}
                                 keys={keys}
@@ -120,7 +121,7 @@ export default function ObjectTableView({activeCollection}: {activeCollection: s
                         ))}
                     </tbody>
                 </table>
-                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} shouldHideCopy={true} /> 
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={"_swizzle_storage"} addHiddenRow={addHiddenRow} shouldHideCopy={true} /> 
             </div>
             {data.length == 0 && (
                 <div className="flex-grow flex flex-col items-center justify-center">

@@ -6,11 +6,11 @@ import RowDetail from "../Database/RowDetail";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 
-export default function UserTableView({activeCollection}: {activeCollection: string}){
+export default function UserTableView(){
 
     const { getDocuments } = useApi(); 
 
-    const { activeProjectName } = useContext(SwizzleContext);
+    const { activeProject, activeProjectName } = useContext(SwizzleContext);
     
     const [searchQuery, setSearchQuery] = useState<string>("")
 
@@ -26,8 +26,7 @@ export default function UserTableView({activeCollection}: {activeCollection: str
 
     //This refreshes the data when the active collection changes. In the future, we should use a context provider
     useEffect(() => {
-        if(!activeCollection || activeCollection == "") return;
-        getDocuments(activeCollection)
+        getDocuments("_swizzle_users")
             .then((data) => {
                 console.log("refreshed")
                 setData(data.documents || [])
@@ -37,7 +36,7 @@ export default function UserTableView({activeCollection}: {activeCollection: str
                 console.log(e)
                 setError(e)
             })
-    }, [activeCollection])
+    }, [activeProject])
 
   
     const runSearch = () => {
@@ -78,7 +77,6 @@ export default function UserTableView({activeCollection}: {activeCollection: str
         }
     }
 
-    if(!activeCollection) return getNiceInfo("Select a collection", "Select (or create) a collection on the left to get started")
     if (error) return getNiceInfo("Failed to load data", "Check your connection and try again")
     if (!data) return getNiceInfo("Loading data", "Please wait while we load your data")
 
@@ -127,7 +125,7 @@ export default function UserTableView({activeCollection}: {activeCollection: str
                     <tbody className='divide-y divide-[#85869833]'>
                         {data.map((row: any, _: number) => (
                             <DatabaseRow
-                                collection={activeCollection}
+                                collection={"_swizzle_users"}
                                 key={row._id}
                                 rowKey={row._id}
                                 keys={keys}
@@ -141,7 +139,7 @@ export default function UserTableView({activeCollection}: {activeCollection: str
                         ))}
                     </tbody>
                 </table>
-                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} shouldHideCopy={true} deleteAction="deactivate"/> 
+                <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={"_swizzle_users"} addHiddenRow={addHiddenRow} shouldHideCopy={true} deleteAction="deactivate"/> 
             </div>
             {data.length == 0 && (
                 <div className="flex-grow flex flex-col items-center justify-center">

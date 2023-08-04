@@ -25,7 +25,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
     } else if(selectedTab == Page.Auth){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
-                <UserTableView activeCollection={"_swizzle_users"} />
+                <UserTableView />
             </div>
         )
     } else if(selectedTab == Page.Db){
@@ -37,7 +37,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
     } else if(selectedTab == Page.Storage){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
-                <ObjectTableView activeCollection={"_swizzle_storage"} />
+                <ObjectTableView />
             </div>
         )
     } else if(selectedTab == Page.Logs){

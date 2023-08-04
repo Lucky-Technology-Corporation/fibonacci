@@ -40,7 +40,6 @@ export default function CollectionList({active, activeCollection, setActiveColle
     }
 
     useEffect(() => {
-        console.log(activeProject)
         if(activeProject == undefined) { return }
         refreshCollections();
     }, [activeProject])
