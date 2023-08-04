@@ -131,15 +131,16 @@ export default function useApi() {
         }
     }  
 
-    const runQuery = async (query: string, queryType: string, collectionName: string, sortByKey: string = "") => {
+    const runQuery = async (query: string, queryType: string, collectionName: string, sortByKey: string = "", sortDirection: string = "asc") => {
         const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             var queryObject = {"mongo_query": query, "mongo_function": queryType}
             if(sortByKey !== ""){
                 queryObject["sort"] = sortByKey
+            } if(sortDirection !== ""){
+                queryObject["sortDirection"] = sortDirection
             }
-
             var lowercasedQueryType = queryType.toLowerCase();
 
             if(lowercasedQueryType === "updateone"){
