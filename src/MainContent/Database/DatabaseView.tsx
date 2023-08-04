@@ -109,22 +109,17 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     }, [searchQuery])
 
     const runSearch = async () => {
-        setSearchQuery("Loading...")
         if(isValidMongoQuery){
             const query = searchQuery.replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "").replace(/\)$/, "");
-            const results = await runQuery(query, queryType, activeCollection);
+            const results = await runQuery(query, queryType, activeCollection, sortedByColumn);
+            setSearchQuery("Loading...")
             if(results.documents){
-                console.log("1")
-                console.log(results.documents)
                 setData(results.documents)
                 setKeys(results.keys.sort())
                 setHiddenRows([])
             } else if(results.modified_count){
-                console.log("2")
-                toast.success("Updated " + results.modified_count + " documents")
-                
+                toast.success("Updated " + results.modified_count + " documents")                
                 const docObject = await getDocuments(activeCollection)
-                console.log(docObject.documents)
                 setData(docObject.documents || [])
                 setKeys(docObject.keys.sort() || [])
                 setHiddenRows([])
@@ -135,16 +130,20 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             setSearchQuery("")
 
         }else{
-            const exampleDoc = JSON.stringify(data[0]);
-            const newMongoQuery = await runEnglishSearchQuery(searchQuery, exampleDoc)
-            if(newMongoQuery){
-                const mongoFunction = newMongoQuery.mongo_function;
-                const englishDescription = newMongoQuery.english_description;
-                const mongioQuery = newMongoQuery.mongo_query;
+            try{
+                const exampleDoc = JSON.stringify(data[0]);
+                const newMongoQuery = await runEnglishSearchQuery(searchQuery, exampleDoc)
+                if(newMongoQuery){
+                    const mongoFunction = newMongoQuery.mongo_function;
+                    const englishDescription = newMongoQuery.english_description;
+                    const mongioQuery = newMongoQuery.mongo_query;
 
-                setSearchQuery(mongoFunction+"(" + mongioQuery + ")")
-                setQueryType(mongoFunction)
-                setQueryDescription(englishDescription)
+                    setSearchQuery(mongoFunction+"(" + mongioQuery + ")")
+                    setQueryType(mongoFunction)
+                    setQueryDescription(englishDescription)
+                }
+            }catch(e){
+                toast.error("We couldn't figure out what you wanted. Please try again.")
             }
         }
     }
@@ -157,6 +156,35 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     const addHiddenRow = (row: string) => {
         setHiddenRows([...hiddenRows, row])
     }
+
+    const [sortedByColumn, setSortedByColumn] = useState<string>("");
+    const didClickSortColumn = (key: string) => {
+        setSortedByColumn(key)
+    }
+
+    useEffect(() => {
+        if(sortedByColumn == "") return;
+        if(!activeCollection || activeCollection == "") return;
+        console.log("getting new documents")
+
+        const query = searchQuery.replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "").replace(/\)$/, "");
+        if(query != ""){
+            runSearch()
+            return;
+        }
+
+        getDocuments(activeCollection, 0, sortedByColumn)
+            .then((data) => {
+                setData(data.documents || [])
+                setKeys(data.keys.sort() || [])
+            })
+            .catch((e) => {
+                console.log(e)
+                setError(e)
+            })
+
+    }, [sortedByColumn])
+
 
     if(!activeCollection) return getNiceInfo("Select a collection", "Select (or create) a collection on the left to get started")
     if (error) return getNiceInfo("Failed to load data", "Check your connection and try again")
@@ -226,7 +254,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
                             <th className='text-left py-1.5 rounded-tl-md w-6' key={0}></th>
                             {keys.filter(k => k != "_id").map((key, index) => (
-                                <th className={`text-left py-1.5 ${index == (keys.length - 2) ? "rounded-tr-md" : ""}`} key={index+1}>{key}</th>
+                                <th className={`cursor-pointer text-left py-1.5 ${index == (keys.length - 2) ? "rounded-tr-md" : ""}`} key={index+1} onClick={() => didClickSortColumn(key)}>{key}</th>
                             ))}
                         </tr>
                     </thead>

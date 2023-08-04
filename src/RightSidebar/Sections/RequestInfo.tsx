@@ -74,12 +74,12 @@ export default function RequestInfo({show}: {show: boolean}) {
                 title={"request"}
                 isLarge={true}
                 content={<div className='text-gray-400'>Access request info using the following syntax:
-                    <table className='table-auto min-w-full my-4'>
-                        <thead className="bg-[#85869833]">
+                    <table className='table-auto min-w-full my-2'>
+                        {/* <thead className="bg-[#85869833]">
                             <tr>
                                 <th className='text-left'>Value</th><th className='text-left'>Type</th>
                             </tr>
-                        </thead>
+                        </thead> */}
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
                                 <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.query.queryVariable")}}>request.query.queryVariable</td><td>Query variables (?queryVariable=value)</td>
@@ -106,12 +106,12 @@ export default function RequestInfo({show}: {show: boolean}) {
                 title={"response"}
                 isLarge={true}
                 content={<div className='text-gray-400'>Send your response with the following syntax:
-                    <table className='table-auto min-w-full my-4'>
-                        <thead className="bg-[#85869833]">
+                    <table className='table-auto min-w-full my-2'>
+                        {/* <thead className="bg-[#85869833]">
                             <tr>
                                 <th className='text-left'>Value</th><th className='text-left'>Type</th>
                             </tr>
-                        </thead>
+                        </thead> */}
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
                                 <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("response.send({})")}}>{`response.send({})`}</td><td>Send an object back to the frontend</td>

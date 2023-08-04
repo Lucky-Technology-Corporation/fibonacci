@@ -13,6 +13,9 @@ export default function CollectionList({active, activeCollection, setActiveColle
 
     const refreshCollections = () => {
         getCollections().then((data) => {
+            if(!data || data.collections.length == 0){
+                return
+            }
             setCollections(data.collections);
             setActiveCollection(data.collections[0])
         })

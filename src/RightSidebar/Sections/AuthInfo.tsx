@@ -47,11 +47,11 @@ export default function AuthInfo({show}: {show: boolean}) {
                 <div className='text-gray-400'>If the request is made from a client that has not signed in, <span className='font-bold font-mono'>request.user</span> will be <span className='font-bold font-mono'>null</span>. 
                 <div className='h-4'></div>Otherwise, you can access the following properties:
                     <table className='table-auto min-w-full my-4'>
-                        <thead className="bg-[#85869833]">
+                        {/* <thead className="bg-[#85869833]">
                             <tr>
                                 <th className='text-left'>Value</th><th className='text-left'>Type</th>
                             </tr>
-                        </thead>
+                        </thead> */}
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
                                 <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("UID(request.user)")}}>UID(request.user)</td><td>Swizzle UID</td>
@@ -66,11 +66,11 @@ export default function AuthInfo({show}: {show: boolean}) {
                     </table>
                     and these (but they might be null!)
                     <table className='table-auto min-w-full mt-4'>
-                        <thead className="bg-[#85869833]">
+                        {/* <thead className="bg-[#85869833]">
                             <tr>
                                 <th className='text-left'>Optional Value</th><th className='text-left'>Type</th>
                             </tr>
-                        </thead>
+                        </thead> */}
                         <tbody className='divide-y divide-[#85869833]'>
                             <tr>
                                 <td className='font-mono py-1 cursor-pointer' onClick={() => {copyText("request.user.username")}}>request.user.username</td><td>string</td>
