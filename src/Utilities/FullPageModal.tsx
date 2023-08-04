@@ -7,6 +7,7 @@ interface ModalDetails {
     confirmText: string,
     confirmHandler: (input: string) => void
     shouldShowInput?: boolean
+    shouldHideCancel?: boolean
 }
 
 export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails}) {
@@ -51,7 +52,7 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {
                         <button type="button" onClick={() => {confirmHandlerInternal()}} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm">
                             {modalDetails.confirmText}
                         </button>
-                        <button type="button" onClick={() => {setIsVisible(false)}} className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <button type="button" onClick={() => {setIsVisible(false)}} className={`${modalDetails.shouldHideCancel ? "hidden" : ""} mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm`}>
                             Cancel
                         </button>
                     </div>

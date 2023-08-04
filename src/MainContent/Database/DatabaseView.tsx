@@ -80,7 +80,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             toast.promise(deleteCollection(activeCollection), {
                 loading: "Deleting collection...",
                 success: () => {
-                    window.location.reload()
+                    window.location.reload() //TODO: Replace this with something better
                     return "Collection deleted"
                 },
                 error: "Failed to delete collection"

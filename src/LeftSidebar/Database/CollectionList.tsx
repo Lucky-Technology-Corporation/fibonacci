@@ -24,13 +24,12 @@ export default function CollectionList({active, activeCollection, setActiveColle
     }
 
     const createNewCollection = (collectionName: string) => {
-        console.log(collectionName)
         toast.promise(
             createCollection(collectionName),
             {
                 loading: "Creating collection...",
                 success: () => {
-                    window.location.reload()
+                    refreshCollections()
                     return "Created collection!"
                 },
                 error: <b>Failed to create collection</b>
