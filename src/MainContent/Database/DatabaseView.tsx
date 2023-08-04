@@ -7,6 +7,11 @@ import RowDetail from "./RowDetail";
 import Dropdown from "../../Utilities/Dropdown";
 import DocumentJSON from "./DocumentJSON";
 import { toast } from "react-hot-toast";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+
+
 
 
 export default function DatabaseView({activeCollection}: {activeCollection: string}){
@@ -33,7 +38,6 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     const [error, setError] = useState<any>(null);
     
     const [hiddenRows, setHiddenRows] = useState<string[]>([]);
-
 
     const createObjectHandler = (id: string) => {
         if(id == "json"){
@@ -158,7 +162,17 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     }
 
     const [sortedByColumn, setSortedByColumn] = useState<string>("");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc"); 
     const didClickSortColumn = (key: string) => {
+        if (sortedByColumn === key) {
+            setSortDirection((prevSortDirection) =>
+              prevSortDirection === "asc" ? "desc" : "asc"
+            );
+          } else {
+            // If clicking a different column, set the sort direction to ascending
+            setSortDirection("asc");
+          }
+
         setSortedByColumn(key)
     }
 
@@ -173,7 +187,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             return;
         }
 
-        getDocuments(activeCollection, 0, sortedByColumn)
+        getDocuments(activeCollection, 0, sortedByColumn, sortDirection)
             .then((data) => {
                 setData(data.documents || [])
                 setKeys(data.keys.sort() || [])
@@ -183,7 +197,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                 setError(e)
             })
 
-    }, [sortedByColumn])
+    }, [sortedByColumn, sortDirection])
 
 
     if(!activeCollection) return getNiceInfo("Select a collection", "Select (or create) a collection on the left to get started")
@@ -254,7 +268,14 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
                             <th className='text-left py-1.5 rounded-tl-md w-6' key={0}></th>
                             {keys.filter(k => k != "_id").map((key, index) => (
-                                <th className={`cursor-pointer text-left py-1.5 ${index == (keys.length - 2) ? "rounded-tr-md" : ""}`} key={index+1} onClick={() => didClickSortColumn(key)}>{key}</th>
+                                <th className={`cursor-pointer text-left py-1.5 ${index == (keys.length - 2) ? "rounded-tr-md" : ""}`} key={index+1} onClick={() => didClickSortColumn(key)}>{key}
+                                {sortedByColumn === key && (
+                      <FontAwesomeIcon
+                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
+                        className="ml-5"
+                      />
+                    )}
+                                </th>
                             ))}
                         </tr>
                     </thead>

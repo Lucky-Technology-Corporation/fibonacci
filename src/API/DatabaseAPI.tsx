@@ -18,12 +18,12 @@ export default function useApi() {
         return response.data;
     };
   
-    const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "") => {
+    const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "", sortDirection: string = "asc") => {
         const projectId = sessionStorage.getItem("projectId");
         try{
             if(!projectId) return
             if(activeCollection == "") return
-            const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}`, {
+            const response = await axios.get(`${BASE_URL}/projects/${projectId}/collections/${activeCollection}?page=${page}&sort=${sortByKey}&sortDirection=${sortDirection}`, {
                 headers: {
                     Authorization: authHeader(), 
                 },
