@@ -290,7 +290,7 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
       <>
       <MonacoEditor
         width="100%"
-        height="calc(100% - 44px)"
+        height="calc(100% - 44px - 280px)"
         language="javascript"
         theme="miramount"
         value={this.state.code}

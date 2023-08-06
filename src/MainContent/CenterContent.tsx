@@ -5,6 +5,7 @@ import { Page } from "../Utilities/Page";
 import DatabaseView from "./Database/DatabaseView";
 import UserTableView from "./Auth/UserTableView";
 import ObjectTableView from "./Storage/ObjectTableView";
+import LogsDrawer from "./Editor/LogsDrawer";
 
 type CenterContentProps = {
     selectedTab: Page, 
@@ -20,6 +21,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
                 <EditorHeader method={Method.GET} path="/" didDeploy={didDeploy} />
                 <Editor prepend={prependCode} setDidDeploy={setDidDeploy} />
+                <LogsDrawer />
             </div>
         )
     } else if(selectedTab == Page.Auth){
@@ -41,6 +43,10 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
             </div>
         )
     } else if(selectedTab == Page.Logs){
-        return (<>Logs</>)
+        return (
+            <div className="m-4 ml-0 text-sm whitespace-pre-line">
+                Logs go here
+            </div>
+        )
     }
 }

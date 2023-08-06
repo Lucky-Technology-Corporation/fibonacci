@@ -33,7 +33,7 @@ export default function LeftSidebar({selectedTab, setSelectedTab, activeCollecti
                 
                 <SectionTitle icon="files.svg" text="Storage" active={selectedTab == Page.Storage} onClick={() => {setSelectedTab(Page.Storage)}} />
 
-                {/* <SectionTitle icon="logs.svg" text="Logs" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} /> */}
+                <SectionTitle icon="logs.svg" text="Logs" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} />
 
                 <UserDropdown />
             </div>

@@ -13,7 +13,7 @@ function App() {
       cookieSecure={window.location.protocol === "https:"}>
 
       <GlobalContextProvider>
-        <Dashboard />
+          <Dashboard />
       </GlobalContextProvider>
 
     </AuthProvider>

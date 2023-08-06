@@ -1,11 +1,12 @@
 import { Toaster } from "react-hot-toast";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
 import RightSidebar from "./RightSidebar/RightSidebar";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Page } from "./Utilities/Page";
 import {useIsAuthenticated} from 'react-auth-kit';
 import SignIn from "./SignIn";
 import CenterContent from "./MainContent/CenterContent";
+import { SwizzleContext } from "./Utilities/GlobalContext";
 
 export default function Dashboard(){
     const isAuthenticated = useIsAuthenticated()
@@ -18,9 +19,11 @@ export default function Dashboard(){
     //Active collection handler
     const [activeCollection, setActiveCollection] = useState<string>("");
 
+    const {isFree} = useContext(SwizzleContext);
+
     if(isAuthenticated()){
         return (
-            <>
+            <div className="page-wrapper" style={{transform: (isFree ? "rotate(1.5deg)" : "rotate(0deg)"), transition: "transform 0.5s"}}> 
                 <div><Toaster/></div>
                 <div className="grid grid-cols-[auto,1fr,auto] gap-0">
                     <LeftSidebar 
@@ -41,7 +44,7 @@ export default function Dashboard(){
                         setPrependCode={setPrependCode} 
                         setDidDeploy={setDidDeploy} />
                 </div>
-            </>
+            </div>
         )
     } else {
         return (

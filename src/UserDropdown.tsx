@@ -1,9 +1,13 @@
 
-import { Fragment, useContext } from 'react'
+import { Fragment, useContext, useState } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useSignOut, useAuthUser } from 'react-auth-kit'
 import { SwizzleContext } from './Utilities/GlobalContext'
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import FullPageModal from './Utilities/FullPageModal'
+import toast from 'react-hot-toast'
 
 function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -13,16 +17,49 @@ function classNames(...classes: string[]) {
 export default function UserDropdown(){
     const signOut = useSignOut()
     const auth = useAuthUser()
-    const {setActiveProject, setActiveProjectName} = useContext(SwizzleContext);
+    const {setActiveProject, setActiveProjectName, isFree, setIsFree} = useContext(SwizzleContext);
+
+    const [isVisible, setIsVisible] = useState(false);
+    const addCreditCard = () => {
+        setIsVisible(true)
+    }
+
+    function delay(duration) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, duration);
+        });
+    }
+    const didAddCreditCard = () => {
+        toast.promise(delay(1000), 
+            {
+                loading: "Adding credit card...",
+                success: () => {
+                    setIsFree(false)
+                    setIsVisible(false)
+                    return "Added credit card!"
+                },
+                error: "Failed to add credit card"
+            }
+        );
+    }
 
     return (
+        <>
         <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
-        <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
-            {auth()?.user}
-            <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
-        </Menu.Button>
-        </div>
+            <div className={`${isFree ? "" : "hidden" } flex-1 mt-1 p-1.5 px-2 mb-2 border-[#525363] cursor-pointer border bg-[#85869833] hover:bg-[#85869855] cursor-pointer rounded text-sm`} onClick={addCreditCard}>
+                <FontAwesomeIcon
+                    icon={faRotateLeft}
+                    className="mr-2"
+                />
+                Fix skewed rotation
+            </div>
+            
+            <div>
+                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
+                    {auth()?.user}
+                    <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                </Menu.Button>
+            </div>
 
         <Transition
             as={Fragment}
@@ -52,5 +89,13 @@ export default function UserDropdown(){
         </Menu.Items>
         </Transition>
     </Menu>
-    )
+    <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
+        title:  "💳 Add a credit card",
+        description: <>Unskew the page by adding a credit card. You will only be charged for the compute you use. For more details, see our <a href="">pricing page</a></>,
+        placeholder: "Card number",
+        confirmText: "Finish",
+        confirmHandler: didAddCreditCard,
+        shouldShowInput: true
+    }} />
+    </>)
 }
