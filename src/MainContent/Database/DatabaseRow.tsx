@@ -63,7 +63,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setShouldSh
                 <td className={`font-mono p-1 border-none ${(editing == key) ? "bg-[#383842]" : ""}`} key={`${rowKey}-${index+1}`}>
                     <input 
                         type="text" 
-                        className={`w-full bg-transparent border-0 outline-0 text-xs ${shouldShowStrikethrough ? "line-through" : ""} ${(rowValues[key].toString() || "").startsWith("https://") && shouldBlockEdits ? "cursor-pointer" : ""}`} 
+                        className={`w-full bg-transparent border-0 outline-0 text-xs ${shouldShowStrikethrough ? "line-through" : ""} ${((rowValues[key] || "").toString()).startsWith("https://") && shouldBlockEdits ? "cursor-pointer" : ""}`} 
                         onFocus={() => setupEditing(key)}
                         value={(editing == key) ? pendingInputValue : rowValues[key]}
                         onClick={() => {
