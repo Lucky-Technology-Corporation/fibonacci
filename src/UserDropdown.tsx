@@ -45,7 +45,7 @@ export default function UserDropdown(){
 
     return (
         <>
-        <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
+        <Menu as="div" className="fixed bottom-4 mb-2 left-6 w-44 inline-block text-left">
             <div className={`${isFree ? "" : "hidden" } flex-1 mt-1 p-1.5 px-2 mb-2 border-[#525363] cursor-pointer border bg-[#85869833] hover:bg-[#85869855] cursor-pointer rounded text-sm`} onClick={addCreditCard}>
                 <FontAwesomeIcon
                     icon={faRotateLeft}

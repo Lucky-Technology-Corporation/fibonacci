@@ -11,7 +11,7 @@ import { SwizzleContext } from "./Utilities/GlobalContext";
 export default function Dashboard(){
     const isAuthenticated = useIsAuthenticated()
     //Content handler
-    const [selectedTab, setSelectedTab] = useState<Page>(Page.Apis)
+    const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs)
     //Auth checkbox handler
     const [prepndCode, setPrependCode] = useState("")
     //Deploy state handler

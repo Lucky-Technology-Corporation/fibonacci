@@ -21,7 +21,8 @@ export default function LeftSidebar({selectedTab, setSelectedTab, activeCollecti
                 
                 <div className="flex"><img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" /><h1 className="font-bold text-md">Swizzle</h1></div>
                 <div className="flex"><ProjectSelector /></div>
-                
+                <SectionTitle icon="monitor.svg" text="Monitoring" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} />
+
                 <SectionTitle icon="cloud.svg" text="APIs" active={selectedTab == Page.Apis} onClick={() => {setSelectedTab(Page.Apis)}} />
                 <EndpointList active={selectedTab == Page.Apis} />
 
@@ -32,8 +33,6 @@ export default function LeftSidebar({selectedTab, setSelectedTab, activeCollecti
                 <CollectionList active={selectedTab == Page.Db} activeCollection={activeCollection} setActiveCollection={setActiveCollection} />
                 
                 <SectionTitle icon="files.svg" text="Storage" active={selectedTab == Page.Storage} onClick={() => {setSelectedTab(Page.Storage)}} />
-
-                <SectionTitle icon="logs.svg" text="Logs" active={selectedTab == Page.Logs} onClick={() => {setSelectedTab(Page.Logs)}} />
 
                 <UserDropdown />
             </div>

@@ -8,7 +8,7 @@ export default function LogsDrawer({}: {}) {
             <table className="w-full h-full">
                 <thead className="bg-[#85869822]">
                     <tr className="border-b border-[#4C4F6B]">
-                        <th className="text-left py-1 pl-4">Logs</th>
+                        <th className="text-left py-1 pl-4">Test Logs</th>
                         <th className="text-left py-1 pl-4">Request</th>
                         <th className="text-left py-1 pl-4">Response</th>
                         <th className="text-left py-1 pl-4"></th>

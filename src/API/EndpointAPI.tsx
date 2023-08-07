@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { useContext } from 'react';
 import {useAuthHeader} from 'react-auth-kit'
+import { SwizzleContext } from '../Utilities/GlobalContext';
 
 // const zlib = require('zlib');
 
@@ -8,6 +10,19 @@ import {useAuthHeader} from 'react-auth-kit'
 
 export default function useApi() {
     const authHeader = useAuthHeader();
+    const {domain} = useContext(SwizzleContext);
+
+
+    const getFiles = async () => {
+        console.log(domain)
+        const response = await axios.get(`http://${domain}/code`, {
+            headers: {
+                Authorization: authHeader(),
+            },
+        })
+        return response.data;
+    }
+            
 
     const createAPI = async (apiName: string) => {
        return true
@@ -18,6 +33,6 @@ export default function useApi() {
         
     }
   
-    return { createAPI, updateEndpoint };
+    return { createAPI, updateEndpoint, getFiles };
 }
 

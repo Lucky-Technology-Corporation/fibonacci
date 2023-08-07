@@ -50,6 +50,7 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
         setTimeout(() => {   
             if(element){ element.style.transition = "width 0.2s ease-out" }
             setDidDeploy(true)
+            toast.success("Deployed to test environment", {icon: "🧪"})
         }, 3200)
 
         setTimeout(() => {
@@ -63,7 +64,11 @@ export default function RightSidebar({selectedTab, setPrependCode, setDidDeploy}
         const handleKeyDown = (event: KeyboardEvent) => {
             if ((window.navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey) && event.key === 's') {
                 event.preventDefault();
-                toast("Deploying...", {icon: "⏳"})
+                if(window.navigator.platform.match("Mac")){
+                    toast("Reloading test environment (Shift-⌘-S to deploy to production)", {icon: "⏳"})
+                } else {
+                    toast("Reloading test environment (Shift-Ctrl-S to deploy to production)", {icon: "⏳"})
+                }
                 runDeploy()
             }
         };

@@ -10,7 +10,7 @@ import { SwizzleContext } from '../Utilities/GlobalContext';
 export default function ProjectSelector(){
     const [isVisible, setIsVisible] = useState(false);
     const { getProjects, createProject } = useApi();
-    const { projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName } = useContext(SwizzleContext);
+    const { projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName, setDomain } = useContext(SwizzleContext);
 
     useEffect(() => {  
         console.log("Getting projects...")
@@ -53,11 +53,30 @@ export default function ProjectSelector(){
         );
     }
 
+    const setCurrentProject = (id: string) => {
+        const project = projects.filter(p => p.id == id)[0]
+
+        setActiveProject(project.id)
+        setActiveProjectName(project.name)
+        sessionStorage.setItem("activeProject", project.id)
+        sessionStorage.setItem("activeProjectName", project.name)
+
+        if(project.edges.project_vm && project.edges.project_vm.length > 0){
+            setDomain(project.edges.project_vm[0].domain + ".swizzle.run")
+            sessionStorage.setItem("domain", project.edges.project_vm[0].domain + ".swizzle.run")
+        }
+    }
+
     useEffect(() => {
-        console.log("setting project")
         if(activeProject == "" && projects.length > 0){
-            setActiveProject(projects[0].id)
-            setActiveProjectName(projects[0].name)
+            if(sessionStorage.getItem("activeProject")){
+                setActiveProject(sessionStorage.getItem("activeProject")!)
+                setActiveProjectName(sessionStorage.getItem("activeProjectName")!)
+                setDomain(sessionStorage.getItem("domain")!)
+                
+            } else {
+                setCurrentProject(projects[0].id)
+            }
         }
     }, [projects])        
 
@@ -67,10 +86,11 @@ export default function ProjectSelector(){
         <>
             <Dropdown 
                 children={projects} 
-                onSelect={(id: string) => {setActiveProject(id); setActiveProjectName(projects.filter(p => p.id == id)[0].name) }} 
+                onSelect={(id: string) => { setCurrentProject(id) }} 
                 lastChild={{id: "_create_new_project", name: "+ New Project"}} 
                 lastOnSelect={() => {setIsVisible(true)}} 
                 className="mt-2" 
+                title={activeProjectName}
             />
             <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
                 title:  "🥋 New project",

@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import EndpointItem from "./EndpointItem";
 import { Method } from "../../Utilities/Method";
 import SectionAction from "../SectionAction";
 import APIWizard from "./APIWizard";
+import useApi from "../../API/EndpointAPI";
+import toast from "react-hot-toast";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function EndpointList({active}: {active: boolean}) {
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const { getFiles } = useApi();
+    const { activeProject } = useContext(SwizzleContext);
+
+    useEffect(() => {
+        getFiles().then((data) => {
+            console.log("endpoints")
+            console.log(data)
+        }).catch((e) => {
+            toast.error("Error fetching endpoints")
+            console.log(e)
+        })        
+    }, [activeProject])
     
     //Fetch from backend and populate it here.
     return(

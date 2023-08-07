@@ -11,7 +11,7 @@ export default function ObjectTableView(){
 
     const { getDocuments } = useApi(); 
 
-    const { activeProject, activeProjectName } = useContext(SwizzleContext);
+    const { activeProject, domain } = useContext(SwizzleContext);
     const [searchQuery, setSearchQuery] = useState<string>("")
 
     const [rowDetailData, setRowDetailData] = useState<any>({})
@@ -111,7 +111,7 @@ export default function ObjectTableView(){
                                 rowKey={row._id}
                                 keys={keys}
                                 data={Object.entries(row).reduce((result, [key, value]) => {
-                                    return {...result, [key]: key == "_id" ? ("/swizzle/db/storage/"+value+".jpeg") : value}
+                                    return {...result, [key]: key == "_id" ? ("https://" + domain + "/swizzle/db/storage/"+value+".jpeg") : value}
                                 }, {})}                            
                                 setShouldShowSaveHint={() => {}}
                                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {showDetailView(row, e.clientX, e.clientY)}}
