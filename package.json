@@ -28,7 +28,8 @@
     "react-hot-toast": "^2.4.1",
     "react-monaco-editor": "^0.53.0",
     "react-search-autocomplete": "^8.5.2",
-    "swr": "^2.2.0"
+    "swr": "^2.2.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",

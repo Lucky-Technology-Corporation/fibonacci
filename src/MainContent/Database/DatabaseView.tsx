@@ -9,8 +9,7 @@ import DocumentJSON from "./DocumentJSON";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
-
-
+import { v4 as uuidv4 } from "uuid";
 
 
 export default function DatabaseView({activeCollection}: {activeCollection: string}){
@@ -31,8 +30,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     const [rowDetailData, setRowDetailData] = useState<any>({})
     const [clickPosition, setClickPosition] = useState<{x: number, y: number}>({x: 0, y: 0})
 
-    //TODO: replace with actual keys
-    const [keys, setKeys] = useState<string[]>([]); //["name", "email", "age", "address", "city", "state", "zip"]
+    const [keys, setKeys] = useState<string[]>([]); 
     const [data, setData] = useState<any>();
     const [error, setError] = useState<any>(null);
     
@@ -51,27 +49,49 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             // create new row
         }
     }
-
+      
     const onJSONChangeHandler = (newData: any) => {
-        if(editingDocumentId){ //not ready yet
-            var editedData = data.map((d: any) => {
-                if(d._id == editingDocumentId){
-                    return {...newData, _id: d._id};
-                }
-                return d;
-            })
-            console.log(editedData)
-            setData(editedData)
+        if (editingDocumentId) {
+          // If editing an existing document, update the specific document in the state
+          const updatedData = data.map((d: any) =>
+            d._id === editingDocumentId ? { ...newData, _id: d._id } : d
+          );
+          setData(updatedData);
+        } else {
+          // If creating a new document or an array of documents
+          if (Array.isArray(newData)) {
+            // Loop through each object in the array
+            newData.forEach((item) => {
+              // Add a unique _id property to each item
+              item._id = uuidv4();
+              // Find the index of the item in the state data (if it exists)
+              const index = data.findIndex((d) => d._id === item._id);
+      
+              if (index !== -1) {
+                // If the item exists in the state data, update it
+                data[index] = { ...data[index], ...item };
+              } else {
+                // If the item does not exist in the state data, add it
+                setData((prevData) => [...prevData, item]);
+              }
+            });
+          } else {
+            // If newData is a single object, add it to the state
+            setData((prevData) => [...prevData, newData]);
+          }
         }
-        else{
-            setData([...data, newData])
+      
+        // Check for new keys
+        if (Array.isArray(newData)) {
+          // If newData is an array, consider only the first object to check for new keys
+          newData = newData[0];
         }
-        //Check for new keys
-        const newKeys = Object.keys(newData).filter((key) => !keys.includes(key))
-        if(newKeys.length > 0){
-            setKeys([...keys, ...newKeys])
+        const newKeys = Object.keys(newData).filter((key) => !keys.includes(key));
+        if (newKeys.length > 0) {
+          setKeys((prevKeys) => [...prevKeys, ...newKeys]);
         }
-    }
+      };
+      
 
     const deleteCollectionHandler = () => {
         const c = confirm("Are you sure you want to delete this collection? This cannot be undone.");
@@ -296,7 +316,14 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                     </tbody>
                 </table>
                 <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} /> 
-                <DocumentJSON document={jsonEditorData} collection={activeCollection} isVisible={isJSONEditorVisible} setIsVisible={setIsJSONEditorVisible} id={editingDocumentId} onChange={onJSONChangeHandler} />                                       
+                <DocumentJSON
+  document={jsonEditorData}
+  collection={activeCollection}
+  isVisible={isJSONEditorVisible}
+  setIsVisible={setIsJSONEditorVisible}
+  id={editingDocumentId}
+  onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
+/>
             </div>
             {data.length == 0 && (
                 <div className="flex-grow flex flex-col items-center justify-center">
