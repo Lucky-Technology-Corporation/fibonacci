@@ -59,7 +59,7 @@ export default function useApi() {
         try{
             if(activeProject == "") return
             if(activeCollection == "") return
-            const response = await axios.post(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}`, {document: data}, {
+            const response = await axios.post(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}`, {documents: [newDocument]}, {
                 headers: {
                     Authorization: authHeader(), 
                 },
