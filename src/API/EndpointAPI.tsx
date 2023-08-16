@@ -14,13 +14,13 @@ export default function useApi() {
 
 
     const getFiles = async () => {
-        console.log(domain)
-        const response = await axios.get(`http://${domain}/code`, {
-            headers: {
-                Authorization: authHeader(),
-            },
-        })
-        return response.data;
+        // console.log(domain)
+        // const response = await axios.get(`http://146.190.138.216:3000/code`, {
+        //     headers: {
+        //         Authorization: authHeader(),
+        //     },
+        // })
+        // return response.data;
     }
             
 

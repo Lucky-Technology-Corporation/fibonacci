@@ -30,9 +30,9 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {
                                     {modalDetails.title}
                                 </h3>
                                 <div className="mt-1">
-                                    <p className="text-sm text-[#D9D9D9]">
+                                    <div className="text-sm text-[#D9D9D9]">
                                         {modalDetails.description}
-                                    </p>
+                                    </div>
                                 </div>
                                 <div className={`mt-3 mb-2 ${(modalDetails.shouldShowInput) ? "" : "hidden"}`}>
                                     <input type="text" 

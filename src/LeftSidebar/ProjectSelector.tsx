@@ -23,7 +23,9 @@ export default function ProjectSelector(){
                 return
             }
             var flexibleData = data
-            if(activeProject){
+
+            // Move active project to the top, if it exists
+            if(activeProject != null && activeProject != ""){
                 const projectIndex = flexibleData.findIndex((project: any) => project.id == activeProject)
                 if(projectIndex != -1){
                     const project = flexibleData[projectIndex]
@@ -31,11 +33,12 @@ export default function ProjectSelector(){
                     flexibleData.unshift(project)
                 }
             }
+
             setProjects(flexibleData);
+
         }).catch((e) => {
             toast.error("Error fetching projects")
             console.log(e)
-            //TODO: decide if we should sign out here...
         })
     }, [])
 
@@ -53,6 +56,7 @@ export default function ProjectSelector(){
         );
     }
 
+    //Set the current project in the context and save it in session storage
     const setCurrentProject = (id: string) => {
         const project = projects.filter(p => p.id == id)[0]
 
@@ -67,13 +71,12 @@ export default function ProjectSelector(){
         }
     }
 
+    //When projects is set, set the active project to the first project in the list or the one stored in session storage
     useEffect(() => {
         if(activeProject == "" && projects.length > 0){
-            if(sessionStorage.getItem("activeProject")){
-                setActiveProject(sessionStorage.getItem("activeProject")!)
-                setActiveProjectName(sessionStorage.getItem("activeProjectName")!)
-                setDomain(sessionStorage.getItem("domain")!)
-                
+            var storedActiveProject = sessionStorage.getItem("activeProject")
+            if(storedActiveProject != undefined && storedActiveProject != ""){
+                setCurrentProject(storedActiveProject)
             } else {
                 setCurrentProject(projects[0].id)
             }

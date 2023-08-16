@@ -27,7 +27,7 @@ export default function SignIn(){
         })){
             // toast.success("Signed in!")
             console.log("Signed in!")
-            window.history.replaceState({}, document.title, window.location.pathname);
+            // window.history.replaceState({}, document.title, window.location.pathname);
         } else {
             console.log("Couldn't sign in")
             toast.error("Couldn't sign in")

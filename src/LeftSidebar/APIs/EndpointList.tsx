@@ -14,8 +14,8 @@ export default function EndpointList({active}: {active: boolean}) {
 
     useEffect(() => {
         getFiles().then((data) => {
-            console.log("endpoints")
-            console.log(data)
+            // console.log("endpoints")
+            // console.log(data)
         }).catch((e) => {
             toast.error("Error fetching endpoints")
             console.log(e)
