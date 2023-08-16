@@ -59,6 +59,7 @@ export default function ProjectSelector(){
     //Set the current project in the context and save it in session storage
     const setCurrentProject = (id: string) => {
         const project = projects.filter(p => p.id == id)[0]
+        if(project == null) return
 
         setActiveProject(project.id)
         setActiveProjectName(project.name)
