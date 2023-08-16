@@ -143,10 +143,10 @@ const MonitoringPage: React.FC = () => {
           <table className="w-full h-full">
             <thead className="bg-[#85869822]">
                 <tr className="border-b border-[#4C4F6B]">
-                    <th className="text-left py-1 pl-4">Status</th>
+                    <th className="text-left py-1 pl-4 w-10"></th>
                     <th className="text-left py-1 pl-4">Endpoint</th>
-                    <th className="text-left py-1 pl-4">Error Rate</th>
-                    <th className="text-left py-1 pl-4">Response Time</th>
+                    <th className="text-left py-1 pl-4">Error Rate (24 hrs)</th>
+                    <th className="text-left py-1 pl-4">Response Time (24 hrs)</th>
                     <th className="text-left py-1 pl-4">Last Requested</th>
                     <th className="text-left py-1 pl-4 rounded-tr-md"></th>
                 </tr>
@@ -155,7 +155,7 @@ const MonitoringPage: React.FC = () => {
               <tr className="border-b border-[#4C4F6B] h-[40px] hover:bg-[#85869855]">
                     <td className="text-left pl-4">🔴</td>
                     <td className="text-left pl-4 font-mono">
-                       GET /users/:userId
+                       <span className='text-green-300 font-bold'>GET</span> /users/:userId
                     </td>
                     <td className="text-left pl-4 font-bold text-red-500">25%</td>
                     <td className="text-left pl-4">5ms</td>
@@ -167,7 +167,7 @@ const MonitoringPage: React.FC = () => {
               <tr className="border-b border-[#4C4F6B] h-[40px] hover:bg-[#85869855]">
                     <td className="text-left pl-4">🟡</td>
                     <td className="text-left pl-4 font-mono">
-                       GET /users/admin
+                    <span className='text-blue-300 font-bold'>POST</span> /users/admin
                     </td>
                     <td className="text-left pl-4">0.12%</td>
                     <td className="text-left pl-4 font-bold text-yellow-400">1200ms</td>
@@ -179,7 +179,7 @@ const MonitoringPage: React.FC = () => {
                 <tr className="border-b border-[#4C4F6B] h-[40px] hover:bg-[#85869855]">
                     <td className="text-left pl-4">🟢</td>
                     <td className="text-left pl-4 font-mono">
-                       GET /users
+                      <span className='text-blue-300 font-bold'>POST</span> /users
                     </td>
                     <td className="text-left pl-4">0.2%</td>
                     <td className="text-left pl-4">25ms</td>
@@ -191,7 +191,7 @@ const MonitoringPage: React.FC = () => {
                 <tr className="border-b border-[#4C4F6B] h-[40px] hover:bg-[#85869855]">
                     <td className="text-left pl-4">🟢</td>
                     <td className="text-left pl-4 font-mono">
-                       GET /posts
+                      <span className='text-green-300 font-bold'>GET</span> /posts
                     </td>
                     <td className="text-left pl-4">0.05%</td>
                     <td className="text-left pl-4">21ms</td>
