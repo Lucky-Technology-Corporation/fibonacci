@@ -25,11 +25,8 @@ export default function SignIn(){
             authState: { isAuthenticated: true, user: userName },
             tokenType: "Bearer",
         })){
-            // toast.success("Signed in!")
-            console.log("Signed in!")
-            // window.history.replaceState({}, document.title, window.location.pathname);
+            console.log("Signed in!") //do not remove the jwt from the url here. it causes a refresh loop
         } else {
-            console.log("Couldn't sign in")
             toast.error("Couldn't sign in")
         }
     }

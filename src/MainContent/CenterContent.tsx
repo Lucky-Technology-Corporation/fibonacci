@@ -21,7 +21,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
                 <EditorHeader method={Method.GET} path="/" didDeploy={didDeploy} />
                 <Editor prepend={prependCode} setDidDeploy={setDidDeploy} />
-                <LogsDrawer />
+                {/* <LogsDrawer /> */}
             </div>
         )
     } else if(selectedTab == Page.Auth){
