@@ -6,6 +6,7 @@ import DatabaseView from "./Database/DatabaseView";
 import UserTableView from "./Auth/UserTableView";
 import ObjectTableView from "./Storage/ObjectTableView";
 import LogsDrawer from "./Editor/LogsDrawer";
+import MonitoringPageOld from "./MonitoringPageOld";
 
 type CenterContentProps = {
     selectedTab: Page, 
@@ -45,7 +46,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
     } else if(selectedTab == Page.Logs){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
-                Logs go here
+                <MonitoringPageOld/>
             </div>
         )
     }
