@@ -288,7 +288,8 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
     
     return (
       <>
-      <MonacoEditor
+      <iframe src="http://146.190.44.229:3000/" width="100%" height="100%" frameBorder="0"></iframe>
+      {/* <MonacoEditor
         width="100%"
         height="calc(100% - 44px - 280px)"
         language="javascript"
@@ -299,7 +300,7 @@ class Editor extends React.Component<MiramountProps, MiramountState> {
         editorDidMount={this.editorDidMount}
         {...this.props} 
       />
-      <EditorAssistant isOpen={this.state.isAssistantOpen} caretPosition={this.state.caretPosition} />
+      <EditorAssistant isOpen={this.state.isAssistantOpen} caretPosition={this.state.caretPosition} /> */}
       </>
     );
   }

@@ -6,7 +6,7 @@ import DatabaseView from "./Database/DatabaseView";
 import UserTableView from "./Auth/UserTableView";
 import ObjectTableView from "./Storage/ObjectTableView";
 import LogsDrawer from "./Editor/LogsDrawer";
-import MonitoringPage from "./MonitoringPage";
+import MonitoringPage from "./Logs/MonitoringPage";
 
 type CenterContentProps = {
     selectedTab: Page, 
