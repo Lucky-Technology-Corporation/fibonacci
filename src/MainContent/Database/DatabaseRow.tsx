@@ -67,7 +67,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setShouldSh
                         onFocus={() => setupEditing(key)}
                         value={(editing == key) ? pendingInputValue : rowValues[key]}
                         onClick={() => {
-                            if(rowValues[key].startsWith("https://") && shouldBlockEdits){
+                            if((rowValues[key] || "").toString().startsWith("https://") && shouldBlockEdits){
                                 window.open(rowValues[key], "_blank")
                             }
                         }}
