@@ -14,9 +14,10 @@ type CenterContentProps = {
     didDeploy: boolean, 
     setDidDeploy: (didDeploy: boolean) => void
     activeCollection: string
+    activeLogsPage: string
 }
 
-export default function CenterContent({selectedTab, prependCode, didDeploy, setDidDeploy, activeCollection} : CenterContentProps){
+export default function CenterContent({selectedTab, prependCode, didDeploy, setDidDeploy, activeCollection, activeLogsPage} : CenterContentProps){
     if(selectedTab === Page.Apis){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
@@ -46,7 +47,7 @@ export default function CenterContent({selectedTab, prependCode, didDeploy, setD
     } else if(selectedTab == Page.Logs){
         return (
             <div className="m-4 ml-0 text-sm whitespace-pre-line">
-                <MonitoringPage/>
+                <MonitoringPage activeLogsPage={activeLogsPage} />
             </div>
         )
     }

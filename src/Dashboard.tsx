@@ -18,6 +18,8 @@ export default function Dashboard(){
     const [didDeploy, setDidDeploy] = useState(false)
     //Active collection handler
     const [activeCollection, setActiveCollection] = useState<string>("");
+    //Active logs page handler
+    const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
 
     const {isFree} = useContext(SwizzleContext);
 
@@ -30,14 +32,17 @@ export default function Dashboard(){
                         selectedTab={selectedTab} 
                         setSelectedTab={setSelectedTab} 
                         activeCollection={activeCollection}
-                        setActiveCollection={setActiveCollection} />
+                        setActiveCollection={setActiveCollection} 
+                        activeLogsPage={activeLogsPage}
+                        setActiveLogsPage={setActiveLogsPage} />
 
                     <CenterContent 
                         selectedTab={selectedTab} 
                         prependCode={prepndCode} 
                         didDeploy={didDeploy} 
                         setDidDeploy={setDidDeploy}
-                        activeCollection={activeCollection} />
+                        activeCollection={activeCollection} 
+                        activeLogsPage={activeLogsPage} />
 
                     <RightSidebar 
                         selectedTab={selectedTab} 

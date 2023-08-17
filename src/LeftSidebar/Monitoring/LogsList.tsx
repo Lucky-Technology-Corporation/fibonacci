@@ -5,6 +5,7 @@ export default function Logslist({active, activePage, setActivePage}: {active: b
 
     return(
         <div className={`flex-col w-full mt-1 px-2 ${active ? "" : "hidden"}`}>
+            <LogsItem active={activePage == "analytics"} name="Analytics" onClick={() => {setActivePage("analytics")}} />
             <LogsItem active={activePage == "logs"} name="Logs" onClick={() => {setActivePage("logs")}} />
         </div>
     )
