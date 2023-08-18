@@ -46,7 +46,7 @@ export default function UserDropdown(){
     return (
         <>
         <Menu as="div" className="fixed bottom-4 mb-2 left-6 w-44 inline-block text-left">
-            <div className={`${isFree ? "" : "hidden" } flex-1 mt-1 p-1.5 px-2 mb-2 border-[#525363] cursor-pointer border bg-[#85869833] hover:bg-[#85869855] cursor-pointer rounded text-sm`} onClick={addCreditCard}>
+            <div className={`${isFree ? "" : "hidden" } flex-1 mt-1 p-1.5 px-2 mb-2 border-[#525363] cursor-pointer border bg-[#33333c] hover:bg-[#474752] cursor-pointer rounded text-sm`} onClick={addCreditCard}>
                 <FontAwesomeIcon
                     icon={faRotateLeft}
                     className="mr-2"
@@ -55,7 +55,7 @@ export default function UserDropdown(){
             </div>
             
             <div>
-                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
+                <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#33333c] ring-1 ring-inset ring-[#525363]">
                     {auth()?.user}
                     <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                 </Menu.Button>
