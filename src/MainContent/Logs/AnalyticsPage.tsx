@@ -1,59 +1,61 @@
-import { Card, Title, LineChart } from "@tremor/react";
 import { useState, useEffect } from "react";
+import { Card, Title, LineChart } from "@tremor/react";
 import useApi from "../../API/MonitoringAPI";
-import { DateRangePicker, DateRangePickerProps} from "@tremor/react";
+import { DateRangePicker, DateRangePickerValue } from "@tremor/react";
 
-export default function AnalyticsPage(){
-    const api = useApi();
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const [data, setData] = useState<any[]>([]); 
+export default function AnalyticsPage() {
+  const api = useApi();
 
-    const handleDateRangeChange = (start: Date | null, end: Date | null) => {
-      setStartDate(start);
-      setEndDate(end);
-    };
-    
-    useEffect(() => {
-        const fetchAndProcessData = async () => {
-          try {
-            const startDateStr = startDate?.toISOString() || "";
-            const endDateStr = endDate?.toISOString() || "";
-            const fetchedData = await api.getData(startDateStr, endDateStr);
-            setData(fetchedData);
-          } catch (error) {
-            console.error('Error fetching monitoring data:', error);
-          }
-        };
-    
-        fetchAndProcessData();
-      }, [api, startDate, endDate]);
+  const [dateRange, setDateRange] = useState<DateRangePickerValue>({
+    from: new Date(),
+    to: new Date(),
+  });
 
-     
-    const processDataAndCreateGraph = (chartdata, title, categories) => {
-      return (
-          <Card className="dark-tremor h-90">
-              <Title>{title}</Title>
-              <LineChart
-                  className="dark-tremor"
-                  data={chartdata}
-                  index="date"
-                  categories={categories}
-                  yAxisWidth={40}
-              />
-          </Card>
-        );
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchAndProcessData = async () => {
+      try {
+        const startDateStr = dateRange.from.toISOString();
+        console.log(startDateStr)
+        const endDateStr = dateRange.to.toISOString();
+        const fetchedData = await api.getData(startDateStr, endDateStr);
+        setData(fetchedData);
+      } catch (error) {
+        console.error('Error fetching monitoring data:', error);
+      }
     };
 
-      return (
-        <div>
-            <DateRangePicker
-            />
-            <div className="p-5 flex flex-row space-x-2">
-                {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
-                {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
-            </div>
-        </div>
+    fetchAndProcessData();
+  }, [api, dateRange]);
 
-      );    
+  const processDataAndCreateGraph = (chartdata, title, categories) => {
+    return (
+      <Card className="dark-tremor h-90">
+        <Title>{title}</Title>
+        <LineChart
+          className="dark-tremor"
+          data={chartdata}
+          index="date"
+          categories={categories}
+          yAxisWidth={40}
+        />
+      </Card>
+    );
+  };
+
+  return (
+    <div>
+      <DateRangePicker
+        value={dateRange} // Pass the dateRange state
+        onValueChange={setDateRange} // Pass the setDateRange function
+      >
+       
+      </DateRangePicker>
+      <div className="p-5 flex flex-row space-x-2">
+        {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
+        {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
+      </div>
+    </div>
+  );
 }
