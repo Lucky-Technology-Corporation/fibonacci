@@ -10,7 +10,7 @@ export default function useApi() {
     const authHeader = useAuthHeader();
     const { activeProject } = useContext(SwizzleContext);
 
-    const getMonitoring = async () => {
+    const getData = async (startDate: string, endDate: string) => {
         try {
             if (!activeProject) {
                 throw new Error("No active project selected");
@@ -20,9 +20,13 @@ export default function useApi() {
                 headers: {
                     Authorization: authHeader(),
                 },
-                params: { project_id: activeProject }, // Pass the project_id as a query parameter
-            });
+                params: { 
+                    project_id: activeProject,
+                    start: startDate,
+                    end: endDate,
 
+                }, 
+            });
             return response.data;
         } catch (e) {
             console.log(e);
@@ -31,6 +35,6 @@ export default function useApi() {
     };
 
     return {
-        getMonitoring,
+        getData,
     };
 }
