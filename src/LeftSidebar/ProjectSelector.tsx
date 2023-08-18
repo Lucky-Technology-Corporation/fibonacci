@@ -12,36 +12,6 @@ export default function ProjectSelector(){
     const { getProjects, createProject } = useApi();
     const { projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName, setDomain } = useContext(SwizzleContext);
 
-    useEffect(() => {  
-        console.log("Getting projects...")
-        getProjects().then((data) => {
-            console.log("projects")
-            console.log(data)
-            if(data.length == 0){
-                setIsVisible(true)
-                setProjects([])
-                return
-            }
-            var flexibleData = data
-
-            // Move active project to the top, if it exists
-            if(activeProject != null && activeProject != ""){
-                const projectIndex = flexibleData.findIndex((project: any) => project.id == activeProject)
-                if(projectIndex != -1){
-                    const project = flexibleData[projectIndex]
-                    flexibleData.splice(projectIndex, 1)
-                    flexibleData.unshift(project)
-                }
-            }
-
-            setProjects(flexibleData);
-
-        }).catch((e) => {
-            toast.error("Error fetching projects")
-            console.log(e)
-        })
-    }, [])
-
     const createNewProject = (projectName: string) => {
         toast.promise(
             createProject(projectName),
@@ -74,7 +44,7 @@ export default function ProjectSelector(){
 
     //When projects is set, set the active project to the first project in the list or the one stored in session storage
     useEffect(() => {
-        if(activeProject == "" && projects.length > 0){
+        if(projects && activeProject == "" && projects.length > 0){
             var storedActiveProject = sessionStorage.getItem("activeProject")
             if(storedActiveProject != undefined && storedActiveProject != ""){
                 setCurrentProject(storedActiveProject)
