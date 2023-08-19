@@ -27,7 +27,7 @@ export default function AnalyticsPage() {
     };
 
     fetchAndProcessData();
-  }, [api, dateRange]);
+  }, [dateRange]);
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (
