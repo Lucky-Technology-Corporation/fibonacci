@@ -10,9 +10,10 @@ import { SwizzleContext } from '../Utilities/GlobalContext';
 export default function ProjectSelector(){
     const [isVisible, setIsVisible] = useState(false);
     const { getProjects, createProject } = useApi();
-    const { projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName, setDomain } = useContext(SwizzleContext);
+    const { projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName, setDomain, setIsCreatingProject } = useContext(SwizzleContext);
 
     const createNewProject = (projectName: string) => {
+        setIsCreatingProject(true)
         toast.promise(
             createProject(projectName),
             {
@@ -21,7 +22,10 @@ export default function ProjectSelector(){
                     window.location.reload()
                     return "Created project!"
                 },
-                error: "Failed to create project"
+                error: () => {
+                    setIsCreatingProject(false)
+                    return "Failed to create project"
+                }
             }
         );
     }

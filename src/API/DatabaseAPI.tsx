@@ -31,8 +31,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            console.log(e)
-            throw e;
+            console.error(e)
+            return null
         }
     };
 
@@ -49,7 +49,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
 
@@ -66,7 +67,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
 
@@ -81,7 +83,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
 
@@ -95,7 +98,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
 
@@ -109,7 +113,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
     
@@ -122,7 +127,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }  
 
@@ -152,7 +158,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
 
@@ -175,7 +182,8 @@ export default function useApi() {
             });
             return response.data;
         } catch(e: any){
-            throw e;
+            console.error(e)
+            return null
         }
     }
   

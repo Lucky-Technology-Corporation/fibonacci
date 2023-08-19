@@ -10,6 +10,7 @@ import { SwizzleContext } from "./Utilities/GlobalContext";
 import Lottie from "lottie-react";
 import dog from "../public/dog.json";
 import useApi from "./API/DatabaseAPI";
+import Lobby from "./Blockrain/Lobby";
 
 export default function Dashboard(){
     const isAuthenticated = useIsAuthenticated()
@@ -25,7 +26,7 @@ export default function Dashboard(){
     const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
 
     //Initialization code...
-    const {isFree, projects, activeProject, setProjects} = useContext(SwizzleContext);
+    const {isFree, projects, activeProject, setProjects, isCreatingProject} = useContext(SwizzleContext);
     const { getProjects } = useApi();
     
     useEffect(() => {  
@@ -38,7 +39,13 @@ export default function Dashboard(){
                 return
             }
             var flexibleData = data
-            
+            for(var i = 0; i < flexibleData.length; i++){
+                //TODO: Add the production domain!
+                if(flexibleData[i].edges.project_vm && flexibleData[i].edges.project_vm.length > 0){
+                    flexibleData[i].test_domain = flexibleData[i].edges.project_vm[0].domain
+                }
+            }
+
             // Move active project to the top, if it exists
             if(activeProject != null && activeProject != ""){
                 const projectIndex = flexibleData.findIndex((project: any) => project.id == activeProject)
@@ -48,9 +55,7 @@ export default function Dashboard(){
                     flexibleData.unshift(project)
                 }
             }
-
             setProjects(flexibleData);
-
         }).catch((e) => {
             toast.error("Error fetching projects")
             console.log(e)
@@ -58,6 +63,9 @@ export default function Dashboard(){
     }, [])
     
     if(isAuthenticated()){
+        if(isCreatingProject){ 
+            return ( <Lobby />)
+        }
         if(projects){
             return (
                 <div className="page-wrapper" style={{transform: (isFree ? "rotate(1.5deg)" : "rotate(0deg)"), transition: "transform 0.5s"}}> 

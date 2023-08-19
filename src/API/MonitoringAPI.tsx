@@ -27,7 +27,7 @@ export default function useApi() {
             return response.data;
         } catch (e) {
             console.log(e);
-            throw e;
+            // throw e;
         }
     };
 
