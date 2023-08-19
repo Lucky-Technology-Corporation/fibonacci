@@ -1,7 +1,21 @@
 import Lottie from "lottie-react";
 import dog from "../../public/dog.json";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
-export default function Lobby(){       
+export default function Lobby(){    
+    function delay(duration) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, duration);
+        });
+    }   
+    useEffect(() => {
+        toast.promise(delay(100000), {
+            loading: "Creating your project...",
+            success: "Created your project!",
+            error: "Failed to create your project"
+        })
+    }, [])
     return (
         <div>
             <Lottie animationData={dog} loop={true} className="w-48 h-48 m-auto mt-2" />
