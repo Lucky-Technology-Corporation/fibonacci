@@ -39,7 +39,7 @@ export default function SecretInfo({show}: {show: boolean}) {
             <div className="h-1"></div>
             <SectionAction text="+ New Secret" onClick={() => {setIsVisible(true)}} />
 
-            <InfoItem
+            {/* <InfoItem
                 title={"secretName"}
                 showHintWindow={showHintWindow}
                 hideHintWindow={hideHintWindow}
@@ -55,7 +55,7 @@ export default function SecretInfo({show}: {show: boolean}) {
                     <span className=''>The function will return the test or production value in each environment.</span>
                 </div>
                 }
-            />
+            /> */}
             <FullPageModal 
                 isVisible={isVisible}
                 setIsVisible={setIsVisible}
