@@ -10,10 +10,11 @@ interface ModalDetails {
     shouldHideCancel?: boolean
 }
 
-export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails}) {
+export default function FullPageModal({isVisible, setIsVisible, modalDetails, shouldTrim = false}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails, shouldTrim?: boolean}) {
     const [inputValue, setInputValue] = useState('');
 
     const confirmHandlerInternal = async () => {
+        if(modalDetails.shouldShowInput && inputValue == "") return
         modalDetails.confirmHandler(inputValue)
         setIsVisible(false)
     }
@@ -37,7 +38,13 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails}: {
                                 <div className={`mt-3 mb-2 ${(modalDetails.shouldShowInput) ? "" : "hidden"}`}>
                                     <input type="text" 
                                         value={inputValue}
-                                        onChange={e => setInputValue(e.target.value.trim())}
+                                        onChange={e => {
+                                            if(shouldTrim){
+                                                setInputValue(e.target.value.replace(/[^\w]/g, ''))
+                                            } else {
+                                                setInputValue(e.target.value)
+                                            }
+                                        }}
                                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder={modalDetails.placeholder} 
                                         onKeyDown={(event: any) => {
                                             if(event.key == "Enter"){

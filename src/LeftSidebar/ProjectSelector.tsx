@@ -74,7 +74,7 @@ export default function ProjectSelector(){
                 className="mt-2" 
                 title={activeProjectName}
             />
-            <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
+            <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} shouldTrim={true} modalDetails={{
                 title:  "🥋 New project",
                 description: <>Enter a name for your project</>,
                 placeholder: "My awesome project",

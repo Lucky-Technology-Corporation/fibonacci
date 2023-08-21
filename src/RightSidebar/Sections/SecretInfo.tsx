@@ -7,32 +7,6 @@ import FullPageModal from '../../Utilities/FullPageModal';
 
 export default function SecretInfo({show}: {show: boolean}) {
     const [isVisible, setIsVisible] = useState(false)
-    const [isHintWindowVisible, setIsHintWindowVisible] = useState(false)
-    const timerRef = useRef<number | undefined>();
-
-    const showHintWindow = () => {
-        clearTimeout(timerRef.current);
-        setIsHintWindowVisible(true)
-    }
-    const showHintWindowIfOpen = () => {
-        if(!isHintWindowVisible) return;
-        clearTimeout(timerRef.current);
-        setIsHintWindowVisible(true)
-    }
-    const hideHintWindow = () => {
-        timerRef.current = window.setTimeout(() => {
-            setIsHintWindowVisible(false)
-        }, 300)
-    }
-    
-    useEffect(() => {
-        return () => {
-            if(timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        };
-    }, []);
-      
 
     return (<>
         <div className={`flex-col items-center justify-between ${show ? "opacity-100" : "opacity-0 h-0 pointer-events-none"}`} style={{transition: "opacity 0.3s"}}>
@@ -50,18 +24,18 @@ export default function SecretInfo({show}: {show: boolean}) {
                                 <input className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder="" />
                             </div>
                             <div className="w-full">
-                                <div className="text-gray-300 mb-2 mt-4">Test value</div>
+                                <div className="text-gray-300 mb-2 mt-4">Test environment value</div>
                                 <textarea className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder="" />
                             </div>
                             <div className="w-full">
-                                <div className="text-gray-300 mb-2 mt-4">Production value</div>
+                                <div className="text-gray-300 mb-2 mt-4">Production environment value</div>
                                 <textarea className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2" placeholder="" />
                             </div>
                         </div>,
-                    placeholder: "/path/:variable",
                     confirmText: "Create",
                     confirmHandler: () => {},  
                     shouldShowInput: false,
+                    placeholder: "", //unused since shouldShowInput is false
                 }}
             />
             
