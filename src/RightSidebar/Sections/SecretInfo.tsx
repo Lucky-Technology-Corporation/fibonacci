@@ -38,24 +38,6 @@ export default function SecretInfo({show}: {show: boolean}) {
         <div className={`flex-col items-center justify-between ${show ? "opacity-100" : "opacity-0 h-0 pointer-events-none"}`} style={{transition: "opacity 0.3s"}}>
             <div className="h-1"></div>
             <SectionAction text="+ New Secret" onClick={() => {setIsVisible(true)}} />
-
-            {/* <InfoItem
-                title={"secretName"}
-                showHintWindow={showHintWindow}
-                hideHintWindow={hideHintWindow}
-            />
-            <ToastWindow
-                isHintWindowVisible={isHintWindowVisible}
-                showHintWindowIfOpen={showHintWindowIfOpen}
-                hideHintWindow={hideHintWindow}
-                title={"secretName"}
-                content={
-                <div className='text-gray-400'>Access the value of secretName in your code with <span className='font-bold font-mono text-sm break-all cursor-pointer' onClick={() => copyText(`getSecret("secretName")`)}>getSecret("secretName")</span>
-                    <div className='w-full h-2'></div>
-                    <span className=''>The function will return the test or production value in each environment.</span>
-                </div>
-                }
-            /> */}
             <FullPageModal 
                 isVisible={isVisible}
                 setIsVisible={setIsVisible}

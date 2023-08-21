@@ -32,7 +32,7 @@ export default function AnalyticsPage() {
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (
       <Card className="dark-tremor h-90">
-        <Title>{title}</Title>
+        <Title className="mb-2">{title}</Title>
         <LineChart
           className="dark-tremor"
           data={chartdata}
@@ -49,6 +49,7 @@ export default function AnalyticsPage() {
       <DateRangePicker
         value={dateRange} // Pass the dateRange state
         onValueChange={setDateRange} // Pass the setDateRange function
+        className="ml-5" //TODO: remove the focus ring from this
       >
        
       </DateRangePicker>
