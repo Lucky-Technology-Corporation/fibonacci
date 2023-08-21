@@ -55,6 +55,10 @@ export default function ProjectSelector(){
             } else {
                 setCurrentProject(projects[0].id)
             }
+        }else{
+            if(projects.length == 0){
+                setIsVisible(true)
+            }
         }
     }, [projects])        
 

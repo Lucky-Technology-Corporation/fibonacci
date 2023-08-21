@@ -275,7 +275,6 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         <li>"Find records missing the email field"</li>
                         <li>"Return documents with a name less than 3 characters, ordered by creation date"</li>
                     </ul>
-                    Don't worry, you'll be able to confirm before running anything.
                 </div>
                 </>) : (<>
                 <div className="font-bold mt-1.5">🚦 Confirm</div>
@@ -317,13 +316,13 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                 </table>
                 <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} /> 
                 <DocumentJSON
-  document={jsonEditorData}
-  collection={activeCollection}
-  isVisible={isJSONEditorVisible}
-  setIsVisible={setIsJSONEditorVisible}
-  id={editingDocumentId}
-  onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
-/>
+                    document={jsonEditorData}
+                    collection={activeCollection}
+                    isVisible={isJSONEditorVisible}
+                    setIsVisible={setIsJSONEditorVisible}
+                    id={editingDocumentId}
+                    onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
+                />
             </div>
             {data.length == 0 && (
                 <div className="flex-grow flex flex-col items-center justify-center">
