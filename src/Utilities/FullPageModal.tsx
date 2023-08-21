@@ -10,7 +10,7 @@ interface ModalDetails {
     shouldHideCancel?: boolean
 }
 
-export default function FullPageModal({isVisible, setIsVisible, modalDetails, regexPattern}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails, regexPattern?: RegExp}) {
+export default function FullPageModal({isVisible, setIsVisible, modalDetails, regexPattern, errorMessage = ""}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void, modalDetails: ModalDetails, regexPattern?: RegExp, errorMessage?: string}) {
     const [inputValue, setInputValue] = useState('');
     const [error, setError] = useState(null);
 
@@ -19,9 +19,6 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails, re
         modalDetails.confirmHandler(inputValue)
         setIsVisible(false)
     }
-
-    // const regexPattern = /^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/;
-    const errorMessage = "Names must start a letter and not contain special characters.";
 
     const handleInputChange = (e) => {
         const value = e.target.value;
