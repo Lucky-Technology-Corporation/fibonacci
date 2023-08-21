@@ -20,8 +20,8 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails, sh
         setIsVisible(false)
     }
 
-    const regexPattern = /^[a-zA-Z0-9\s]+$/;
-    const errorMessage = "Project names can only contain letters, numbers, and spaces.";
+    const regexPattern = /^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/;
+    const errorMessage = "Names must start a letter and not contain special characters.";
 
     const handleInputChange = (e) => {
         const value = e.target.value;
