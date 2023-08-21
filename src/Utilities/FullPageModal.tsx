@@ -20,8 +20,8 @@ export default function FullPageModal({isVisible, setIsVisible, modalDetails, sh
         setIsVisible(false)
     }
 
-    const regexPattern = /^[a-zA-z]\w{1,24}$/;
-    const errorMessage = "Input must start with a letter and can only contain letters, numbers, or underscores. Total length should be between 2 and 25 characters.";
+    const regexPattern = /^[a-zA-Z0-9\s]+$/;
+    const errorMessage = "Project names can only contain letters, numbers, and spaces.";
 
     const handleInputChange = (e) => {
         const value = e.target.value;
