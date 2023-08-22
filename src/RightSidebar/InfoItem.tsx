@@ -6,9 +6,10 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 type ToastProps = {
     title: string,
     content: React.ReactNode
+    position?: "top-left" | "top-right" | "bottom-left" | "bottom-right"
 }
 
-export default function InfoItem({content, toast}: {content: React.ReactNode, toast: ToastProps}) {
+export default function InfoItem({content, toast, position}: {content: React.ReactNode, toast: ToastProps, position: "top-left" | "top-right" | "bottom-left" | "bottom-right"}) {
     
     const [id, setId] = useState(Math.random().toString(36).substring(7));
     const timerRef = useRef<number | undefined>();
@@ -64,6 +65,7 @@ export default function InfoItem({content, toast}: {content: React.ReactNode, to
                 title={toast.title}
                 isLarge={true}
                 content={toast.content}
+                position={position}
             />
         </>
     )
