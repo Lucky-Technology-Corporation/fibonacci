@@ -55,6 +55,10 @@ export default function ProjectSelector(){
             } else {
                 setCurrentProject(projects[0].id)
             }
+        }else{
+            if(projects.length == 0){
+                setIsVisible(true)
+            }
         }
     }, [projects])        
 
@@ -70,15 +74,20 @@ export default function ProjectSelector(){
                 className="mt-2" 
                 title={activeProjectName}
             />
-            <FullPageModal isVisible={isVisible} setIsVisible={setIsVisible} modalDetails={{
-                title:  "🥋 New project",
-                description: <>Enter a name for your project</>,
-                placeholder: "My awesome project",
-                confirmText: "Create",
-                confirmHandler: createNewProject,
-                shouldShowInput: true,
-                shouldHideCancel: (projects.length == 0)
-            }} />
+            <FullPageModal 
+                isVisible={isVisible} 
+                setIsVisible={setIsVisible} 
+                regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/} 
+                errorMessage='Names must start a letter and not contain special characters.'
+                modalDetails={{
+                    title:  "🥋 New project",
+                    description: <>Enter a name for your project</>,
+                    placeholder: "My awesome project",
+                    confirmText: "Create",
+                    confirmHandler: createNewProject,
+                    shouldShowInput: true,
+                    shouldHideCancel: (projects.length == 0)
+                }} />
         </>
     )
 }

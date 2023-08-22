@@ -316,14 +316,13 @@ const handleRefresh = () => {
                 onMouseLeave={() => {setShouldShowSearchHint(false)}}
             >
                 {!isValidMongoQuery ? (<>
-                <div className="font-bold mt-1.5">💡 Ask for anything you need</div>
+                <div className="font-bold mt-1.5">💡 Find anything you need</div>
                 <div className="text-sm ml-5 my-1">You can do things like: 
                     <ul className="list-disc my-1 mb-2 ml-5">
                         <li>"Get everything with a SKU containing vendor-001"</li>
-                        <li>"Add a field 'recent' to everyone who signed up this week"</li>
-                        <li>"Append today to everyone's date array, or create the array if necessary"</li>
+                        <li>"Find records missing the email field"</li>
+                        <li>"Return documents with a name less than 3 characters, ordered by creation date"</li>
                     </ul>
-                    Don't worry, you'll be able to confirm before running anything.
                 </div>
                 </>) : (<>
                 <div className="font-bold mt-1.5">🚦 Confirm</div>
@@ -365,13 +364,13 @@ const handleRefresh = () => {
                 </table>
                 <RowDetail data={rowDetailData} clickPosition={clickPosition} collection={activeCollection} addHiddenRow={addHiddenRow} /> 
                 <DocumentJSON
-  document={jsonEditorData}
-  collection={activeCollection}
-  isVisible={isJSONEditorVisible}
-  setIsVisible={setIsJSONEditorVisible}
-  id={editingDocumentId}
-  onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
-/>
+                    document={jsonEditorData}
+                    collection={activeCollection}
+                    isVisible={isJSONEditorVisible}
+                    setIsVisible={setIsJSONEditorVisible}
+                    id={editingDocumentId}
+                    onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
+                />
             </div>
             {data.length == 0 && currentPage == 1 ? (
                 <div className="flex-grow flex flex-col items-center justify-center">

@@ -88,14 +88,6 @@ export default function UserTableView(){
                     <div className={`font-bold text-base`}>{activeProjectName} users</div>
                     <div className={`text-sm mt-0.5`}>Create users <a href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4" target="_blank" rel="nofollow" className="underline decoration-dotted text-[#d2d3e0] hover:text-white">from your app</a>. These records cannot be edited.</div>
                 </div> 
-                {/* <div className={`flex h-10 mt-1 mr-[-16px] text-sm`}>
-                    <Dropdown 
-                        className="ml-2" 
-                        onSelect={createObjectHandler} 
-                        children={[{id: "json", name: "Document"}]}
-                        direction="right"
-                        title="Create" />
-                </div> */}
             </div>
             <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
                 <input 

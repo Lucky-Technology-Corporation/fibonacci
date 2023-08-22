@@ -9,9 +9,10 @@ export const GlobalContextProvider = ({ children }) => {
     const [isFree, setIsFree] = useState(false);
     const [domain, setDomain] = useState("");
     const [isCreatingProject, setIsCreatingProject] = useState(false);
+    const [activeToast, setActiveToast] = useState(null);
 
     return (
-      <SwizzleContext.Provider value={{ projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName, isFree, setIsFree, domain, setDomain, isCreatingProject, setIsCreatingProject }}>
+      <SwizzleContext.Provider value={{ projects, setProjects, activeProject, setActiveProject, activeProjectName, setActiveProjectName, isFree, setIsFree, domain, setDomain, isCreatingProject, setIsCreatingProject, activeToast, setActiveToast }}>
         {children}
       </SwizzleContext.Provider>
     );
