@@ -8,7 +8,7 @@ import Dropdown from "../../Utilities/Dropdown";
 import DocumentJSON from "./DocumentJSON";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown, faArrowRight, faArrowLeft, faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import { v4 as uuidv4 } from "uuid";
 
 
@@ -36,6 +36,54 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
     
     const [hiddenRows, setHiddenRows] = useState<string[]>([]);
 
+    const [currentPage, setCurrentPage] = useState<number>(0);
+    const [totalDocs, setTotalDocs] = useState<number>(0);
+    const itemsPerPage = 20;
+    const startDocument = (currentPage) * itemsPerPage + 1;
+    const isLastPage = Math.ceil(totalDocs / itemsPerPage) === currentPage + 1;
+    const endDocument = isLastPage ? totalDocs : (currentPage + 1) * itemsPerPage;
+
+
+    const renderPaginationControls = () =>  {
+        const btnStyles = "inline-flex items-center justify-center gap-x-1.5 rounded-md px-3 h-7 text-sm font-semibold shadow-sm bg-[#85869833] hover:bg-[#85869855] ring-1 ring-inset ring-[#525363] mx-2";
+
+        return (
+            <div className="flex items-center">
+                {currentPage >= 1 && (
+                    <button className={btnStyles} onClick={() => setCurrentPage(currentPage - 1)}>
+                        <FontAwesomeIcon icon={faArrowLeft} />
+                    </button>
+                )}
+
+                <span className="mx-2">{`${startDocument} – ${endDocument} of ${totalDocs}`}</span>
+
+                {!isLastPage && (
+                    <button className={btnStyles} onClick={() => setCurrentPage(currentPage + 1)}>
+                        <FontAwesomeIcon icon={faArrowRight} />
+                    </button>
+                )}
+
+                <button className={btnStyles} onClick={handleRefresh}>
+                <FontAwesomeIcon icon={faArrowsRotate} />
+                </button>
+            </div>
+        );
+    }
+    
+const handleRefresh = () => {
+    if(!activeCollection || activeCollection == "") return;
+    setCurrentPage(0);
+        getDocuments(activeCollection, currentPage, 20)
+            .then((data) => {
+                setData(data.documents || [])
+                setKeys(data.keys.sort() || [])
+                setTotalDocs(data.pagination.total_documents)
+            })
+            .catch((e) => {
+                console.log(e)
+                setError(e)
+            })
+} 
     const createObjectHandler = (id: string) => {
         if(id == "json"){
             let object = keys.reduce<Record<string, string>>((acc, key) => {
@@ -109,17 +157,22 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
 
     //This refreshes the data when the active collection changes. In the future, we should use a context provider
     useEffect(() => {
+        setCurrentPage(0)
+    }, [activeCollection])
+
+    useEffect(() => {
         if(!activeCollection || activeCollection == "") return;
-        getDocuments(activeCollection)
+        getDocuments(activeCollection, currentPage, 20)
             .then((data) => {
                 setData(data.documents || [])
                 setKeys(data.keys.sort() || [])
+                setTotalDocs(data.pagination.total_documents)
             })
             .catch((e) => {
                 console.log(e)
                 setError(e)
             })
-    }, [activeCollection])
+    }, [activeCollection, currentPage])
 
     //This changes the button to "run" if the query is a mongo query
     useEffect(() => {
@@ -133,18 +186,13 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
 
     const runSearch = async () => {
         if(isValidMongoQuery){
+            setCurrentPage(0)
             const query = searchQuery.replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "").replace(/\)$/, "");
             setSearchQuery("Loading...")
             const results = await runQuery(query, queryType, activeCollection, sortedByColumn);
             if(results.documents){
                 setData(results.documents)
                 setKeys(results.keys.sort())
-                setHiddenRows([])
-            } else if(results.modified_count){
-                toast.success("Updated " + results.modified_count + " documents")                
-                const docObject = await getDocuments(activeCollection)
-                setData(docObject.documents || [])
-                setKeys(docObject.keys.sort() || [])
                 setHiddenRows([])
 
             } else{
@@ -207,7 +255,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
             return;
         }
 
-        getDocuments(activeCollection, 0, sortedByColumn, sortDirection)
+        getDocuments(activeCollection, currentPage, 20, sortedByColumn, sortDirection)
             .then((data) => {
                 console.log(data.documents)
                 setData(data.documents || [])
@@ -325,7 +373,7 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
   onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
 />
             </div>
-            {data.length == 0 && (
+            {data.length == 0 && currentPage == 1 ? (
                 <div className="flex-grow flex flex-col items-center justify-center">
                     <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
                     <Button
@@ -333,8 +381,13 @@ export default function DatabaseView({activeCollection}: {activeCollection: stri
                         onClick={deleteCollectionHandler}
                     />
                 </div>
-            )}
+            ): (<></>)}
+
+<div className="pagination-controls flex justify-center items-center py-4">
+    {renderPaginationControls()}
+</div>
         </div>
+        
     )
 }
 

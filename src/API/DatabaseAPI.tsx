@@ -20,11 +20,11 @@ export default function useApi() {
         return response.data;
     };
   
-    const getDocuments = async (activeCollection: string, page: number = 0, sortByKey: string = "", sortDirection: string = "asc") => {
+    const getDocuments = async (activeCollection: string, page: number, pageSize: number, sortByKey: string = "", sortDirection: string = "asc") => {
         try{
             if(activeProject == "") return
             if(activeCollection == "") return
-            const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}?page=${page}&sort=${sortByKey}&sortDirection=${sortDirection}`, {
+            const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections/${activeCollection}?page=${page}&pageSize=${20}&sort=${sortByKey}&sortDirection=${sortDirection}`, {
                 headers: {
                     Authorization: authHeader(), 
                 },
