@@ -28,6 +28,7 @@ export default function DBInfo({ show }: { show: boolean }) {
                }
                toast={{
                   title: "db",
+                  isLarge: true,
                   content: (
                      <div className="text-gray-400">
                         You can interact with your MongoDB instance easily.{" "}

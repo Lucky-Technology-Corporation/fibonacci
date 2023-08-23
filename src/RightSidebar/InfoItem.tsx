@@ -7,6 +7,7 @@ type ToastProps = {
    title: string;
    content: React.ReactNode;
    position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+   isLarge?: boolean;
 };
 
 export default function InfoItem({
@@ -17,6 +18,7 @@ export default function InfoItem({
    content: React.ReactNode;
    toast: ToastProps;
    position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+   isLarge?: boolean;   
 }) {
    
    const [id, setId] = useState(Math.random().toString(36).substring(7));
@@ -72,7 +74,7 @@ export default function InfoItem({
             showHintWindowIfOpen={showHintWindowIfOpen}
             hideHintWindow={hideHintWindow}
             title={toast.title}
-            isLarge={true}
+            isLarge={toast.isLarge}
             content={toast.content}
             position={position}
          />

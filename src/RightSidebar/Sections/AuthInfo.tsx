@@ -28,6 +28,7 @@ export default function AuthInfo({ show }: { show: boolean }) {
                }
                toast={{
                   title: "request.user",
+                  isLarge: true,
                   content: (
                      <div className="text-gray-400">
                         If the request is made from a client that has not signed

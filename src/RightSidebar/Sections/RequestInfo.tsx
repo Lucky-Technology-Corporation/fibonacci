@@ -31,6 +31,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
                }
                toast={{
                   title: "request",
+                  isLarge: true,
                   content: (
                      <div className="text-gray-400">
                         Access request info using the following syntax:
@@ -73,6 +74,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
                }
                toast={{
                   title: "response",
+                  isLarge: true,
                   content: (
                      <div className="text-gray-400">
                         Send your response with the following syntax:
