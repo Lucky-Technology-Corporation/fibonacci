@@ -1,5 +1,4 @@
 declare module "worker-loader!*" {
-    const content: any;
-    export = content;
-  }
-  
+   const content: any;
+   export = content;
+}

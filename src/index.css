@@ -3,29 +3,29 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+   line-height: 1.5;
+   font-weight: 400;
 
-  color: #D2D3E0;
-  background-color: #181922;
+   color: #d2d3e0;
+   background-color: #181922;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+   font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   -webkit-text-size-adjust: 100%;
 }
 
-body{
-  overflow-y: hidden;
+body {
+   overflow-y: hidden;
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+   font-weight: 500;
+   color: #646cff;
+   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+   color: #535bf2;
 }
