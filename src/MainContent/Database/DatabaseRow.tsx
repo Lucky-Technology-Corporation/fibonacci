@@ -71,7 +71,7 @@ export default function DatabaseRow({collection, keys, data, rowKey, setShouldSh
                                 {isObject ? (
                                     <InfoItem
                                         content={
-                                            <div className='text-xs font-mono'>Hover to View JSON</div>
+                                            <div className='text-xs font-mono underline decoration-dotted'>Object</div>
                                         }
                                         toast={{
                                             title: "JSON Content",
