@@ -30,10 +30,26 @@ export default function ToastWindow({
             return "ml-[-" + pixels + "px]";
       }
    };
+
+   const getTopMargin = () => {
+      switch (position) {
+         case "top-left":
+            return "mt-[-28px]";
+         case "top-right":
+            return "mt-[-28px]";
+         case "bottom-left":
+            return "mt-[2px]";
+         case "bottom-right":
+            return "mt-[2px]";
+         default:
+            return "mt-[-28px]";
+      }
+   };
+
    return (
       <div
-         className={`z-50 absolute mt-[-28px] ${
-            isLarge ? "w-[600px]" + getMargin() : "w-[350px]" + getMargin()
+         className={`z-50 absolute ${getTopMargin()} ${
+            isLarge ? "w-[600px] " + getMargin() : "w-[350px] " + getMargin()
          } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg ${
             isHintWindowVisible
                ? "opacity-100"

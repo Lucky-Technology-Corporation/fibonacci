@@ -16,11 +16,10 @@ export default function ObjectTableView() {
    const [rowDetailData, setRowDetailData] = useState<any>({});
    const [clickPosition, setClickPosition] = useState<{x: number; y: number;}>({x: 0, y: 0,});
 
-   //TODO: replace with actual keys
-   const [keys, setKeys] = useState<string[]>([]); 
+
+   const [keys, setKeys] = useState<string[]>([]);
    const [data, setData] = useState<any>();
    const [error, setError] = useState<any>(null);
-
    const [hiddenRows, setHiddenRows] = useState<string[]>([]);
 
    //This refreshes the data when the active collection changes. In the future, we should use a context provider

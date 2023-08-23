@@ -38,6 +38,7 @@ export default function FullPageModal({
       setInputValue(value);
 
       // Check for validity
+      if(!regexPattern) return;
       if (!regexPattern.test(value)) {
          setError(errorMessage);
       } else {
@@ -108,9 +109,7 @@ export default function FullPageModal({
                   <button
                      type="button"
                      onClick={() => {
-                        if (error != null) {
-                           confirmHandlerInternal();
-                        }
+                        confirmHandlerInternal();
                      }}
                      className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698] ${
                         error ? "opacity-40" : ""

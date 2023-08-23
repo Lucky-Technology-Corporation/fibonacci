@@ -392,6 +392,7 @@ export default function DatabaseView({
                 </li>
               </ul>
             </div>
+<<<<<<< HEAD
           </>
         ) : (
           <>
@@ -423,6 +424,78 @@ export default function DatabaseView({
                     }`}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
+=======
+         </div>
+         <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
+            <input
+               type="text"
+               className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${
+                  isValidMongoQuery ? "font-mono text-xs" : ""
+               }`}
+               placeholder={"Search"}
+               value={searchQuery}
+               onChange={(e) => {
+                  setSearchQuery(e.target.value);
+               }}
+               onKeyDown={(event) => {
+                  if (event.key == "Enter") {
+                     runSearch();
+                  }
+               }}
+            />
+            <Button
+               text={isValidMongoQuery ? "Execute" : "Go"}
+               onClick={runSearch}
+            />
+         </div>
+         <div
+            className={`absolute z-40 ml-6 mt-2 border-[#525363] border rounded bg-[#181922] p-2 max-w-lg ${
+               shouldShowSearchHint
+                  ? "opacity-100"
+                  : "opacity-0 pointer-events-none"
+            }`}
+            style={{ transition: "opacity 0.2s" }}
+
+         >
+            {!isValidMongoQuery ? (
+               <>
+                  <div className="font-bold mt-1.5">
+                     💡 Find anything you need
+                  </div>
+                  <div className="text-sm ml-5 my-1">
+                     You can do things like:
+                     <ul className="list-disc my-1 mb-2 ml-5">
+                        <li>
+                           "Get everything with a SKU containing vendor-001"
+                        </li>
+                        <li>"Find records missing the email field"</li>
+                        <li>
+                           "Return documents with a name less than 3 characters,
+                           ordered by creation date"
+                        </li>
+                     </ul>
+                  </div>
+               </>
+            ) : (
+               <>
+                  <div className="font-bold mt-1.5">🚦 Confirm</div>
+                  <div className="text-sm ml-5 my-1">
+                     {queryDescription}
+                     <br />
+                     <br />
+                     Click Execute or press enter again to confirm.
+                  </div>
+               </>
+            )}
+         </div>
+         <div className="flex">
+            <table className="table-auto flex-grow my-4 ml-4">
+               <thead className="bg-[#85869822]">
+                  <tr
+                     className={`font-mono text-xs ${
+                        keys.length == 0 ? "hidden" : ""
+                     }`}
+>>>>>>> b35e3c3d42698e123a1008eb26098f183a624ae9
                   >
                     {key}
                     {sortedByColumn === key && (
