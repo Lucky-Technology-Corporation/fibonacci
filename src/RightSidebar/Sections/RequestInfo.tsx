@@ -14,6 +14,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
             style={{ transition: "opacity 0.3s" }}
          >
             <InfoItem
+               position="bottom-left"
                content={
                   <>
                      <svg
@@ -55,6 +56,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
                }}
             />
             <InfoItem
+               position="bottom-left"
                content={
                   <>
                      <svg
