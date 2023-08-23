@@ -70,8 +70,7 @@ export default function ObjectTableView() {
           />
       );
   }
-  
-   console.log(data);
+
    return (
       <div>
          <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>

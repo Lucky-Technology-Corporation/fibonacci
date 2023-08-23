@@ -1,4 +1,4 @@
-import InfoItem from "../InfoItem";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 import { getTableHelper } from "../../Utilities/TableHelper";
 
 export default function AuthInfo({ show }: { show: boolean }) {

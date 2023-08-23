@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { copyText } from "../Utilities/Copyable";
+import { copyText } from "../Copyable";
 import ToastWindow from "./ToastWindow";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import { SwizzleContext } from "../GlobalContext";
 
 type ToastProps = {
    title: string;

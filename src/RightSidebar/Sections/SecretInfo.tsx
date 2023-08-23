@@ -1,7 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import ToastWindow from "../ToastWindow";
-import InfoItem from "../InfoItem";
-import { copyText } from "../../Utilities/Copyable";
+import { useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 

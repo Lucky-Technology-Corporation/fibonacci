@@ -1,7 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import ToastWindow from "../ToastWindow";
-import InfoItem from "../InfoItem";
-import { copyText } from "../../Utilities/Copyable";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 import { getTableHelper } from "../../Utilities/TableHelper";
 
 export default function RequestInfo({ show }: { show: boolean }) {

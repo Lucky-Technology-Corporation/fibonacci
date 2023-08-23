@@ -109,7 +109,6 @@ export default function Dashboard() {
                   <RightSidebar
                      selectedTab={selectedTab}
                      setPrependCode={setPrependCode}
-                     setDidDeploy={setDidDeploy}
                   />
                </div>
             </div>

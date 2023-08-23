@@ -28,6 +28,7 @@ export default function LeftSidebar({
    return (
       <div className="min-w-[220px] border-r border-[#4C4F6B] bg-[#191A23]">
          <div className="flex flex-col items-center mt-4 h-screen">
+            
             <div className="flex">
                <img
                   src="/logo_offwhite.png"
@@ -38,6 +39,7 @@ export default function LeftSidebar({
             <div className="flex">
                <ProjectSelector />
             </div>
+
             <SectionTitle
                icon="monitor.svg"
                text="Monitoring"
@@ -70,7 +72,6 @@ export default function LeftSidebar({
                   setSelectedTab(Page.Auth);
                }}
             />
-            {/* <AuthSettings active={selectedTab == Page.Auth} /> */}
 
             <SectionTitle
                icon="database.svg"

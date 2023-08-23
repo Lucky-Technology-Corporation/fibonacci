@@ -7,6 +7,7 @@ import { Page } from "../Utilities/Page";
 import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
+import DeployButton from "./DeployButton";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -19,14 +20,10 @@ const dbContent = `const db = getDb()
 export default function RightSidebar({
    selectedTab,
    setPrependCode,
-   setDidDeploy,
 }: {
    selectedTab: Page;
    setPrependCode: (code: string) => void;
-   setDidDeploy: (didDeploy: boolean) => void;
 }) {
-   const [deployProgress, setDeployProgress] = useState(0);
-   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
 
    const [isAuthChecked, setIsAuthChecked] = useState(false);
    const [isDBChecked, setIsDBChecked] = useState(false);
@@ -38,78 +35,6 @@ export default function RightSidebar({
       setPrependCode(newPrependCode);
    }, [isAuthChecked, isDBChecked]);
 
-   const teaseDeploy = () => {
-      if (!isDeploymentInProgress) {
-         setDeployProgress(8);
-      }
-   };
-   const resetDeploy = () => {
-      if (!isDeploymentInProgress) {
-         setDeployProgress(0);
-      }
-   };
-
-   //fake, for demo purposes
-   const runDeploy = () => {
-      setIsDeploymentInProgress(true);
-      const element = document.getElementById("deploy-progress-bar");
-      if (element) {
-         element.style.transition = "width 3s ease-in-out";
-      }
-      setDeployProgress(79);
-      setTimeout(() => {
-         if (element) {
-            element.style.transition = "width 0.2s ease-in";
-         }
-         setDeployProgress(100);
-      }, 3000);
-      setTimeout(() => {
-         if (element) {
-            element.style.transition = "width 0.2s ease-out";
-         }
-         setDidDeploy(true);
-         toast.success("Deployed to test environment", {
-            icon: "🧪",
-         });
-      }, 3200);
-
-      setTimeout(() => {
-         setIsDeploymentInProgress(false);
-         setDeployProgress(0);
-      }, 3500);
-   };
-
-   //Command-S deploy trigger
-   useEffect(() => {
-      const handleKeyDown = (event: KeyboardEvent) => {
-         if (
-            (window.navigator.platform.match("Mac")
-               ? event.metaKey
-               : event.ctrlKey) &&
-            event.key === "s"
-         ) {
-            event.preventDefault();
-            if (window.navigator.platform.match("Mac")) {
-               toast(
-                  "Reloading test environment (Shift-⌘-S to deploy to production)",
-                  { icon: "⏳" },
-               );
-            } else {
-               toast(
-                  "Reloading test environment (Shift-Ctrl-S to deploy to production)",
-                  { icon: "⏳" },
-               );
-            }
-            runDeploy();
-         }
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      // Clean up the effect
-      return () => {
-         window.removeEventListener("keydown", handleKeyDown);
-      };
-   }, []);
-
    return (
       <div
          className={`w-[200px] text-sm ${
@@ -117,33 +42,8 @@ export default function RightSidebar({
          }`}
       >
          <div className="flex flex-col items-center mt-4 h-screen pr-4 space-y-4">
-            <div className="relative w-full mb-2">
-               <div
-                  id="deploy-progress-bar"
-                  className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
-                  style={{
-                     width: `${deployProgress}%`,
-                     transition: "width 0.2s ease-out",
-                  }}
-               />
-               <button
-                  className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
-                  onMouseEnter={teaseDeploy}
-                  onMouseLeave={resetDeploy}
-                  onClick={runDeploy}
-               >
-                  <img
-                     src="rocket.svg"
-                     alt="rocket"
-                     className="w-4 h-4 inline-block mr-2"
-                  />
-                  {deployProgress > 8
-                     ? deployProgress == 100
-                        ? "Deployed!"
-                        : "Deploying..."
-                     : "Deploy"}
-               </button>
-            </div>
+
+            <DeployButton />            
 
             <div className="text-left w-full space-y-2">
                <Checkbox

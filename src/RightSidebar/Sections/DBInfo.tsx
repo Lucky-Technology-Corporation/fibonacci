@@ -1,4 +1,4 @@
-import InfoItem from "../InfoItem";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 import { copyText } from "../../Utilities/Copyable";
 
 export default function DBInfo({ show }: { show: boolean }) {

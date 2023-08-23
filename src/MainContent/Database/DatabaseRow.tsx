@@ -2,7 +2,7 @@ import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useApi from "../../API/DatabaseAPI";
-import InfoItem from "../../RightSidebar/InfoItem";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 
 export default function DatabaseRow({
    collection,
