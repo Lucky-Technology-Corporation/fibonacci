@@ -5,6 +5,7 @@ import useApi from "../../API/DatabaseAPI";
 import RowDetail from "../Database/RowDetail";
 import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import NiceInfo from "../../Utilities/NiceInfo";
 
 export default function ObjectTableView() {
    const { getDocuments } = useApi();
@@ -13,16 +14,10 @@ export default function ObjectTableView() {
    const [searchQuery, setSearchQuery] = useState<string>("");
 
    const [rowDetailData, setRowDetailData] = useState<any>({});
-   const [clickPosition, setClickPosition] = useState<{
-      x: number;
-      y: number;
-   }>({
-      x: 0,
-      y: 0,
-   });
+   const [clickPosition, setClickPosition] = useState<{x: number; y: number;}>({x: 0, y: 0,});
 
    //TODO: replace with actual keys
-   const [keys, setKeys] = useState<string[]>([]); //["name", "email", "age", "address", "city", "state", "zip"]
+   const [keys, setKeys] = useState<string[]>([]); 
    const [data, setData] = useState<any>();
    const [error, setError] = useState<any>(null);
 
@@ -60,14 +55,23 @@ export default function ObjectTableView() {
       setHiddenRows([...hiddenRows, row]);
    };
 
-   if (error)
-      return getNiceInfo(
-         "Failed to load data",
-         "Check your connection and try again",
+   if (error) {
+      return (
+          <NiceInfo 
+              title="Failed to load data" 
+              subtitle="Check your connection and try again" 
+          />
       );
-   if (!data)
-      return getNiceInfo("Loading data", "Please wait while we load your data");
-
+  }
+  if (!data) {
+      return (
+          <NiceInfo 
+              title="Loading data" 
+              subtitle="Please wait while we load your data" 
+          />
+      );
+  }
+  
    console.log(data);
    return (
       <div>
@@ -190,12 +194,3 @@ export default function ObjectTableView() {
       </div>
    );
 }
-
-const getNiceInfo = (title: string, subtitle: string) => {
-   return (
-      <div className="flex-grow flex flex-col items-center justify-center">
-         <div className="text-lg font-bold mt-4">{title}</div>
-         <div className="text-sm text-center mt-2">{subtitle}</div>
-      </div>
-   );
-};
