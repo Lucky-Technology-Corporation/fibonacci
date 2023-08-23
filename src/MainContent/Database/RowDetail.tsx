@@ -59,7 +59,7 @@ export default function RowDetail({
                },
                error: (e: any) => {
                   console.log(e);
-                  return "Failed toreactivate this user";
+                  return "Failed to reactivate this user";
                },
             });
          } else {

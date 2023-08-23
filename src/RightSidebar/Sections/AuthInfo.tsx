@@ -1,36 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import ToastWindow from "../ToastWindow";
 import InfoItem from "../InfoItem";
-import { copyText } from "../../Utilities/Copyable";
 import { getTableHelper } from "../../Utilities/TableHelper";
 
 export default function AuthInfo({ show }: { show: boolean }) {
-   const [isHintWindowVisible, setIsHintWindowVisible] = useState(false);
-   const timerRef = useRef<number | undefined>();
-
-   const showHintWindow = () => {
-      clearTimeout(timerRef.current);
-      setIsHintWindowVisible(true);
-   };
-   const showHintWindowIfOpen = () => {
-      if (!isHintWindowVisible) return;
-      clearTimeout(timerRef.current);
-      setIsHintWindowVisible(true);
-   };
-   const hideHintWindow = () => {
-      timerRef.current = window.setTimeout(() => {
-         setIsHintWindowVisible(false);
-      }, 300);
-   };
-
-   useEffect(() => {
-      return () => {
-         if (timerRef.current) {
-            clearTimeout(timerRef.current);
-         }
-      };
-   }, []);
-
    return (
       <>
          <div

@@ -18,6 +18,7 @@ export default function InfoItem({
    toast: ToastProps;
    position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
 }) {
+   
    const [id, setId] = useState(Math.random().toString(36).substring(7));
    const timerRef = useRef<number | undefined>();
    const { activeToast, setActiveToast } = useContext(SwizzleContext);
@@ -27,7 +28,6 @@ export default function InfoItem({
       clearTimeout(timerRef.current);
       console.log("showing");
       setActiveToast(id);
-      // setIsResponseHintWindowVisible(false) //we should probably be reusing a single component instead of this
       setIsHintWindowVisible(true);
    };
    const showHintWindowIfOpen = () => {
