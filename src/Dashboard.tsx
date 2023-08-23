@@ -42,7 +42,7 @@ export default function Dashboard() {
             }
             var flexibleData = data;
             for (var i = 0; i < flexibleData.length; i++) {
-               //TODO: Add the production domain!
+               //TODO: Add the production domain and use the new structure
                if (
                   flexibleData[i].edges.project_vm &&
                   flexibleData[i].edges.project_vm.length > 0

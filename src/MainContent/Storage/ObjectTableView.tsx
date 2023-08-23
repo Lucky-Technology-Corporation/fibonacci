@@ -21,11 +21,10 @@ export default function ObjectTableView() {
       y: 0,
    });
 
-   //TODO: replace with actual keys
-   const [keys, setKeys] = useState<string[]>([]); //["name", "email", "age", "address", "city", "state", "zip"]
+
+   const [keys, setKeys] = useState<string[]>([]);
    const [data, setData] = useState<any>();
    const [error, setError] = useState<any>(null);
-
    const [hiddenRows, setHiddenRows] = useState<string[]>([]);
 
    //This refreshes the data when the active collection changes. In the future, we should use a context provider

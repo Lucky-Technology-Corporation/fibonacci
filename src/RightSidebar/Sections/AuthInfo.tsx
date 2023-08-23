@@ -11,7 +11,7 @@ export default function AuthInfo({ show }: { show: boolean }) {
             style={{ transition: "opacity 0.3s" }}
          >
             <InfoItem
-               position="bottom-left"
+               position="top-left"
                content={
                   <>
                      <svg

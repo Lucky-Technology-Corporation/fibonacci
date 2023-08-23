@@ -374,7 +374,7 @@ export default function DatabaseView({
                className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${
                   isValidMongoQuery ? "font-mono text-xs" : ""
                }`}
-               placeholder={"What do you need?"}
+               placeholder={"Search"}
                value={searchQuery}
                onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -383,12 +383,6 @@ export default function DatabaseView({
                   if (event.key == "Enter") {
                      runSearch();
                   }
-               }}
-               onMouseEnter={() => {
-                  setShouldShowSearchHint(true);
-               }}
-               onMouseLeave={() => {
-                  setShouldShowSearchHint(false);
                }}
             />
             <Button
@@ -403,12 +397,7 @@ export default function DatabaseView({
                   : "opacity-0 pointer-events-none"
             }`}
             style={{ transition: "opacity 0.2s" }}
-            onMouseEnter={() => {
-               setShouldShowSearchHint(true);
-            }}
-            onMouseLeave={() => {
-               setShouldShowSearchHint(false);
-            }}
+
          >
             {!isValidMongoQuery ? (
                <>
