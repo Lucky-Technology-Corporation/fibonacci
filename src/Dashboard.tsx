@@ -24,6 +24,8 @@ export default function Dashboard() {
    const [activeCollection, setActiveCollection] = useState<string>("");
    //Active logs page handler
    const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
+   //Current file state
+   const [currentFile, setCurrentFile] = useState<string>("/Users/adam/Downloads/billionairebackup.json");
 
    //Initialization code...
    const { isFree, projects, activeProject, setProjects, isCreatingProject } =
@@ -34,8 +36,6 @@ export default function Dashboard() {
       console.log("Getting projects...");
       getProjects()
          .then((data) => {
-            console.log("projects");
-            console.log(data);
             if (data.length == 0) {
                setProjects([]);
                return;
@@ -104,6 +104,7 @@ export default function Dashboard() {
                      setDidDeploy={setDidDeploy}
                      activeCollection={activeCollection}
                      activeLogsPage={activeLogsPage}
+                     fileUri={currentFile}
                   />
 
                   <RightSidebar

@@ -8,7 +8,7 @@ export const getTableHelper = (
          <tbody className="divide-y divide-[#85869833]">
             {rows.map((row, i) => {
                return (
-                  <tr>
+                  <tr key={i}>
                      <td
                         className="font-mono py-1 cursor-pointer"
                         onClick={() => {

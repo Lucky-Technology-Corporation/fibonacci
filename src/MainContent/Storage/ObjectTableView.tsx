@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Button from "../../Utilities/Button";
 import DatabaseRow from "../Database/DatabaseRow";
 import useApi from "../../API/DatabaseAPI";
+import useStorageApi from "../../API/StorageAPI";
 import RowDetail from "../Database/RowDetail";
 import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -9,6 +10,7 @@ import NiceInfo from "../../Utilities/NiceInfo";
 
 export default function ObjectTableView() {
    const { getDocuments } = useApi();
+   const { uploadFile } = useStorageApi();
 
    const { activeProject, domain } = useContext(SwizzleContext);
    const [searchQuery, setSearchQuery] = useState<string>("");
@@ -40,10 +42,17 @@ export default function ObjectTableView() {
       // run search
    };
 
+   const fileInputRef = useRef<HTMLInputElement>(null);
    const uploadFileHandler = (e: any) => {
-      const file = e.target.files[0];
-      console.log(file);
+      fileInputRef.current?.click();
    };
+   const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      //upload file
+      uploadFile(file)
+    };
+  
 
    const showDetailView = (rowData: any, x: number, y: number) => {
       setRowDetailData(rowData);
@@ -93,6 +102,7 @@ export default function ObjectTableView() {
                   direction="right"
                   title="Upload"
                />
+               <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
             </div>
          </div>
          <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>

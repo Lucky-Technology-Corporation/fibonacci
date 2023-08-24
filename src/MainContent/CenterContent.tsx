@@ -15,6 +15,7 @@ type CenterContentProps = {
    setDidDeploy: (didDeploy: boolean) => void;
    activeCollection: string;
    activeLogsPage: string;
+   fileUri: string;
 };
 
 export default function CenterContent({
@@ -24,13 +25,13 @@ export default function CenterContent({
    setDidDeploy,
    activeCollection,
    activeLogsPage,
+   fileUri,
 }: CenterContentProps) {
    if (selectedTab === Page.Apis) {
       return (
          <div className="m-4 ml-0 text-sm whitespace-pre-line overflow-y-auto max-h-[900px]">
-            <EditorHeader method={Method.GET} path="/" didDeploy={didDeploy} />
-            <Editor prepend={prependCode} setDidDeploy={setDidDeploy} />
-            {/* <LogsDrawer /> */}
+            <EditorHeader method={Method.GET} path="/" />
+            <Editor fileUri={fileUri} />
          </div>
       );
    } else if (selectedTab == Page.Auth) {
