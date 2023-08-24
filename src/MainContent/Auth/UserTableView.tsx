@@ -23,8 +23,7 @@ export default function UserTableView() {
     y: 0,
   });
 
-  //TODO: replace with actual keys
-  const [keys, setKeys] = useState<string[]>([]); //["name", "email", "age", "address", "city", "state", "zip"]
+  const [keys, setKeys] = useState<string[]>([]); 
   const [data, setData] = useState<any>();
   const [error, setError] = useState<any>(null);
 
@@ -33,6 +32,7 @@ export default function UserTableView() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const itemsPerPage = 20;
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   //This refreshes the data when the active collection changes. In the future, we should use a context provider
   useEffect(() => {
@@ -68,6 +68,7 @@ export default function UserTableView() {
   };
 
   const handleRefresh = () => {
+    setIsRefreshing(true);
     setCurrentPage(0);
     getDocuments("_swizzle_users", currentPage, 20)
       .then((data) => {
@@ -78,6 +79,9 @@ export default function UserTableView() {
       .catch((e) => {
         console.log(e);
         setError(e);
+      })
+      .finally(() => {
+        setIsRefreshing(false);
       });
   };
 
@@ -240,14 +244,20 @@ export default function UserTableView() {
           <div className="text-base font-bold mt-4 mb-4">😟 No users yet</div>
         </div>
       )}
+      
+      <div className={` ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}>
       <div className="pagination-controls flex justify-center items-center py-4">
+      {data && data.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalDocs={totalDocs}
           handlePageChange={setCurrentPage}
           handleRefresh={handleRefresh}
         />
+      )}
       </div>
+  </div>
+
     </div>
   );
 }

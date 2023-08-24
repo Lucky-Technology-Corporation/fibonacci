@@ -57,9 +57,13 @@ export default function DatabaseView({
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const itemsPerPage = 20;
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const handleRefresh = () => {
     if (!activeCollection || activeCollection == "") return;
+
+    setIsRefreshing(true);
+
     setCurrentPage(0);
     getDocuments(activeCollection, currentPage, 20)
       .then((data) => {
@@ -70,8 +74,12 @@ export default function DatabaseView({
       .catch((e) => {
         console.log(e);
         setError(e);
+      })
+      .finally(() => {
+        setIsRefreshing(false);
       });
   };
+
   const createObjectHandler = (id: string) => {
     if (id == "json") {
       let object = keys.reduce<Record<string, string>>((acc, key) => {
@@ -298,206 +306,189 @@ export default function DatabaseView({
       />
     );
 
-  
-
-   return (
-      <div>
-         <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
-            <div>
-               <div className={`font-bold text-base`}>{activeCollection}</div>
-               <div className={`text-sm mt-0.5`}>
-                  Connect{" "}
-                  <a
-                     href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4"
-                     target="_blank"
-                     rel="nofollow"
-                     className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
-                  >
-                     directly from your app
-                  </a>{" "}
-                  or via APIs
-               </div>
-            </div>
-            <div className="text-sm w-20">
-               <DatabaseEditorHint isVisible={shouldShowSaveHint} />
-            </div>
-            <div
-               className={`flex h-10 mt-1 mr-[-16px] text-sm ${
-                  shouldShowSaveHint ? "hidden" : ""
-               }`}
+  return (
+    <div>
+      <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+        <div>
+          <div className={`font-bold text-base`}>{activeCollection}</div>
+          <div className={`text-sm mt-0.5`}>
+            Connect{" "}
+            <a
+              href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4"
+              target="_blank"
+              rel="nofollow"
+              className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
             >
-               <Dropdown
-                  className="ml-2"
-                  onSelect={createObjectHandler}
-                  children={[
-                     {
-                        id: "json",
-                        name: "Document",
-                     },
-                  ]}
-                  direction="right"
-                  title="Create"
-               />
-            </div>
-         </div>
-         <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
-            <input
-               type="text"
-               className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${
-                  isValidMongoQuery ? "font-mono text-xs" : ""
-               }`}
-               placeholder={"Search"}
-               value={searchQuery}
-               onChange={(e) => {
-                  setSearchQuery(e.target.value);
-               }}
-               onKeyDown={(event) => {
-                  if (event.key == "Enter") {
-                     runSearch();
-                  }
-               }}
-            />
-            <Button
-               text={isValidMongoQuery ? "Execute" : "Go"}
-               onClick={runSearch}
-            />
-         </div>
-         <div
-            className={`absolute z-40 ml-6 mt-2 border-[#525363] border rounded bg-[#181922] p-2 max-w-lg ${
-               shouldShowSearchHint
-                  ? "opacity-100"
-                  : "opacity-0 pointer-events-none"
-            }`}
-            style={{ transition: "opacity 0.2s" }}
-
-         >
-            {!isValidMongoQuery ? (
-               <>
-                  <div className="font-bold mt-1.5">
-                     💡 Find anything you need
-                  </div>
-                  <div className="text-sm ml-5 my-1">
-                     You can do things like:
-                     <ul className="list-disc my-1 mb-2 ml-5">
-                        <li>
-                           "Get everything with a SKU containing vendor-001"
-                        </li>
-                        <li>"Find records missing the email field"</li>
-                        <li>
-                           "Return documents with a name less than 3 characters,
-                           ordered by creation date"
-                        </li>
-                     </ul>
-                  </div>
-               </>
-            ) : (
-               <>
-                  <div className="font-bold mt-1.5">🚦 Confirm</div>
-                  <div className="text-sm ml-5 my-1">
-                     {queryDescription}
-                     <br />
-                     <br />
-                     Click Execute or press enter again to confirm.
-                  </div>
-               </>
-            )}
-         </div>
-         <div className="flex">
-            <table className="table-auto flex-grow my-4 ml-4">
-               <thead className="bg-[#85869822]">
-                  <tr
-                     className={`font-mono text-xs ${
-                        keys.length == 0 ? "hidden" : ""
-                     }`}
-                  >
-                     <th
-                        className="text-left py-1.5 rounded-tl-md w-6"
-                        key={0}
-                     ></th>
-                     {keys
-                        .filter((k) => k != "_id")
-                        .map((key, index) => (
-                           <th
-                              className={`cursor-pointer text-left py-1.5 ${
-                                 index == keys.length - 2 ? "rounded-tr-md" : ""
-                              }`}
-                              key={index + 1}
-                              onClick={() => didClickSortColumn(key)}
-                           >
-                              {key}
-                              {sortedByColumn === key && (
-                                 <FontAwesomeIcon
-                                    icon={
-                                       sortDirection === "asc"
-                                          ? faArrowUp
-                                          : faArrowDown
-                                    }
-                                    className="ml-5"
-                                 />
-                              )}
-                           </th>
-                        ))}
-                  </tr>
-               </thead>
-               <tbody className="divide-y divide-[#85869833]">
-                  {data.map((row: any, _: number) => (
-                     <DatabaseRow
-                        style={{
-                           display: hiddenRows.includes(row._id)
-                              ? "none"
-                              : "table-row",
-                        }}
-                        collection={activeCollection}
-                        key={row._id}
-                        rowKey={row._id}
-                        keys={keys}
-                        data={row}
-                        setShouldShowSaveHint={setShouldShowSaveHint}
-                        showDetailView={(
-                           e: React.MouseEvent<SVGSVGElement>,
-                        ) => {
-                           showDetailView(row, e.clientX, e.clientY);
-                        }}
-                     />
-                  ))}
-               </tbody>
-            </table>
-            <RowDetail
-               data={rowDetailData}
-               clickPosition={clickPosition}
-               collection={activeCollection}
-               addHiddenRow={addHiddenRow}
-            />
-            <DocumentJSON
-               document={jsonEditorData}
-               collection={activeCollection}
-               isVisible={isJSONEditorVisible}
-               setIsVisible={setIsJSONEditorVisible}
-               id={editingDocumentId}
-               onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
-            />
-         </div>
-         {data.length == 0 && currentPage == 1 ? (
-            <div className="flex-grow flex flex-col items-center justify-center">
-               <div className="text-lg font-bold mt-4 mb-4">
-                  😟 No documents
-               </div>
-               <Button
-                  text="Delete this collection"
-                  onClick={deleteCollectionHandler}
-               />
-            </div>
-         ) : (
-            <></>
-         )}
-
-      <div className="pagination-controls flex justify-center items-center py-4">
-        <Pagination
-          currentPage={currentPage}
-          totalDocs={totalDocs}
-          handlePageChange={setCurrentPage}
-          handleRefresh={handleRefresh}
+              directly from your app
+            </a>{" "}
+            or via APIs
+          </div>
+        </div>
+        <div className="text-sm w-20">
+          <DatabaseEditorHint isVisible={shouldShowSaveHint} />
+        </div>
+        <div
+          className={`flex h-10 mt-1 mr-[-16px] text-sm ${
+            shouldShowSaveHint ? "hidden" : ""
+          }`}
+        >
+          <Dropdown
+            className="ml-2"
+            onSelect={createObjectHandler}
+            children={[
+              {
+                id: "json",
+                name: "Document",
+              },
+            ]}
+            direction="right"
+            title="Create"
+          />
+        </div>
+      </div>
+      <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
+        <input
+          type="text"
+          className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${
+            isValidMongoQuery ? "font-mono text-xs" : ""
+          }`}
+          placeholder={"Search"}
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          onKeyDown={(event) => {
+            if (event.key == "Enter") {
+              runSearch();
+            }
+          }}
         />
+        <Button
+          text={isValidMongoQuery ? "Execute" : "Go"}
+          onClick={runSearch}
+        />
+      </div>
+      <div
+        className={`absolute z-40 ml-6 mt-2 border-[#525363] border rounded bg-[#181922] p-2 max-w-lg ${
+          shouldShowSearchHint ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        style={{ transition: "opacity 0.2s" }}
+      >
+        {!isValidMongoQuery ? (
+          <>
+            <div className="font-bold mt-1.5">💡 Find anything you need</div>
+            <div className="text-sm ml-5 my-1">
+              You can do things like:
+              <ul className="list-disc my-1 mb-2 ml-5">
+                <li>"Get everything with a SKU containing vendor-001"</li>
+                <li>"Find records missing the email field"</li>
+                <li>
+                  "Return documents with a name less than 3 characters, ordered
+                  by creation date"
+                </li>
+              </ul>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="font-bold mt-1.5">🚦 Confirm</div>
+            <div className="text-sm ml-5 my-1">
+              {queryDescription}
+              <br />
+              <br />
+              Click Execute or press enter again to confirm.
+            </div>
+          </>
+        )}
+      </div>
+      <div className="flex">
+        <table className="table-auto flex-grow my-4 ml-4">
+          <thead className="bg-[#85869822]">
+            <tr
+              className={`font-mono text-xs ${
+                keys.length == 0 ? "hidden" : ""
+              }`}
+            >
+              <th className="text-left py-1.5 rounded-tl-md w-6" key={0}></th>
+              {keys
+                .filter((k) => k != "_id")
+                .map((key, index) => (
+                  <th
+                    className={`cursor-pointer text-left py-1.5 ${
+                      index == keys.length - 2 ? "rounded-tr-md" : ""
+                    }`}
+                    key={index + 1}
+                    onClick={() => didClickSortColumn(key)}
+                  >
+                    {key}
+                    {sortedByColumn === key && (
+                      <FontAwesomeIcon
+                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
+                        className="ml-5"
+                      />
+                    )}
+                  </th>
+                ))}
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-[#85869833]">
+            {data.map((row: any, _: number) => (
+              <DatabaseRow
+                style={{
+                  display: hiddenRows.includes(row._id) ? "none" : "table-row",
+                }}
+                collection={activeCollection}
+                key={row._id}
+                rowKey={row._id}
+                keys={keys}
+                data={row}
+                setShouldShowSaveHint={setShouldShowSaveHint}
+                showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
+                  showDetailView(row, e.clientX, e.clientY);
+                }}
+              />
+            ))}
+          </tbody>
+        </table>
+        <RowDetail
+          data={rowDetailData}
+          clickPosition={clickPosition}
+          collection={activeCollection}
+          addHiddenRow={addHiddenRow}
+        />
+        <DocumentJSON
+          document={jsonEditorData}
+          collection={activeCollection}
+          isVisible={isJSONEditorVisible}
+          setIsVisible={setIsJSONEditorVisible}
+          id={editingDocumentId}
+          onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
+        />
+      </div>
+      {data.length == 0 && currentPage == 0 ? (
+        <div className="flex-grow flex flex-col items-center justify-center">
+          <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
+          <Button
+            text="Delete this collection"
+            onClick={deleteCollectionHandler}
+          />
+        </div>
+      ) : (
+        <></>
+      )}
+
+      <div className={` ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
+        <div className="pagination-controls flex justify-center items-center py-4">
+          {data && data.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalDocs={totalDocs}
+            handlePageChange={setCurrentPage}
+            handleRefresh={handleRefresh}
+          />
+          )}
+        </div>
       </div>
     </div>
   );
