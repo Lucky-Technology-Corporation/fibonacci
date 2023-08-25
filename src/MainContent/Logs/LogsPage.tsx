@@ -80,7 +80,7 @@ export default function LogsPage() {
                   Click any request to see its logs
                </div>
             </div>
-            <div className="flex">
+            {/* <div className="flex">
                <div className="text-sm m-auto mr-2">
                   Stream {isStreaming ? "active" : "paused"}
                </div>
@@ -92,7 +92,7 @@ export default function LogsPage() {
                   uncheckedIcon={<PauseIcon className="p-2" />}
                   offColor="#474752"
                />
-            </div>
+            </div> */}
          </div>
          <div className="mx-4 pt-1 flex flex-row space-x-2">
             <table className="w-full h-full">
@@ -104,7 +104,7 @@ export default function LogsPage() {
                      <th className="text-left py-1 pl-4 font-light">
                         Timestamp
                      </th>
-                     <th className="text-left py-1 pl-4 font-light">
+                     <th className="text-left py-1 pl-4 font-light max-w-1/2">
                         Endpoint
                      </th>
                      <th className="text-left py-1 pl-4 font-light">Result</th>

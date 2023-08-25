@@ -24,6 +24,8 @@ export default function ObjectTableView() {
    const [error, setError] = useState<any>(null);
    const [hiddenRows, setHiddenRows] = useState<string[]>([]);
 
+   const [totalDocs, setTotalDocs] = useState<number>(0);
+
    //This refreshes the data when the active collection changes. In the future, we should use a context provider
    useEffect(() => {
       getDocuments("_swizzle_storage")
@@ -190,6 +192,7 @@ export default function ObjectTableView() {
                collection={"_swizzle_storage"}
                addHiddenRow={addHiddenRow}
                shouldHideCopy={true}
+               setTotalDocs={setTotalDocs}
             />
          </div>
          {data.length == 0 && (

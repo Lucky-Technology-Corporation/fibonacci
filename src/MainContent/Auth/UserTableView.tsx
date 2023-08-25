@@ -237,6 +237,7 @@ export default function UserTableView() {
           addHiddenRow={addHiddenRow}
           shouldHideCopy={true}
           deleteAction="deactivate"
+          setTotalDocs={setTotalDocs}
         />
       </div>
       {data.length == 0 && (

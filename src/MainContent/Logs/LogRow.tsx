@@ -21,6 +21,11 @@ export default function LogRow({message}: {message: any}) {
       }
    }, [isExpanded])
 
+   useEffect(() => {
+      setIsExpanded(false);
+      setLogDetails(null);
+   }, [message])
+
    const formatDate = (inputDateStr: string) => {
       const date = new Date(inputDateStr);
       const month = date.toLocaleDateString('en-US', { month: 'short' });
@@ -53,7 +58,7 @@ export default function LogRow({message}: {message: any}) {
                />
             </td>
             <td className="text-left pl-4">{formatDate(message.createdAt)}</td>
-            <td className="text-left pl-4">{message.method} {message.url}</td>
+            <td className="text-left pl-4">{message.method} {message.url.split("?")[0]}</td>
             <td className="text-left pl-4 font-bold">
                <div className="flex">
                   <Dot color={message.responseCode > 202 ? "yellow" : "green"} className="ml-0 mr-2" />
