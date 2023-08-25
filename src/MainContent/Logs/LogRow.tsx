@@ -13,13 +13,26 @@ export default function LogRow({message}: {message: any}) {
    const {getLogDetails} = useApi();
 
    useEffect(() => {
-      if(isExpanded){
+      if(isExpanded && logDetails == null){
          getLogDetails(message.traceId).then((data) => {
             if(data.logs == null){ setLogDetails([]); return; }
             setLogDetails(data.logs)
          })
       }
    }, [isExpanded])
+
+   const formatDate = (inputDateStr: string) => {
+      const date = new Date(inputDateStr);
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const day = date.getDate();
+      const hour = date.getHours() % 12 || 12; // Convert to 12-hour format and make it 12 instead of 0
+      const minute = date.getMinutes().toString().padStart(2, '0'); // Add leading zero to single-digit minute
+      const second = date.getSeconds().toString().padStart(2, '0'); // Add leading zero to single-digit second
+      const ampm = date.getHours() >= 12 ? 'pm' : 'am';
+      
+      const formattedDate = `${month} ${day} ${hour}:${minute}:${second} ${ampm}`;
+      return formattedDate;
+   }
 
    return (
       <>
@@ -39,7 +52,7 @@ export default function LogRow({message}: {message: any}) {
                   onClick={() => {}}
                />
             </td>
-            <td className="text-left pl-4">{message.createdAt}</td>
+            <td className="text-left pl-4">{formatDate(message.createdAt)}</td>
             <td className="text-left pl-4">{message.method} {message.url}</td>
             <td className="text-left pl-4 font-bold">
                <div className="flex">
