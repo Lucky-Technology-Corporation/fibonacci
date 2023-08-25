@@ -30,7 +30,6 @@ export default function ObjectTableView() {
    useEffect(() => {
       getDocuments("_swizzle_storage")
          .then((data) => {
-            console.log("refreshed");
             setData(data.documents || []);
             setKeys(data.keys.sort() || []);
          })

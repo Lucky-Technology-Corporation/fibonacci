@@ -2,6 +2,7 @@ const path = require("path");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
    entry: "./src/main.tsx",
@@ -53,6 +54,7 @@ module.exports = {
       extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
    },
    plugins: [
+      new Dotenv(),
       new HtmlWebpackPlugin({
          template: "./index.html",
       }),

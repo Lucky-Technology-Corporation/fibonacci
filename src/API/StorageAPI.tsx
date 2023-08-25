@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-const BASE_URL = "http://localhost:4000/api/v1";
+const BASE_URL = process.env.BASE_URL;
 
 export default function useStorageApi() {
    const authHeader = useAuthHeader();
