@@ -31,7 +31,7 @@ export default function CenterContent({
       return (
          <div className="m-4 ml-0 text-sm whitespace-pre-line overflow-y-auto max-h-[900px]">
             <EditorHeader method={Method.GET} path="/" />
-            <Editor fileUri={fileUri} />
+            <Editor fileUri={fileUri} prependText={prependCode} />
          </div>
       );
    } else if (selectedTab == Page.Auth) {

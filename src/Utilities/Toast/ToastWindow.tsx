@@ -19,43 +19,47 @@ export default function ToastWindow({
       var pixels = isLarge ? 608 : 358;
       switch (position) {
          case "top-left":
-            return "ml-[-" + pixels + "px]";
+            return `-${pixels}px`;
          case "top-right":
-            return "ml-[" + pixels + "px]";
+            return `${0}px`
          case "bottom-left":
-            return "ml-[-" + pixels + "px]";
+            return `-${pixels}px`
          case "bottom-right":
-            return "ml-[" + pixels + "px]";
+            return `${0}px`
          default:
-            return "ml-[-" + pixels + "px]";
+            return `-${pixels}px`
       }
    };
 
    const getTopMargin = () => {
       switch (position) {
          case "top-left":
-            return "mt-[-28px]";
+            return "-28px"
          case "top-right":
-            return "mt-[-28px]";
+            return "-28px"
          case "bottom-left":
-            return "mt-[2px]";
+            return "2px"
          case "bottom-right":
-            return "mt-[2px]";
+            return "2px"
          default:
-            return "mt-[-28px]";
+            return "-28px"
       }
    };
 
    return (
       <div
-         className={`z-50 absolute ${getTopMargin()} ${
-            isLarge ? "w-[600px] " + getMargin() : "w-[350px] " + getMargin()
+         className={`z-50 absolute ${
+            isLarge ? "w-[600px]" : "w-[350px]"
          } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg ${
             isHintWindowVisible
                ? "opacity-100"
                : "opacity-0 pointer-events-none"
          }`}
-         style={{ transition: "opacity 0.1s" }}
+         style={{ 
+            transition: "opacity 0.1s",
+            marginLeft: getMargin(),
+            marginTop: getTopMargin(), 
+         }}
          onMouseEnter={showHintWindowIfOpen}
          onMouseLeave={hideHintWindow}
       >
