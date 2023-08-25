@@ -3,10 +3,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import Dot from "../../Utilities/Dot";
 import IconButton from "../../Utilities/IconButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import InfoItem from "../../Utilities/Toast/InfoItem";
+import useApi from "../../API/MonitoringAPI";
 
-export default function LogRow() {
+export default function LogRow({message}: {message: any}) {
    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+   const [logDetails, setLogDetails] = useState<[] | null>(null);
+   const {getLogDetails} = useApi();
+
+   useEffect(() => {
+      if(isExpanded){
+         getLogDetails(message.traceId).then((data) => {
+            if(data.logs == null){ setLogDetails([]); return; }
+            setLogDetails(data.logs)
+         })
+      }
+   }, [isExpanded])
 
    return (
       <>
@@ -26,18 +39,54 @@ export default function LogRow() {
                   onClick={() => {}}
                />
             </td>
-            <td className="text-left pl-4">Aug 17 5:05:23pm</td>
-            <td className="text-left pl-4">GET /users/:userId</td>
+            <td className="text-left pl-4">{message.createdAt}</td>
+            <td className="text-left pl-4">{message.method} {message.url}</td>
             <td className="text-left pl-4 font-bold">
                <div className="flex">
-                  <Dot color={"green"} className="ml-0 mr-2" />
-                  <div>200</div>
+                  <Dot color={message.responseCode > 202 ? "yellow" : "green"} className="ml-0 mr-2" />
+                  <div>{message.responseCode}</div>
                </div>
             </td>
-            <td className="text-left pl-4 font-bold underline">Jfu283hy20</td>
-            <td className="text-left pl-4 font-bold underline">Request</td>
-            <td className="text-left pl-4 font-bold underline">Response</td>
-            <td className="text-left pl-4">242ms</td>
+            <td className={`text-left pl-4 ${message.userId == null ? "" : "font-bold underline decoration-dotted"}`}>{message.userId || "None"}</td>
+            <td className="text-left pl-4">
+               <InfoItem
+                  content={
+                     <div className="text-xs font-mono underline decoration-dotted">
+                        Request
+                     </div>
+                  }
+                  toast={{
+                     title: "",
+                     content: (
+                        <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap">
+                           {JSON.stringify(message.request, null, 2)}
+                        </div>
+                     ),
+                     isLarge: false,
+                  }}
+                  position="bottom-center"
+               />
+            </td>
+            <td className="text-left pl-4">
+            <InfoItem
+                  content={
+                     <div className="text-xs font-mono underline decoration-dotted">
+                        Response
+                     </div>
+                  }
+                  toast={{
+                     title: "",
+                     content: (
+                        <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap">
+                           {JSON.stringify(message.response, null, 2)}
+                        </div>
+                     ),
+                     isLarge: false,
+                  }}
+                  position="bottom-center"
+               />
+            </td>
+            <td className="text-left pl-4">{message.timeTaken || "?? "}ms</td>
             <td className="text-right pl-4">
                <ArrowRightIcon
                   className={`w-6 h-6 ml-auto mr-2 ${
@@ -56,11 +105,9 @@ export default function LogRow() {
          >
             <td colSpan={9} className="text-left pl-16 text-xs py-3">
                <pre>
-                  {`[12:05:27] Fetching user data for userId: 12345
-
-[12:05:28] User data retrieved: { "id": 12345, "name": "John Doe" }
-
-[12:05:29] Rendering main dashboard...`}
+                  {logDetails == null ? "Loading..." : (logDetails.length == 0 ? "No logs" : logDetails.map((log: any, index) => (
+                     <div key={index}>{log.text}</div>
+                  )))}
                </pre>
             </td>
          </tr>

@@ -32,11 +32,50 @@ export default function useApi() {
          return response.data;
       } catch (e) {
          console.log(e);
-         // throw e;
       }
    };
 
+   const getLogs = async (offset: number) => {
+      try{
+         if(!activeProject){
+            throw new Error("No active project selected");
+         }
+         const response = await axios.get(
+            `${BASE_URL}/projects/${activeProject}/monitoring/logs?offset=${offset}&limit=20`,
+            {
+               headers: {
+                  Authorization: authHeader(),
+               },
+            },
+         );
+         return response.data;
+      } catch (e) {  
+         console.log(e);
+      }
+   }
+
+   const getLogDetails = async (requestId: string) => {
+      try{
+         if(!activeProject){
+            throw new Error("No active project selected");
+         }
+         const response = await axios.get(
+            `${BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}`,
+            {
+               headers: {
+                  Authorization: authHeader(),
+               },
+            },
+         );
+         return response.data;
+      } catch (e){
+         console.log(e);
+      }
+   }  
+
    return {
       getData,
+      getLogs,
+      getLogDetails
    };
 }

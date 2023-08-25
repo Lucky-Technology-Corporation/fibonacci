@@ -8,6 +8,7 @@ import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import DeployButton from "./DeployButton";
+import PackageInfo from "./Sections/PackageInfo";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -28,6 +29,7 @@ export default function RightSidebar({
    const [isAuthChecked, setIsAuthChecked] = useState(false);
    const [isDBChecked, setIsDBChecked] = useState(false);
    const [isSecretsChecked, setIsSecretsChecked] = useState(false);
+   const [isPackagesChecked, setIsPackagesChecked] = useState(false);
 
    useEffect(() => {
       var newPrependCode = isAuthChecked ? authContent : "";
@@ -81,6 +83,16 @@ export default function RightSidebar({
                />
                <SecretInfo show={isSecretsChecked} />
             </div>
+            <div className="text-left w-full space-y-2">
+               <Checkbox
+                  id="packages"
+                  label="Packages"
+                  isChecked={isPackagesChecked}
+                  setIsChecked={setIsPackagesChecked}
+               />
+               <PackageInfo show={isPackagesChecked} />
+            </div>
+
             {/* <div className='text-left w-full space-y-2'>
               <div className="font-bold flex justify-between"><div>Recent requests</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer"></div></div>
               <div className="flex justify-between opacity-70"><div>Today</div></div>

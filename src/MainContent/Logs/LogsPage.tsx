@@ -6,14 +6,23 @@ import useWebSocket from "react-use-websocket";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { useAuthHeader } from "react-auth-kit";
+import useApi from "../../API/MonitoringAPI";
+import Pagination from "../../Utilities/Pagination";
 
 export default function LogsPage() {
    const { activeProject } = useContext(SwizzleContext);
    const authHeader = useAuthHeader();
+   const { getLogs } = useApi();
 
    const [messages, setMessages] = useState([]);
    const [wsUrl, setWsUrl] = useState<string | null>(null);
    const [isStreaming, setIsStreaming] = useState<boolean>(false);
+   const [offset, setOffset] = useState<number>(0);
+   const [page, setPage] = useState<number>(0);
+
+   useEffect(() => {
+      setOffset(page * 20);
+   }, [page]);
 
    const { lastMessage, getWebSocket, readyState } = useWebSocket(wsUrl, {
       onError: (e) => {
@@ -48,10 +57,19 @@ export default function LogsPage() {
 
    //Disconnect websocket when component unmounts
    useEffect(() => {
+      getLogs(offset).then((data) => {
+         setMessages(data);
+      });
       return () => {
          setWsUrl(null);
       };
    }, []);
+
+   useEffect(() => {
+      getLogs(offset).then((data) => {
+         setMessages(data);
+      });
+   }, [offset]);
 
    return (
       <div>
@@ -101,12 +119,22 @@ export default function LogsPage() {
                </thead>
                <tbody className="overflow-y-scroll">
                   {messages.map((message, index) => {
-                     return <LogRow key={index} />;
+                     return <LogRow key={index} message={message} />;
                   })}
                   <tr></tr>
                </tbody>
             </table>
          </div>
+         <div className="mt-4 m-auto w-fit">
+               <Pagination
+               currentPage={page}
+               itemsPerPage={20}
+               handlePageChange={setPage}
+               handleRefresh={() => {
+                  setPage(0)
+               }}
+            />
+            </div>
       </div>
    );
 }

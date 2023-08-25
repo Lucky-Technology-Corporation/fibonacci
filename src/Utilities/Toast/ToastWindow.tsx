@@ -13,7 +13,7 @@ export default function ToastWindow({
    title: string;
    content: React.ReactNode;
    isLarge?: boolean;
-   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
 }) {
    const getMargin = () => {
       var pixels = isLarge ? 608 : 358;
@@ -26,6 +26,8 @@ export default function ToastWindow({
             return `-${pixels}px`
          case "bottom-right":
             return `${0}px`
+         case "bottom-center":
+            return `-${pixels/2}px`
          default:
             return `-${pixels}px`
       }
@@ -40,6 +42,8 @@ export default function ToastWindow({
          case "bottom-left":
             return "2px"
          case "bottom-right":
+            return "2px"
+         case "bottom-center":
             return "2px"
          default:
             return "-28px"

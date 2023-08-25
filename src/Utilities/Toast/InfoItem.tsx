@@ -6,7 +6,7 @@ import { SwizzleContext } from "../GlobalContext";
 type ToastProps = {
    title: string;
    content: React.ReactNode;
-   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
    isLarge?: boolean;
 };
 
@@ -17,7 +17,7 @@ export default function InfoItem({
 }: {
    content: React.ReactNode;
    toast: ToastProps;
-   position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+   position: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
    isLarge?: boolean;   
 }) {
    
