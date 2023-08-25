@@ -10,6 +10,7 @@ export default function RowDetail({
    addHiddenRow,
    deleteAction = "delete",
    shouldHideCopy = false,
+   setTotalDocs,
 }: {
    collection: string;
    data: any;
@@ -17,6 +18,7 @@ export default function RowDetail({
    addHiddenRow: (row: string) => void;
    deleteAction?: "delete" | "deactivate";
    shouldHideCopy?: boolean;
+   setTotalDocs: React.Dispatch<React.SetStateAction<number>>;
 }) {
    const { deleteDocument, updateDocument } = useApi();
 
@@ -42,6 +44,7 @@ export default function RowDetail({
                loading: "Deleting document...",
                success: () => {
                   addHiddenRow(data._id);
+                  setTotalDocs((totalDocs) => totalDocs - 1);
                   return "Document deleted";
                },
                error: "Failed to delete document",

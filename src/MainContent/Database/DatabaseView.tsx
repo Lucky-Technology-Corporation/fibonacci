@@ -458,6 +458,7 @@ export default function DatabaseView({
           clickPosition={clickPosition}
           collection={activeCollection}
           addHiddenRow={addHiddenRow}
+          setTotalDocs={setTotalDocs}
         />
         <DocumentJSON
           document={jsonEditorData}
