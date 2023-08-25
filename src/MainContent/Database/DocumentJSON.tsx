@@ -149,7 +149,7 @@ export default function DocumentJSON({
 
    return (
       <div
-         className={`fixed z-50 inset-0 overflow-y-auto bg-black bg-opacity-50 ${
+         className={`fixed max-h-1/2 z-50 inset-0 overflow-y-auto bg-black bg-opacity-50 ${
             isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
          }`}
          style={{ transition: "opacity 0.2s" }}
@@ -173,6 +173,8 @@ export default function DocumentJSON({
                            "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
                         borderRadius: 4,
                         border: "1px solid #525363",
+                        maxHeight: "50vh",
+                        overflow: 'scroll'
                      }}
                   />
                </div>
