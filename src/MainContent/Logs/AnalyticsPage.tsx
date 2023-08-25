@@ -45,7 +45,7 @@ export default function AnalyticsPage() {
    };
 
    return (
-      <div>
+      <div className="no-focus-ring">
          <DateRangePicker
             value={dateRange} // Pass the dateRange state
             onValueChange={setDateRange} // Pass the setDateRange function
