@@ -122,9 +122,11 @@ export default function DatabaseView({
             setData((prevData) => [...prevData, item]);
           }
         });
+        setTotalDocs((prevTotalDocs) => prevTotalDocs + newData.length);
       } else {
         // If newData is a single object, add it to the state
         setData((prevData) => [...prevData, newData]);
+        setTotalDocs((prevTotalDocs) => prevTotalDocs + 1);
       }
     }
 
@@ -456,6 +458,7 @@ export default function DatabaseView({
           clickPosition={clickPosition}
           collection={activeCollection}
           addHiddenRow={addHiddenRow}
+          setTotalDocs={setTotalDocs}
         />
         <DocumentJSON
           document={jsonEditorData}
