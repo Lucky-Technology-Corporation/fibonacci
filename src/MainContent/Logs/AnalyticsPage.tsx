@@ -20,7 +20,12 @@ export default function AnalyticsPage() {
             console.log(startDateStr);
             const endDateStr = dateRange.to.toISOString();
             const fetchedData = await api.getData(startDateStr, endDateStr);
-            setData(fetchedData);
+            const processedData = fetchedData.map(entry => ({
+               date: entry._id,
+               uniqueUsers: entry.uniqueUsers,
+               totalRequests: entry.totalRequests
+           }));
+            setData(processedData);
          } catch (error) {
             console.error("Error fetching monitoring data:", error);
          }
@@ -47,9 +52,9 @@ export default function AnalyticsPage() {
    return (
       <div>
          <DateRangePicker
-            value={dateRange} // Pass the dateRange state
-            onValueChange={setDateRange} // Pass the setDateRange function
-            className="ml-5" //TODO: remove the focus ring from this
+            value={dateRange} 
+            onValueChange={setDateRange} 
+            className="ml-5" 
          ></DateRangePicker>
          <div className="p-5 flex flex-row space-x-2">
             {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
