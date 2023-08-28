@@ -35,14 +35,14 @@ export default function Editor({fileUri, prependText}: {fileUri: string, prepend
    }, []);
    
    return (
-      <div style={{ overflow: 'hidden', height: "100%"}}>
+      <div style={{ overflow: 'hidden', height: "calc(100% - 36px)"}}>
          <iframe
          ref={iframeRef}
          src={"http://localhost:3000"}
          frameBorder="0"
          style={{
             width: 'calc(100% + 96px)',
-            height: 'calc(100% + 78px)',
+            height: 'calc(100% + 100px)',
             marginLeft: '-48px',
             marginRight: '-48px',
             marginTop: '-78px',

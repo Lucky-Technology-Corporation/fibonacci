@@ -121,7 +121,7 @@ export default function LogRow({message}: {message: any}) {
                isExpanded ? "" : "hidden"
             } border-b border-[#4C4F6B]`}
          >
-            <td colSpan={9} className="text-left pl-16 text-xs py-3">
+            <td colSpan={9} className="text-left pl-16 text-xs py-3 word-wrap max-w-full">
                <pre>
                   {logDetails == null ? "Loading..." : (logDetails.length == 0 ? "No logs" : logDetails.map((log: any, index) => (
                      <div key={index}>{log.text}</div>

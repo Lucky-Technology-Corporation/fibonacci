@@ -11,6 +11,11 @@ export default function useApi() {
    const authHeader = useAuthHeader();
    const { domain } = useContext(SwizzleContext);
 
+   const npmSearch = async (query: string) => {
+      const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=5`)
+      return response.data.objects;
+   }
+
    const getFiles = async () => {
       // console.log(domain)
       // const response = await axios.get(`http://146.190.138.216:3000/code`, {
@@ -29,5 +34,5 @@ export default function useApi() {
       return true;
    };
 
-   return { createAPI, updateEndpoint, getFiles };
+   return { createAPI, updateEndpoint, getFiles, npmSearch };
 }

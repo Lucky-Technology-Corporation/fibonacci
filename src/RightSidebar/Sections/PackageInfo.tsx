@@ -1,11 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import Select from "react-select"
+import useApi from "../../API/EndpointAPI";
 
 export default function PackageInfo({ show }: { show: boolean }) {
    const [isVisible, setIsVisible] = useState(false);
+   
+   const [query, setQuery] = useState('');
    const [items, setItems] = useState([]);
+   const [selectedOption, setSelectedOption] = useState(null);
+
+   const {npmSearch} = useApi();
+
+   useEffect(() => {
+      npmSearch(query).then((data) => {
+         setItems(data.map((item) => {
+            return {label: item.package.name, value: item.package.name}
+         }))
+         console.log(items)
+      });
+   }, [query])
+
+   const handleInputChange = (inputValue) => {
+      setQuery(inputValue);
+    };
 
    return (
       <>
@@ -27,34 +46,74 @@ export default function PackageInfo({ show }: { show: boolean }) {
                setIsVisible={setIsVisible}
                modalDetails={{
                   title: "📦 Add Package",
+                  shouldAllowOverflow: true,
                   description: (
                      <div className="flex flex-col items-center justify-center mt-2">
                         <div className="w-full">
                            <div className="text-gray-300 mb-2">Search NPM</div>
-                              <ReactSearchAutocomplete
-                                 items={items}
-                                 // onSelect={handleOnSelect}
-                                 autoFocus
-                                 placeholder="Blank endpoint"
-                                 styling={{
-                                    border: "1px solid #525363",
-                                    lineColor: "#525363",
-                                    borderRadius: "0.375rem",
-                                    boxShadow: "none",
-                                    backgroundColor: "#32333b",
-                                    hoverBackgroundColor: "#525363",
-                                    color: "#D9D9D9",
-                                    fontSize: "0.875rem",
-                                    iconColor: "#D9D9D9",
-                                    placeholderColor: "#D9D9D9",
-                                    zIndex: 1000,
+                              <Select
+                                 value={selectedOption}
+                                 onChange={setSelectedOption}
+                                 onInputChange={handleInputChange}
+                                 options={items}
+                                 placeholder="Search..."
+                                 styles={{
+                                    input: (provided, state) => ({
+                                       ...provided,
+                                       backgroundColor: "#32333b",
+                                       borderColor: "#525363",
+                                       boxShadow: "none",
+                                       color: "#D9D9D9",
+                                       fontSize: "0.875rem",
+                                    }),
+                                    control: (provided, state) => ({
+                                       ...provided,
+                                       backgroundColor: "#32333b",
+                                       borderColor: "#525363",
+                                       boxShadow: "none",
+                                       color: "#D9D9D9",
+                                       fontSize: "0.875rem",
+                                       "&:hover": {
+                                          borderColor: "#525363",
+                                       },
+                                    }),
+                                    indicatorSeparator: (provided, state) => ({
+                                       ...provided,
+                                       display: "none",
+                                    }),
+                                    menu: (provided, state) => ({
+                                       ...provided,
+                                       backgroundColor: "#32333b",
+                                       color: "#D9D9D9",
+                                       fontSize: "0.875rem",
+                                       zIndex: 1000,
+                                    }),
+                                    option: (provided, state) => ({
+                                       ...provided,
+                                       backgroundColor: state.isFocused ? "#525363" : "#32333b",
+                                       color: "#D9D9D9",
+                                       fontSize: "0.875rem",
+                                       zIndex: 1000,
+                                    }),
+                                    singleValue: (provided, state) => ({
+                                       ...provided,
+                                       color: "#D9D9D9",
+                                       fontSize: "0.875rem",
+                                       zIndex: 1000,
+                                    }),
+                                    placeholder: (provided, state) => ({
+                                       ...provided,
+                                       color: "#D9D9D9",
+                                       fontSize: "0.875rem",
+                                       zIndex: 1000,
+                                    }),
+                                    
                                  }}
-                                 showIcon={false}
-                              />
+                              />                              
                         </div>
                      </div>
                   ),
-                  confirmText: "Create",
+                  confirmText: "Add Package",
                   confirmHandler: () => {},
                   shouldShowInput: false,
                   placeholder: "", //unused since shouldShowInput is false
