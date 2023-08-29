@@ -8,6 +8,8 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { useAuthHeader } from "react-auth-kit";
 import useApi from "../../API/MonitoringAPI";
 import Pagination from "../../Utilities/Pagination";
+import Button from "../../Utilities/Button";
+import Dropdown from "../../Utilities/Dropdown";
 
 export default function LogsPage() {
    const { activeProject } = useContext(SwizzleContext);
@@ -19,6 +21,22 @@ export default function LogsPage() {
    const [isStreaming, setIsStreaming] = useState<boolean>(false);
    const [offset, setOffset] = useState<number>(0);
    const [page, setPage] = useState<number>(0);
+   const [searchQuery, setSearchQuery] = useState<string>("");
+   const [selectedSearchType, setSelectedSearchType] = useState<string>("log");
+   const searchTypes = [
+      {
+         id: "log",
+         name: "Log Text",
+      },
+      {
+         id: "user",
+         name: "User ID",
+      },
+      {
+         id: "endpoint",
+         name: "Endpoint URL",
+      },
+   ]
 
    useEffect(() => {
       setOffset(page * 20);
@@ -71,6 +89,13 @@ export default function LogsPage() {
       });
    }, [offset]);
 
+   const setSearchType = (id: string) => {
+      setSelectedSearchType(id)
+    };
+
+   const runSearch = () => {
+   }
+
    return (
       <div>
          <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
@@ -94,6 +119,34 @@ export default function LogsPage() {
                />
             </div> */}
          </div>
+         <div className={`flex h-9 mb-4`}>
+            <Dropdown
+               className="ml-4"
+               onSelect={setSearchType}
+               children={searchTypes}
+               direction="right"
+               title={searchTypes.filter((type) => type.id == selectedSearchType)[0].name}
+            />
+            <input
+               type="text"
+               className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
+               placeholder={"Filter by " + searchTypes.filter((type) => type.id == selectedSearchType)[0].name.toLowerCase() + "..."}
+               value={searchQuery}
+               onChange={(e) => {
+                  setSearchQuery(e.target.value);
+               }}
+               onKeyDown={(event) => {
+                  if (event.key == "Enter") {
+                     runSearch();
+                  }
+               }}
+            />
+            <Button
+               text={"Search"}
+               onClick={runSearch}
+            />
+         </div>
+
          <div className="mx-4 pt-1 flex flex-row space-x-2">
             <table className="w-full h-full">
                <thead className="bg-[#85869822]">
