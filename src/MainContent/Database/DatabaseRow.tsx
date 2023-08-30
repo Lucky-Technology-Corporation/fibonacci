@@ -6,7 +6,7 @@ import InfoItem from "../../Utilities/Toast/InfoItem";
 import moment from "moment";
 
 const formatDateIfISO8601 = (date: string): string => {
-  const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/;
+  const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
   if (iso8601Regex.test(date)) {
     const dateTime = new Date(date);
     const formattedDate = `${
