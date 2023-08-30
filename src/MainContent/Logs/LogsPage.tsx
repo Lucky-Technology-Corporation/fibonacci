@@ -32,12 +32,12 @@ export default function LogsPage() {
          name: "Log Text",
       },
       {
-         id: "user",
-         name: "User ID",
-      },
-      {
          id: "endpoint",
          name: "Endpoint URL",
+      },
+      {
+         id: "user",
+         name: "User ID",
       },
    ]
 
@@ -92,13 +92,20 @@ export default function LogsPage() {
    }, []);
 
    useEffect(() => {
-      getLogs(offset, filterName, filterQuery).then((data) => {
-         if(data && data.results){
-            setMessages(data.results);
-            setNextPageToken(data.next_page_token);
-         } else if (data){
-            setMessages(data);
-         }
+      toast.promise(
+         getLogs(offset, filterName, filterQuery).then((data) => {
+            if(data && data.results != null){
+               setMessages(data.results);
+               setNextPageToken(data.next_page_token);
+            } else if (data){
+               setMessages(data);
+            } else{
+               setMessages([]);
+            }
+         }), {
+         loading: "Loading...",
+         success: "Loaded logs",
+         error: "Error loading logs",
       });
    }, [offset, filterQuery]);
 

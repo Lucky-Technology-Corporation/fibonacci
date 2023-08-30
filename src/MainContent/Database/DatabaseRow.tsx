@@ -116,7 +116,7 @@ export default function DatabaseRow({
                            toast={{
                               title: "",
                               content: (
-                                 <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap">
+                                 <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                                     {JSON.stringify(value, null, 2)}
                                  </div>
                               ),
