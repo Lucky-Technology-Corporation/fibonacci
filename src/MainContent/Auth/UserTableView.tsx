@@ -205,7 +205,7 @@ export default function UserTableView() {
         />
         <Button text={"Search"} onClick={runSearch} />
       </div>
-      <div style={{ overflowX: "auto" }}>
+      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 220px - 12px)"}}>
         <table
           className="table-auto flex-grow my-4 ml-4"
           style={{ tableLayout: "auto", minWidth: "100%" }}
@@ -218,7 +218,6 @@ export default function UserTableView() {
             >
               <th
                 className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"
-                style={{ minWidth: "100%" }}
               ></th>
               {keys
                 .filter((k) => ["_deactivated", "deviceId"].indexOf(k) == -1)
