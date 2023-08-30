@@ -226,7 +226,7 @@ export default function ObjectTableView() {
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-                shouldBlockEdits={true}
+                shouldBlockEdits={[]}
                 shouldHideFields={["data"]}
               />
             ))}

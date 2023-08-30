@@ -4,6 +4,7 @@ import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useApi from "../../API/DatabaseAPI";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import moment from "moment";
+import { copyText } from "../../Utilities/Copyable";
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
@@ -29,7 +30,7 @@ export default function DatabaseRow({
   showDetailView,
   style,
   shouldHideFields = ["_id"],
-  shouldBlockEdits = false,
+  shouldBlockEdits = [],
   shouldShowStrikethrough = false,
 }: {
   collection: string;
@@ -40,7 +41,7 @@ export default function DatabaseRow({
   showDetailView: MouseEventHandler<SVGSVGElement>;
   style?: any;
   shouldHideFields?: string[];
-  shouldBlockEdits?: boolean;
+  shouldBlockEdits?: string[];
   shouldShowStrikethrough?: boolean;
 }) {
   const [editing, setEditing] = useState("");
@@ -53,7 +54,7 @@ export default function DatabaseRow({
   }, [data]);
 
   const setupEditing = (key: string) => {
-    if (shouldBlockEdits) return;
+    if (shouldBlockEdits.includes(key)) return;
     setEditing(key);
     setShouldShowSaveHint(true);
     setPendingInputValue(rowValues[key]);
@@ -156,35 +157,39 @@ export default function DatabaseRow({
                   }}
                 />
               ) : (
-                <input
-                  type="text"
-                  className={`w-full bg-transparent border-0 outline-0 text-xs ${
-                    shouldShowStrikethrough ? "line-through" : ""
-                  } ${
-                    (value || "").toString().startsWith("https://") &&
-                    shouldBlockEdits
-                      ? "cursor-pointer"
-                      : ""
-                  }`}
-                  onFocus={() => setupEditing(key)}
-                  value={editing === key ? pendingInputValue : (value || "")}
-                  onClick={() => {
-                    if (
-                      (value || "").toString().startsWith("https://") &&
-                      shouldBlockEdits
-                    ) {
-                      window.open(value, "_blank");
-                    }
-                  }}
-                  onChange={(event) => setPendingInputValue(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      saveNewValues(key, pendingInputValue);
-                    } else if (event.key === "Escape") {
-                      endEditing();
-                    }
-                  }}
-                />
+               <input
+               type="text"
+               className={`w-full bg-transparent border-0 outline-0 text-xs ${
+                 shouldShowStrikethrough ? "line-through" : ""
+               } ${
+                 ((value || "").toString().startsWith("https://") &&
+                 shouldBlockEdits.includes(key)) || shouldBlockEdits.includes(key)
+                   ? "cursor-pointer"
+                   : ""
+               }`}
+               onFocus={() => {
+                 if (!shouldBlockEdits.includes(key)) { 
+                   setupEditing(key);
+                 }
+               }}
+               value={editing === key ? pendingInputValue : (value || "")}
+               onClick={() => {
+                 if (!shouldBlockEdits.includes(key)) { 
+                   setupEditing(key);
+                 } else {
+                  copyText(value);
+                 }
+               }}
+               readOnly={shouldBlockEdits.includes(key)} 
+               onChange={(event) => setPendingInputValue(event.target.value)}
+               onKeyDown={(event) => {
+                 if (event.key === "Enter") {
+                   saveNewValues(key, pendingInputValue);
+                 } else if (event.key === "Escape") {
+                   endEditing();
+                 }
+               }}
+             />
               )}
             </td>
           );
