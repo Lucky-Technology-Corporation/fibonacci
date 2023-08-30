@@ -231,22 +231,10 @@ export default function UserTableView() {
                     onClick={() => didClickSortColumn(key)}
                   >
                     {key == "_id" ? (
-                      <>
-                        userId (
-                        <a
-                          href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4"
-                          target="_blank"
-                          rel="nofollow"
-                          className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
-                        >
-                          docs
-                        </a>
-                        )
-                      </>
+                      "userId"
                     ) : (
-                      ""
+                      key
                     )}
-                    {key}
                     {sortedByColumn === key && (
                       <FontAwesomeIcon
                         icon={sortDirection === "asc" ? faArrowUp : faArrowDown}

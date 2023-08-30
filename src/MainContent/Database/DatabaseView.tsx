@@ -400,7 +400,7 @@ export default function DatabaseView({
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
-                    {key}
+                    {key == "_swizzle_uid" ? "userId" : key}
                     {sortedByColumn === key && (
                       <FontAwesomeIcon
                         icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
