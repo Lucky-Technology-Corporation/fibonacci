@@ -91,7 +91,7 @@ export default function LogsPage() {
 
    useEffect(() => {
       getLogs(offset, filterName, filterQuery).then((data) => {
-         if(data.results){
+         if(data && data.results){
             setMessages(data.results);
             setNextPageToken(data.next_page_token);
          } else{
