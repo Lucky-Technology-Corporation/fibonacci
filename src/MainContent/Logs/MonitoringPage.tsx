@@ -2,9 +2,9 @@ import AnalyticsPage from "./AnalyticsPage";
 import LogsPage from "./LogsPage";
 
 export default function MonitoringPage({
-   activeLogsPage,
+  activeLogsPage,
 }: {
-   activeLogsPage: string;
+  activeLogsPage: string;
 }) {
-   return activeLogsPage == "analytics" ? <AnalyticsPage /> : <LogsPage />;
+  return activeLogsPage == "analytics" ? <AnalyticsPage /> : <LogsPage />;
 }

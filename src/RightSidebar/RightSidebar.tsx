@@ -20,82 +20,80 @@ const dbContent = `const db = getDb()
 `;
 
 export default function RightSidebar({
-   selectedTab,
-   setPrependCode,
+  selectedTab,
+  setPrependCode,
 }: {
-   selectedTab: Page;
-   setPrependCode: (code: string) => void;
+  selectedTab: Page;
+  setPrependCode: (code: string) => void;
 }) {
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [isDBChecked, setIsDBChecked] = useState(false);
+  const [isSecretsChecked, setIsSecretsChecked] = useState(false);
+  const [isPackagesChecked, setIsPackagesChecked] = useState(false);
 
-   const [isAuthChecked, setIsAuthChecked] = useState(false);
-   const [isDBChecked, setIsDBChecked] = useState(false);
-   const [isSecretsChecked, setIsSecretsChecked] = useState(false);
-   const [isPackagesChecked, setIsPackagesChecked] = useState(false);
+  useEffect(() => {
+    var newPrependCode = isAuthChecked ? authContent : "";
+    newPrependCode += isDBChecked ? dbContent : "";
+    setPrependCode(newPrependCode);
+  }, [isAuthChecked, isDBChecked]);
 
-   useEffect(() => {
-      var newPrependCode = isAuthChecked ? authContent : "";
-      newPrependCode += isDBChecked ? dbContent : "";
-      setPrependCode(newPrependCode);
-   }, [isAuthChecked, isDBChecked]);
+  return (
+    <div
+      className={`w-[200px] text-sm ${
+        selectedTab == Page.Apis ? "" : "hidden"
+      }`}
+    >
+      <div className="flex flex-col items-center mt-4 h-screen pr-4 space-y-4">
+        <DeployButton />
+        <SearchCodeButton />
 
-   return (
-      <div
-         className={`w-[200px] text-sm ${
-            selectedTab == Page.Apis ? "" : "hidden"
-         }`}
-      >
-         <div className="flex flex-col items-center mt-4 h-screen pr-4 space-y-4">
+        <div className="text-left w-full space-y-2">
+          <Checkbox
+            id="requests"
+            label="Request"
+            isChecked={true}
+            setIsChecked={() => {}}
+          />
+          <RequestInfo show={true} />
+        </div>
+        <div className="text-left w-full space-y-2">
+          <Checkbox
+            id="auth"
+            label="Authentication"
+            isChecked={isAuthChecked}
+            setIsChecked={setIsAuthChecked}
+          />
+          <AuthInfo show={isAuthChecked} />
+        </div>
+        <div className="text-left w-full space-y-2">
+          <Checkbox
+            id="db"
+            label="Database"
+            isChecked={isDBChecked}
+            setIsChecked={setIsDBChecked}
+          />
+          <DBInfo show={isDBChecked} />
+        </div>
+        <div className="text-left w-full space-y-2">
+          <Checkbox
+            id="secrets"
+            label="Secrets"
+            isChecked={isSecretsChecked}
+            setIsChecked={setIsSecretsChecked}
+          />
+          <SecretInfo show={isSecretsChecked} />
+        </div>
+        <div className="text-left w-full space-y-2">
+          <Checkbox
+            id="packages"
+            label="Packages"
+            isChecked={isPackagesChecked}
+            setIsChecked={setIsPackagesChecked}
+          />
+          <PackageInfo show={isPackagesChecked} />
+        </div>
 
-            <DeployButton />      
-            <SearchCodeButton/>      
-
-            <div className="text-left w-full space-y-2">
-               <Checkbox
-                  id="requests"
-                  label="Request"
-                  isChecked={true}
-                  setIsChecked={() => {}}
-               />
-               <RequestInfo show={true} />
-            </div>
-            <div className="text-left w-full space-y-2">
-               <Checkbox
-                  id="auth"
-                  label="Authentication"
-                  isChecked={isAuthChecked}
-                  setIsChecked={setIsAuthChecked}
-               />
-               <AuthInfo show={isAuthChecked} />
-            </div>
-            <div className="text-left w-full space-y-2">
-               <Checkbox
-                  id="db"
-                  label="Database"
-                  isChecked={isDBChecked}
-                  setIsChecked={setIsDBChecked}
-               />
-               <DBInfo show={isDBChecked} />
-            </div>
-            <div className="text-left w-full space-y-2">
-               <Checkbox
-                  id="secrets"
-                  label="Secrets"
-                  isChecked={isSecretsChecked}
-                  setIsChecked={setIsSecretsChecked}
-               />
-               <SecretInfo show={isSecretsChecked} />
-            </div>
-            <div className="text-left w-full space-y-2">
-               <Checkbox
-                  id="packages"
-                  label="Packages"
-                  isChecked={isPackagesChecked}
-                  setIsChecked={setIsPackagesChecked}
-               />
-               <PackageInfo show={isPackagesChecked} />
-            </div>
-
-            {/* <div className='text-left w-full space-y-2'>
+        {/* <div className='text-left w-full space-y-2'>
               <div className="font-bold flex justify-between"><div>Recent requests</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer"></div></div>
               <div className="flex justify-between opacity-70"><div>Today</div></div>
               <div className="flex justify-between"><div>2:32:12pm</div> <div className="flex space-x-2"><img src="/logs.svg" className="w-4 h-4 m-auto cursor-pointer" /><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div></div>
@@ -106,7 +104,7 @@ export default function RightSidebar({
               <div className="flex justify-between"><div>2:30:33pm</div><ArrowPathIcon className="w-4 h-4 cursor-pointer m-auto mr-0" /></div>
 
             </div> */}
-         </div>
       </div>
-   );
+    </div>
+  );
 }

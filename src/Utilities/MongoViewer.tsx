@@ -1,8 +1,3 @@
-export default function MongoViewer({ collection }: { collection: string; }) {
-
-
- return ( 
-    <></>
- )
- }
- 
+export default function MongoViewer({ collection }: { collection: string }) {
+  return <></>;
+}

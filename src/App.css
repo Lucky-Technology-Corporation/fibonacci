@@ -1,101 +1,101 @@
 /* Checkbox */
 .cbx {
-   margin: auto;
-   -webkit-user-select: none;
-   user-select: none;
-   cursor: pointer;
+  margin: auto;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
 }
 
 .cbx span {
-   display: inline-block;
-   vertical-align: middle;
-   transform: translate3d(0, 0, 0);
+  display: inline-block;
+  vertical-align: middle;
+  transform: translate3d(0, 0, 0);
 }
 
 .cbx span:first-child {
-   position: relative;
-   width: 18px;
-   height: 18px;
-   border-radius: 3px;
-   transform: scale(1);
-   vertical-align: middle;
-   border: 1px solid #9098a9;
-   transition: all 0.2s ease;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  transform: scale(1);
+  vertical-align: middle;
+  border: 1px solid #9098a9;
+  transition: all 0.2s ease;
 }
 
 .cbx span:first-child svg {
-   position: absolute;
-   top: 3px;
-   left: 2px;
-   fill: none;
-   stroke: #d2d3e0;
-   stroke-width: 2;
-   stroke-linecap: round;
-   stroke-linejoin: round;
-   stroke-dasharray: 16px;
-   stroke-dashoffset: 16px;
-   transition: all 0.3s ease;
-   transition-delay: 0.1s;
-   transform: translate3d(0, 0, 0);
+  position: absolute;
+  top: 3px;
+  left: 2px;
+  fill: none;
+  stroke: #d2d3e0;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 16px;
+  stroke-dashoffset: 16px;
+  transition: all 0.3s ease;
+  transition-delay: 0.1s;
+  transform: translate3d(0, 0, 0);
 }
 
 .cbx span:first-child:before {
-   content: "";
-   width: 100%;
-   height: 100%;
-   background: #d2d3e0;
-   display: block;
-   transform: scale(0);
-   opacity: 1;
-   border-radius: 50%;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: #d2d3e0;
+  display: block;
+  transform: scale(0);
+  opacity: 1;
+  border-radius: 50%;
 }
 
 .cbx span:last-child {
-   padding-left: 8px;
+  padding-left: 8px;
 }
 
 .cbx:hover span:first-child {
-   border-color: #9f9f9f;
+  border-color: #9f9f9f;
 }
 
 .inp-cbx:checked + .cbx span:first-child {
-   /* background: #506EEC; */
-   border-color: #d2d3e0;
-   animation: wave 0.3s ease;
+  /* background: #506EEC; */
+  border-color: #d2d3e0;
+  animation: wave 0.3s ease;
 }
 
 .inp-cbx:checked + .cbx span:first-child svg {
-   stroke-dashoffset: 0;
+  stroke-dashoffset: 0;
 }
 
 @keyframes wave {
-   50% {
-      transform: scale(0.9);
-   }
+  50% {
+    transform: scale(0.9);
+  }
 }
 
 /* Dot */
 .glow-green {
-   box-shadow:
-      0 0 10px #3b82f6,
-      0 0 20px #3b82f6,
-      0 0 30px #3b83f6e1,
-      0 0 40px #3b83f6e5;
+  box-shadow:
+    0 0 10px #3b82f6,
+    0 0 20px #3b82f6,
+    0 0 30px #3b83f6e1,
+    0 0 40px #3b83f6e5;
 }
 .glow-yellow {
-   box-shadow:
-      0 0 5px #ffe692,
-      0 0 20px #ffe692dd;
+  box-shadow:
+    0 0 5px #ffe692,
+    0 0 20px #ffe692dd;
 }
 
 /* Editor */
 .monaco-editor .aiDecoration {
-   background-color: rgba(95, 0, 196, 0.164);
+  background-color: rgba(95, 0, 196, 0.164);
 }
 
 .no-focus-ring * {
-   outline: none !important;
-   box-shadow: none !important;
-   border-color: rgb(144 152 169 / var(--tw-border-opacity)) !important;
-   /* You can add more styles if needed */
- }
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgb(144 152 169 / var(--tw-border-opacity)) !important;
+  /* You can add more styles if needed */
+}

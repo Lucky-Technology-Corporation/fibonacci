@@ -3,263 +3,263 @@ import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { useContext } from "react";
 
-const BASE_URL = process.env.BASE_URL
+const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
-   const authHeader = useAuthHeader();
-   const { activeProject } = useContext(SwizzleContext);
+  const authHeader = useAuthHeader();
+  const { activeProject } = useContext(SwizzleContext);
 
-   const getCollections = async () => {
-      if (activeProject == "") return;
-      const response = await axios.get(
-         `${BASE_URL}/projects/${activeProject}/collections`,
-         {
-            headers: {
-               Authorization: authHeader(),
-            },
-         },
-      );
-      return response.data;
-   };
+  const getCollections = async () => {
+    if (activeProject == "") return;
+    const response = await axios.get(
+      `${BASE_URL}/projects/${activeProject}/collections`,
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
+      },
+    );
+    return response.data;
+  };
 
-   const getDocuments = async (
-      activeCollection: string,
-      page: number = -1,
-      pageSize: number = 20,
-      sortByKey: string = "",
-      sortDirection: string = "asc",
-   ) => {
-      try {
-         if (activeProject == "") return;
-         if (activeCollection == "") return;
-         var queryString = "?";
-         if (page !== -1) {
-            queryString += `page=${page}&pageSize=${pageSize}`;
-         }
-         if (sortByKey !== "") {
-            queryString += `&sort=${sortByKey}&sortDirection=${sortDirection}`;
-         }
-
-         const response = await axios.get(
-            `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
-      }
-   };
-
-   const updateDocument = async (
-      activeCollection: string,
-      id: string,
-      data: any,
-   ) => {
-      var newDocument = data;
-      delete newDocument._id;
+  const getDocuments = async (
+    activeCollection: string,
+    page: number = -1,
+    pageSize: number = 20,
+    sortByKey: string = "",
+    sortDirection: string = "asc",
+  ) => {
+    try {
       if (activeProject == "") return;
       if (activeCollection == "") return;
-      try {
-         const response = await axios.patch(
-            `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`,
-            { document: data },
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
+      var queryString = "?";
+      if (page !== -1) {
+        queryString += `page=${page}&pageSize=${pageSize}`;
       }
-   };
-
-   const createDocument = async (activeCollection: string, data: any) => {
-      var newDocument = data;
-      delete newDocument._id;
-      try {
-         if (activeProject == "") return;
-         if (activeCollection == "") return;
-         const response = await axios.post(
-            `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}`,
-            { documents: [newDocument] },
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
+      if (sortByKey !== "") {
+        queryString += `&sort=${sortByKey}&sortDirection=${sortDirection}`;
       }
-   };
 
-   const deleteDocument = async (activeCollection: string, id: string) => {
-      try {
-         if (activeProject == "") return;
-         if (activeCollection == "") return;
-         const response = await axios.delete(
-            `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`,
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
-      }
-   };
-
-   const createCollection = async (name: string) => {
-      try {
-         if (activeProject == "") return;
-         const response = await axios.post(
-            `${BASE_URL}/projects/${activeProject}/collections`,
-            { name: name },
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
-      }
-   };
-
-   const deleteCollection = async (name: string) => {
-      try {
-         if (activeProject == "") return;
-         const response = await axios.delete(
-            `${BASE_URL}/projects/${activeProject}/collections/${name}`,
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
-      }
-   };
-
-   const runEnglishSearchQuery = async (query: string, exampleDoc: string) => {
-      try {
-         const response = await axios.post(
-            `${BASE_URL}/ai`,
-            {
-               english_description: query,
-               example_doc: exampleDoc,
-            },
-            {
-               headers: {
-                  Authorization: authHeader(),
-               },
-            },
-         );
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
-      }
-   };
-
-   const runQuery = async (
-      query: string,
-      queryType: string,
-      collectionName: string,
-      sortByKey: string = "",
-      sortDirection: string = "asc",
-   ) => {
-      try {
-         if (activeProject == "") return;
-         var queryObject = {
-            mongo_query: query,
-            mongo_function: queryType,
-         };
-         if (sortByKey !== "") {
-            queryObject["sort"] = sortByKey;
-         }
-         if (sortDirection !== "") {
-            queryObject["sortDirection"] = sortDirection;
-         }
-         var lowercasedQueryType = queryType.toLowerCase();
-
-         if (lowercasedQueryType === "updateone") {
-            lowercasedQueryType = "update";
-         } else if (lowercasedQueryType === "updatemany") {
-            lowercasedQueryType = "update";
-         }
-
-         var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/${lowercasedQueryType}`;
-
-         const response = await axios.post(url, queryObject, {
-            headers: {
-               Authorization: authHeader(),
-            },
-         });
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
-      }
-   };
-
-   const createProject = async (name: string) => {
-      const response = await axios.post(
-         `${BASE_URL}/projects`,
-         { name },
-         {
-            headers: {
-               Authorization: authHeader(),
-            },
-            timeout: 180000,
-         },
+      const response = await axios.get(
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
       );
       return response.data;
-   };
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
 
-   const getProjects = async () => {
-      try {
-         const response = await axios.get(`${BASE_URL}/projects`, {
-            headers: {
-               Authorization: authHeader(),
-            },
-         });
-         return response.data;
-      } catch (e: any) {
-         console.error(e);
-         return null;
+  const updateDocument = async (
+    activeCollection: string,
+    id: string,
+    data: any,
+  ) => {
+    var newDocument = data;
+    delete newDocument._id;
+    if (activeProject == "") return;
+    if (activeCollection == "") return;
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`,
+        { document: data },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const createDocument = async (activeCollection: string, data: any) => {
+    var newDocument = data;
+    delete newDocument._id;
+    try {
+      if (activeProject == "") return;
+      if (activeCollection == "") return;
+      const response = await axios.post(
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}`,
+        { documents: [newDocument] },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const deleteDocument = async (activeCollection: string, id: string) => {
+    try {
+      if (activeProject == "") return;
+      if (activeCollection == "") return;
+      const response = await axios.delete(
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const createCollection = async (name: string) => {
+    try {
+      if (activeProject == "") return;
+      const response = await axios.post(
+        `${BASE_URL}/projects/${activeProject}/collections`,
+        { name: name },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const deleteCollection = async (name: string) => {
+    try {
+      if (activeProject == "") return;
+      const response = await axios.delete(
+        `${BASE_URL}/projects/${activeProject}/collections/${name}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const runEnglishSearchQuery = async (query: string, exampleDoc: string) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/ai`,
+        {
+          english_description: query,
+          example_doc: exampleDoc,
+        },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const runQuery = async (
+    query: string,
+    queryType: string,
+    collectionName: string,
+    sortByKey: string = "",
+    sortDirection: string = "asc",
+  ) => {
+    try {
+      if (activeProject == "") return;
+      var queryObject = {
+        mongo_query: query,
+        mongo_function: queryType,
+      };
+      if (sortByKey !== "") {
+        queryObject["sort"] = sortByKey;
       }
-   };
+      if (sortDirection !== "") {
+        queryObject["sortDirection"] = sortDirection;
+      }
+      var lowercasedQueryType = queryType.toLowerCase();
 
-   return {
-      getDocuments,
-      updateDocument,
-      createProject,
-      getProjects,
-      getCollections,
-      deleteDocument,
-      createCollection,
-      createDocument,
-      deleteCollection,
-      runEnglishSearchQuery,
-      runQuery,
-   };
+      if (lowercasedQueryType === "updateone") {
+        lowercasedQueryType = "update";
+      } else if (lowercasedQueryType === "updatemany") {
+        lowercasedQueryType = "update";
+      }
+
+      var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/${lowercasedQueryType}`;
+
+      const response = await axios.post(url, queryObject, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const createProject = async (name: string) => {
+    const response = await axios.post(
+      `${BASE_URL}/projects`,
+      { name },
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
+        timeout: 180000,
+      },
+    );
+    return response.data;
+  };
+
+  const getProjects = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/projects`, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  return {
+    getDocuments,
+    updateDocument,
+    createProject,
+    getProjects,
+    getCollections,
+    deleteDocument,
+    createCollection,
+    createDocument,
+    deleteCollection,
+    runEnglishSearchQuery,
+    runQuery,
+  };
 }

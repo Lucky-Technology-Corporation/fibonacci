@@ -7,7 +7,7 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faArrowUp, faArrowDown} from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 export default function UserTableView() {
   const { getDocuments } = useApi();
 
@@ -24,7 +24,7 @@ export default function UserTableView() {
     y: 0,
   });
 
-  const [keys, setKeys] = useState<string[]>([]); 
+  const [keys, setKeys] = useState<string[]>([]);
   const [data, setData] = useState<any>();
   const [error, setError] = useState<any>(null);
 
@@ -37,9 +37,15 @@ export default function UserTableView() {
 
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  
+
   const fetchData = (page: number) => {
-    getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
+    getDocuments(
+      "_swizzle_users",
+      page,
+      ITEMS_PER_PAGE,
+      sortedByColumn,
+      sortDirection,
+    )
       .then((data) => {
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
@@ -60,7 +66,6 @@ export default function UserTableView() {
     setCurrentPage(0);
     fetchData(currentPage);
   }, [activeProject]);
-
 
   const runSearch = () => {
     // run search
@@ -200,13 +205,23 @@ export default function UserTableView() {
         />
         <Button text={"Search"} onClick={runSearch} />
       </div>
-      <div style={{ overflowX: 'auto' }}>
-  <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: 'auto', minWidth: '100%' }}>
-    <thead className="bg-[#85869822]">
-      <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
-        <th className="text-left py-1.5 rounded-tl-md w-6" style={{ minWidth: '100%' }}></th>
+      <div style={{ overflowX: "auto" }}>
+        <table
+          className="table-auto flex-grow my-4 ml-4"
+          style={{ tableLayout: "auto", minWidth: "100%" }}
+        >
+          <thead className="bg-[#85869822]">
+            <tr
+              className={`font-mono text-xs ${
+                keys.length == 0 ? "hidden" : ""
+              }`}
+            >
+              <th
+                className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"
+                style={{ minWidth: "100%" }}
+              ></th>
               {keys
-                .filter((k) => k != "_deactivated")
+                .filter((k) => ["_deactivated", "deviceId"].indexOf(k) == -1)
                 .map((key, index) => (
                   <th
                     className={`text-left py-1.5 ${
@@ -254,7 +269,7 @@ export default function UserTableView() {
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-                shouldHideField={"_deactivated"}
+                shouldHideFields={["_deactivated", "deviceId"]}
                 shouldBlockEdits={true}
                 shouldShowStrikethrough={
                   hiddenRows.includes(row._id) || row._deactivated == true
@@ -278,20 +293,19 @@ export default function UserTableView() {
           <div className="text-base font-bold mt-4 mb-4">😟 No users yet</div>
         </div>
       )}
-      
-      <div className={` ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}>
-      <div className="pagination-controls flex justify-center items-center py-4">
-      {data && data.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalDocs={totalDocs}
-          handlePageChange={setCurrentPage}
-          handleRefresh={handleRefresh}
-        />
-      )}
-      </div>
-  </div>
 
+      <div className={` ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
+        <div className="pagination-controls flex justify-center items-center py-4">
+          {data && data.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalDocs={totalDocs}
+              handlePageChange={setCurrentPage}
+              handleRefresh={handleRefresh}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

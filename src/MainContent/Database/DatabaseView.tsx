@@ -66,7 +66,13 @@ export default function DatabaseView({
 
   const fetchData = (page: number) => {
     if (!activeCollection || activeCollection == "") return;
-    getDocuments(activeCollection, page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
+    getDocuments(
+      activeCollection,
+      page,
+      ITEMS_PER_PAGE,
+      sortedByColumn,
+      sortDirection,
+    )
       .then((data) => {
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
@@ -239,7 +245,6 @@ export default function DatabaseView({
     setHiddenRows([...hiddenRows, row]);
   };
 
-  
   const didClickSortColumn = (key: string) => {
     if (sortedByColumn === key) {
       setSortDirection((prevSortDirection) =>
@@ -369,19 +374,29 @@ export default function DatabaseView({
           </>
         )}
       </div>
-      <div style={{ overflowX: 'auto' }}>
-  <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: 'auto', minWidth: '100%' }}>
-    <thead className="bg-[#85869822]">
-      <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
-        <th className="text-left py-1.5 rounded-tl-md w-6" style={{ minWidth: '100%' }}></th>
+      <div style={{ overflowX: "auto" }}>
+        <table
+          className="table-auto flex-grow my-4 ml-4"
+          style={{ tableLayout: "auto", minWidth: "100%" }}
+        >
+          <thead className="bg-[#85869822]">
+            <tr
+              className={`font-mono text-xs ${
+                keys.length == 0 ? "hidden" : ""
+              }`}
+            >
+              <th
+                className="text-left py-1.5 rounded-tl-md w-6"
+                style={{ minWidth: "100%" }}
+              ></th>
               {keys
                 .filter((k) => k != "_id")
                 .map((key, index) => (
                   <th
                     className={`cursor-pointer text-left py-1.5 ${
                       index == keys.length - 2 ? "rounded-tr-md" : ""
-                    }` }
-                    style = {{ minWidth: '120px' }}
+                    }`}
+                    style={{ minWidth: "120px" }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
@@ -447,12 +462,12 @@ export default function DatabaseView({
       <div className={` ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
         <div className="pagination-controls flex justify-center items-center py-4">
           {data && data.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalDocs={totalDocs}
-            handlePageChange={setCurrentPage}
-            handleRefresh={handleRefresh}
-          />
+            <Pagination
+              currentPage={currentPage}
+              totalDocs={totalDocs}
+              handlePageChange={setCurrentPage}
+              handleRefresh={handleRefresh}
+            />
           )}
         </div>
       </div>
