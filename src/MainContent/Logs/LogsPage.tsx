@@ -82,7 +82,9 @@ export default function LogsPage() {
       setNextPageToken(null)
 
       getLogs(offset, filterName, filterQuery).then((data) => {
-         setMessages(data);
+         if(data){
+            setMessages(data);
+         }
       });
       return () => {
          setWsUrl(null);
@@ -94,7 +96,7 @@ export default function LogsPage() {
          if(data && data.results){
             setMessages(data.results);
             setNextPageToken(data.next_page_token);
-         } else{
+         } else if (data){
             setMessages(data);
          }
       });
