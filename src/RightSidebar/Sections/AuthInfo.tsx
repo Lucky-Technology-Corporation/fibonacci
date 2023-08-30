@@ -1,7 +1,11 @@
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import { getTableHelper } from "../../Utilities/TableHelper";
+import { copyText } from "../../Utilities/Copyable";
 
 export default function AuthInfo({ show }: { show: boolean }) {
+   const handleRowClick = (row: { name: string; description?: string }) => {
+      copyText(row.name);
+    };
    return (
       <>
          <div
@@ -53,7 +57,7 @@ export default function AuthInfo({ show }: { show: boolean }) {
                               name: "request.user.isAnonymous",
                               description: "boolean",
                            },
-                        ])}
+                        ], handleRowClick)}
                         and these (but they might be null!)
                         {getTableHelper([
                            {
@@ -68,7 +72,7 @@ export default function AuthInfo({ show }: { show: boolean }) {
                               name: "request.user.phoneNumber",
                               description: "string (E.164)",
                            },
-                        ])}
+                        ], handleRowClick)}
                      </div>
                   ),
                }}

@@ -9,6 +9,7 @@ import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import DeployButton from "./DeployButton";
 import PackageInfo from "./Sections/PackageInfo";
+import SearchCodeButton from "./SearchCodeButton";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -45,7 +46,8 @@ export default function RightSidebar({
       >
          <div className="flex flex-col items-center mt-4 h-screen pr-4 space-y-4">
 
-            <DeployButton />            
+            <DeployButton />      
+            <SearchCodeButton/>      
 
             <div className="text-left w-full space-y-2">
                <Checkbox

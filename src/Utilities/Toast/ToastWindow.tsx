@@ -3,6 +3,7 @@ export default function ToastWindow({
    showHintWindowIfOpen,
    hideHintWindow,
    title,
+   titleText,
    content,
    isLarge = false,
    position,
@@ -10,7 +11,8 @@ export default function ToastWindow({
    isHintWindowVisible: boolean;
    showHintWindowIfOpen: () => void;
    hideHintWindow: () => void;
-   title: string;
+   title?: string;
+   titleText?: string;
    content: React.ReactNode;
    isLarge?: boolean;
    position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
@@ -50,6 +52,8 @@ export default function ToastWindow({
       }
    };
 
+   const titleClass = titleText ? titleText : "text-sm font-bold font-mono";
+
    return (
       <div
          className={`z-50 absolute ${
@@ -68,7 +72,9 @@ export default function ToastWindow({
          onMouseLeave={hideHintWindow}
       >
          <div className="flex items-center justify-between px-4 py-2 pb-1">
-            <div className="text-sm font-bold font-mono">{title}</div>
+            <div className={titleClass}>
+               {title}
+            </div>
          </div>
          <div className="px-4 pb-2 text-sm">{content}</div>
       </div>

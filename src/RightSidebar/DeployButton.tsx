@@ -84,7 +84,7 @@ export default function DeployButton({}: {}){
 
     
     return (
-        <div className="relative w-full mb-2">
+        <div className="relative w-full mb-1">
         <div
         id="deploy-progress-bar"
         className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"

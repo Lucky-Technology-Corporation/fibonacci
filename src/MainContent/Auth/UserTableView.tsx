@@ -6,7 +6,8 @@ import RowDetail from "../Database/RowDetail";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faArrowUp, faArrowDown} from "@fortawesome/free-solid-svg-icons";
 export default function UserTableView() {
   const { getDocuments } = useApi();
 
@@ -31,15 +32,15 @@ export default function UserTableView() {
 
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
-  const itemsPerPage = 20;
+  const ITEMS_PER_PAGE = 20;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  //This refreshes the data when the active collection changes. In the future, we should use a context provider
-  useEffect(() => {
-    setCurrentPage(0);
-    getDocuments("_swizzle_users")
+  const [sortedByColumn, setSortedByColumn] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  
+  const fetchData = (page: number) => {
+    getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
-        console.log("refreshed");
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
@@ -48,20 +49,18 @@ export default function UserTableView() {
         console.log(e);
         setError(e);
       });
-  }, [activeProject]);
+  };
 
   useEffect(() => {
-   getDocuments("_swizzle_users", currentPage, 20)
-     .then((data) => {
-       setData(data.documents || []);
-       setKeys(data.keys.sort() || []);
-       setTotalDocs(data.pagination.total_documents);
-     })
-     .catch((e) => {
-       console.log(e);
-       setError(e);
-     });
- }, [currentPage]);
+    fetchData(currentPage);
+  }, [currentPage, sortedByColumn, sortDirection]);
+
+  //This refreshes the data when the active collection changes. In the future, we should use a context provider
+  useEffect(() => {
+    setCurrentPage(0);
+    fetchData(currentPage);
+  }, [activeProject]);
+
 
   const runSearch = () => {
     // run search
@@ -70,19 +69,8 @@ export default function UserTableView() {
   const handleRefresh = () => {
     setIsRefreshing(true);
     setCurrentPage(0);
-    getDocuments("_swizzle_users", currentPage, 20)
-      .then((data) => {
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-        setTotalDocs(data.pagination.total_documents);
-      })
-      .catch((e) => {
-        console.log(e);
-        setError(e);
-      })
-      .finally(() => {
-        setIsRefreshing(false);
-      });
+    fetchData(currentPage);
+    setIsRefreshing(false);
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
@@ -117,6 +105,47 @@ export default function UserTableView() {
       setData(newData);
     }
   };
+
+  const didClickSortColumn = (key: string) => {
+    if (sortedByColumn === key) {
+      setSortDirection((prevSortDirection) =>
+        prevSortDirection === "asc" ? "desc" : "asc",
+      );
+    } else {
+      setSortDirection("asc");
+    }
+
+    setSortedByColumn(key);
+  };
+
+  useEffect(() => {
+    if (sortedByColumn == "") return;
+
+    const query = searchQuery
+      .replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "")
+      .replace(/\)$/, "");
+    if (query != "") {
+      runSearch();
+      return;
+    }
+
+    getDocuments(
+      "_swizzle_users",
+      currentPage,
+      20,
+      sortedByColumn,
+      sortDirection,
+    )
+      .then((data) => {
+        console.log(data.documents);
+        setData(data.documents || []);
+        setKeys(data.keys.sort() || []);
+      })
+      .catch((e) => {
+        console.log(e);
+        setError(e);
+      });
+  }, [sortedByColumn, sortDirection]);
 
   if (error) {
     return (
@@ -171,15 +200,11 @@ export default function UserTableView() {
         />
         <Button text={"Search"} onClick={runSearch} />
       </div>
-      <div className="flex">
-        <table className="table-auto flex-grow my-4 ml-4">
-          <thead className="bg-[#85869822]">
-            <tr
-              className={`font-mono text-xs ${
-                keys.length == 0 ? "hidden" : ""
-              }`}
-            >
-              <th className="text-left py-1.5 rounded-tl-md w-6" key={0}></th>
+      <div style={{ overflowX: 'auto' }}>
+  <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: 'auto', minWidth: '100%' }}>
+    <thead className="bg-[#85869822]">
+      <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
+        <th className="text-left py-1.5 rounded-tl-md w-6" style={{ minWidth: '100%' }}></th>
               {keys
                 .filter((k) => k != "_deactivated")
                 .map((key, index) => (
@@ -188,6 +213,7 @@ export default function UserTableView() {
                       index == keys.length - 2 ? "rounded-tr-md" : ""
                     }`}
                     key={index + 1}
+                    onClick={() => didClickSortColumn(key)}
                   >
                     {key == "_id" ? (
                       <>
@@ -203,7 +229,14 @@ export default function UserTableView() {
                         )
                       </>
                     ) : (
-                      key
+                      ""
+                    )}
+                    {key}
+                    {sortedByColumn === key && (
+                      <FontAwesomeIcon
+                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
+                        className="ml-5"
+                      />
                     )}
                   </th>
                 ))}

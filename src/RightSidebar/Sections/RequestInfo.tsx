@@ -1,7 +1,11 @@
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import { getTableHelper } from "../../Utilities/TableHelper";
+import { copyText } from "../../Utilities/Copyable";
 
 export default function RequestInfo({ show }: { show: boolean }) {
+   const handleRowClick = (row: { name: string; description?: string }) => {
+      copyText(row.name);
+    };
    return (
       <>
          <div
@@ -48,7 +52,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
                               description:
                                  "Body object (whatever is sent in the body)",
                            },
-                        ])}
+                        ], handleRowClick)}
                      </div>
                   ),
                }}
@@ -90,7 +94,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
                               name: "response.redirect(url)",
                               description: "Redirect to another url",
                            },
-                        ])}
+                        ], handleRowClick)}
                      </div>
                   ),
                }}

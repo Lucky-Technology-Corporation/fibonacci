@@ -7,6 +7,9 @@ import RowDetail from "../Database/RowDetail";
 import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faArrowUp, faArrowDown} from "@fortawesome/free-solid-svg-icons";
+import Pagination from "../../Utilities/Pagination";
 
 export default function ObjectTableView() {
    const { getDocuments } = useApi();
@@ -26,18 +29,41 @@ export default function ObjectTableView() {
 
    const [totalDocs, setTotalDocs] = useState<number>(0);
 
-   //This refreshes the data when the active collection changes. In the future, we should use a context provider
+   const [currentPage, setCurrentPage] = useState<number>(0);
+   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+   const [sortedByColumn, setSortedByColumn] = useState<string>("");
+   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+   const ITEMS_PER_PAGE = 20;
+ 
+   const fetchData = (page: number) => {
+      getDocuments("_swizzle_storage", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
+        .then((data) => {
+          setData(data.documents || []);
+          setKeys(data.keys.sort() || []);
+          setTotalDocs(data.pagination.total_documents);
+        })
+        .catch((e) => {
+          console.log(e);
+          setError(e);
+        });
+    };
+
    useEffect(() => {
-      getDocuments("_swizzle_storage")
-         .then((data) => {
-            setData(data.documents || []);
-            setKeys(data.keys.sort() || []);
-         })
-         .catch((e) => {
-            console.log(e);
-            setError(e);
-         });
+      setCurrentPage(0);
+      fetchData(currentPage);
    }, [activeProject]);
+
+   useEffect(() => {
+      fetchData(currentPage);
+   }, [currentPage, sortedByColumn, sortDirection]);
+   
+   const handleRefresh = () => {
+      setIsRefreshing(true);
+      setCurrentPage(0);
+      fetchData(currentPage);
+      setIsRefreshing(false);
+   };
+  
 
    const runSearch = () => {
       // run search
@@ -63,6 +89,19 @@ export default function ObjectTableView() {
    const addHiddenRow = (row: string) => {
       setHiddenRows([...hiddenRows, row]);
    };
+
+  
+  const didClickSortColumn = (key: string) => {
+    if (sortedByColumn === key) {
+      setSortDirection((prevSortDirection) =>
+        prevSortDirection === "asc" ? "desc" : "asc",
+      );
+    } else {
+      setSortDirection("asc");
+    }
+
+    setSortedByColumn(key);
+  };
 
    if (error) {
       return (
@@ -123,18 +162,11 @@ export default function ObjectTableView() {
             />
             <Button text={"Search"} onClick={runSearch} />
          </div>
-         <div className="flex">
-            <table className="table-auto flex-grow my-4 ml-4">
-               <thead className="bg-[#85869822]">
-                  <tr
-                     className={`font-mono text-xs ${
-                        keys.length == 0 ? "hidden" : ""
-                     }`}
-                  >
-                     <th
-                        className="text-left py-1.5 rounded-tl-md w-6"
-                        key={0}
-                     ></th>
+         <div style={{ overflowX: 'auto' }}>
+  <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: 'auto', minWidth: '100%' }}>
+    <thead className="bg-[#85869822]">
+      <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
+        <th className="text-left py-1.5 rounded-tl-md w-6" style={{ minWidth: '100%' }}></th>
                      {keys
                         .filter((k) => k != "data")
                         .map((key, index) => (
@@ -143,8 +175,17 @@ export default function ObjectTableView() {
                                  index == keys.length - 2 ? "rounded-tr-md" : ""
                               }`}
                               key={index + 1}
+                              onClick={() => didClickSortColumn(key)}
+
                            >
                               {key == "_id" ? <>File URL</> : key}
+                              
+                    {sortedByColumn === key && (
+                      <FontAwesomeIcon
+                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
+                        className="ml-5"
+                      />
+                    )}
                            </th>
                         ))}
                   </tr>
@@ -201,6 +242,20 @@ export default function ObjectTableView() {
                </div>
             </div>
          )}
+
+<div className={` ${isRefreshing ? 'opacity-50' : 'opacity-100'}`}>
+      <div className="pagination-controls flex justify-center items-center py-4">
+      {data && data.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalDocs={totalDocs}
+          handlePageChange={setCurrentPage}
+          handleRefresh={handleRefresh}
+        />
+      )}
+      </div>
+  </div>
+
       </div>
    );
 }

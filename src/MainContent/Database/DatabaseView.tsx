@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "../../Utilities/Button";
 import DatabaseEditorHint from "./DatabaseEditorHint";
 import DatabaseRow from "./DatabaseRow";
@@ -18,6 +18,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function DatabaseView({
   activeCollection,
@@ -26,6 +27,8 @@ export default function DatabaseView({
 }) {
   const { getDocuments, deleteCollection, runEnglishSearchQuery, runQuery } =
     useApi();
+
+  const { activeProject, activeProjectName } = useContext(SwizzleContext);
 
   const [isValidMongoQuery, setIsValidMongoQuery] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -56,16 +59,14 @@ export default function DatabaseView({
 
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
-  const itemsPerPage = 20;
+  const ITEMS_PER_PAGE = 20;
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [sortedByColumn, setSortedByColumn] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  const handleRefresh = () => {
+  const fetchData = (page: number) => {
     if (!activeCollection || activeCollection == "") return;
-
-    setIsRefreshing(true);
-
-    setCurrentPage(0);
-    getDocuments(activeCollection, currentPage, 20)
+    getDocuments(activeCollection, page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
@@ -74,10 +75,14 @@ export default function DatabaseView({
       .catch((e) => {
         console.log(e);
         setError(e);
-      })
-      .finally(() => {
-        setIsRefreshing(false);
       });
+  };
+
+  const handleRefresh = () => {
+    if (!activeCollection || activeCollection == "") return;
+    setIsRefreshing(true);
+    fetchData(0);
+    setIsRefreshing(false);
   };
 
   const createObjectHandler = (id: string) => {
@@ -160,21 +165,13 @@ export default function DatabaseView({
   //This refreshes the data when the active collection changes. In the future, we should use a context provider
   useEffect(() => {
     setCurrentPage(0);
-  }, [activeCollection]);
+    fetchData(currentPage);
+  }, [activeCollection, activeProject]);
 
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;
-    getDocuments(activeCollection, currentPage, 20)
-      .then((data) => {
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-        setTotalDocs(data.pagination.total_documents);
-      })
-      .catch((e) => {
-        console.log(e);
-        setError(e);
-      });
-  }, [activeCollection, currentPage]);
+    fetchData(currentPage);
+  }, [currentPage, sortedByColumn, sortDirection]);
 
   //This changes the button to "run" if the query is a mongo query
   useEffect(() => {
@@ -242,8 +239,7 @@ export default function DatabaseView({
     setHiddenRows([...hiddenRows, row]);
   };
 
-  const [sortedByColumn, setSortedByColumn] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  
   const didClickSortColumn = (key: string) => {
     if (sortedByColumn === key) {
       setSortDirection((prevSortDirection) =>
@@ -255,36 +251,6 @@ export default function DatabaseView({
 
     setSortedByColumn(key);
   };
-
-  useEffect(() => {
-    if (sortedByColumn == "") return;
-    if (!activeCollection || activeCollection == "") return;
-
-    const query = searchQuery
-      .replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "")
-      .replace(/\)$/, "");
-    if (query != "") {
-      runSearch();
-      return;
-    }
-
-    getDocuments(
-      activeCollection,
-      currentPage,
-      20,
-      sortedByColumn,
-      sortDirection,
-    )
-      .then((data) => {
-        console.log(data.documents);
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-      })
-      .catch((e) => {
-        console.log(e);
-        setError(e);
-      });
-  }, [sortedByColumn, sortDirection]);
 
   if (!activeCollection)
     return (
@@ -403,22 +369,19 @@ export default function DatabaseView({
           </>
         )}
       </div>
-      <div className="flex">
-        <table className="table-auto flex-grow my-4 ml-4">
-          <thead className="bg-[#85869822]">
-            <tr
-              className={`font-mono text-xs ${
-                keys.length == 0 ? "hidden" : ""
-              }`}
-            >
-              <th className="text-left py-1.5 rounded-tl-md w-6" key={0}></th>
+      <div style={{ overflowX: 'auto' }}>
+  <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: 'auto', minWidth: '100%' }}>
+    <thead className="bg-[#85869822]">
+      <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
+        <th className="text-left py-1.5 rounded-tl-md w-6" style={{ minWidth: '100%' }}></th>
               {keys
                 .filter((k) => k != "_id")
                 .map((key, index) => (
                   <th
                     className={`cursor-pointer text-left py-1.5 ${
                       index == keys.length - 2 ? "rounded-tr-md" : ""
-                    }`}
+                    }` }
+                    style = {{ minWidth: '120px' }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >

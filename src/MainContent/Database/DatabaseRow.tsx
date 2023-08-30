@@ -3,6 +3,18 @@ import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useApi from "../../API/DatabaseAPI";
 import InfoItem from "../../Utilities/Toast/InfoItem";
+import moment from "moment";
+
+const formatDateIfISO8601 = (date: string): string => {
+   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/;
+   if (iso8601Regex.test(date)) {
+     const dateTime = new Date(date);
+     const formattedDate = `${dateTime.getMonth() + 1}/${dateTime.getDate()}/${dateTime.getFullYear()}, ${dateTime.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+     return formattedDate;
+   }
+   return date;
+ };
+ 
 
 export default function DatabaseRow({
    collection,
@@ -92,13 +104,18 @@ export default function DatabaseRow({
             />
          </td>
          {keys
-            .filter((k) => k !== shouldHideField)
-            .map((key, index) => {
-               const value = rowValues[key];
-               const isObject =
-                  typeof value === "object" &&
-                  value !== null &&
-                  !Array.isArray(value);
+  .filter((k) => k !== shouldHideField)
+  .map((key, index) => {
+    const originalValue = rowValues[key];
+    const isObject =
+      typeof originalValue === "object" &&
+      originalValue !== null &&
+      !Array.isArray(originalValue);
+
+    let value = originalValue;
+    if (typeof originalValue === "string") {
+      value = formatDateIfISO8601(originalValue);
+    }
                return (
                   <td
                      className={`font-mono p-1 border-none ${
