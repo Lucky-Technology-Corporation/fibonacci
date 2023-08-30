@@ -19,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 
 export default function DatabaseView({
   activeCollection,
@@ -386,16 +387,14 @@ export default function DatabaseView({
               }`}
             >
               <th
-                className="text-left py-1.5 rounded-tl-md w-6"
+                className="text-left py-1.5 w-6"
               ></th>
               {keys
                 .filter((k) => k != "_id")
                 .map((key, index) => (
                   <th
-                    className={`cursor-pointer text-left py-1.5 ${
-                      index == keys.length - 2 ? "rounded-tr-md" : ""
-                    }`}
-                    style={{ minWidth: "120px" }}
+                    className={`cursor-pointer text-left py-1.5`}
+                    style={{ minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px` }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >

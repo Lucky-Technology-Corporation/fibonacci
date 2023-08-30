@@ -8,6 +8,8 @@ import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+
 export default function UserTableView() {
   const { getDocuments } = useApi();
 
@@ -217,15 +219,14 @@ export default function UserTableView() {
               }`}
             >
               <th
-                className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"
+                className="text-left py-1.5 w-6 cursor-pointer"
               ></th>
               {keys
                 .filter((k) => ["_deactivated", "deviceId"].indexOf(k) == -1)
                 .map((key, index) => (
                   <th
-                    className={`text-left py-1.5 cursor-pointer ${
-                      index == keys.length - 2 ? "rounded-tr-md" : ""
-                    }`}
+                    className={`text-left py-1.5 cursor-pointer`}
+                    style={{ minWidth: `${getEstimatedColumnWidth(keys.length - 2, key)}px` }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >

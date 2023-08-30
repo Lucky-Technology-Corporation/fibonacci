@@ -167,7 +167,7 @@ export default function DatabaseRow({
                       : ""
                   }`}
                   onFocus={() => setupEditing(key)}
-                  value={editing === key ? pendingInputValue : value}
+                  value={editing === key ? pendingInputValue : (value || "")}
                   onClick={() => {
                     if (
                       (value || "").toString().startsWith("https://") &&

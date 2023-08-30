@@ -10,6 +10,7 @@ import NiceInfo from "../../Utilities/NiceInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../../Utilities/Pagination";
+import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 
 export default function ObjectTableView() {
   const { getDocuments } = useApi();
@@ -184,15 +185,14 @@ export default function ObjectTableView() {
               }`}
             >
               <th
-                className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"
+                className="text-left py-1.5 w-6 cursor-pointer"
               ></th>
               {keys
                 .filter((k) => k != "data")
                 .map((key, index) => (
                   <th
-                    className={`text-left py-1.5 cursor-pointer ${
-                      index == keys.length - 2 ? "rounded-tr-md" : ""
-                    }`}
+                    className={`text-left py-1.5 cursor-pointer`}
+                    style={{ minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px` }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
