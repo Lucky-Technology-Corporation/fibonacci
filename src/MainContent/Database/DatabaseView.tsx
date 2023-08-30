@@ -253,7 +253,7 @@ export default function DatabaseView({
     } else {
       setSortDirection("asc");
     }
-
+    setCurrentPage(0)
     setSortedByColumn(key);
   };
 

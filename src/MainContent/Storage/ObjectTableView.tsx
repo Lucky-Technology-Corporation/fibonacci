@@ -104,7 +104,7 @@ export default function ObjectTableView() {
     } else {
       setSortDirection("asc");
     }
-
+    setCurrentPage(0)
     setSortedByColumn(key);
   };
 
@@ -191,13 +191,19 @@ export default function ObjectTableView() {
                 .filter((k) => k != "data")
                 .map((key, index) => (
                   <th
-                    className={`text-left py-1.5 ${
+                    className={`text-left py-1.5 cursor-pointer ${
                       index == keys.length - 2 ? "rounded-tr-md" : ""
                     }`}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
                     {key == "_id" ? <>File</> : key}
+                    {sortedByColumn === key && (
+                      <FontAwesomeIcon
+                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
+                        className="ml-5"
+                      />
+                    )}
                   </th>
                 ))}
             </tr>
