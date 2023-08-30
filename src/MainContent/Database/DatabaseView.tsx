@@ -422,6 +422,7 @@ export default function DatabaseView({
                 keys={keys}
                 data={row}
                 setShouldShowSaveHint={setShouldShowSaveHint}
+                shouldBlockEdits={["swizzle_uid"]}
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
