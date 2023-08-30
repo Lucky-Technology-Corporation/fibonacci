@@ -15,7 +15,7 @@ export default function LogRow({message}: {message: any}) {
    useEffect(() => {
       if(isExpanded && logDetails == null){
          getLogDetails(message.traceId).then((data) => {
-            if(data.logs == null){ setLogDetails([]); return; }
+            if(data == null || data.logs == null){ setLogDetails([]); return; }
             setLogDetails(data.logs)
          })
       }
@@ -76,7 +76,7 @@ export default function LogRow({message}: {message: any}) {
                   toast={{
                      title: "",
                      content: (
-                        <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap">
+                        <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                            {JSON.stringify(message.request, null, 2)}
                         </div>
                      ),
@@ -95,7 +95,7 @@ export default function LogRow({message}: {message: any}) {
                   toast={{
                      title: "",
                      content: (
-                        <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap">
+                        <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                            {JSON.stringify(message.response, null, 2)}
                         </div>
                      ),
@@ -121,12 +121,10 @@ export default function LogRow({message}: {message: any}) {
                isExpanded ? "" : "hidden"
             } border-b border-[#4C4F6B]`}
          >
-            <td colSpan={9} className="text-left pl-16 text-xs py-3">
-               <pre>
-                  {logDetails == null ? "Loading..." : (logDetails.length == 0 ? "No logs" : logDetails.map((log: any, index) => (
-                     <div key={index}>{log.text}</div>
-                  )))}
-               </pre>
+            <td colSpan={9} className="text-left pl-20 text-xs py-3 word-wrap max-w-full font-mono">
+               {logDetails == null ? "Loading..." : (logDetails.length == 0 ? "No logs" : logDetails.map((log: any, index) => (
+                  <div className="font-mono" key={index}>{log.text}</div>
+               )))}
             </td>
          </tr>
       </>

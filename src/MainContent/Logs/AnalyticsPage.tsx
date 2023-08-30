@@ -1,38 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Card, Title, LineChart } from "@tremor/react";
 import useApi from "../../API/MonitoringAPI";
 import { DateRangePicker, DateRangePickerValue } from "@tremor/react";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function AnalyticsPage() {
    const api = useApi();
+   const { activeProject } = useContext(SwizzleContext);
 
    const [dateRange, setDateRange] = useState<DateRangePickerValue>({
-      from: new Date(),
+      from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       to: new Date(),
    });
 
    const [data, setData] = useState<any[]>([]);
+   const fetchAndProcessData = async () => {
+      try {
+         const startDateStr = dateRange.from.toISOString();
+         const endDateStr = dateRange.to.toISOString();
+         const fetchedData = await api.getData(startDateStr, endDateStr);
+         if(fetchedData == null){ return; }
+         const processedData = fetchedData.map(entry => ({
+            date: entry._id,
+            uniqueUsers: entry.uniqueUsers,
+            totalRequests: entry.totalRequests
+        }));
+         setData(processedData);
+      } catch (error) {
+         console.error("Error fetching monitoring data:", error);
+      }
+   };
 
    useEffect(() => {
-      const fetchAndProcessData = async () => {
-         try {
-            const startDateStr = dateRange.from.toISOString();
-            console.log(startDateStr);
-            const endDateStr = dateRange.to.toISOString();
-            const fetchedData = await api.getData(startDateStr, endDateStr);
-            const processedData = fetchedData.map(entry => ({
-               date: entry._id,
-               uniqueUsers: entry.uniqueUsers,
-               totalRequests: entry.totalRequests
-           }));
-            setData(processedData);
-         } catch (error) {
-            console.error("Error fetching monitoring data:", error);
-         }
-      };
-
+      if(activeProject == null){ return; }
       fetchAndProcessData();
-   }, [dateRange]);
+   }, [dateRange, activeProject]);
 
    const processDataAndCreateGraph = (chartdata, title, categories) => {
       return (
@@ -54,7 +56,7 @@ export default function AnalyticsPage() {
          <DateRangePicker
             value={dateRange} 
             onValueChange={setDateRange} 
-            className="ml-5" 
+            className="ml-10" 
          ></DateRangePicker>
          <div className="p-5 flex flex-row space-x-2">
             {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}

@@ -28,7 +28,6 @@ export default function InfoItem({
    const [isHintWindowVisible, setIsHintWindowVisible] = useState(false);
    const showHintWindow = () => {
       clearTimeout(timerRef.current);
-      console.log("showing");
       setActiveToast(id);
       setIsHintWindowVisible(true);
    };
@@ -53,9 +52,7 @@ export default function InfoItem({
    }, []);
 
    useEffect(() => {
-      console.log(activeToast);
       if (activeToast !== id) {
-         console.log("hiding");
          setIsHintWindowVisible(false);
       }
    }, [activeToast]);
