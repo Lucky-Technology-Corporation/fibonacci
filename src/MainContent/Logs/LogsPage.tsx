@@ -78,7 +78,6 @@ export default function LogsPage() {
 
    //Disconnect websocket when component unmounts
    useEffect(() => {
-      setFilterName(null)
       setFilterQuery(null)
       setNextPageToken(null)
 
