@@ -15,7 +15,7 @@ export default function LogRow({message}: {message: any}) {
    useEffect(() => {
       if(isExpanded && logDetails == null){
          getLogDetails(message.traceId).then((data) => {
-            if(data.logs == null){ setLogDetails([]); return; }
+            if(data == null || data.logs == null){ setLogDetails([]); return; }
             setLogDetails(data.logs)
          })
       }

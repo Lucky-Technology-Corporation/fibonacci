@@ -22,7 +22,10 @@ export default function LogsPage() {
    const [offset, setOffset] = useState<number>(0);
    const [page, setPage] = useState<number>(0);
    const [searchQuery, setSearchQuery] = useState<string>("");
-   const [selectedSearchType, setSelectedSearchType] = useState<string>("log");
+   const [filterName, setFilterName] = useState<string | undefined>("log");
+   const [filterQuery, setFilterQuery] = useState<string | undefined>(null);
+   const [nextPageToken, setNextPageToken] = useState<string | undefined>(null);
+
    const searchTypes = [
       {
          id: "log",
@@ -75,7 +78,11 @@ export default function LogsPage() {
 
    //Disconnect websocket when component unmounts
    useEffect(() => {
-      getLogs(offset).then((data) => {
+      setFilterName(null)
+      setFilterQuery(null)
+      setNextPageToken(null)
+
+      getLogs(offset, filterName, filterQuery).then((data) => {
          setMessages(data);
       });
       return () => {
@@ -84,16 +91,22 @@ export default function LogsPage() {
    }, []);
 
    useEffect(() => {
-      getLogs(offset).then((data) => {
-         setMessages(data);
+      getLogs(offset, filterName, filterQuery).then((data) => {
+         if(data.results){
+            setMessages(data.results);
+            setNextPageToken(data.next_page_token);
+         } else{
+            setMessages(data);
+         }
       });
-   }, [offset]);
+   }, [offset, filterQuery]);
 
    const setSearchType = (id: string) => {
-      setSelectedSearchType(id)
+      setFilterName(id)
     };
 
    const runSearch = () => {
+      setFilterQuery(searchQuery)
    }
 
    return (
@@ -125,12 +138,12 @@ export default function LogsPage() {
                onSelect={setSearchType}
                children={searchTypes}
                direction="right"
-               title={searchTypes.filter((type) => type.id == selectedSearchType)[0].name}
+               title={searchTypes.filter((type) => type.id == filterName)[0].name}
             />
             <input
                type="text"
                className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
-               placeholder={"Filter by " + searchTypes.filter((type) => type.id == selectedSearchType)[0].name.toLowerCase() + "..."}
+               placeholder={"Filter by " + searchTypes.filter((type) => type.id == filterName)[0].name.toLowerCase() + "..."}
                value={searchQuery}
                onChange={(e) => {
                   setSearchQuery(e.target.value);

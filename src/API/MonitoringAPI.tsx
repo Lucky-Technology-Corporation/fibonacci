@@ -34,7 +34,7 @@ export default function useApi() {
       }
    };
 
-   const getLogs = async (offset: number, filterKey?: string, filterQuery?: string) => {
+   const getLogs = async (offset: number, filterKey?: string, filterQuery?: string, pageToken?: string) => {
       try{
          if(!activeProject){
             throw new Error("No active project selected");
@@ -42,7 +42,11 @@ export default function useApi() {
          
          var url = `${BASE_URL}/projects/${activeProject}/monitoring/logs?offset=${offset}&limit=20`
          if(filterKey && filterQuery){
-            url += `&filter_key=${filterKey}&filter_query=${filterQuery}`
+            if(filterKey == "log"){
+               url = `${BASE_URL}/projects/${activeProject}/monitoring/logs/search?search_string=${filterQuery}${pageToken ? `&page_token=${pageToken}` : ""}`
+            } else{
+               url += `&filter_key=${filterKey}&filter_query=${filterQuery}`
+            }
          }
 
          const response = await axios.get(url,
