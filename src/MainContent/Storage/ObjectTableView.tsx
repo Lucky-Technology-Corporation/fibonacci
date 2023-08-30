@@ -144,7 +144,7 @@ export default function ObjectTableView() {
                               }`}
                               key={index + 1}
                            >
-                              {key == "_id" ? <>File URL</> : key}
+                              {key == "_id" ? <>File</> : key}
                            </th>
                         ))}
                   </tr>
@@ -159,20 +159,14 @@ export default function ObjectTableView() {
                         keys={keys}
                         data={Object.entries(row).reduce(
                            (result, [key, value]) => {
-                              return {
-                                 ...result,
-                                 [key]:
-                                    key == "_id"
-                                       ? "https://" +
-                                         domain +
-                                         "/swizzle/db/storage/" +
-                                         value +
-                                         ".jpeg"
-                                       : value,
-                              };
+                             const fileURL = `https://${domain}/swizzle/db/storage/${value}/${row.fileName}`;
+                             return {
+                               ...result,
+                               [key]: key === "_id" ? fileURL : value,
+                             };
                            },
                            {},
-                        )}
+                         )}                 
                         setShouldShowSaveHint={() => {}}
                         showDetailView={(
                            e: React.MouseEvent<SVGSVGElement>,

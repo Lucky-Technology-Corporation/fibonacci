@@ -92,8 +92,13 @@ export default function LogsPage() {
    }, []);
 
    useEffect(() => {
-      toast.promise(
-         getLogs(offset, filterName, filterQuery).then((data) => {
+      if(filterQuery == ""){
+         setNextPageToken(null)
+         setFilterName(null)
+      }
+      
+      toast.promise(     
+         getLogs(offset, filterName, filterQuery, nextPageToken).then((data) => {
             if(data && data.results != null){
                setMessages(data.results);
                setNextPageToken(data.next_page_token);

@@ -125,6 +125,15 @@ export default function DatabaseRow({
                            position="bottom-right"
                         />
                      ) : (
+                        (value || "").toString().startsWith("https://") && shouldBlockEdits &&  (value || "").toString().match(/\.(jpeg|jpg|png|gif)$/) ? (
+                           <img
+                              src={value}
+                              className="h-8 w-8 rounded-md cursor-pointer"
+                              onClick={() => {
+                                 window.open(value, "_blank");
+                              }}
+                           />
+                        ) : (
                         <input
                            type="text"
                            className={`w-full bg-transparent border-0 outline-0 text-xs ${
@@ -158,6 +167,7 @@ export default function DatabaseRow({
                               }
                            }}
                         />
+                        )
                      )}
                   </td>
                );
