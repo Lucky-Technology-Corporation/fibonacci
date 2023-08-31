@@ -39,7 +39,7 @@ export default function Dropdown({
       className={`${className} relative inline-block text-left mt-2"`}
     >
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
+        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] hover:bg-[#85869855] ring-1 ring-inset ring-[#525363]">
           {title
             ? title
             : (
