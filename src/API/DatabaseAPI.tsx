@@ -2,12 +2,14 @@ import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { useContext } from "react";
+import { useSignOut } from 'react-auth-kit'
 
 const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
   const { activeProject } = useContext(SwizzleContext);
+  const signOut = useSignOut()
 
   const getCollections = async () => {
     if (activeProject == "") return;
@@ -239,6 +241,9 @@ export default function useApi() {
       });
       return response.data;
     } catch (e: any) {
+      if(e.response.status == 401) {
+        signOut()
+      }
       console.error(e);
       return null;
     }

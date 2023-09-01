@@ -17,6 +17,7 @@ export default function ProjectSelector() {
     setActiveProjectName,
     setDomain,
     setIsCreatingProject,
+    isCreatingProject,
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -83,9 +84,10 @@ export default function ProjectSelector() {
           name: "+ New Project",
         }}
         lastOnSelect={() => {
+          if(isCreatingProject){ alert("A project is already being created for you now!") }
           setIsVisible(true);
         }}
-        className="mt-2"
+        className={`mt-2 ${isCreatingProject ? "opacity-70" : ""}`}
         title={activeProjectName}
       />
       <FullPageModal
