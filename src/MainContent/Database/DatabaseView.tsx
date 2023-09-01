@@ -181,6 +181,10 @@ export default function DatabaseView({
 
 
   const runSearch = async () => {
+    if(filterName == ""){
+      toast.error("Please select a filter")
+      return
+    }
     runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
     .then((data) => {
       setDidSearch(true)
@@ -284,10 +288,10 @@ export default function DatabaseView({
           onSelect={setFilterName}
           children={keys.filter(k => k !== "_id").map((key) => {
             if(key == "_swizzle_uid"){ return { id: key, name: "userId" } }
-            else{ return { id: key, name: key } }
+            else{ return { id: key, name: ("Filter " + key) } }
           })}
           direction="right"
-          title={(keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
+          title={("Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId"))}
         />
         <input
           type="text"
