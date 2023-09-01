@@ -84,7 +84,7 @@ export default function ProjectSelector() {
           name: "+ New Project",
         }}
         lastOnSelect={() => {
-          if(isCreatingProject){ alert("A project is already being created for you now!") }
+          if(isCreatingProject){ alert("A project is already being created for you now!"); return; }
           setIsVisible(true);
         }}
         className={`mt-2 ${isCreatingProject ? "opacity-70" : ""}`}
