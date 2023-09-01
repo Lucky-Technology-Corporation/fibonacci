@@ -157,39 +157,40 @@ export default function DatabaseRow({
                   }}
                 />
               ) : (
-               <input
-               type="text"
-               className={`w-full bg-transparent border-0 outline-0 text-xs ${
-                 shouldShowStrikethrough ? "line-through" : ""
-               } ${
-                 ((value || "").toString().startsWith("https://") &&
-                 shouldBlockEdits.includes(key)) || shouldBlockEdits.includes(key)
-                   ? "cursor-pointer"
-                   : ""
-               }`}
-               onFocus={() => {
-                 if (!shouldBlockEdits.includes(key)) { 
-                   setupEditing(key);
-                 }
-               }}
-               value={editing === key ? pendingInputValue : (value || "")}
-               onClick={() => {
-                 if (!shouldBlockEdits.includes(key)) { 
-                   setupEditing(key);
-                 } else {
-                  copyText(value);
-                 }
-               }}
-               readOnly={shouldBlockEdits.includes(key)} 
-               onChange={(event) => setPendingInputValue(event.target.value)}
-               onKeyDown={(event) => {
-                 if (event.key === "Enter") {
-                   saveNewValues(key, pendingInputValue);
-                 } else if (event.key === "Escape") {
-                   endEditing();
-                 }
-               }}
-             />
+                <input
+                  type="text"
+                  className={`w-full bg-transparent border-0 outline-0 text-xs ${
+                    shouldShowStrikethrough ? "line-through" : ""
+                  } ${
+                    ((value || "").toString().startsWith("https://") &&
+                      shouldBlockEdits.includes(key)) ||
+                    shouldBlockEdits.includes(key)
+                      ? "cursor-pointer"
+                      : ""
+                  }`}
+                  onFocus={() => {
+                    if (!shouldBlockEdits.includes(key)) {
+                      setupEditing(key);
+                    }
+                  }}
+                  value={editing === key ? pendingInputValue : value || ""}
+                  onClick={() => {
+                    if (!shouldBlockEdits.includes(key)) {
+                      setupEditing(key);
+                    } else {
+                      copyText(value);
+                    }
+                  }}
+                  readOnly={shouldBlockEdits.includes(key)}
+                  onChange={(event) => setPendingInputValue(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      saveNewValues(key, pendingInputValue);
+                    } else if (event.key === "Escape") {
+                      endEditing();
+                    }
+                  }}
+                />
               )}
             </td>
           );

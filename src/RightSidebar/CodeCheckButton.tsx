@@ -106,7 +106,7 @@ export default function CodeCheckButton({}: {}) {
           ? deployProgress == 100
             ? "Deployed!"
             : "Deploying..."
-          : "Deploy"}
+          : "Code Check"}
       </button>
     </div>
   );

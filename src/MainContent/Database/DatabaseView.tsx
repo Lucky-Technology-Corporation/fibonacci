@@ -254,7 +254,7 @@ export default function DatabaseView({
     } else {
       setSortDirection("asc");
     }
-    setCurrentPage(0)
+    setCurrentPage(0);
     setSortedByColumn(key);
   };
 
@@ -375,10 +375,13 @@ export default function DatabaseView({
           </>
         )}
       </div>
-      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 220px - 12px)"}}>
+      <div
+        className="max-w-full overflow-x-auto"
+        style={{ width: "calc(100vw - 220px - 12px)" }}
+      >
         <table
           className="table-auto my-4 ml-4 block"
-          style={{ tableLayout: "auto"}}
+          style={{ tableLayout: "auto" }}
         >
           <thead className="bg-[#85869822]">
             <tr
@@ -386,15 +389,18 @@ export default function DatabaseView({
                 keys.length == 0 ? "hidden" : ""
               }`}
             >
-              <th
-                className="text-left py-1.5 w-6"
-              ></th>
+              <th className="text-left py-1.5 w-6"></th>
               {keys
                 .filter((k) => k != "_id")
                 .map((key, index) => (
                   <th
                     className={`cursor-pointer text-left py-1.5`}
-                    style={{ minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px` }}
+                    style={{
+                      minWidth: `${getEstimatedColumnWidth(
+                        keys.length - 1,
+                        key,
+                      )}px`,
+                    }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >

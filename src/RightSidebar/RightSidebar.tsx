@@ -12,6 +12,7 @@ import PackageInfo from "./Sections/PackageInfo";
 import SearchCodeButton from "./SearchCodeButton";
 import CodeCheckButton from "./CodeCheckButton";
 import TestButton from "./TestButton";
+import NewTestWindow from "./NewTestWindow";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -32,6 +33,11 @@ export default function RightSidebar({
   const [isDBChecked, setIsDBChecked] = useState(false);
   const [isSecretsChecked, setIsSecretsChecked] = useState(false);
   const [isPackagesChecked, setIsPackagesChecked] = useState(false);
+  const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
+
+  const toggleTestWindow = () => {
+    setShouldShowTestWindow((prevState) => !prevState);
+  };
 
   useEffect(() => {
     var newPrependCode = isAuthChecked ? authContent : "";
@@ -47,8 +53,15 @@ export default function RightSidebar({
     >
       <div className="flex flex-col items-center mt-4 h-screen pr-4 space-y-4">
         <DeployButton />
-        <TestButton />
-        <SearchCodeButton />
+        <TestButton shouldShowTestWindow={toggleTestWindow} />
+        {shouldShowTestWindow && (
+          <NewTestWindow
+            shouldShowTestWindow={shouldShowTestWindow}
+            hideTestWindow={toggleTestWindow}
+            savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
+            position="bottom-left"
+          />
+        )}
         <div className="text-left w-full space-y-2">
           <Checkbox
             id="requests"

@@ -105,7 +105,7 @@ export default function ObjectTableView() {
     } else {
       setSortDirection("asc");
     }
-    setCurrentPage(0)
+    setCurrentPage(0);
     setSortedByColumn(key);
   };
 
@@ -173,7 +173,10 @@ export default function ObjectTableView() {
         />
         <Button text={"Search"} onClick={runSearch} />
       </div>
-      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 220px - 12px)"}}>
+      <div
+        className="max-w-full overflow-x-auto"
+        style={{ width: "calc(100vw - 220px - 12px)" }}
+      >
         <table
           className="table-auto flex-grow my-4 ml-4"
           style={{ tableLayout: "auto", minWidth: "100%" }}
@@ -184,15 +187,18 @@ export default function ObjectTableView() {
                 keys.length == 0 ? "hidden" : ""
               }`}
             >
-              <th
-                className="text-left py-1.5 w-6 cursor-pointer"
-              ></th>
+              <th className="text-left py-1.5 w-6 cursor-pointer"></th>
               {keys
                 .filter((k) => k != "data")
                 .map((key, index) => (
                   <th
                     className={`text-left py-1.5 cursor-pointer`}
-                    style={{ minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px` }}
+                    style={{
+                      minWidth: `${getEstimatedColumnWidth(
+                        keys.length - 1,
+                        key,
+                      )}px`,
+                    }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >

@@ -121,7 +121,7 @@ export default function UserTableView() {
     } else {
       setSortDirection("asc");
     }
-    setCurrentPage(0)
+    setCurrentPage(0);
     setSortedByColumn(key);
   };
 
@@ -207,7 +207,10 @@ export default function UserTableView() {
         />
         <Button text={"Search"} onClick={runSearch} />
       </div>
-      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 220px - 12px)"}}>
+      <div
+        className="max-w-full overflow-x-auto"
+        style={{ width: "calc(100vw - 220px - 12px)" }}
+      >
         <table
           className="table-auto flex-grow my-4 ml-4"
           style={{ tableLayout: "auto", minWidth: "100%" }}
@@ -218,9 +221,7 @@ export default function UserTableView() {
                 keys.length == 0 ? "hidden" : ""
               }`}
             >
-              <th
-                className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"
-              ></th>
+              <th className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"></th>
               {keys
                 .filter((k) => ["_deactivated", "deviceId"].indexOf(k) == -1)
                 .map((key, index) => (
@@ -231,11 +232,7 @@ export default function UserTableView() {
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
-                    {key == "_id" ? (
-                      "userId"
-                    ) : (
-                      key
-                    )}
+                    {key == "_id" ? "userId" : key}
                     {sortedByColumn === key && (
                       <FontAwesomeIcon
                         icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
