@@ -1,10 +1,11 @@
-import { useSignIn } from "react-auth-kit";
+import { useSignIn, useSignOut } from "react-auth-kit";
 import toast from "react-hot-toast";
 import jwt_decode from "jwt-decode";
 import { useEffect } from "react";
 
 export default function SignIn() {
   const signIn = useSignIn();
+  const signOut = useSignOut();
 
   const getNameFromJWT = (token: string) => {
     try {
@@ -41,6 +42,7 @@ export default function SignIn() {
     const urlParams = new URLSearchParams(window.location.search);
     const jwt = urlParams.get("jwt");
     if (jwt && jwt.length > 0) {
+      signOut();
       signInWithJWT(jwt);
     }
   }, []);
