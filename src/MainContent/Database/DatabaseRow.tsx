@@ -5,6 +5,7 @@ import useApi from "../../API/DatabaseAPI";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import moment from "moment";
 import { copyText } from "../../Utilities/Copyable";
+import e from "express";
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
@@ -147,13 +148,17 @@ export default function DatabaseRow({
                   position="bottom-right"
                 />
               ) : (value || "").toString().startsWith("https://") &&
-                shouldBlockEdits &&
-                (value || "").toString().match(/\.(jpeg|jpg|png|gif)$/) ? (
+                  editing !== key &&
+                  (value || "").toString().match(/\.(jpeg|jpg|png|gif)$/) ? (
                 <img
                   src={value}
                   className="h-8 w-8 rounded-md cursor-pointer"
                   onClick={() => {
-                    window.open(value, "_blank");
+                    if(!shouldBlockEdits.includes(key)) {
+                      setupEditing(key);
+                    } else{
+                      window.open(value, "_blank");
+                    }
                   }}
                 />
               ) : (

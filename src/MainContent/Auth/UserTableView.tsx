@@ -184,9 +184,8 @@ export default function UserTableView() {
               rel="nofollow"
               className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
             >
-              from your app
+              from your app.
             </a>
-            . These records cannot be edited.
           </div>
         </div>
       </div>
@@ -259,7 +258,7 @@ export default function UserTableView() {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
                 shouldHideFields={["_deactivated", "deviceId"]}
-                shouldBlockEdits={["_id"]}
+                shouldBlockEdits={["_id", "createdAt", "isAnonymous"]}
                 shouldShowStrikethrough={
                   hiddenRows.includes(row._id) || row._deactivated == true
                 }

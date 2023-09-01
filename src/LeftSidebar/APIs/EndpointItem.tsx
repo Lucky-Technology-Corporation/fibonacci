@@ -4,10 +4,12 @@ export default function EndpointItem({
   active = false,
   path,
   method,
+  onClick,
 }: {
   active?: boolean;
   path: string;
   method: Method;
+  onClick?: () => void;
 }) {
   const methodToColor = (method: Method) => {
     switch (method) {
@@ -30,6 +32,7 @@ export default function EndpointItem({
         className={`font-mono text-xs flex-1 p-1.5 py-2 my-1 font-bold ${
           active ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
+        onClick={onClick}
       >
         <span className={methodToColor(method)}>{method}</span> {path}
       </div>

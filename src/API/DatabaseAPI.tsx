@@ -182,32 +182,27 @@ export default function useApi() {
 
   const runQuery = async (
     query: string,
-    queryType: string,
+    search_filter: string,
     collectionName: string,
     sortByKey: string = "",
     sortDirection: string = "asc",
+    page: number = 0,
   ) => {
     try {
       if (activeProject == "") return;
       var queryObject = {
-        mongo_query: query,
-        mongo_function: queryType,
+        query: query,
+        search_filter: search_filter,
+        page: page,
       };
       if (sortByKey !== "") {
         queryObject["sort"] = sortByKey;
       }
       if (sortDirection !== "") {
-        queryObject["sortDirection"] = sortDirection;
-      }
-      var lowercasedQueryType = queryType.toLowerCase();
-
-      if (lowercasedQueryType === "updateone") {
-        lowercasedQueryType = "update";
-      } else if (lowercasedQueryType === "updatemany") {
-        lowercasedQueryType = "update";
+        queryObject["sort_direction"] = sortDirection;
       }
 
-      var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/${lowercasedQueryType}`;
+      var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/search`;
 
       const response = await axios.post(url, queryObject, {
         headers: {

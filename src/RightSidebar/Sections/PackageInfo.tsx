@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 import Select from "react-select";
 import useApi from "../../API/EndpointAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function PackageInfo({ show }: { show: boolean }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,6 +13,8 @@ export default function PackageInfo({ show }: { show: boolean }) {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const { npmSearch } = useApi();
+
+  const { setPostMessage } = useContext(SwizzleContext);
 
   useEffect(() => {
     npmSearch(query).then((data) => {
@@ -27,6 +30,11 @@ export default function PackageInfo({ show }: { show: boolean }) {
   const handleInputChange = (inputValue) => {
     setQuery(inputValue);
   };
+
+  const postCommandToIframe = (message) => {
+    const messageBody = {type: "addPackage", packageName: message};
+    setPostMessage(messageBody)
+  }
 
   return (
     <>
@@ -123,7 +131,7 @@ export default function PackageInfo({ show }: { show: boolean }) {
               </div>
             ),
             confirmText: "Add Package",
-            confirmHandler: () => {},
+            confirmHandler: () => postCommandToIframe(selectedOption.value),
             shouldShowInput: false,
             placeholder: "", //unused since shouldShowInput is false
           }}

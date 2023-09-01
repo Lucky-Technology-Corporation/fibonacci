@@ -38,21 +38,11 @@ export default function Dashboard() {
     console.log("Getting projects...");
     getProjects()
       .then((data) => {
-        if (data.length == 0) {
+        if (data && data.length == 0) {
           setProjects([]);
           return;
         }
         var flexibleData = data;
-        for (var i = 0; i < flexibleData.length; i++) {
-          //TODO: Add the production domain and use the new structure
-          if (
-            flexibleData[i].edges.project_vm &&
-            flexibleData[i].edges.project_vm.length > 0
-          ) {
-            flexibleData[i].test_domain =
-              flexibleData[i].edges.project_vm[0].domain;
-          }
-        }
 
         // Move active project to the top, if it exists
         if (activeProject != null && activeProject != "") {
