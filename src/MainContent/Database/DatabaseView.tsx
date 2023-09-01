@@ -11,9 +11,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
   faArrowDown,
-  faArrowRight,
-  faArrowLeft,
-  faArrowsRotate,
 } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid";
 import NiceInfo from "../../Utilities/NiceInfo";
@@ -29,15 +26,8 @@ export default function DatabaseView({
   const { getDocuments, deleteCollection, runEnglishSearchQuery, runQuery } =
     useApi();
 
-  const { activeProject, activeProjectName } = useContext(SwizzleContext);
-
-  const [isValidMongoQuery, setIsValidMongoQuery] = useState<boolean>(true);
+  const { activeProject } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [queryType, setQueryType] = useState<string>("");
-  const [queryDescription, setQueryDescription] = useState<string>("");
-
-  const [shouldShowSearchHint, setShouldShowSearchHint] =
-    useState<boolean>(false);
   const [shouldShowSaveHint, setShouldShowSaveHint] = useState(false);
   const [isJSONEditorVisible, setIsJSONEditorVisible] = useState(false);
   const [jsonEditorData, setJSONEditorData] = useState<any>();
@@ -64,6 +54,21 @@ export default function DatabaseView({
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [didSearch, setDidSearch] = useState<boolean>(false)
+
+  const [filterName, setFilterName] = useState<string>("");
+
+  useEffect(() => {
+    if (searchQuery == "") {
+      resetCollection()
+    }
+  }, [filterName]);
+
+  const resetCollection = () => {
+    setDidSearch(false)
+    setCurrentPage(0)
+    fetchData(0);
+  }
 
   const fetchData = (page: number) => {
     if (!activeCollection || activeCollection == "") return;
@@ -101,9 +106,7 @@ export default function DatabaseView({
       delete object["_id"];
       setJSONEditorData(object);
       setIsJSONEditorVisible(true);
-    } else if (id == "row") {
-      // create new row
-    }
+    } 
   };
 
   const onJSONChangeHandler = (newData: any) => {
@@ -114,29 +117,22 @@ export default function DatabaseView({
       );
       setData(updatedData);
     } else {
-      // If creating a new document or an array of documents
       if (Array.isArray(newData)) {
-        // Loop through each object in the array
         newData.forEach((item) => {
-          // Add a unique _id property to each item
           item._id = uuidv4();
-          // Find the index of the item in the state data (if it exists)
           const index = data.findIndex((d) => d._id === item._id);
 
           if (index !== -1) {
-            // If the item exists in the state data, update it
             data[index] = {
               ...data[index],
               ...item,
             };
           } else {
-            // If the item does not exist in the state data, add it
             setData((prevData) => [...prevData, item]);
           }
         });
         setTotalDocs((prevTotalDocs) => prevTotalDocs + newData.length);
       } else {
-        // If newData is a single object, add it to the state
         setData((prevData) => [...prevData, newData]);
         setTotalDocs((prevTotalDocs) => prevTotalDocs + 1);
       }
@@ -144,7 +140,6 @@ export default function DatabaseView({
 
     // Check for new keys
     if (Array.isArray(newData)) {
-      // If newData is an array, consider only the first object to check for new keys
       newData = newData[0];
     }
     const newKeys = Object.keys(newData).filter((key) => !keys.includes(key));
@@ -177,64 +172,27 @@ export default function DatabaseView({
 
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;
-    fetchData(currentPage);
+    if(didSearch){
+      runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection, currentPage)
+    } else{
+      fetchData(currentPage);
+    }
   }, [currentPage, sortedByColumn, sortDirection]);
 
-  //This changes the button to "run" if the query is a mongo query
-  useEffect(() => {
-    const regex = /^(Find|Aggregate|UpdateMany|UpdateOne)\(\s*\{.*\}\s*\)$/;
-    const isValid = regex.test(searchQuery);
-    setIsValidMongoQuery(isValid);
-    if (!isValid) {
-      setQueryDescription("");
-    }
-  }, [searchQuery]);
 
   const runSearch = async () => {
-    if (isValidMongoQuery) {
-      setCurrentPage(0);
-      const query = searchQuery
-        .replace(/(Find|Aggregate|UpdateMany|UpdateOne)\(/, "")
-        .replace(/\)$/, "");
-      setSearchQuery("Loading...");
-      const results = await runQuery(
-        query,
-        queryType,
-        activeCollection,
-        sortedByColumn,
-      );
-      if (results.documents) {
-        setData(results.documents);
-        setKeys(results.keys.sort());
-        setHiddenRows([]);
-      } else {
-        console.log(results);
-        toast.error(
-          "Something went wrong with that query. No documents were updated.",
-        );
-      }
-      setSearchQuery("");
-    } else {
-      try {
-        const exampleDoc = JSON.stringify(data[0]);
-        const query = searchQuery;
-        setSearchQuery("Loading...");
-        const newMongoQuery = await runEnglishSearchQuery(query, exampleDoc);
-        if (newMongoQuery) {
-          const mongoFunction = newMongoQuery.mongo_function;
-          const englishDescription = newMongoQuery.english_description;
-          const mongioQuery = newMongoQuery.mongo_query;
+    runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
+    .then((data) => {
+      setDidSearch(true)
+      setData(data.documents || []);
+      setKeys(data.keys.sort() || []);
+      setTotalDocs(data.pagination.total_documents);
+    })
+    .catch((e) => {
+      console.log(e);
+      setError(e);
+    })
 
-          setSearchQuery(mongoFunction + "(" + mongioQuery + ")");
-          setQueryType(mongoFunction);
-          setQueryDescription(englishDescription);
-        }
-      } catch (e) {
-        toast.error(
-          "We couldn't figure out what you wanted. Please try again.",
-        );
-      }
-    }
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
@@ -321,11 +279,19 @@ export default function DatabaseView({
         </div>
       </div>
       <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
+        <Dropdown
+          className="ml-4"
+          onSelect={setFilterName}
+          children={keys.filter(k => k !== "_id").map((key) => {
+            if(key == "_swizzle_uid"){ return { id: key, name: "userId" } }
+            else{ return { id: key, name: key } }
+          })}
+          direction="right"
+          title={(keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
+        />
         <input
           type="text"
-          className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${
-            isValidMongoQuery ? "font-mono text-xs" : ""
-          }`}
+          className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
           placeholder={"Search"}
           value={searchQuery}
           onChange={(e) => {
@@ -338,47 +304,12 @@ export default function DatabaseView({
           }}
         />
         <Button
-          text={isValidMongoQuery ? "Execute" : "Go"}
+          text={"Search"}
           onClick={runSearch}
         />
       </div>
-      <div
-        className={`absolute z-40 ml-6 mt-2 border-[#525363] border rounded bg-[#181922] p-2 max-w-lg ${
-          shouldShowSearchHint ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        style={{ transition: "opacity 0.2s" }}
-      >
-        {!isValidMongoQuery ? (
-          <>
-            <div className="font-bold mt-1.5">💡 Find anything you need</div>
-            <div className="text-sm ml-5 my-1">
-              You can do things like:
-              <ul className="list-disc my-1 mb-2 ml-5">
-                <li>"Get everything with a SKU containing vendor-001"</li>
-                <li>"Find records missing the email field"</li>
-                <li>
-                  "Return documents with a name less than 3 characters, ordered
-                  by creation date"
-                </li>
-              </ul>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="font-bold mt-1.5">🚦 Confirm</div>
-            <div className="text-sm ml-5 my-1">
-              {queryDescription}
-              <br />
-              <br />
-              Click Execute or press enter again to confirm.
-            </div>
-          </>
-        )}
-      </div>
-      <div
-        className="max-w-full overflow-x-auto"
-        style={{ width: "calc(100vw - 220px - 12px)" }}
-      >
+
+      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 220px - 12px)"}}>
         <table
           className="table-auto my-4 ml-4 block"
           style={{ tableLayout: "auto" }}
@@ -455,10 +386,14 @@ export default function DatabaseView({
       {data.length == 0 && currentPage == 0 ? (
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
-          <Button
+          {!didSearch ? <Button
             text="Delete this collection"
             onClick={deleteCollectionHandler}
-          />
+          /> :
+           <Button
+            text="Reset search"
+            onClick={() => { setSearchQuery(""); resetCollection() }}
+          />}
         </div>
       ) : (
         <></>

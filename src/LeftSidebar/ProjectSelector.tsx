@@ -7,7 +7,7 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
-  const { getProjects, createProject } = useApi();
+  const { createProject } = useApi();
   const {
     projects,
     setProjects,
@@ -44,11 +44,11 @@ export default function ProjectSelector() {
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
 
-    if (project.edges.project_vm && project.edges.project_vm.length > 0) {
-      setDomain(project.edges.project_vm[0].domain + ".swizzle.run");
+    if (project.test_swizzle_domain) {
+      setDomain(project.test_swizzle_domain);
       sessionStorage.setItem(
         "domain",
-        project.edges.project_vm[0].domain + ".swizzle.run",
+        project.test_swizzle_domain,
       );
     }
   };

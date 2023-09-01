@@ -57,21 +57,13 @@ export default function AuthInfo({ show }: { show: boolean }) {
                   ],
                   handleRowClick,
                 )}
-                and these (but they might be null!)
+                and any custom properties you've set
                 {getTableHelper(
                   [
                     {
-                      name: "request.user.username",
-                      description: "string",
-                    },
-                    {
-                      name: "request.user.email",
-                      description: "string",
-                    },
-                    {
-                      name: "request.user.phoneNumber",
-                      description: "string (E.164)",
-                    },
+                      name: "request.user.yourKeyHere",
+                      description: "",
+                    }
                   ],
                   handleRowClick,
                 )}

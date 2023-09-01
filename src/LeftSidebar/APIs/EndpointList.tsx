@@ -10,19 +10,46 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const { getFiles } = useApi();
-  const { activeProject } = useContext(SwizzleContext);
+  const [searchFilter, setSearchFilter] = useState<string>("");
+  const [activeEndpoint, setActiveEndpoint] = useState<string>("");
+  const [fullEndpointList, setFullEndpointList] = useState<any[]>(["get/", "post/", "get/admin", "get/admin/:id"]);
+  const [endpoints, setEndpoints] = useState<any[]>(["get/", "post/", "get/admin", "get/admin/:id"]);
+  const { activeProject, setPostMessage } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles()
       .then((data) => {
-        // console.log("endpoints")
-        // console.log(data)
+        // data.endpoints.forEach.replace("-", "/");
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
         console.log(e);
       });
   }, [activeProject]);
+
+  useEffect(() => {
+    const fileName = activeEndpoint.replace("/", "-");
+    setPostMessage({type: "openFile", fileUri: `/home/swizzle_prod_user/code/${fileName}.js`})
+  }, [activeEndpoint]);
+
+  useEffect(() => {
+    if(searchFilter == "") {
+      setEndpoints(fullEndpointList);
+      return;
+    }
+    const filteredEndpoints = endpoints.filter((endpoint) => {
+      return endpoint.includes(searchFilter);
+    });
+    setEndpoints(filteredEndpoints);
+  }, [searchFilter]);
+
+  const formatEndpointName = (endpoint: string) => {
+    return "/" + endpoint.split("/")[1];
+  }
+
+  const getMethodType = (endpoint: string) => {
+    return endpoint.split("/")[0].toUpperCase() as Method;
+  }
 
   //Fetch from backend and populate it here.
   return (
@@ -33,10 +60,27 @@ export default function EndpointList({ active }: { active: boolean }) {
           setIsVisible(true);
         }}
       />
-      <EndpointItem path={"/"} method={Method.GET} active={true} />
-      <EndpointItem path={"/"} method={Method.POST} active={false} />
-      <EndpointItem path={"/admin"} method={Method.GET} active={false} />
-      <EndpointItem path={"/admin/:id"} method={Method.GET} active={false} />
+      <input
+        className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2 py-1.5"
+        placeholder="Filter"
+        value={searchFilter}
+        onChange={(e) => {
+          setSearchFilter(e.target.value);
+        }}
+      />
+
+      {endpoints.map((endpoint) => {  
+        return (
+          <EndpointItem
+            path={formatEndpointName(endpoint)}
+            method={getMethodType(endpoint)}
+            active={endpoint == activeEndpoint}
+            onClick={() => {
+              setActiveEndpoint(endpoint);
+            }}
+          />
+        );
+      })}
       <APIWizard isVisible={isVisible} setIsVisible={setIsVisible} />
     </div>
   );

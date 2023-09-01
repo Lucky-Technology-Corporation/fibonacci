@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 
 export default function SecretInfo({ show }: { show: boolean }) {
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+  }, [])
 
   return (
     <>

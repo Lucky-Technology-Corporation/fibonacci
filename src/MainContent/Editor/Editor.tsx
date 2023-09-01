@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function Editor({
   fileUri,
@@ -8,6 +9,12 @@ export default function Editor({
   prependText: string;
 }) {
   const iframeRef = useRef(null);
+  const { domain, postMessage } = useContext(SwizzleContext);
+
+  useEffect(() => {
+    if(postMessage == null) return;
+    postMessageToIframe(postMessage)
+  }, [postMessage])
 
   const postMessageToIframe = (message) => {
     if (
@@ -43,12 +50,12 @@ export default function Editor({
       }
     });
   }, []);
-
+  
   return (
     <div style={{ overflow: "hidden", height: "calc(100% - 36px)" }}>
       <iframe
         ref={iframeRef}
-        src={"http://localhost:3000"}
+        src={`${domain.replace("https", "http")}:3000`}
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",

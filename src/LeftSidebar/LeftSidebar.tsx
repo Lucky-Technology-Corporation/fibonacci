@@ -27,7 +27,7 @@ export default function LeftSidebar({
 }: LeftSidebarProps) {
   return (
     <div className="min-w-[220px] border-r border-[#4C4F6B] bg-[#191A23]">
-      <div className="flex flex-col items-center mt-4 h-screen">
+      <div className="flex flex-col items-center pt-4 h-screen">
         <div className="flex">
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
           <h1 className="font-bold text-md">Swizzle</h1>
@@ -59,6 +59,15 @@ export default function LeftSidebar({
           }}
         />
         <EndpointList active={selectedTab == Page.Apis} />
+        
+        {/* <SectionTitle
+          icon="world.svg"
+          text="Hosting"
+          active={selectedTab == Page.Storage}
+          onClick={() => {
+            setSelectedTab(Page.Storage);
+          }}
+        /> */}
 
         <SectionTitle
           icon="auth.svg"
@@ -91,6 +100,16 @@ export default function LeftSidebar({
             setSelectedTab(Page.Storage);
           }}
         />
+
+
+        {/* <SectionTitle
+          icon="brain.svg"
+          text="Models"
+          active={selectedTab == Page.Storage}
+          onClick={() => {
+            setSelectedTab(Page.Storage);
+          }}
+        /> */}
 
         <UserDropdown />
       </div>
