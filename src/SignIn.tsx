@@ -38,6 +38,7 @@ export default function SignIn() {
   };
 
   //check if there's a jwt query param
+  //TODO: Check that this is working!
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const jwt = urlParams.get("jwt");

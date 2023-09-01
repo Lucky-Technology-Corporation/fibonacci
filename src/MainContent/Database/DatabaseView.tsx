@@ -144,7 +144,7 @@ export default function DatabaseView({
     }
     const newKeys = Object.keys(newData).filter((key) => !keys.includes(key));
     if (newKeys.length > 0) {
-      setKeys((prevKeys) => [...prevKeys, ...newKeys]);
+      setKeys((prevKeys) => [...prevKeys, ...newKeys].sort());
     }
   };
 
