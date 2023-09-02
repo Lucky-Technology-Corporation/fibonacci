@@ -11,8 +11,12 @@ import DeployButton from "./DeployButton";
 import PackageInfo from "./Sections/PackageInfo";
 import SearchCodeButton from "./SearchCodeButton";
 import CodeCheckButton from "./CodeCheckButton";
-import TestButton from "./TestButton";
+import TestButton from "../Utilities/IconTextButton";
 import NewTestWindow from "./NewTestWindow";
+import IconButton from "../Utilities/IconButton";
+import IconTextButton from "../Utilities/IconTextButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFlask } from "@fortawesome/free-solid-svg-icons";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -34,10 +38,9 @@ export default function RightSidebar({
   const [isSecretsChecked, setIsSecretsChecked] = useState(false);
   const [isPackagesChecked, setIsPackagesChecked] = useState(false);
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
+  const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
+  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
 
-  const toggleTestWindow = () => {
-    setShouldShowTestWindow((prevState) => !prevState);
-  };
 
   useEffect(() => {
     var newPrependCode = isAuthChecked ? authContent : "";
@@ -51,26 +54,46 @@ export default function RightSidebar({
         selectedTab == Page.Apis ? "" : "hidden"
       }`}
     >
-      <div className="flex flex-col items-center mt-4 h-screen pr-4 space-y-4">
+      <div className="flex flex-col items-center mt-4 h-screen pr-4">
         <DeployButton />
-        <TestButton shouldShowTestWindow={toggleTestWindow} />
+        <div className="h-2" />
+        <IconTextButton
+          onClick={() => {
+            setShouldShowTestWindow(true);
+          }}
+          icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
+          text="Test"
+        />
         {shouldShowTestWindow && (
           <NewTestWindow
             shouldShowTestWindow={shouldShowTestWindow}
-            hideTestWindow={toggleTestWindow}
+            hideTestWindow={() => setShouldShowTestWindow(false)}
             savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
-            position="bottom-left"
           />
         )}
-        <div className="text-left w-full space-y-2">
-          <Checkbox
-            id="requests"
-            label="Request"
-            isChecked={true}
-            setIsChecked={() => {}}
-          />
+        <div className="h-4" />
+        <div className="font-bold">Configuration</div>
+        <div className="h-2" />
+        <IconTextButton
+          onClick={() => {setShouldShowSecretsWindow(true)}}
+          icon={<img src="/lock.svg" className="w-3 h-3 m-auto" />}
+          text="Secrets"
+        />
+        <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
+        <div className="h-2" />
+        <IconTextButton
+          onClick={() => {setShouldShowPackagesWindow(true)}}
+          icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
+          text="Packages"
+        />
+        <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow}  />
+        <div className="h-6" />
+        <div className="font-bold">Available Variables</div>
+        <div className="h-1" />
+        <div className="text-left w-full">
           <RequestInfo show={true} />
         </div>
+        <div className="h-3" />
         <div className="text-left w-full space-y-2">
           <Checkbox
             id="auth"
@@ -80,6 +103,7 @@ export default function RightSidebar({
           />
           <AuthInfo show={isAuthChecked} />
         </div>
+        <div className="h-2" />
         <div className="text-left w-full space-y-2">
           <Checkbox
             id="db"
@@ -89,24 +113,7 @@ export default function RightSidebar({
           />
           <DBInfo show={isDBChecked} />
         </div>
-        <div className="text-left w-full space-y-2">
-          <Checkbox
-            id="secrets"
-            label="Secrets"
-            isChecked={isSecretsChecked}
-            setIsChecked={setIsSecretsChecked}
-          />
-          <SecretInfo show={isSecretsChecked} />
-        </div>
-        <div className="text-left w-full space-y-2">
-          <Checkbox
-            id="packages"
-            label="Packages"
-            isChecked={isPackagesChecked}
-            setIsChecked={setIsPackagesChecked}
-          />
-          <PackageInfo show={isPackagesChecked} />
-        </div>
+
 
         {/* <div className='text-left w-full space-y-2'>
               <div className="font-bold flex justify-between"><div>Recent requests</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer"></div></div>

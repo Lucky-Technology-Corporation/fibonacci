@@ -2,27 +2,8 @@ import { useEffect, useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 
-export default function SecretInfo({ show }: { show: boolean }) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-  }, [])
-
+export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boolean, setIsVisible: any }) {
   return (
-    <>
-      <div
-        className={`flex-col items-center justify-between ${
-          show ? "opacity-100" : "opacity-0 h-0 pointer-events-none"
-        }`}
-        style={{ transition: "opacity 0.3s" }}
-      >
-        <div className="h-1"></div>
-        <SectionAction
-          text="+ New Secret"
-          onClick={() => {
-            setIsVisible(true);
-          }}
-        />
         <FullPageModal
           isVisible={isVisible}
           setIsVisible={setIsVisible}
@@ -63,7 +44,5 @@ export default function SecretInfo({ show }: { show: boolean }) {
             placeholder: "", //unused since shouldShowInput is false
           }}
         />
-      </div>
-    </>
   );
 }

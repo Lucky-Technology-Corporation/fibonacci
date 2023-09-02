@@ -5,16 +5,28 @@ import Select from "react-select";
 import useApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function PackageInfo({ show }: { show: boolean }) {
-  const [isVisible, setIsVisible] = useState(false);
+export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: boolean, setIsVisible: any }) {
 
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
+  const [installedPackages, setInstalledPackages] = useState<string[]>([]); 
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const { npmSearch } = useApi();
+  const { npmSearch, getPackageJson } = useApi();
 
   const { setPostMessage } = useContext(SwizzleContext);
+
+  useEffect(() => {
+    getPackageJson().then((data) => {
+      if (data == undefined || data.dependencies == undefined) {
+        return;
+      }
+      const dependencies = Object.keys(data.dependencies).map((key) => {
+        return key
+      });
+      setInstalledPackages(dependencies);
+    })
+  }, []);
 
   useEffect(() => {
     if (query == "") { return }
@@ -31,26 +43,15 @@ export default function PackageInfo({ show }: { show: boolean }) {
     setQuery(inputValue);
   };
 
-  const postCommandToIframe = (message) => {
+  const addPackageToProject = (message) => {
     const messageBody = {type: "addPackage", packageName: message};
     setPostMessage(messageBody)
+    setInstalledPackages([...installedPackages, message]);
   }
 
+  
+
   return (
-    <>
-      <div
-        className={`flex-col items-center justify-between ${
-          show ? "opacity-100" : "opacity-0 h-0 pointer-events-none"
-        }`}
-        style={{ transition: "opacity 0.3s" }}
-      >
-        <div className="h-1"></div>
-        <SectionAction
-          text="+ Add Package"
-          onClick={() => {
-            setIsVisible(true);
-          }}
-        />
         <FullPageModal
           isVisible={isVisible}
           setIsVisible={setIsVisible}
@@ -131,12 +132,10 @@ export default function PackageInfo({ show }: { show: boolean }) {
               </div>
             ),
             confirmText: "Add Package",
-            confirmHandler: () => postCommandToIframe(selectedOption.value),
+            confirmHandler: () => addPackageToProject(selectedOption.value),
             shouldShowInput: false,
             placeholder: "", //unused since shouldShowInput is false
           }}
         />
-      </div>
-    </>
   );
 }

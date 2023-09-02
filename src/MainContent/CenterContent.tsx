@@ -30,7 +30,7 @@ export default function CenterContent({
   if (selectedTab === Page.Apis) {
     return (
       <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
-        <EditorHeader method={Method.GET} path="/" />
+        <EditorHeader />
         <Editor fileUri={fileUri} prependText={prependCode} />
       </div>
     );

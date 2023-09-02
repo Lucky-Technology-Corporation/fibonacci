@@ -57,12 +57,13 @@ export default function AnalyticsPage() {
 
   return (
     <div className="no-focus-ring">
-      <DateRangePicker
-        value={dateRange}
-        onValueChange={setDateRange}
-        className="ml-10"
-      ></DateRangePicker>
-      <div className="p-5 flex flex-row space-x-2">
+      <div className="ml-10">
+        <DateRangePicker
+          value={dateRange}
+          onValueChange={setDateRange}
+        ></DateRangePicker>
+      </div>
+      <div className="p-5 pt-2 flex flex-row space-x-2">
         {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
         {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
       </div>

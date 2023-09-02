@@ -6,15 +6,16 @@ import APIWizard from "./APIWizard";
 import useApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 
 export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const { getFiles } = useApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
-  const [activeEndpoint, setActiveEndpoint] = useState<string>("");
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
-  const { activeProject, setPostMessage } = useContext(SwizzleContext);
+  const { activeProject, setPostMessage, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles()
@@ -72,14 +73,17 @@ export default function EndpointList({ active }: { active: boolean }) {
           setIsVisible(true);
         }}
       />
+      <div className="flex">
       <input
-        className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2 py-1.5"
+        className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a] px-1.5 pb-1.5 mt-1"
         placeholder="Filter"
         value={searchFilter}
         onChange={(e) => {
           setSearchFilter(e.target.value);
         }}
       />
+      <FontAwesomeIcon icon={faXmarkCircle} className={`w-3 h-3 m-auto text-[#525363] cursor-pointer hover:text-[#D9D9D9] ${searchFilter == "" ? "hidden" : "" }`} onClick={() => setSearchFilter("")} />
+      </div>
 
       {endpoints.map((endpoint) => {  
         return (

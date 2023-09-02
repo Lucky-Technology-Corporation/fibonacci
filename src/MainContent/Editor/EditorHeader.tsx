@@ -1,13 +1,11 @@
-import Dot from "../../Utilities/Dot";
+import { useContext, useEffect, useState } from "react";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
+import Button from "../../Utilities/Button";
+import Dropdown from "../../Utilities/Dropdown";
+import { copyText } from "../../Utilities/Copyable";
 
-export default function EndpointItem({
-  method,
-  path,
-}: {
-  method: Method;
-  path: string;
-}) {
+export default function EndpointHeader() {
   const methodToColor = (method: Method) => {
     switch (method) {
       case Method.GET:
@@ -23,14 +21,46 @@ export default function EndpointItem({
     }
   };
 
+  const {activeEndpoint} = useContext(SwizzleContext);
+  const [method, setMethod] = useState<Method>(Method.GET);
+  const [path, setPath] = useState<string>("");
+
+  useEffect(() => {
+    if(activeEndpoint == undefined) return;
+    const splitEndpoint = activeEndpoint.split("/");
+    setMethod(splitEndpoint[0].toUpperCase() as Method);
+    setPath("/" + splitEndpoint[1] || "");
+  }, [activeEndpoint]);
+
+  const getSnippetForLanguage = (language: string) => {
+    if(language == "swift") {
+      return `let result = await Swizzle.shared.${method.toLowerCase()}("${path}", parameters: [:])`
+    } else if(language == "js") {
+      return `const result = await Swizzle.${method.toLowerCase()}("${path}")`
+    }
+  }
+
   return (
     <>
-      <div className={`flex-1 ml-8 mb-2 text-lg font-bold font-mono`}>
+    {activeEndpoint &&
+      <div className={`flex justify-between ml-8 mb-2 text-lg font-bold font-mono`}>
         <div className="flex">
           <span className={`${methodToColor(method)} mr-2`}>{method}</span>{" "}
           {path}
         </div>
+        <div>
+          <Dropdown
+            className="text-xs font-sans"
+            children={[{id: "swift", name: "Swift"}, {id: "js", name: "JavaScript"}]}
+            title="Code Snippet"
+            onSelect={(option) => {
+              const snippet = getSnippetForLanguage(option);
+              copyText(snippet)
+            }}
+          />
+        </div>
       </div>
+    }
     </>
   );
 }

@@ -39,6 +39,10 @@ export default function LogsPage() {
       id: "user",
       name: "User ID",
     },
+    {
+      id: "code",
+      name: "Response Code",
+    }
   ];
 
   useEffect(() => {
@@ -97,28 +101,21 @@ export default function LogsPage() {
       setFilterName(null);
     }
 
-    toast.promise(
-      getLogs(offset, filterName, filterQuery, nextPageToken).then((data) => {
-        if (data && data.results != null) {
-          setMessages(data.results);
-          setNextPageToken(data.next_page_token);
-        } else if (data) {
-          setMessages(data);
-        } else {
-          setMessages([]);
-        }
-      }),
-      {
-        loading: "Loading...",
-        success: "Loaded logs",
-        error: "Error loading logs",
-      },
-    );
+    getLogs(offset, filterName, filterQuery, nextPageToken).then((data) => {
+      if (data && data.results != null) {
+        setMessages(data.results);
+        setNextPageToken(data.next_page_token);
+      } else if (data) {
+        setMessages(data);
+      } else {
+        setMessages([]);
+      }
+    }).catch((e) => {
+      console.log(e);
+      toast.error("Error fetching logs");
+    });
   }, [offset, filterQuery]);
 
-  const setSearchType = (id: string) => {
-    setFilterName(id);
-  };
 
   const runSearch = () => {
     setFilterQuery(searchQuery);
@@ -150,7 +147,7 @@ export default function LogsPage() {
       <div className={`flex h-9 mb-4`}>
         <Dropdown
           className="ml-4"
-          onSelect={setSearchType}
+          onSelect={(id: string) => {setFilterName(id)}}
           children={searchTypes}
           direction="right"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}

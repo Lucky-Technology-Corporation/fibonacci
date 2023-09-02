@@ -30,7 +30,7 @@ export default function Checkbox({
           </svg>
         </span>
         <span
-          className={isChecked ? "font-bold" : "font-base"}
+          className={`text-sm ${isChecked ? "font-bold" : "font-base"}`}
           style={{
             transition: "font-weight 0.2s",
           }}

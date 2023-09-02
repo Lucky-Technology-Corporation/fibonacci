@@ -18,6 +18,22 @@ export default function useApi() {
     return response.data.objects;
   };
 
+  const getPackageJson = async () => {
+    try {
+      if(domain == null || domain == undefined || domain == "") {return []};
+      if(domain.includes("localhost")) {return []};
+      const response = await axios.get(`${domain.replace("https", "http")}:1234/code/package.json`, {
+          headers: {
+              Authorization: authHeader(),
+          },
+      })
+      return response.data;
+    } catch(e) {
+      console.log(e)
+      return [];
+    }
+  };
+
   const getFiles = async () => {
     try{
       if(domain == null || domain == undefined || domain == "") {return []};
@@ -42,5 +58,5 @@ export default function useApi() {
     return true;
   };
 
-  return { createAPI, updateEndpoint, getFiles, npmSearch };
+  return { createAPI, updateEndpoint, getFiles, npmSearch, getPackageJson };
 }

@@ -74,7 +74,7 @@ export default function ToastWindow({
       onMouseEnter={showHintWindowIfOpen}
       onMouseLeave={hideHintWindow}
     >
-      <div className="flex items-center justify-between px-4 py-2 pb-1">
+      <div className="flex items-center justify-between px-4 pt-3 pb-1">
         <div className={titleClass}>{title}</div>
       </div>
       <div className="px-4 pb-2 text-sm">{content}</div>

@@ -10,7 +10,7 @@ export default function SectionAction({
   return (
     <>
       <div
-        className={`flex-1 mt-1 p-1.5 px-2 mb-2 border-[#525363] border bg-[#85869833] hover:bg-[#85869855] cursor-pointer rounded text-sm`}
+        className={`flex-1 my-2 p-1.5 border-[#525363] border bg-[#85869833] hover:bg-[#85869855] cursor-pointer rounded text-sm`}
         onClick={onClick}
       >
         {text}

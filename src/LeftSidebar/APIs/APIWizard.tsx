@@ -51,7 +51,7 @@ export default function APIWizard({
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
     console.log(fileName)
     setPostMessage({type: "newFile", fileName: fileName})
-    setStep(2);
+    setIsVisible(false)
   };
 
   return (
