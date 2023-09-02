@@ -12,14 +12,22 @@ export default function EndpointList({ active }: { active: boolean }) {
   const { getFiles } = useApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [activeEndpoint, setActiveEndpoint] = useState<string>("");
-  const [fullEndpointList, setFullEndpointList] = useState<any[]>(["get/", "post/", "get/admin", "get/admin/:id"]);
-  const [endpoints, setEndpoints] = useState<any[]>(["get/", "post/", "get/admin", "get/admin/:id"]);
+  const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
+  const [endpoints, setEndpoints] = useState<any[]>([]);
   const { activeProject, setPostMessage } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles()
       .then((data) => {
-        // data.endpoints.forEach.replace("-", "/");
+        if(data == undefined || data.children == undefined || data.children.length == 0) { return }
+        const transformedEndpoints = data.children.map((endpoint: any) => {
+          console.log(endpoint)
+          return endpoint.name.replace(/-/g, "/").replace(".js", "");
+        }).filter((endpoint: string) => {
+          return endpoint != "_swizzle_blank";
+        });
+        setFullEndpointList(transformedEndpoints);
+        setEndpoints(transformedEndpoints);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -27,11 +35,15 @@ export default function EndpointList({ active }: { active: boolean }) {
       });
   }, [activeProject]);
 
+  //Used to open any file in theia
   useEffect(() => {
-    const fileName = activeEndpoint.replace("/", "-");
-    setPostMessage({type: "openFile", fileUri: `/home/swizzle_prod_user/code/${fileName}.js`})
+    if(activeEndpoint == undefined || activeEndpoint == "") return;
+    const fileName = activeEndpoint.replace(/\//g, '-');
+    console.log(fileName)
+    setPostMessage({type: "openFile", fileName: `${fileName}.js`})
   }, [activeEndpoint]);
 
+  //Used to filter the endopint list
   useEffect(() => {
     if(searchFilter == "") {
       setEndpoints(fullEndpointList);
@@ -72,6 +84,7 @@ export default function EndpointList({ active }: { active: boolean }) {
       {endpoints.map((endpoint) => {  
         return (
           <EndpointItem
+            key={endpoint}
             path={formatEndpointName(endpoint)}
             method={getMethodType(endpoint)}
             active={endpoint == activeEndpoint}

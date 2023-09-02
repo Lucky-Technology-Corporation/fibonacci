@@ -1,6 +1,7 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import Dropdown from "../../Utilities/Dropdown";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function APIWizard({
   isVisible,
@@ -10,10 +11,10 @@ export default function APIWizard({
   setIsVisible: (isVisible: boolean) => void;
 }) {
   const [inputValue, setInputValue] = useState("");
-
   const [step, setStep] = useState(0);
-
   const [selectedMethod, setSelectedMethod] = useState<string>("GET");
+  const {setPostMessage} = useContext(SwizzleContext);
+
   const methods = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
@@ -43,6 +44,13 @@ export default function APIWizard({
   };
 
   const createHandler = () => {
+    var cleanInputValue = ""
+    if(inputValue.startsWith("/")){
+      cleanInputValue = inputValue.substring(1).replace(/\//g, "-")
+    }
+    const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
+    console.log(fileName)
+    setPostMessage({type: "newFile", fileName: fileName})
     setStep(2);
   };
 

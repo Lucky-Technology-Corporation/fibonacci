@@ -19,13 +19,19 @@ export default function useApi() {
   };
 
   const getFiles = async () => {
-    // console.log(domain)
-    // const response = await axios.get(`http://146.190.138.216:3000/code`, {
-    //     headers: {
-    //         Authorization: authHeader(),
-    //     },
-    // })
-    // return response.data;
+    try{
+      if(domain == null || domain == undefined || domain == "") {return []};
+      if(domain.includes("localhost")) {return []};
+      const response = await axios.get(`${domain.replace("https", "http")}:1234/table_of_contents`, {
+          headers: {
+              Authorization: authHeader(),
+          },
+      })
+      return response.data;
+    } catch(e) {
+      console.log(e)
+      return [];
+    }
   };
 
   const createAPI = async (apiName: string) => {

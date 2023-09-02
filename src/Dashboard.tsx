@@ -35,7 +35,6 @@ export default function Dashboard() {
   const { getProjects } = useApi();
 
   useEffect(() => {
-    console.log("Getting projects...");
     getProjects()
       .then((data) => {
         if (data && data.length == 0) {

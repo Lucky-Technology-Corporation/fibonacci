@@ -17,13 +17,13 @@ export default function PackageInfo({ show }: { show: boolean }) {
   const { setPostMessage } = useContext(SwizzleContext);
 
   useEffect(() => {
+    if (query == "") { return }
     npmSearch(query).then((data) => {
       setItems(
         data.map((item) => {
           return { label: item.package.name, value: item.package.name };
         }),
       );
-      console.log(items);
     });
   }, [query]);
 

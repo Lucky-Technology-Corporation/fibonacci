@@ -27,6 +27,7 @@ export default function Editor({
   };
 
   useEffect(() => {
+    if(fileUri == undefined || fileUri == "") return;
     const message = { fileUri: fileUri, type: "openFile" };
     postMessageToIframe(message);
   }, [fileUri]);
@@ -49,6 +50,13 @@ export default function Editor({
         console.log("fileChanged");
       }
     });
+
+    //On unmount, save the file and remove the event listener
+    return () => {
+      window.removeEventListener("message", () => {});
+      const message = { type: "saveFile"}
+      postMessageToIframe(message);
+    }
   }, []);
   
   return (
