@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Checkbox from "../Utilities/Checkbox";
 import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
@@ -18,35 +18,72 @@ import IconTextButton from "../Utilities/IconTextButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 
-const authContent = `if(request.user == null){
-    return response.send(401, "Unauthorized")
-}
-const userId = UID(request.user)
-`;
-const dbContent = `const db = getDb()
-`;
+const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`
+const signatureNoAuth = `async (request, result)`
+
+const signatureNoDb = `async (request, result) => {
+`
+const signatureWithDb = `async (request, result) => {
+  const db = getDb()
+`
 
 export default function RightSidebar({
   selectedTab,
   setPrependCode,
+  setFindReplace,
+  currentFileProperties,
 }: {
   selectedTab: Page;
   setPrependCode: (code: string) => void;
+  setFindReplace: (content: string[]) => void;
+  currentFileProperties: any;
 }) {
+  const programmaticDbUpdateRef = useRef(false);
+  const programmaticAuthUpdateRef = useRef(false);
+    
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isDBChecked, setIsDBChecked] = useState(false);
-  const [isSecretsChecked, setIsSecretsChecked] = useState(false);
-  const [isPackagesChecked, setIsPackagesChecked] = useState(false);
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
 
 
   useEffect(() => {
-    var newPrependCode = isAuthChecked ? authContent : "";
-    newPrependCode += isDBChecked ? dbContent : "";
-    setPrependCode(newPrependCode);
-  }, [isAuthChecked, isDBChecked]);
+    if (programmaticAuthUpdateRef.current) {
+      programmaticAuthUpdateRef.current = false;
+    } else {
+      if(isAuthChecked){
+        setFindReplace([signatureNoAuth, signatureWithAuth])
+      } else {
+        setFindReplace([signatureWithAuth, signatureNoAuth])
+      }
+    }
+  }, [isAuthChecked]);
+
+  useEffect(() => {
+    if (programmaticDbUpdateRef.current) {
+      programmaticDbUpdateRef.current = false;
+    } else {  
+      if(isDBChecked){
+        setFindReplace([signatureNoDb, signatureWithDb])
+      } else {
+        setFindReplace([signatureWithDb, signatureNoDb])
+      }
+    }
+  }, [isDBChecked]);
+
+  useEffect(() => {
+    if(currentFileProperties == undefined) return;
+    
+    if(currentFileProperties.hasGetDb !== isDBChecked){
+      programmaticDbUpdateRef.current = true;
+      setIsDBChecked(currentFileProperties.hasGetDb)
+    }
+    if(currentFileProperties.hasPassportAuth !== isAuthChecked){
+      programmaticAuthUpdateRef.current = true;
+      setIsAuthChecked(currentFileProperties.hasPassportAuth)
+    }
+  }, [currentFileProperties])
 
   return (
     <div

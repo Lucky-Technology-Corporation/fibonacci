@@ -6,9 +6,13 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 export default function APIWizard({
   isVisible,
   setIsVisible,
+  setEndpoints,
+  setFullEndpoints,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
+  setEndpoints: React.Dispatch<React.SetStateAction<any[]>>
+  setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>
 }) {
   const [inputValue, setInputValue] = useState("");
   const [step, setStep] = useState(0);
@@ -44,14 +48,21 @@ export default function APIWizard({
   };
 
   const createHandler = () => {
-    var cleanInputValue = ""
+    var cleanInputValue = inputValue
     if(inputValue.startsWith("/")){
+      console.log("STARTS WITH SLASH")
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-")
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
-    console.log(fileName)
     setPostMessage({type: "newFile", fileName: fileName})
     setIsVisible(false)
+    const newEndpointName = fileName.replace(/-/g, "/").replace(".js", "");
+    setEndpoints((endpoints: any[]) => {
+      return [...endpoints, newEndpointName];
+    })
+    setFullEndpoints((endpoints: any[]) => {
+      return [...endpoints, newEndpointName];
+    })
   };
 
   return (

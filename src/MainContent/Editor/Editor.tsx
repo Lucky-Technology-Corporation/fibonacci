@@ -4,9 +4,13 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 export default function Editor({
   fileUri,
   prependText,
+  findReplace,
+  setCurrentFileProperties,
 }: {
   fileUri: string;
   prependText: string;
+  findReplace: string[]; //[find, replace]
+  setCurrentFileProperties: (properties: any) => void;
 }) {
   const iframeRef = useRef(null);
   const { domain, postMessage } = useContext(SwizzleContext);
@@ -38,16 +42,29 @@ export default function Editor({
     postMessageToIframe(message);
   }, [prependText]);
 
+  useEffect(() => {
+    if(findReplace == undefined || findReplace.length != 2) return;
+    const message = { findText: findReplace[0], replaceText: findReplace[1], type: "findAndReplace" };
+    postMessageToIframe(message);
+  }, [findReplace]);
+
   //Resend the file name when ready
   useEffect(() => {
     window.addEventListener("message", (event) => {
       if (event.data.type === "extensionReady") {
+        console.log("EXTENSION READY")
         const message = { fileUri: fileUri, type: "openFile" };
         postMessageToIframe(message);
       }
       if (event.data.type === "fileChanged") {
+        setCurrentFileProperties({
+          fileUri: event.data.fileUri,
+          hasPassportAuth: event.data.hasPassportAuth,
+          hasGetDb: event.data.hasGetDb,
+        })
         //React to the viewed file changing - update the currently selected endpoint
         console.log("fileChanged");
+        console.log(event.data);
       }
     });
 
@@ -64,6 +81,7 @@ export default function Editor({
       <iframe
         ref={iframeRef}
         src={`${domain.replace("https", "http")}:3000`}
+        // src={`http://localhost:3000`}
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",

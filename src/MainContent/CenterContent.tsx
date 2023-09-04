@@ -11,6 +11,8 @@ import MonitoringPage from "./Logs/MonitoringPage";
 type CenterContentProps = {
   selectedTab: Page;
   prependCode: string;
+  findReplace: string[];
+  setCurrentFileProperties: (properties: any) => void;
   didDeploy: boolean;
   setDidDeploy: (didDeploy: boolean) => void;
   activeCollection: string;
@@ -21,6 +23,8 @@ type CenterContentProps = {
 export default function CenterContent({
   selectedTab,
   prependCode,
+  findReplace,
+  setCurrentFileProperties,
   didDeploy,
   setDidDeploy,
   activeCollection,
@@ -31,7 +35,7 @@ export default function CenterContent({
     return (
       <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
         <EditorHeader />
-        <Editor fileUri={fileUri} prependText={prependCode} />
+        <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
       </div>
     );
   } else if (selectedTab == Page.Auth) {

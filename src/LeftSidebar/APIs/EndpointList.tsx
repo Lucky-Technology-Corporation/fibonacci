@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import EndpointItem from "./EndpointItem";
 import { Method } from "../../Utilities/Method";
 import SectionAction from "../SectionAction";
@@ -9,13 +9,14 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 
-export default function EndpointList({ active }: { active: boolean }) {
+export default function EndpointList({ active, currentFileProperties }: { active: boolean, currentFileProperties: any }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const { getFiles } = useApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const { activeProject, setPostMessage, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
+  const programmatiFileUpdateRef = useRef(false);
 
   useEffect(() => {
     getFiles()
@@ -29,6 +30,7 @@ export default function EndpointList({ active }: { active: boolean }) {
         });
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
+        console.log(transformedEndpoints);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -38,11 +40,22 @@ export default function EndpointList({ active }: { active: boolean }) {
 
   //Used to open any file in theia
   useEffect(() => {
+    if (programmatiFileUpdateRef.current) {
+      programmatiFileUpdateRef.current = false;
+      return;
+    }
     if(activeEndpoint == undefined || activeEndpoint == "") return;
     const fileName = activeEndpoint.replace(/\//g, '-');
-    console.log(fileName)
     setPostMessage({type: "openFile", fileName: `${fileName}.js`})
   }, [activeEndpoint]);
+
+  useEffect(() => {
+    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
+    const newEndpoint = (currentFileProperties.fileUri.split("user-dependencies/")[1].replace(".js", "").replace(/-/g, "/"));
+    if(newEndpoint == activeEndpoint) return;
+    programmatiFileUpdateRef.current = true;
+    setActiveEndpoint(newEndpoint);
+  }, [currentFileProperties]);
 
   //Used to filter the endopint list
   useEffect(() => {
@@ -98,7 +111,7 @@ export default function EndpointList({ active }: { active: boolean }) {
           />
         );
       })}
-      <APIWizard isVisible={isVisible} setIsVisible={setIsVisible} />
+      <APIWizard isVisible={isVisible} setIsVisible={setIsVisible} setEndpoints={setEndpoints} setFullEndpoints={setFullEndpointList} />
     </div>
   );
 }

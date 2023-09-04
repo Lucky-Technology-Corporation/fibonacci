@@ -18,6 +18,10 @@ export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
   //Auth checkbox handler
   const [prepndCode, setPrependCode] = useState("");
+  //Find and replace handler
+  const [findReplace, setFindReplace] = useState([]);
+  //Current file properties handler
+  const [currentFileProperties, setCurrentFileProperties] = useState<any>({});
   //Deploy state handler
   const [didDeploy, setDidDeploy] = useState(false);
   //Active collection handler
@@ -86,11 +90,14 @@ export default function Dashboard() {
               setActiveCollection={setActiveCollection}
               activeLogsPage={activeLogsPage}
               setActiveLogsPage={setActiveLogsPage}
+              currentFileProperties={currentFileProperties}
             />
 
             <CenterContent
               selectedTab={selectedTab}
               prependCode={prepndCode}
+              findReplace={findReplace}
+              setCurrentFileProperties={setCurrentFileProperties}
               didDeploy={didDeploy}
               setDidDeploy={setDidDeploy}
               activeCollection={activeCollection}
@@ -101,6 +108,8 @@ export default function Dashboard() {
             <RightSidebar
               selectedTab={selectedTab}
               setPrependCode={setPrependCode}
+              setFindReplace={setFindReplace}
+              currentFileProperties={currentFileProperties}
             />
           </div>
         </div>
