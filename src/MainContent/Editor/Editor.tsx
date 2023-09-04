@@ -80,7 +80,7 @@ export default function Editor({
     <div style={{ overflow: "hidden", height: "calc(100% - 36px)" }}>
       <iframe
         ref={iframeRef}
-        src={`${domain.replace("https", "http")}:3000`}
+        src={`${domain.replace("https", "http")}:3000/#/home/swizzle_prod_user/code`}
         // src={`http://localhost:3000`}
         frameBorder="0"
         style={{
