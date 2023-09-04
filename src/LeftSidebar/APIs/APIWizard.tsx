@@ -2,6 +2,7 @@ import { ReactNode, useContext, useState } from "react";
 import Dropdown from "../../Utilities/Dropdown";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import toast from "react-hot-toast";
 
 export default function APIWizard({
   isVisible,
@@ -54,15 +55,32 @@ export default function APIWizard({
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-")
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
+    const newEndpointName = fileName.replace(/-/g, "/").replace(".js", "");     
+    
+    let isDuplicate = false;
+    setFullEndpoints((endpoints: any[]) => {
+      if (!endpoints.includes(newEndpointName)) {
+        return [...endpoints, newEndpointName];
+      }
+      isDuplicate = true;
+      return endpoints;
+    });
+    
+    setEndpoints((endpoints: any[]) => {
+      if (!endpoints.includes(newEndpointName)) {
+        return [...endpoints, newEndpointName];
+      }
+      isDuplicate = true;
+      return endpoints;
+    });
+
+    if(isDuplicate) {
+      toast.error("That endpoint already exists");
+      return;
+    }
     setPostMessage({type: "newFile", fileName: fileName})
     setIsVisible(false)
-    const newEndpointName = fileName.replace(/-/g, "/").replace(".js", "");
-    setEndpoints((endpoints: any[]) => {
-      return [...endpoints, newEndpointName];
-    })
-    setFullEndpoints((endpoints: any[]) => {
-      return [...endpoints, newEndpointName];
-    })
+
   };
 
   return (
