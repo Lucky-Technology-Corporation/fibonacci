@@ -15,6 +15,7 @@ type LeftSidebarProps = {
   setActiveCollection: Dispatch<SetStateAction<string>>;
   activeLogsPage: string;
   setActiveLogsPage: Dispatch<SetStateAction<string>>;
+  currentFileProperties: any;
 };
 
 export default function LeftSidebar({
@@ -24,6 +25,7 @@ export default function LeftSidebar({
   setActiveCollection,
   activeLogsPage,
   setActiveLogsPage,
+  currentFileProperties,
 }: LeftSidebarProps) {
   return (
     <div className="min-w-[220px] border-r border-[#4C4F6B] bg-[#191A23]">
@@ -58,7 +60,7 @@ export default function LeftSidebar({
             setSelectedTab(Page.Apis);
           }}
         />
-        <EndpointList active={selectedTab == Page.Apis} />
+        <EndpointList active={selectedTab == Page.Apis} currentFileProperties={currentFileProperties} />
         
         {/* <SectionTitle
           icon="world.svg"

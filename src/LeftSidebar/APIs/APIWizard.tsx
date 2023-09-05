@@ -2,13 +2,18 @@ import { ReactNode, useContext, useState } from "react";
 import Dropdown from "../../Utilities/Dropdown";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import toast from "react-hot-toast";
 
 export default function APIWizard({
   isVisible,
   setIsVisible,
+  setEndpoints,
+  setFullEndpoints,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
+  setEndpoints: React.Dispatch<React.SetStateAction<any[]>>
+  setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>
 }) {
   const [inputValue, setInputValue] = useState("");
   const [step, setStep] = useState(0);
@@ -44,14 +49,38 @@ export default function APIWizard({
   };
 
   const createHandler = () => {
-    var cleanInputValue = ""
+    var cleanInputValue = inputValue
     if(inputValue.startsWith("/")){
+      console.log("STARTS WITH SLASH")
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-")
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
-    console.log(fileName)
+    const newEndpointName = fileName.replace(/-/g, "/").replace(".js", "");     
+    
+    let isDuplicate = false;
+    setFullEndpoints((endpoints: any[]) => {
+      if (!endpoints.includes(newEndpointName)) {
+        return [...endpoints, newEndpointName];
+      }
+      isDuplicate = true;
+      return endpoints;
+    });
+    
+    setEndpoints((endpoints: any[]) => {
+      if (!endpoints.includes(newEndpointName)) {
+        return [...endpoints, newEndpointName];
+      }
+      isDuplicate = true;
+      return endpoints;
+    });
+
+    if(isDuplicate) {
+      toast.error("That endpoint already exists");
+      return;
+    }
     setPostMessage({type: "newFile", fileName: fileName})
     setIsVisible(false)
+
   };
 
   return (
