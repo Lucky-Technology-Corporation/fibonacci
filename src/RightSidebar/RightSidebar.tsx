@@ -17,6 +17,7 @@ import IconButton from "../Utilities/IconButton";
 import IconTextButton from "../Utilities/IconTextButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
+import TestWindow from "./TestWindow";
 
 const authContent = `if(request.user == null){
     return response.send(401, "Unauthorized")
@@ -40,6 +41,8 @@ export default function RightSidebar({
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
+  const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
+  const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
 
 
   useEffect(() => {
@@ -55,19 +58,32 @@ export default function RightSidebar({
       }`}
     >
       <div className="flex flex-col items-center mt-4 h-screen pr-4">
-        <DeployButton />
+        <DeployButton 
+          
+          />
         <div className="h-2" />
         <IconTextButton
           onClick={() => {
+            setCurrentWindow("test");
             setShouldShowTestWindow(true);
           }}
           icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
           text="Test"
         />
-        {shouldShowTestWindow && (
+        {currentWindow === "test" && (
+         <TestWindow 
+         shouldShowTestWindow={() => setShouldShowTestWindow(false)}
+         //hideTestWindow={() => setShouldShowTestWindow(false)}
+         setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)} 
+         setCurrentWindow={setCurrentWindow}
+         savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
+     />
+     
+        )}
+        {currentWindow === "newTest" && (
           <NewTestWindow
-            shouldShowTestWindow={shouldShowTestWindow}
-            hideTestWindow={() => setShouldShowTestWindow(false)}
+            shouldShowNewTestWindow={shouldShowNewTestWindow}
+            hideNewTestWindow={() => setShouldShowNewTestWindow(false)}
             savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
           />
         )}

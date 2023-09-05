@@ -1,17 +1,17 @@
 import Button from "../Utilities/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useRef, useState } from "react";
 import InputWithPrefix from "../Utilities/InputWithPrefix";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 export default function NewTestWindow({
-  shouldShowTestWindow,
-  hideTestWindow,
+  shouldShowNewTestWindow,
+  hideNewTestWindow,
   savedTests,
 }: {
-  shouldShowTestWindow: boolean;
-  hideTestWindow: () => void;
+  shouldShowNewTestWindow: boolean;
+  hideNewTestWindow: any;
   savedTests?: string[];
 }) {
 
@@ -27,7 +27,7 @@ export default function NewTestWindow({
     function handleClickOutside(event) {
       console.log("click outside")
       if (myRef.current && !myRef.current.contains(event.target)) {
-        hideTestWindow()
+        hideNewTestWindow()
       }
     }
     window.addEventListener('mousedown', handleClickOutside);
@@ -43,7 +43,7 @@ export default function NewTestWindow({
   return (
     <div
       className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
-        shouldShowTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
+        shouldShowNewTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
         transition: "opacity 0.1s",
@@ -51,19 +51,20 @@ export default function NewTestWindow({
       }}
       ref={myRef}
     > 
+    
 
-    <div className="flex flex-col justify-between px-4 py-2 pb-4 mt-2">
-
-      <div className="absolute top-0 right-0 m-2">
-        <FontAwesomeIcon
-          icon={faXmark}
-          className="h-6 w-6 text-[#525363] cursor-pointer hover:text-[#D9D9D9]"
-          onClick={hideTestWindow}
-        />
-      </div>
+    <div className="flex flex-col justify-between px-4 py-2 pb-4">
+    <div className="flex items-center pb-2">
+    <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
+    <div className="font-bold" style={{ fontSize: "18px" }}>
+        New Request
+    </div>
+</div>
 
 
-      <div className="flex w-full mb-2 mt-4">
+      <div className="font-bold my-2">Test Name</div>
+
+      <div className="flex w-full mb-2">
         <input
             type="text"
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"          
@@ -78,7 +79,6 @@ export default function NewTestWindow({
               }
             }}
           />
-          <Button text="Save" onClick={hideTestWindow} />
       </div>
   <div className="font-bold my-2 text-md">Query Parameters</div>
     <div className="flex w-full mb-2">
@@ -133,6 +133,10 @@ export default function NewTestWindow({
 
     {/* <Button text="Save" onClick={hideTestWindow} /> */}
   </div>
+  <div className="flex justify-end items-center pb-4 mr-4 space-x-4">
+        <Button text="Cancel" onClick={hideNewTestWindow} className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" />
+        <Button text="Save" onClick={() => {}} className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" />
+        </div>
 </div>
 
   );
