@@ -44,7 +44,6 @@ export default function ProjectSelector() {
     setActiveProjectName(project.name);
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
-
     if (project.test_swizzle_domain) {
       setDomain(project.test_swizzle_domain);
       sessionStorage.setItem(

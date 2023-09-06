@@ -48,7 +48,7 @@ export default function SearchModal({
       showHintWindowIfOpen={showHintWindowIfOpen}
       hideHintWindow={hideHintWindow}
       title="search code"
-      titleText="text-sm"
+      titleClass="text-sm"
       position="top-left"
       content={
         <>

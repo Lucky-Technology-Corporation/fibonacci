@@ -49,38 +49,6 @@ export default function CodeCheckButton({}: {}) {
     }, 3500);
   };
 
-  //Command-S deploy trigger
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        (window.navigator.platform.match("Mac")
-          ? event.metaKey
-          : event.ctrlKey) &&
-        event.key === "s"
-      ) {
-        event.preventDefault();
-        if (window.navigator.platform.match("Mac")) {
-          toast(
-            "Reloading test environment (Shift-⌘-S to deploy to production)",
-            { icon: "⏳" },
-          );
-        } else {
-          toast(
-            "Reloading test environment (Shift-Ctrl-S to deploy to production)",
-            { icon: "⏳" },
-          );
-        }
-        runDeploy();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    // Clean up the effect
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
   return (
     <div className="relative w-full mb-1">
       <div
