@@ -36,6 +36,7 @@ export default function TestWindow({
     const [tests, setTests] = useState([]);
     const [testResults, setTestResults] = useState({});
     const api = useTestApi();
+    const activeCollection = "_swizzle_usertests"
 
     const runSingleTest = async (testDoc) => {
         try {
@@ -79,7 +80,7 @@ export default function TestWindow({
     
 
 useEffect(() => {
-    api.getTests("ddd")
+    api.getTests(activeCollection)
         .then(response => {
             console.log("API Response:", response.documents)
             setTests(response.documents);
@@ -158,8 +159,8 @@ if (showNewTestWindow) {
     className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all"
     icon={faTrash}
               onClick={() => {
-                api.deleteTest("ddd", testDoc._id)
-                api.getTests("ddd")
+                api.deleteTest(activeCollection, testDoc._id)
+                api.getTests(activeCollection)
         .then(response => {
             console.log("API Response:", response.documents)
             setTests(response.documents);

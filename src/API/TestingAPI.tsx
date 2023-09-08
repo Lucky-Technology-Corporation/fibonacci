@@ -15,9 +15,9 @@ export default function useTestApi() {
         deleteDocument: deleteTest} = useApi();
 
     const { domain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
-    //const BASE_URL_USER = domain;
-    const BASE_URL_USER = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1'
-    const activeCollection  = "ddd";
+    const BASE_URL_USER = domain;
+    //const BASE_URL_USER = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1'
+    const activeCollection  = "_swizzle_usertests";
 
     const runTest = async (testDoc) => {
         try {
@@ -25,16 +25,15 @@ export default function useTestApi() {
                 throw new Error("No active endppoint selected");
             }
 
-            // const jwtSpoof = await axios.get(`${BASE_URL}/projects/7a5925d7-44ec-456c-83f4-29aad46dc871/testing/spoofJwt?user_id=1234`,
-            // {
-            //     headers: {
-            //       Authorization: authHeader(),
-            //     },
-            //   })
+            const response = await axios.get(`${BASE_URL}/projects/c6d6e68f-a8a3-4dc6-b197-b0a17ea95a9a/${environment}/testing/spoofJwt?user_id=${testDoc.userId}`,
+{
+    headers: {
+        Authorization: authHeader(),
+    },
+});
 
-            const jwtDataJSON = `{"jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQyMTg3NjAsInVzZXJJZCI6IjEyMzQifQ.krMXfL62lyzkPwofeVd8WKgMkZw6zjs6wQ5oXZ7VKgE"}`;
-            const jwtSpoof = JSON.parse(jwtDataJSON);
-            const jwtToken = jwtSpoof.jwt;            
+const jwtToken = response.data.jwt;  
+            
             const method = activeEndpoint.split("/")[0].toUpperCase();
             const header = `Bearer ${jwtToken}`
             const endpointPath = "/" + activeEndpoint.split("/")[1]
@@ -73,8 +72,8 @@ export default function useTestApi() {
                 throw new Error("No active endpoint selected");
             }
     
-            const allTests = await useApi().getDocuments("ddd");
-            
+            const allTests = await useApi().getDocuments(activeCollection);
+
             const responses = [];
             for (const testDoc of allTests) {
                 const response = await runTest(testDoc);

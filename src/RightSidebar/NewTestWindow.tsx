@@ -33,7 +33,7 @@ savedBody?: string;
   const [userId, setUserId] = useState(savedUserId || "");
   const [body, setBody] = useState(savedBody || "");
   const {activeEndpoint} = useContext(SwizzleContext);
-  const activeCollection = "ddd"
+  const activeCollection = "_swizzle_usertests";
   const myRef = useRef<HTMLDivElement>(null);
   const { createTest, updateTest} = useTestApi();
   
