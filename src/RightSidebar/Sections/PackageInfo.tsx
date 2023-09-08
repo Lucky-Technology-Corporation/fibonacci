@@ -165,7 +165,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
                 <tbody>
                   {installedPackages.map((packageName) => {
                     return (
-                      <tr>
+                      <tr key={packageName}>
                         <td>{packageName}</td>
                         <td className="opacity-70 hover:opacity-100 cursor-pointer"><FontAwesomeIcon
                           className="ml-auto"
