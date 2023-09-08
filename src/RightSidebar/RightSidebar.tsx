@@ -18,6 +18,7 @@ import IconTextButton from "../Utilities/IconTextButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import TestWindow from "./TestWindow";
+import useTestApi from "../API/TestingAPI";
 
 const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`
 const signatureNoAuth = `async (request, result)`
@@ -113,7 +114,7 @@ export default function RightSidebar({
          //hideTestWindow={() => setShouldShowTestWindow(false)}
          setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)} 
          setCurrentWindow={setCurrentWindow}
-         savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
+         //savedTests={useApi().getTests()}
      />
      
         )}
