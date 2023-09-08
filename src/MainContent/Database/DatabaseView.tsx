@@ -23,10 +23,10 @@ export default function DatabaseView({
 }: {
   activeCollection: string;
 }) {
-  const { getDocuments, deleteCollection, runEnglishSearchQuery, runQuery } =
+  const { getDocuments, deleteCollection, runQuery } =
     useApi();
 
-  const { activeProject } = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [shouldShowSaveHint, setShouldShowSaveHint] = useState(false);
   const [isJSONEditorVisible, setIsJSONEditorVisible] = useState(false);
@@ -168,7 +168,7 @@ export default function DatabaseView({
   useEffect(() => {
     setCurrentPage(0);
     fetchData(currentPage);
-  }, [activeCollection, activeProject]);
+  }, [activeCollection, activeProject, environment]);
 
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;

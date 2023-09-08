@@ -7,6 +7,9 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
+  const [testDomain, setTestDomain] = useState("");
+  const [prodDomain, setProdDomain] = useState("");
+  
   const { createProject } = useApi();
   const {
     projects,
@@ -18,6 +21,7 @@ export default function ProjectSelector() {
     setDomain,
     setIsCreatingProject,
     isCreatingProject,
+    environment
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -44,14 +48,28 @@ export default function ProjectSelector() {
     setActiveProjectName(project.name);
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
-    if (project.test_swizzle_domain) {
+    
+    //TODO: Remove this
+    console.log(project)
+
+    setTestDomain(project.test_swizzle_domain);
+    setProdDomain(project.prod_swizzle_domain);
+
+    if(environment == "test"){
       setDomain(project.test_swizzle_domain);
-      sessionStorage.setItem(
-        "domain",
-        project.test_swizzle_domain,
-      );
+    }
+    else {
+      setDomain(project.prod_swizzle_domain);
     }
   };
+
+  useEffect(() => {
+    if(environment == "test"){
+      setDomain(testDomain);
+    } else{
+      setDomain(prodDomain);
+    }
+  }, [environment])
 
   //When projects is set, set the active project to the first project in the list or the one stored in session storage
   useEffect(() => {

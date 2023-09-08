@@ -6,7 +6,7 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function AnalyticsPage() {
   const api = useApi();
-  const { activeProject } = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
 
   const [dateRange, setDateRange] = useState<DateRangePickerValue>({
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -38,7 +38,7 @@ export default function AnalyticsPage() {
       return;
     }
     fetchAndProcessData();
-  }, [dateRange, activeProject]);
+  }, [dateRange, activeProject, environment]);
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (

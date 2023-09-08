@@ -7,7 +7,7 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { activeProject } = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
 
   const getData = async (startDate: string, endDate: string) => {
     try {
@@ -18,7 +18,7 @@ export default function useApi() {
       };
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/monitoring`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/monitoring`,
         body,
         {
           headers: {
@@ -43,10 +43,10 @@ export default function useApi() {
         throw new Error("No active project selected");
       }
 
-      var url = `${BASE_URL}/projects/${activeProject}/monitoring/logs?offset=${offset}&limit=20`;
+      var url = `${BASE_URL}/projects/${activeProject}/${environment}/monitoring/logs?offset=${offset}&limit=20`;
       if (filterKey && filterQuery) {
         if (filterKey == "log") {
-          url = `${BASE_URL}/projects/${activeProject}/monitoring/logs/search?search_string=${filterQuery}${
+          url = `${BASE_URL}/projects/${activeProject}/${environment}/monitoring/logs/search?search_string=${filterQuery}${
             pageToken ? `&page_token=${pageToken}` : ""
           }`;
         } else {
@@ -73,7 +73,7 @@ export default function useApi() {
         throw new Error("No active project selected");
       }
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/monitoring/logs/${requestId}`,
         {
           headers: {
             Authorization: authHeader(),

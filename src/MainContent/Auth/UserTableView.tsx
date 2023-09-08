@@ -13,7 +13,7 @@ import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 export default function UserTableView() {
   const { getDocuments } = useApi();
 
-  const { activeProject, activeProjectName } = useContext(SwizzleContext);
+  const { activeProject, activeProjectName, environment } = useContext(SwizzleContext);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -67,7 +67,7 @@ export default function UserTableView() {
   useEffect(() => {
     setCurrentPage(0);
     fetchData(currentPage);
-  }, [activeProject]);
+  }, [activeProject, environment]);
 
   const runSearch = () => {
     // run search

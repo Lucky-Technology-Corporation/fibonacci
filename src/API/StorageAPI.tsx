@@ -7,8 +7,7 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useStorageApi() {
   const authHeader = useAuthHeader();
-  const { activeProject } = useContext(SwizzleContext);
-  const { domain } = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
 
   const uploadFile = async (file: any) => {
     try {
@@ -19,7 +18,7 @@ export default function useStorageApi() {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/storage/test/public/${fileName}`, //TODO: change this
+        `${BASE_URL}/projects/${activeProject}/storage/${environment}/public/${fileName}`, //TODO: change this
         formData,
         {
           headers: {

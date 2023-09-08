@@ -12,7 +12,7 @@ import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 
 export default function LogsPage() {
-  const { activeProject } = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
   const authHeader = useAuthHeader();
   const { getLogs } = useApi();
 
@@ -44,6 +44,20 @@ export default function LogsPage() {
       name: "Response Code",
     }
   ];
+
+  useEffect(() => {
+    setPage(0);
+    setOffset(0)
+    setFilterQuery(null);
+    setSearchQuery("");
+    setNextPageToken(null);
+
+    getLogs(offset, filterName, filterQuery).then((data) => {
+      if (data) {
+        setMessages(data);
+      }
+    });
+  }, [filterName, environment, activeProject]);
 
   useEffect(() => {
     setOffset(page * 20);
@@ -193,7 +207,7 @@ export default function LogsPage() {
             </tr>
           </thead>
           <tbody className="overflow-y-scroll">
-            {messages.map((message, index) => {
+            {(messages || []).map((message, index) => {
               return <LogRow key={index} message={message} />;
             })}
             <tr></tr>

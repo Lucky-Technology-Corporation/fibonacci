@@ -16,7 +16,7 @@ export default function ObjectTableView() {
   const { getDocuments } = useApi();
   const { uploadFile } = useStorageApi();
 
-  const { activeProject, domain } = useContext(SwizzleContext);
+  const { activeProject, domain, environment } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [rowDetailData, setRowDetailData] = useState<any>({});
@@ -60,7 +60,7 @@ export default function ObjectTableView() {
   useEffect(() => {
     setCurrentPage(0);
     fetchData(currentPage);
-  }, [activeProject]);
+  }, [activeProject, environment]);
 
   useEffect(() => {
     fetchData(currentPage);

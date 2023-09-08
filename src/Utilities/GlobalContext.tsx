@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState } from "react";
 export const SwizzleContext = createContext(undefined);
 
 export const GlobalContextProvider = ({ children }) => {
+  const [environment, setEnvironment] = useState("test"); // ["test", "prod"]
   const [projects, setProjects] = useState(null);
   const [activeProject, setActiveProject] = useState("");
   const [activeProjectName, setActiveProjectName] = useState("");
@@ -34,6 +35,8 @@ export const GlobalContextProvider = ({ children }) => {
         setPostMessage,
         activeEndpoint,
         setActiveEndpoint,
+        environment,
+        setEnvironment
       }}
     >
       {children}

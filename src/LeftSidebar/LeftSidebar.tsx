@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 import { Page } from "../Utilities/Page";
 import SectionTitle from "./SectionTitle";
 import CollectionList from "./Database/CollectionList";
@@ -7,6 +7,10 @@ import UserDropdown from "../UserDropdown";
 import EndpointList from "./APIs/EndpointList";
 import AuthSettings from "./Auth/AuthSettings";
 import LogsList from "./Monitoring/LogsList";
+import Switch from "react-switch";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
+import { SwizzleContext } from "../Utilities/GlobalContext";
 
 type LeftSidebarProps = {
   selectedTab: Page;
@@ -27,6 +31,9 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
+
+  const {environment, setEnvironment} = useContext(SwizzleContext);
+
   return (
     <div className="min-w-[220px] border-r border-[#4C4F6B] bg-[#191A23]">
       <div className="flex flex-col items-center pt-4 h-screen">
@@ -36,6 +43,20 @@ export default function LeftSidebar({
         </div>
         <div className="flex">
           <ProjectSelector />
+        </div>
+        <div className="flex mt-2">
+          <Switch
+            className="m-auto mr-1 scale-75"
+            onChange={() => { setEnvironment(environment == "test" ? "prod" : "test") }}
+            checked={environment == 'test'}
+            uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
+            checkedIcon={<FontAwesomeIcon icon={faFlask} className="ml-2.5" color="#ffffff" />}
+            offColor="#474752"
+            onColor="#f39c12"
+            onHandleColor="#d2d3e0"
+            offHandleColor="#d2d3e0"
+          />
+          {environment == "test" ? <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div> : <div className="text-sm font-bold m-auto">Production View</div>}
         </div>
 
         <SectionTitle

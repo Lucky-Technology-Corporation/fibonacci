@@ -8,13 +8,13 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { activeProject } = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
   const signOut = useSignOut()
 
   const getCollections = async () => {
     if (activeProject == "") return;
     const response = await axios.get(
-      `${BASE_URL}/projects/${activeProject}/collections`,
+      `${BASE_URL}/projects/${activeProject}/${environment}/collections`,
       {
         headers: {
           Authorization: authHeader(),
@@ -43,7 +43,7 @@ export default function useApi() {
       }
 
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}${queryString}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -68,7 +68,7 @@ export default function useApi() {
     if (activeCollection == "") return;
     try {
       const response = await axios.patch(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}/${id}`,
         { document: data },
         {
           headers: {
@@ -90,7 +90,7 @@ export default function useApi() {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}`,
         { documents: [newDocument] },
         {
           headers: {
@@ -110,7 +110,7 @@ export default function useApi() {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}/${id}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -128,7 +128,7 @@ export default function useApi() {
     try {
       if (activeProject == "") return;
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/collections`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/collections`,
         { name: name },
         {
           headers: {
@@ -147,7 +147,7 @@ export default function useApi() {
     try {
       if (activeProject == "") return;
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/collections/${name}`,
+        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${name}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -161,26 +161,26 @@ export default function useApi() {
     }
   };
 
-  const runEnglishSearchQuery = async (query: string, exampleDoc: string) => {
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/ai`,
-        {
-          english_description: query,
-          example_doc: exampleDoc,
-        },
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
-        },
-      );
-      return response.data;
-    } catch (e: any) {
-      console.error(e);
-      return null;
-    }
-  };
+  // const runEnglishSearchQuery = async (query: string, exampleDoc: string) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${BASE_URL}/ai`,
+  //       {
+  //         english_description: query,
+  //         example_doc: exampleDoc,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: authHeader(),
+  //         },
+  //       },
+  //     );
+  //     return response.data;
+  //   } catch (e: any) {
+  //     console.error(e);
+  //     return null;
+  //   }
+  // };
 
   const runQuery = async (
     query: string,
@@ -204,7 +204,7 @@ export default function useApi() {
         queryObject["sort_direction"] = sortDirection;
       }
 
-      var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/search`;
+      var url = `${BASE_URL}/projects/${activeProject}/${environment}/collections/${collectionName}/search`;
 
       const response = await axios.post(url, queryObject, {
         headers: {
@@ -259,7 +259,6 @@ export default function useApi() {
     createCollection,
     createDocument,
     deleteCollection,
-    runEnglishSearchQuery,
     runQuery,
   };
 }
