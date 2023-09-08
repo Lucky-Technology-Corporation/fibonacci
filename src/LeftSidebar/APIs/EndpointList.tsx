@@ -50,7 +50,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
   }, [activeEndpoint]);
 
   useEffect(() => {
-    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
+    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.includes("user-dependencies")) return;
     const newEndpoint = (currentFileProperties.fileUri.split("user-dependencies/")[1].replace(".js", "").replace(/-/g, "/"));
     if(newEndpoint == activeEndpoint) return;
     programmatiFileUpdateRef.current = true;
