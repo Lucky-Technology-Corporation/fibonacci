@@ -97,7 +97,7 @@ export default function ProjectSelector() {
 
   return (
     <>
-      <div className="mx-2 max-w-full">
+      <div className="mx-2 mt-2 max-w-full flex flex-nowrap items-center">
         <Dropdown
           children={projects}
           onSelect={(id: string) => {
@@ -111,7 +111,7 @@ export default function ProjectSelector() {
             if(isCreatingProject){ alert("A project is already being created for you now!"); return; }
             setIsVisible(true);
           }}
-          className={`mt-2 ${isCreatingProject ? "opacity-70" : ""}`}
+          className={`${isCreatingProject ? "opacity-70" : ""}`}
           title={activeProjectName}
         />
         <Switch

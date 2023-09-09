@@ -175,7 +175,7 @@ export default function ObjectTableView() {
       </div>
       <div
         className="max-w-full overflow-x-auto"
-        style={{ width: "calc(100vw - 220px - 12px)" }}
+        style={{ width: "calc(100vw - 240px - 12px)" }}
       >
         <table
           className="table-auto flex-grow my-4 ml-4"

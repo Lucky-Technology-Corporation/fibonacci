@@ -314,7 +314,7 @@ export default function DatabaseView({
         />
       </div>
 
-      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 220px - 12px)"}}>
+      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 240px - 12px)"}}>
         <table
           className="table-auto my-4 ml-4 block"
           style={{ tableLayout: "auto" }}

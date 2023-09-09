@@ -35,7 +35,7 @@ export default function LeftSidebar({
   const {environment, setEnvironment} = useContext(SwizzleContext);
 
   return (
-    <div className="min-w-[220px] border-r border-[#4C4F6B] bg-[#191A23] max-h-[100vh] overflow-hidden">
+    <div className="min-w-[240px] border-r border-[#4C4F6B] bg-[#191A23] max-h-[100vh] overflow-hidden">
       <div className="flex flex-col items-center pt-4 h-screen">
         <div className="flex">
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
