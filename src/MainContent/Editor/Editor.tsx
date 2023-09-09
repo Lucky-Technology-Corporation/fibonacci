@@ -77,7 +77,7 @@ export default function Editor({
   }, []);
   
   return (
-    <div style={{ overflow: "hidden", height: "100vh" }}>
+    <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
       <iframe
         ref={iframeRef}
         src={`${testDomain.replace("https", "http")}:3000/#/home/swizzle_prod_user/code`}

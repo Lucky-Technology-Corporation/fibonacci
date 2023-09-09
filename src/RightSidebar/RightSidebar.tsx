@@ -95,7 +95,7 @@ export default function RightSidebar({
         selectedTab == Page.Apis ? "" : "hidden"
       }`}
     >
-      <div className="flex flex-col items-center pt-4 h-full pr-4">
+      <div className="flex flex-col items-center pt-4 h-full px-4">
         <DeployButton />
         <div className="h-4" />
         <div className="font-bold">Testing</div>

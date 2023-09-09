@@ -7,6 +7,8 @@ import UserTableView from "./Auth/UserTableView";
 import ObjectTableView from "./Storage/ObjectTableView";
 import LogsDrawer from "./Editor/LogsDrawer";
 import MonitoringPage from "./Logs/MonitoringPage";
+import { useContext } from "react";
+import { SwizzleContext } from "../Utilities/GlobalContext";
 
 type CenterContentProps = {
   selectedTab: Page;
@@ -31,11 +33,25 @@ export default function CenterContent({
   activeLogsPage,
   fileUri,
 }: CenterContentProps) {
+
+  const {activeEndpoint} = useContext(SwizzleContext);
+
   if (selectedTab === Page.Apis) {
     return (
       <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
-        {/* <EditorHeader /> */}
-        <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
+        {activeEndpoint ? (
+          <>
+            <EditorHeader />
+            <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
+          </>
+        ) : (
+          <>
+           <div className="flex-grow flex flex-col items-center justify-center">
+              <div className="text-lg mt-12 mb-4 font-bold">No endpoint selected</div>
+              <div className="text-md">👈 Create or select an endpoint from the list</div>
+            </div>
+          </>
+        )}
       </div>
     );
   } else if (selectedTab == Page.Auth) {

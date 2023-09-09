@@ -41,11 +41,8 @@ export default function LeftSidebar({
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
           <h1 className="font-bold text-md">Swizzle</h1>
         </div>
-        <div className="flex">
-          <ProjectSelector />
-        </div>
         <div className="flex mt-2">
-          <Switch
+          {/* <Switch
             className="m-auto mr-0.5 scale-75"
             onChange={() => { setEnvironment(environment == "test" ? "prod" : "test") }}
             checked={environment == 'test'}
@@ -55,8 +52,12 @@ export default function LeftSidebar({
             onColor="#f39c12"
             onHandleColor="#d2d3e0"
             offHandleColor="#d2d3e0"
-          />
+          /> */}
           {environment == "test" ? <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div> : <div className="text-sm font-bold m-auto">Production View</div>}
+        </div>
+
+        <div className="flex">
+          <ProjectSelector />
         </div>
 
         <SectionTitle

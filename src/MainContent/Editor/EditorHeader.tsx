@@ -24,6 +24,7 @@ export default function EndpointHeader() {
   const {activeEndpoint} = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
+  const [prompt, setPrompt] = useState<string>("");
 
   useEffect(() => {
     if(activeEndpoint == undefined) return;
@@ -43,13 +44,31 @@ export default function EndpointHeader() {
   return (
     <>
     {activeEndpoint &&
-      <div className={`flex justify-between ml-8 mb-2 text-lg font-bold font-mono`}>
-        <div className="flex">
-          <span className={`${methodToColor(method)} mr-2`}>{method}</span>{" "}
-          {path}
-        </div>
+      <div className={`flex justify-between ml-4 mb-2 text-lg font-bold font-mono pt-4 max-h-[52px]`}>
+          <input
+            className="grow mr-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
+            placeholder="Ask for anything related to this code"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
+          <Button
+            className="px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            text="Ask to edit code"
+            onClick={() => {
+              console.log("send");
+            }}
+          />
+
+          <Button
+            className="ml-4 px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            text="Ask for a response"
+            onClick={() => {
+              console.log("send");
+            }}
+          />
+
         <div>
-          <Dropdown
+          {/* <Dropdown
             className="text-xs font-sans"
             children={[{id: "swift", name: "Swift"}, {id: "js", name: "JavaScript"}]}
             title="Frontend Code"
@@ -57,7 +76,7 @@ export default function EndpointHeader() {
               const snippet = getSnippetForLanguage(option);
               copyText(snippet)
             }}
-          />
+          /> */}
         </div>
       </div>
     }

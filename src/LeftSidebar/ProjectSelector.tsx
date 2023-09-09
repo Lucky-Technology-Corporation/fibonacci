@@ -4,6 +4,9 @@ import Dropdown from "../Utilities/Dropdown";
 import toast from "react-hot-toast";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Switch from "react-switch";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
@@ -23,7 +26,8 @@ export default function ProjectSelector() {
     prodDomain,
     setIsCreatingProject,
     isCreatingProject,
-    environment
+    environment,
+    setEnvironment
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -93,22 +97,36 @@ export default function ProjectSelector() {
 
   return (
     <>
-      <Dropdown
-        children={projects}
-        onSelect={(id: string) => {
-          setCurrentProject(id);
-        }}
-        lastChild={{
-          id: "_create_new_project",
-          name: "+ New Project",
-        }}
-        lastOnSelect={() => {
-          if(isCreatingProject){ alert("A project is already being created for you now!"); return; }
-          setIsVisible(true);
-        }}
-        className={`mt-2 ${isCreatingProject ? "opacity-70" : ""}`}
-        title={activeProjectName}
-      />
+      <div className="mx-2 max-w-full">
+        <Dropdown
+          children={projects}
+          onSelect={(id: string) => {
+            setCurrentProject(id);
+          }}
+          lastChild={{
+            id: "_create_new_project",
+            name: "+ New Project",
+          }}
+          lastOnSelect={() => {
+            if(isCreatingProject){ alert("A project is already being created for you now!"); return; }
+            setIsVisible(true);
+          }}
+          className={`mt-2 ${isCreatingProject ? "opacity-70" : ""}`}
+          title={activeProjectName}
+        />
+        <Switch
+            className="ml-1 scale-75"
+            onChange={() => { setEnvironment(environment == "test" ? "prod" : "test") }}
+            checked={environment == 'test'}
+            uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
+            checkedIcon={<FontAwesomeIcon icon={faFlask} className="ml-2.5" color="#ffffff" />}
+            offColor="#474752"
+            onColor="#f39c12"
+            onHandleColor="#d2d3e0"
+            offHandleColor="#d2d3e0"
+          />
+        </div>
+
       <FullPageModal
         isVisible={isVisible}
         setIsVisible={setIsVisible}

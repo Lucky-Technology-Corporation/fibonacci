@@ -63,7 +63,7 @@ export default function CollectionList({
         onClick={() => {
           setIsVisible(true);
         }}
-        className="py-1 my-0.5"
+        className="py-1.5 px-1 !my-1.5 !mb-2"
       />
       {collections.map((collection, index) => (
         <CollectionItem
