@@ -52,7 +52,7 @@ export default function EndpointHeader() {
           <Dropdown
             className="text-xs font-sans"
             children={[{id: "swift", name: "Swift"}, {id: "js", name: "JavaScript"}]}
-            title="Code Snippet"
+            title="Frontend Code"
             onSelect={(option) => {
               const snippet = getSnippetForLanguage(option);
               copyText(snippet)

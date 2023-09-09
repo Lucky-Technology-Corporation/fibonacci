@@ -13,7 +13,7 @@ export default function Editor({
   setCurrentFileProperties: (properties: any) => void;
 }) {
   const iframeRef = useRef(null);
-  const { domain, postMessage } = useContext(SwizzleContext);
+  const { testDomain, postMessage } = useContext(SwizzleContext);
 
   useEffect(() => {
     if(postMessage == null) return;
@@ -77,10 +77,10 @@ export default function Editor({
   }, []);
   
   return (
-    <div style={{ overflow: "hidden", height: "calc(100% - 36px)" }}>
+    <div style={{ overflow: "hidden", height: "100vh" }}>
       <iframe
         ref={iframeRef}
-        src={`${domain.replace("https", "http")}:3000/#/home/swizzle_prod_user/code`}
+        src={`${testDomain.replace("https", "http")}:3000/#/home/swizzle_prod_user/code`}
         // src={`http://localhost:3000`}
         frameBorder="0"
         style={{

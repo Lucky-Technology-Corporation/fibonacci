@@ -9,7 +9,7 @@ const BASE_URL = process.env.BASE_RUL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { domain } = useContext(SwizzleContext);
+  const { testDomain } = useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(
@@ -20,9 +20,9 @@ export default function useApi() {
 
   const getPackageJson = async () => {
     try {
-      if(domain == null || domain == undefined || domain == "") {return []};
-      if(domain.includes("localhost")) {return []};
-      const response = await axios.get(`${domain.replace("https", "http")}:1234/code/package.json`, {
+      if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
+      if(testDomain.includes("localhost")) {return []};
+      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/code/package.json`, {
           headers: {
               Authorization: authHeader(),
           },
@@ -36,9 +36,9 @@ export default function useApi() {
 
   const getFiles = async () => {
     try{
-      if(domain == null || domain == undefined || domain == "") {return []};
-      if(domain.includes("localhost")) {return []};
-      const response = await axios.get(`${domain.replace("https", "http")}:1234/table_of_contents`, {
+      if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
+      if(testDomain.includes("localhost")) {return []};
+      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/table_of_contents`, {
           headers: {
               Authorization: authHeader(),
           },

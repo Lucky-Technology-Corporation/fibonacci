@@ -95,11 +95,12 @@ export default function RightSidebar({
         selectedTab == Page.Apis ? "" : "hidden"
       }`}
     >
-      <div className="flex flex-col items-center mt-4 h-screen pr-4">
-        <DeployButton 
-          
-          />
+      <div className="flex flex-col items-center pt-4 h-full pr-4">
+        <DeployButton />
+        <div className="h-4" />
+        <div className="font-bold">Testing</div>
         <div className="h-2" />
+
         <IconTextButton
           onClick={() => {
             setCurrentWindow("test");
@@ -109,14 +110,13 @@ export default function RightSidebar({
           text="Test"
         />
         {currentWindow === "test" && (
-         <TestWindow 
-         shouldShowTestWindow={() => setShouldShowTestWindow(false)}
-         //hideTestWindow={() => setShouldShowTestWindow(false)}
-         setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)} 
-         setCurrentWindow={setCurrentWindow}
-         //savedTests={useApi().getTests()}
-     />
-     
+          <TestWindow 
+            shouldShowTestWindow={() => setShouldShowTestWindow(false)}
+            //hideTestWindow={() => setShouldShowTestWindow(false)}
+            setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)} 
+            setCurrentWindow={setCurrentWindow}
+            //savedTests={useApi().getTests()}
+        />
         )}
         {currentWindow === "newTest" && (
           <NewTestWindow
@@ -125,6 +125,16 @@ export default function RightSidebar({
             savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
           />
         )}
+        <div className="h-2" />
+        <IconTextButton
+          onClick={() => { 
+            //Send this code to GPT and ask it to check for errors line by line
+          }}
+          icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
+          text="Autocheck"
+        />
+
+
         <div className="h-4" />
         <div className="font-bold">Configuration</div>
         <div className="h-2" />

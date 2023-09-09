@@ -33,32 +33,32 @@ export default function CenterContent({
 }: CenterContentProps) {
   if (selectedTab === Page.Apis) {
     return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
-        <EditorHeader />
+      <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
+        {/* <EditorHeader /> */}
         <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
       </div>
     );
   } else if (selectedTab == Page.Auth) {
     return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
+      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
         <UserTableView />
       </div>
     );
   } else if (selectedTab == Page.Db) {
     return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
+      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
         <DatabaseView activeCollection={activeCollection} />
       </div>
     );
   } else if (selectedTab == Page.Storage) {
     return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
+      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
         <ObjectTableView />
       </div>
     );
   } else if (selectedTab == Page.Logs) {
     return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-full">
+      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
         <MonitoringPage activeLogsPage={activeLogsPage} />
       </div>
     );

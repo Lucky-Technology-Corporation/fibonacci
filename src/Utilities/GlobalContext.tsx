@@ -9,6 +9,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [activeProjectName, setActiveProjectName] = useState("");
   const [isFree, setIsFree] = useState(false);
   const [domain, setDomain] = useState("");
+  const [testDomain, setTestDomain] = useState("");
+  const [prodDomain, setProdDomain] = useState(""); 
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
@@ -27,6 +29,10 @@ export const GlobalContextProvider = ({ children }) => {
         setIsFree,
         domain,
         setDomain,
+        testDomain, 
+        setTestDomain,
+        prodDomain,
+        setProdDomain,
         isCreatingProject,
         setIsCreatingProject,
         activeToast,

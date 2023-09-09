@@ -128,7 +128,7 @@ export default function ObjectTableView() {
 
   return (
     <div>
-      <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Storage</div>
           <div className={`text-sm mt-0.5`}>
@@ -156,7 +156,7 @@ export default function ObjectTableView() {
           />
         </div>
       </div>
-      <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
+      <div className={`flex pr-2 h-8 ${data.length == 0 ? "hidden" : ""}`}>
         <input
           type="text"
           className="text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]"

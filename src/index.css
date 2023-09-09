@@ -17,9 +17,9 @@
   -webkit-text-size-adjust: 100%;
 }
 
-body {
+/* body {
   overflow-y: hidden;
-}
+} */
 
 a {
   font-weight: 500;

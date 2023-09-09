@@ -7,8 +7,6 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
-  const [testDomain, setTestDomain] = useState("");
-  const [prodDomain, setProdDomain] = useState("");
   
   const { createProject } = useApi();
   const {
@@ -19,6 +17,10 @@ export default function ProjectSelector() {
     activeProjectName,
     setActiveProjectName,
     setDomain,
+    setTestDomain,
+    testDomain,
+    setProdDomain,
+    prodDomain,
     setIsCreatingProject,
     isCreatingProject,
     environment

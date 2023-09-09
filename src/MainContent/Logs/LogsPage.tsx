@@ -46,6 +46,7 @@ export default function LogsPage() {
   ];
 
   useEffect(() => {
+    console.log("getting logs for " + environment)
     setPage(0);
     setOffset(0)
     setFilterQuery(null);
@@ -53,6 +54,7 @@ export default function LogsPage() {
     setNextPageToken(null);
 
     getLogs(offset, filterName, filterQuery).then((data) => {
+      console.log(data)
       if (data) {
         setMessages(data);
       }
@@ -136,8 +138,8 @@ export default function LogsPage() {
   };
 
   return (
-    <div>
-      <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+    <div className="h-full overflow-scroll">
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Logs</div>
           <div className={`text-sm mt-0.5`}>
@@ -158,7 +160,7 @@ export default function LogsPage() {
                />
             </div> */}
       </div>
-      <div className={`flex h-9 mb-4`}>
+      <div className={`flex pr-2 h-9 mb-4`}>
         <Dropdown
           className="ml-4"
           onSelect={(id: string) => {setFilterName(id)}}
@@ -189,8 +191,8 @@ export default function LogsPage() {
         <Button text={"Search"} onClick={runSearch} />
       </div>
 
-      <div className="mx-4 pt-1 flex flex-row space-x-2">
-        <table className="w-full h-full">
+      <div className="pr-2 pl-4 pt-1 flex flex-row space-x-2">
+        <table className="w-full">
           <thead className="bg-[#85869822]">
             <tr className="border-b border-[#4C4F6B]">
               <th className="text-left py-1 pl-4 w-12 font-light">Retry</th>

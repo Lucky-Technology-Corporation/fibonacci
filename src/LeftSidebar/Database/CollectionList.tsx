@@ -21,11 +21,10 @@ export default function CollectionList({
   activeCollection: string;
   setActiveCollection: Dispatch<SetStateAction<string>>;
 }) {
-  const { getCollections } = useApi();
   const [isVisible, setIsVisible] = useState(false);
   const [collections, setCollections] = useState<string[]>([]);
-  const { createCollection } = useApi();
-  const { activeProject } = useContext(SwizzleContext);
+  const { createCollection, getCollections } = useApi();
+  const { activeProject, environment } = useContext(SwizzleContext);
 
   const refreshCollections = () => {
     getCollections().then((data) => {
@@ -55,7 +54,7 @@ export default function CollectionList({
       return;
     }
     refreshCollections();
-  }, [activeProject]);
+  }, [activeProject, environment]);
 
   return (
     <div className={`flex-col w-full mt-1 px-2 ${active ? "" : "hidden"}`}>
@@ -64,6 +63,7 @@ export default function CollectionList({
         onClick={() => {
           setIsVisible(true);
         }}
+        className="py-1 my-0.5"
       />
       {collections.map((collection, index) => (
         <CollectionItem

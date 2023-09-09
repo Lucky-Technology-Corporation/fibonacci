@@ -166,6 +166,7 @@ export default function DatabaseView({
 
   //This refreshes the data when the active collection changes. In the future, we should use a context provider
   useEffect(() => {
+    console.log("refreshing data...")
     setCurrentPage(0);
     fetchData(currentPage);
   }, [activeCollection, activeProject, environment]);
@@ -244,7 +245,7 @@ export default function DatabaseView({
 
   return (
     <div>
-      <div className={`flex-1 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>{activeCollection}</div>
           <div className={`text-sm mt-0.5`}>
@@ -282,7 +283,7 @@ export default function DatabaseView({
           />
         </div>
       </div>
-      <div className={`flex h-8 ${data.length == 0 ? "hidden" : ""}`}>
+      <div className={`flex pr-2 h-8 ${data.length == 0 ? "hidden" : ""}`}>
         <Dropdown
           className="ml-4"
           onSelect={setFilterName}

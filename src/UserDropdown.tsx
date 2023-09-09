@@ -44,7 +44,7 @@ export default function UserDropdown() {
     <>
       <Menu
         as="div"
-        className="fixed bottom-4 mb-2 left-6 w-44 inline-block text-left"
+        className="fixed bottom-4 left-6 w-44 inline-block text-left"
       >
         <div
           className={`${
