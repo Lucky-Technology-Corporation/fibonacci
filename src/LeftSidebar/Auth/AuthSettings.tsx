@@ -15,6 +15,7 @@ export default function AuthSettings({ active }: { active: boolean }) {
         onClick={() => {
           setIsVisible(true);
         }}
+        className="py-1.5 px-1 !my-1.5 !mb-2"
       />
       <FullPageModal
         isVisible={isVisible}
