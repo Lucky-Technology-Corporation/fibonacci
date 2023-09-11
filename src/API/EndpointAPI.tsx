@@ -3,13 +3,12 @@ import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-// const zlib = require('zlib');
-
-const BASE_URL = process.env.BASE_RUL;
+const BASE_URL = process.env.BASE_URL;
+const { activeProject, environment } = useContext(SwizzleContext);
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { testDomain } = useContext(SwizzleContext);
+  const { testDomain, activeEndpoint } = useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(
@@ -17,6 +16,70 @@ export default function useApi() {
     );
     return response.data.objects;
   };
+
+  const getFile = async (fileName: string) => {
+    try {
+      if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
+      if(testDomain.includes("localhost")) {return []};
+      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/code/${fileName}`, {
+          headers: {
+              Authorization: authHeader(),
+          },
+      })
+      return response.data;
+    } catch(e) {
+      console.log(e)
+      return "";
+    }
+  };
+
+  const getAIResponseToFile = async (userQuery: string, aiAction: string) => {
+    //TODO: pull in code from imported files
+    //TODO: split files into chunks an summarize long functions
+    try {
+      const fileName = activeEndpoint.replace(/\//g, '-');
+      const fileContents = await getFile(fileName)
+
+      const response = await axios.post(
+        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/file`, 
+        {
+          userQuery: userQuery,
+          aiAction: aiAction,
+          fileContents: fileContents
+        },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        })
+      return response.data;
+    } catch(e) {
+      console.log(e)
+      return "";
+    }
+  }
+
+  const getAutocheckResponse = async () => {
+    try {
+      const fileName = activeEndpoint.replace(/\//g, '-');
+      const fileContents = await getFile(fileName)
+
+      const response = await axios.post(
+        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`, 
+        {
+          fileContents: fileContents
+        },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        })
+      return response.data;
+    } catch(e) {
+      console.log(e)
+      return "";
+    }
+  }
 
   const getPackageJson = async () => {
     try {
@@ -58,5 +121,5 @@ export default function useApi() {
     return true;
   };
 
-  return { createAPI, updateEndpoint, getFiles, npmSearch, getPackageJson };
+  return { createAPI, updateEndpoint, getFiles, npmSearch, getPackageJson, getFile, getAIResponseToFile, getAutocheckResponse };
 }

@@ -18,7 +18,7 @@ export default function useStorageApi() {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/storage/${environment}/public/${fileName}`, //TODO: change this
+        `${BASE_URL}/projects/${activeProject}/${environment}/storage/public/${fileName}`, //TODO: change this
         formData,
         {
           headers: {

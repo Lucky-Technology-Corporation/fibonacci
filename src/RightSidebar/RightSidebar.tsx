@@ -2,23 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import Checkbox from "../Utilities/Checkbox";
 import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
-import toast from "react-hot-toast";
 import { Page } from "../Utilities/Page";
-import { ArrowPathIcon } from "@heroicons/react/20/solid";
 import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import DeployButton from "./DeployButton";
 import PackageInfo from "./Sections/PackageInfo";
-import SearchCodeButton from "./SearchCodeButton";
-import CodeCheckButton from "./CodeCheckButton";
-import TestButton from "../Utilities/IconTextButton";
 import NewTestWindow from "./NewTestWindow";
-import IconButton from "../Utilities/IconButton";
 import IconTextButton from "../Utilities/IconTextButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import TestWindow from "./TestWindow";
-import useTestApi from "../API/TestingAPI";
+import useApi from "../API/EndpointAPI";
+import toast from "react-hot-toast";
 
 const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`
 const signatureNoAuth = `async (request, result)`
@@ -51,6 +44,7 @@ export default function RightSidebar({
   const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
   const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
 
+  const { getAutocheckResponse } = useApi();
 
   useEffect(() => {
     if (programmaticAuthUpdateRef.current) {
@@ -128,7 +122,17 @@ export default function RightSidebar({
         <div className="h-2" />
         <IconTextButton
           onClick={() => { 
-            //Send this code to GPT and ask it to check for errors line by line
+            toast.promise(getAutocheckResponse(), {
+              loading: "Running autocheck...",
+              success: (data) => {
+                if(data == "") {
+                  toast.error("Error running autocheck");
+                  return;
+                }
+                return "Done"
+              },
+              error: "Error running autocheck"
+            })
           }}
           icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
           text="Autocheck"

@@ -4,27 +4,18 @@ import { Method } from "../../Utilities/Method";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 import { copyText } from "../../Utilities/Copyable";
+import useApi from "../../API/EndpointAPI";
+import toast from "react-hot-toast";
 
 export default function EndpointHeader() {
-  const methodToColor = (method: Method) => {
-    switch (method) {
-      case Method.GET:
-        return "text-green-400";
-      case Method.POST:
-        return "text-blue-400";
-      case Method.PUT:
-        return "text-yellow-400";
-      case Method.DELETE:
-        return "text-red-400";
-      case Method.PATCH:
-        return "text-purple-400";
-    }
-  };
 
   const {activeEndpoint} = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
+  const [AICommand, setAICommand] = useState<string>("ask");
+
+  const { getAIResponseToFile } = useApi();
 
   useEffect(() => {
     if(activeEndpoint == undefined) return;
@@ -41,29 +32,44 @@ export default function EndpointHeader() {
     }
   }
 
+  const runQuery = async () => {
+    return toast.promise(getAIResponseToFile(prompt, AICommand), {
+      loading: "Generating code...",
+      success: (data) => {
+        console.log(data)
+        return "Done"
+      },
+      error: "Error generating code"
+    })
+  }
+
   return (
     <>
     {activeEndpoint &&
-      <div className={`flex justify-between ml-4 mb-2 text-lg font-bold font-mono pt-4 max-h-[52px]`}>
+      <div className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px]`}>
+          <Dropdown
+            className="ml-4 "
+            onSelect={setAICommand}
+            children={[
+              { id: "ask", name: "Ask" },
+              { id: "do", name: "Do" },
+            ]}
+            direction="right"
+            title={AICommand.charAt(0).toUpperCase() + AICommand.slice(1)}
+          />
+
           <input
-            className="grow mr-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
-            placeholder="Ask for anything related to this code"
+            className="grow mx-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
+            placeholder={AICommand == "ask" ? "Ask any question..." : "Change this code to..."}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
-          <Button
-            className="px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-            text="Ask to edit code"
-            onClick={() => {
-              console.log("send");
-            }}
-          />
 
           <Button
-            className="ml-4 px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-            text="Ask for a response"
+            className="px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            text="Go"
             onClick={() => {
-              console.log("send");
+              runQuery()
             }}
           />
 

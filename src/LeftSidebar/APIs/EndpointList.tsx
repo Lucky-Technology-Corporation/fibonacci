@@ -106,7 +106,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
 
      
       <div className="ml-1">
-        {endpoints.map((endpoint) => {  
+        {endpoints.filter(e => !e.includes(".html")).map((endpoint) => {  
           return (
             <EndpointItem
               key={endpoint}
