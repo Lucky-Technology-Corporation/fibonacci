@@ -37,7 +37,7 @@ export default function useApi() {
     //TODO: split files into chunks an summarize long functions
     try {
       const fileName = activeEndpoint.replace(/\//g, '-');
-      const fileContents = await getFile(fileName)
+      const fileContents = await getFile("user-dependencies/" + fileName + ".js")
 
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/${environment}/assistant/file`, 
@@ -61,7 +61,7 @@ export default function useApi() {
   const getAutocheckResponse = async () => {
     try {
       const fileName = activeEndpoint.replace(/\//g, '-');
-      const fileContents = await getFile(fileName)
+      const fileContents = await getFile("user-dependencies/" + fileName + ".js")
 
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`, 
