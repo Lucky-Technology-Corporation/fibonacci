@@ -4,11 +4,10 @@ import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const BASE_URL = process.env.BASE_URL;
-const { activeProject, environment } = useContext(SwizzleContext);
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint } = useContext(SwizzleContext);
+  const { testDomain, activeEndpoint, environment, activeProject } = useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(
