@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 
 export default function EndpointHeader() {
 
-  const {activeEndpoint} = useContext(SwizzleContext);
+  const {activeEndpoint, ideReady} = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -46,7 +46,7 @@ export default function EndpointHeader() {
   return (
     <>
     {activeEndpoint &&
-      <div className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px]`}>
+      <div className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${ideReady ? "" : "opacity-50 pointer-events-none"}`}>
           <Dropdown
             className="ml-4 "
             onSelect={setAICommand}

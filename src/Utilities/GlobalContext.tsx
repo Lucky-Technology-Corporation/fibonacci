@@ -15,6 +15,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
   const [activeEndpoint, setActiveEndpoint] = useState("");
+  const [ideReady, setIdeReady] = useState(false); 
 
   return (
     <SwizzleContext.Provider
@@ -42,7 +43,9 @@ export const GlobalContextProvider = ({ children }) => {
         activeEndpoint,
         setActiveEndpoint,
         environment,
-        setEnvironment
+        setEnvironment,
+        ideReady,
+        setIdeReady
       }}
     >
       {children}

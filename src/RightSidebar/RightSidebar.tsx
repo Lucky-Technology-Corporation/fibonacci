@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Checkbox from "../Utilities/Checkbox";
 import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
@@ -12,6 +12,7 @@ import IconTextButton from "../Utilities/IconTextButton";
 import TestWindow from "./TestWindow";
 import useApi from "../API/EndpointAPI";
 import toast from "react-hot-toast";
+import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`
 const signatureNoAuth = `async (request, result)`
@@ -44,6 +45,7 @@ export default function RightSidebar({
   const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
   const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
 
+  const { ideReady } = useContext(SwizzleContext);
   const { getAutocheckResponse } = useApi();
 
   useEffect(() => {
@@ -87,7 +89,9 @@ export default function RightSidebar({
     <div
       className={`w-[200px] text-sm ${
         selectedTab == Page.Apis ? "" : "hidden"
-      }`}
+      }
+      ${ideReady ? "": "opacity-50 pointer-events-none"}
+      `}
     >
       <div className="flex flex-col items-center pt-4 h-full px-4">
         <DeployButton />

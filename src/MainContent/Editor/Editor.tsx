@@ -13,7 +13,7 @@ export default function Editor({
   setCurrentFileProperties: (properties: any) => void;
 }) {
   const iframeRef = useRef(null);
-  const { testDomain, postMessage } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
 
   useEffect(() => {
     if(postMessage == null) return;
@@ -53,6 +53,7 @@ export default function Editor({
     window.addEventListener("message", (event) => {
       if (event.data.type === "extensionReady") {
         console.log("EXTENSION READY")
+        setIdeReady(true);
         const message = { fileUri: fileUri, type: "openFile" };
         postMessageToIframe(message);
       }
@@ -73,6 +74,7 @@ export default function Editor({
       window.removeEventListener("message", () => {});
       const message = { type: "saveFile"}
       postMessageToIframe(message);
+      setIdeReady(false);
     }
   }, []);
   
