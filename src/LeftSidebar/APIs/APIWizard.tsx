@@ -18,7 +18,7 @@ export default function APIWizard({
   const [inputValue, setInputValue] = useState("");
   const [step, setStep] = useState(0);
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
-  const {setPostMessage} = useContext(SwizzleContext);
+  const {setPostMessage, setActiveEndpoint} = useContext(SwizzleContext);
 
   const methods: any = [
     { id: "get", name: "GET" },
@@ -88,6 +88,9 @@ export default function APIWizard({
       fileName: "user-dependencies/" + fileName,
     });
     setIsVisible(false);
+    setTimeout(() => {
+      setActiveEndpoint(newEndpointName);
+    }, 500);
   };
 
   useEffect(() => {
@@ -156,43 +159,6 @@ export default function APIWizard({
                     />
                   </div>
                   <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        createHandler();
-                      }}
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
-                    ></button>
-                    <h3>
-                      Standard API
-                    </h3>
-                    <div className="mt-1">
-                      <p className="text-sm text-[#D9D9D9]">
-                        Name your endpoint
-                      </p>
-                    </div>
-                    <div className="mt-3 mb-2 flex">
-                      <Dropdown
-                        className="mr-2"
-                        onSelect={(item: any) => {
-                          setSelectedMethod(item.id);
-                        }}
-                        children={methods}
-                        direction="left"
-                      />
-                      <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value.trim())}
-                        className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={"/path/:variable"}
-                        onKeyDown={(event: any) => {
-                          if (event.key == "Enter") {
-                            createHandler();
-                          }
-                        }}
-                      />
-                    </div>
                     <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
                       <button
                         type="button"
