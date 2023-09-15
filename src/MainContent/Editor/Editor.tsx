@@ -16,6 +16,7 @@ export default function Editor({
   const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
 
   useEffect(() => {
+    console.log("file uri changed to " + JSON.stringify(postMessage))
     if(postMessage == null) return;
     postMessageToIframe(postMessage)
   }, [postMessage])
@@ -30,11 +31,12 @@ export default function Editor({
     iframeRef.current.contentWindow.postMessage(message, "*");
   };
 
-  useEffect(() => {
-    if(fileUri == undefined || fileUri == "") return;
-    const message = { fileUri: fileUri, type: "openFile" };
-    postMessageToIframe(message);
-  }, [fileUri]);
+  // useEffect(() => {
+  //   console.log("file uri changed to " + fileUri)
+  //   if(fileUri == undefined || fileUri == "") return;
+  //   const message = { fileUri: fileUri, type: "openFile" };
+  //   postMessageToIframe(message);
+  // }, [fileUri]);
 
   useEffect(() => {
     const message = { content: prependText, type: "prependText" };

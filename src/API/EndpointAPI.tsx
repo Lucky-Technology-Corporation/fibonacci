@@ -20,7 +20,7 @@ export default function useApi() {
     try {
       if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
       if(testDomain.includes("localhost")) {return []};
-      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/code/${fileName}`, {
+      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/code/file_contents?path=code/${fileName}`, {
           headers: {
               Authorization: authHeader(),
           },
@@ -96,11 +96,17 @@ export default function useApi() {
     }
   };
 
-  const getFiles = async () => {
+  const getFiles = async (fileTypes) => {
     try{
       if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
       if(testDomain.includes("localhost")) {return []};
-      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/table_of_contents`, {
+      
+      var path = "table_of_contents";
+      if(fileTypes.toLowerCase() == "files"){
+        path = "table_of_files"
+      }
+      
+      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/${path}`, {
           headers: {
               Authorization: authHeader(),
           },

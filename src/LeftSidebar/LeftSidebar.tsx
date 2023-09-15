@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { Page } from "../Utilities/Page";
 import SectionTitle from "./SectionTitle";
 import CollectionList from "./Database/CollectionList";
@@ -11,6 +11,7 @@ import Switch from "react-switch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import FilesList from "./APIs/FilesList";
 
 type LeftSidebarProps = {
   selectedTab: Page;
@@ -32,10 +33,31 @@ export default function LeftSidebar({
   currentFileProperties,
 }: LeftSidebarProps) {
 
-  const {environment, setEnvironment} = useContext(SwizzleContext);
+  const {environment, setActiveEndpoint, activeEndpoint, setPostMessage } = useContext(SwizzleContext);
+
+  //File management + sidebar management code
+  const programmatiFileUpdateRef = useRef(false);
+
+  useEffect(() => {
+    if (programmatiFileUpdateRef.current) {
+      programmatiFileUpdateRef.current = false;
+      return;
+    }
+    if(activeEndpoint == undefined || activeEndpoint == "") return;
+    const fileName = activeEndpoint.replace(/\//g, '-');
+    setPostMessage({type: "openFile", fileName: `user-dependencies/${fileName}.js`})
+  }, [activeEndpoint]);
+
+  useEffect(() => {
+    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.includes("user-dependencies")) return;
+    const newEndpoint = (currentFileProperties.fileUri.split("user-dependencies/")[1].replace(".js", "").replace(/-/g, "/"));
+    if(newEndpoint == activeEndpoint) return;
+    programmatiFileUpdateRef.current = true;
+    setActiveEndpoint(newEndpoint);
+  }, [currentFileProperties]);
 
   return (
-    <div className="min-w-[240px] border-r border-[#4C4F6B] bg-[#191A23] max-h-[100vh] overflow-hidden">
+    <div className="min-w-[240px] border-r border-[#4C4F6B] bg-[#191A23] overflow-scroll">
       <div className="flex flex-col items-center pt-4 h-screen">
         <div className="flex">
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
@@ -82,16 +104,17 @@ export default function LeftSidebar({
             setSelectedTab(Page.Apis);
           }}
         />
-        <EndpointList active={selectedTab == Page.Apis} currentFileProperties={currentFileProperties} />
+        <EndpointList active={selectedTab == Page.Apis} />
         
-        {/* <SectionTitle
+        <SectionTitle
           icon="world.svg"
           text="Hosting"
-          active={selectedTab == Page.Storage}
+          active={selectedTab == Page.Hosting}
           onClick={() => {
-            setSelectedTab(Page.Storage);
+            setSelectedTab(Page.Hosting);
           }}
-        /> */}
+        />
+        <FilesList active={selectedTab == Page.Hosting} />
 
         <SectionTitle
           icon="auth.svg"
@@ -124,6 +147,12 @@ export default function LeftSidebar({
             setSelectedTab(Page.Storage);
           }}
         />
+
+        <div className="h-36 w-full flex-row">
+          <div>&nbsp;</div>
+          <div>&nbsp;</div>
+          <div>&nbsp;</div>
+        </div>
 
 
         {/* <SectionTitle

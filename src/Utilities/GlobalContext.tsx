@@ -15,6 +15,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
   const [activeEndpoint, setActiveEndpoint] = useState("");
+  const [activeFile, setActiveFile] = useState("");
   const [ideReady, setIdeReady] = useState(false); 
 
   return (
@@ -45,7 +46,9 @@ export const GlobalContextProvider = ({ children }) => {
         environment,
         setEnvironment,
         ideReady,
-        setIdeReady
+        setIdeReady,
+        activeFile,
+        setActiveFile
       }}
     >
       {children}

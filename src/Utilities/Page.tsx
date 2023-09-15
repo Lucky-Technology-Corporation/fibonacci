@@ -5,4 +5,5 @@ export enum Page {
   Apis = "apis",
   Auth = "auth",
   Storage = "storage",
+  Hosting = "hosting"
 }

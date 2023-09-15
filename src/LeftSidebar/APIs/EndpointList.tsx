@@ -9,53 +9,33 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 
-export default function EndpointList({ active, currentFileProperties }: { active: boolean, currentFileProperties: any }) {
+export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const { getFiles } = useApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
-  const { activeProject, setPostMessage, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
-  const programmatiFileUpdateRef = useRef(false);
+  const { activeProject, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
 
   useEffect(() => {
-    getFiles()
+    getFiles("endpoints")
       .then((data) => {
+        console.log(data);
         if(data == undefined || data.children == undefined || data.children.length == 0) { return }
         const transformedEndpoints = data.children.map((endpoint: any) => {
-          console.log(endpoint)
           return endpoint.name.replace(/-/g, "/").replace(".js", "");
         }).filter((endpoint: string) => {
           return endpoint != "_swizzle_blank";
         });
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
-        console.log(transformedEndpoints);
+        setActiveEndpoint(transformedEndpoints[0])
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
         console.log(e);
       });
   }, [activeProject]);
-
-  //Used to open any file in theia
-  useEffect(() => {
-    if (programmatiFileUpdateRef.current) {
-      programmatiFileUpdateRef.current = false;
-      return;
-    }
-    if(activeEndpoint == undefined || activeEndpoint == "") return;
-    const fileName = activeEndpoint.replace(/\//g, '-');
-    setPostMessage({type: "openFile", fileName: `${fileName}.js`})
-  }, [activeEndpoint]);
-
-  useEffect(() => {
-    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.includes("user-dependencies")) return;
-    const newEndpoint = (currentFileProperties.fileUri.split("user-dependencies/")[1].replace(".js", "").replace(/-/g, "/"));
-    if(newEndpoint == activeEndpoint) return;
-    programmatiFileUpdateRef.current = true;
-    setActiveEndpoint(newEndpoint);
-  }, [currentFileProperties]);
 
   //Used to filter the endopint list
   useEffect(() => {
@@ -79,7 +59,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
 
   //Fetch from backend and populate it here.
   return (
-    <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"}`}>
+    <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
 
       <div className="flex ml-2 mt-2">
         <input
@@ -94,14 +74,14 @@ export default function EndpointList({ active, currentFileProperties }: { active
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex">
-        <div className="flex items-center">Endpoints</div>
         <SectionAction
           text="+"
           onClick={() => {
             setIsVisible(true);
           }}
-          className="max-w-[21px] ml-2"
+          className="max-w-[21px] mr-2"
         />
+        <div className="flex items-center">Endpoints</div>
       </div>
 
      
@@ -119,16 +99,6 @@ export default function EndpointList({ active, currentFileProperties }: { active
             />
           );
         })}
-      </div>
-      <div className="font-semibold ml-2 mt-2 flex">
-        <div className="flex items-center">Helpers</div>
-        <SectionAction
-          text="+"
-          onClick={() => {
-            setIsVisible(true);
-          }}
-          className="max-w-[20px] ml-2"
-        />
       </div>
 
       <APIWizard isVisible={isVisible} setIsVisible={setIsVisible} setEndpoints={setEndpoints} setFullEndpoints={setFullEndpointList} />

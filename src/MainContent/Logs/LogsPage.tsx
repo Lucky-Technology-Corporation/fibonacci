@@ -165,7 +165,7 @@ export default function LogsPage() {
           className="ml-4"
           onSelect={(id: string) => {setFilterName(id)}}
           children={searchTypes}
-          direction="right"
+          direction="left"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
         />
         <input

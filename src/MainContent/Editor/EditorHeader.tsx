@@ -13,7 +13,7 @@ export default function EndpointHeader() {
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
-  const [AICommand, setAICommand] = useState<string>("ask");
+  const [AICommand, setAICommand] = useState<string>("do");
 
   const { getAIResponseToFile } = useApi();
 

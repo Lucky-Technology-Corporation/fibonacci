@@ -34,7 +34,7 @@ export default function CenterContent({
   fileUri,
 }: CenterContentProps) {
 
-  const {activeEndpoint} = useContext(SwizzleContext);
+  const {activeEndpoint, activeFile} = useContext(SwizzleContext);
 
   if (selectedTab === Page.Apis) {
     return (
@@ -49,6 +49,24 @@ export default function CenterContent({
            <div className="flex-grow flex flex-col items-center justify-center">
               <div className="text-lg mt-12 mb-4 font-bold">No endpoint selected</div>
               <div className="text-md">👈 Create or select an endpoint from the list</div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  } else if (selectedTab === Page.Hosting) {
+    return (
+      <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
+        {activeFile ? (
+          <>
+            <EditorHeader />
+            <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
+          </>
+        ) : (
+          <>
+           <div className="flex-grow flex flex-col items-center justify-center">
+              <div className="text-lg mt-12 mb-4 font-bold">No file selected</div>
+              <div className="text-md">👈 Create or select a file from the list</div>
             </div>
           </>
         )}
