@@ -17,10 +17,10 @@ export default function APIWizard({
 }) {
   const [inputValue, setInputValue] = useState("");
   const [step, setStep] = useState(0);
-  const [selectedMethod, setSelectedMethod] = useState<string>("GET");
-  const { setPostMessage } = useContext(SwizzleContext);
+  const [selectedMethod, setSelectedMethod] = useState<string>("get");
+  const {setPostMessage, setActiveEndpoint} = useContext(SwizzleContext);
 
-  const methods = [
+  const methods: any = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
   ]; //{id: "put", name: "PUT"}, {id: "delete", name: "DELETE"}, {id: "patch", name: "PATCH"}
@@ -88,6 +88,9 @@ export default function APIWizard({
       fileName: "user-dependencies/" + fileName,
     });
     setIsVisible(false);
+    setTimeout(() => {
+      setActiveEndpoint(newEndpointName);
+    }, 500);
   };
 
   useEffect(() => {
@@ -121,94 +124,41 @@ export default function APIWizard({
         <div className="inline-block align-bottom bg-[#32333b] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
           <div className="bg-[#32333b] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
-              {
-                // step == 0 ? (
-                //   <>
-                //     <h3
-                //       className="text-lg leading-6 font-medium text-[#D9D9D9]"
-                //       id="modal-title"
-                //     >
-                //       🎨 New API
-                //     </h3>
-                //     <div className="mt-1">
-                //       <p className="text-sm text-[#D9D9D9]">
-                //         What type of API do you want to create?
-                //       </p>
-                //     </div>
-                //     <div className="mt-3 mb-2">
-                //       <div className="flex flex-row space-x-2 text-center">
-                //         <div
-                //           className="flex-row rounded p-3 border border-[#525363] hover:border-[#6f7082] cursor-pointer w-full"
-                //           onClick={() => chooseType("http")}
-                //         >
-                //           <img src="/gear.svg" className="w-8 h-8 m-auto mb-2" />
-                //           <div className="text-base m-auto flex-row">
-                //             <div className="font-bold">Standard</div>
-                //             <div className="text-sm">Standard HTTP request</div>
-                //           </div>
-                //         </div>
-                //         <div
-                //           className="flex-row rounded p-3 border border-[#525363] hover:border-[#6f7082] cursor-pointer w-full"
-                //           onClick={() => chooseType("cron")}
-                //         >
-                //           <img src="/cron.svg" className="w-8 h-8 m-auto mb-2" />
-                //           <div className="text-base m-auto flex-row">
-                //             <div className="font-bold">Scheduled</div>
-                //             <div className="text-sm">Run code periodically</div>
-                //           </div>
-                //         </div>
-                //         <div
-                //           className="flex-row rounded p-3 border border-[#525363] hover:border-[#6f7082] cursor-pointer w-full"
-                //           onClick={() => chooseType("socket")}
-                //         >
-                //           <img
-                //             src="/socket.svg"
-                //             className="w-8 h-8 m-auto mb-2"
-                //           />
-                //           <div className="text-base m-auto flex-row">
-                //             <div className="font-bold">Websocket</div>
-                //             <div className="text-sm">Real-time connection</div>
-                //           </div>
-                //         </div>
-                //       </div>
-                //     </div>
-                //   </>
-                // ) :
-                step == 0 ? (
-                  <>
-                    <h3
-                      className="text-lg leading-6 font-medium text-[#D9D9D9]"
-                      id="modal-title"
-                    >
-                      Standard API
-                    </h3>
-                    <div className="mt-1">
-                      <p className="text-sm text-[#D9D9D9]">
-                        Name your endpoint
-                      </p>
-                    </div>
-                    <div className="mt-3 mb-2 flex">
-                      <Dropdown
-                        className="mr-2"
-                        onSelect={(item: any) => {
-                          setSelectedMethod(item.id);
-                        }}
-                        children={methods}
-                        direction="left"
-                      />
-                      <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value.trim())}
-                        className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={"/path/:variable"}
-                        onKeyDown={(event: any) => {
-                          if (event.key == "Enter") {
-                            createHandler();
-                          }
-                        }}
-                      />
-                    </div>
+              {step == 0 ? (
+                <>
+                  <h3
+                    className="text-lg leading-6 font-medium text-[#D9D9D9]"
+                    id="modal-title"
+                  >
+                    Standard API
+                  </h3>
+                  <div className="mt-1">
+                    <p className="text-sm text-[#D9D9D9]">Name your endpoint</p>
+                  </div>
+                  <div className="mt-3 mb-2 flex">
+                    <Dropdown
+                      className="mr-2"
+                      onSelect={(item: any) => {
+                        setSelectedMethod(item);
+                      }}
+                      children={methods}
+                      direction="left"
+                      title={selectedMethod.toUpperCase()}
+                    />
+                    <input
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value.trim())}
+                      className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
+                      placeholder={"/path/:variable"}
+                      onKeyDown={(event: any) => {
+                        if (event.key == "Enter") {
+                          createHandler();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
                     <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
                       <button
                         type="button"
@@ -232,6 +182,7 @@ export default function APIWizard({
                         Cancel
                       </button>
                     </div>
+                  </div>
                   </>
                 ) : (
                   <>

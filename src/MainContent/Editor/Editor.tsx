@@ -2,18 +2,16 @@ import React, { useContext, useEffect, useRef } from "react";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function Editor({
-  fileUri,
   prependText,
   findReplace,
   setCurrentFileProperties,
 }: {
-  fileUri: string;
   prependText: string;
   findReplace: string[]; //[find, replace]
   setCurrentFileProperties: (properties: any) => void;
 }) {
   const iframeRef = useRef(null);
-  const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setIdeReady, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
 
   useEffect(() => {
     console.log("file uri changed to " + JSON.stringify(postMessage));
@@ -54,31 +52,35 @@ export default function Editor({
     postMessageToIframe(message);
   }, [findReplace]);
 
+
+  const messageHandler = (event) => {
+    if (event.data.type === "extensionReady") {
+      console.log("EXTENSION READY")
+      setIdeReady(true);
+      const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
+      postMessageToIframe(message);
+    }
+    if (event.data.type === "fileChanged") {
+      setCurrentFileProperties({
+        fileUri: event.data.fileUri,
+        hasPassportAuth: event.data.hasPassportAuth,
+        hasGetDb: event.data.hasGetDb,
+      })
+      //React to the viewed file changing - update the currently selected endpoint
+      console.log("fileChanged");
+      console.log(event.data);
+    }
+  }
+
   //Resend the file name when ready
   useEffect(() => {
-    window.addEventListener("message", (event) => {
-      if (event.data.type === "extensionReady") {
-        console.log("EXTENSION READY");
-        setIdeReady(true);
-        const message = { fileUri: fileUri, type: "openFile" };
-        postMessageToIframe(message);
-      }
-      if (event.data.type === "fileChanged") {
-        setCurrentFileProperties({
-          fileUri: event.data.fileUri,
-          hasPassportAuth: event.data.hasPassportAuth,
-          hasGetDb: event.data.hasGetDb,
-        });
-        //React to the viewed file changing - update the currently selected endpoint
-        console.log("fileChanged");
-        console.log(event.data);
-      }
-    });
+    window.addEventListener("message", messageHandler);
 
     //On unmount, save the file and remove the event listener
     return () => {
-      window.removeEventListener("message", () => {});
-      const message = { type: "saveFile" };
+      console.log("unmount listener")
+      window.removeEventListener("message", messageHandler);
+      const message = { type: "saveFile"}
       postMessageToIframe(message);
       setIdeReady(false);
     };
