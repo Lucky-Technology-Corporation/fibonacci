@@ -10,7 +10,7 @@ import Switch from "react-switch";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
-  
+
   const { createProject } = useApi();
   const {
     projects,
@@ -27,7 +27,7 @@ export default function ProjectSelector() {
     setIsCreatingProject,
     isCreatingProject,
     environment,
-    setEnvironment
+    setEnvironment,
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -54,28 +54,27 @@ export default function ProjectSelector() {
     setActiveProjectName(project.name);
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
-    
+
     //TODO: Remove this
-    console.log(project)
+    console.log(project);
 
     setTestDomain(project.test_swizzle_domain);
     setProdDomain(project.prod_swizzle_domain);
 
-    if(environment == "test"){
+    if (environment == "test") {
       setDomain(project.test_swizzle_domain);
-    }
-    else {
+    } else {
       setDomain(project.prod_swizzle_domain);
     }
   };
 
   useEffect(() => {
-    if(environment == "test"){
+    if (environment == "test") {
       setDomain(testDomain);
-    } else{
+    } else {
       setDomain(prodDomain);
     }
-  }, [environment])
+  }, [environment]);
 
   //When projects is set, set the active project to the first project in the list or the one stored in session storage
   useEffect(() => {
@@ -108,24 +107,35 @@ export default function ProjectSelector() {
             name: "+ New Project",
           }}
           lastOnSelect={() => {
-            if(isCreatingProject){ alert("A project is already being created for you now!"); return; }
+            if (isCreatingProject) {
+              alert("A project is already being created for you now!");
+              return;
+            }
             setIsVisible(true);
           }}
           className={`${isCreatingProject ? "opacity-70" : ""}`}
           title={activeProjectName}
         />
         <Switch
-            className="ml-1 scale-75"
-            onChange={() => { setEnvironment(environment == "test" ? "prod" : "test") }}
-            checked={environment == 'test'}
-            uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
-            checkedIcon={<FontAwesomeIcon icon={faFlask} className="ml-2.5" color="#ffffff" />}
-            offColor="#474752"
-            onColor="#f39c12"
-            onHandleColor="#d2d3e0"
-            offHandleColor="#d2d3e0"
-          />
-        </div>
+          className="ml-1 scale-75"
+          onChange={() => {
+            setEnvironment(environment == "test" ? "prod" : "test");
+          }}
+          checked={environment == "test"}
+          uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
+          checkedIcon={
+            <FontAwesomeIcon
+              icon={faFlask}
+              className="ml-2.5"
+              color="#ffffff"
+            />
+          }
+          offColor="#474752"
+          onColor="#f39c12"
+          onHandleColor="#d2d3e0"
+          offHandleColor="#d2d3e0"
+        />
+      </div>
 
       <FullPageModal
         isVisible={isVisible}

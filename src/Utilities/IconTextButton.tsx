@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 export default function IconTextButton({
   onClick,
   icon,
-  text
+  text,
 }: {
   onClick: () => void;
   icon: ReactNode;

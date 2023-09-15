@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Page } from "../Utilities/Page";
 import SectionTitle from "./SectionTitle";
 import CollectionList from "./Database/CollectionList";
@@ -32,8 +39,8 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
-
-  const {environment, setActiveEndpoint, activeEndpoint, setPostMessage } = useContext(SwizzleContext);
+  const { environment, setActiveEndpoint, activeEndpoint, setPostMessage } =
+    useContext(SwizzleContext);
 
   //File management + sidebar management code
   const programmatiFileUpdateRef = useRef(false);
@@ -43,15 +50,26 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = false;
       return;
     }
-    if(activeEndpoint == undefined || activeEndpoint == "") return;
-    const fileName = activeEndpoint.replace(/\//g, '-');
-    setPostMessage({type: "openFile", fileName: `user-dependencies/${fileName}.js`})
+    if (activeEndpoint == undefined || activeEndpoint == "") return;
+    const fileName = activeEndpoint.replace(/\//g, "-");
+    setPostMessage({
+      type: "openFile",
+      fileName: `user-dependencies/${fileName}.js`,
+    });
   }, [activeEndpoint]);
 
   useEffect(() => {
-    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.includes("user-dependencies")) return;
-    const newEndpoint = (currentFileProperties.fileUri.split("user-dependencies/")[1].replace(".js", "").replace(/-/g, "/"));
-    if(newEndpoint == activeEndpoint) return;
+    if (
+      currentFileProperties == undefined ||
+      currentFileProperties.fileUri == undefined ||
+      !currentFileProperties.fileUri.includes("user-dependencies")
+    )
+      return;
+    const newEndpoint = currentFileProperties.fileUri
+      .split("user-dependencies/")[1]
+      .replace(".js", "")
+      .replace(/-/g, "/");
+    if (newEndpoint == activeEndpoint) return;
     programmatiFileUpdateRef.current = true;
     setActiveEndpoint(newEndpoint);
   }, [currentFileProperties]);
@@ -75,7 +93,13 @@ export default function LeftSidebar({
             onHandleColor="#d2d3e0"
             offHandleColor="#d2d3e0"
           /> */}
-          {environment == "test" ? <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div> : <div className="text-sm font-bold m-auto">Production View</div>}
+          {environment == "test" ? (
+            <div className="text-sm font-bold m-auto text-[#f39c12]">
+              Test View
+            </div>
+          ) : (
+            <div className="text-sm font-bold m-auto">Production View</div>
+          )}
         </div>
 
         <div className="flex">
@@ -105,7 +129,7 @@ export default function LeftSidebar({
           }}
         />
         <EndpointList active={selectedTab == Page.Apis} />
-        
+
         <SectionTitle
           icon="world.svg"
           text="Hosting"
@@ -153,7 +177,6 @@ export default function LeftSidebar({
           <div>&nbsp;</div>
           <div>&nbsp;</div>
         </div>
-
 
         {/* <SectionTitle
           icon="brain.svg"

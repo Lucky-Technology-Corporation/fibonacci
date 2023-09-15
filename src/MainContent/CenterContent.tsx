@@ -33,8 +33,7 @@ export default function CenterContent({
   activeLogsPage,
   fileUri,
 }: CenterContentProps) {
-
-  const {activeEndpoint, activeFile} = useContext(SwizzleContext);
+  const { activeEndpoint, activeFile } = useContext(SwizzleContext);
 
   if (selectedTab === Page.Apis) {
     return (
@@ -42,13 +41,22 @@ export default function CenterContent({
         {activeEndpoint ? (
           <>
             <EditorHeader />
-            <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
+            <Editor
+              fileUri={fileUri}
+              prependText={prependCode}
+              findReplace={findReplace}
+              setCurrentFileProperties={setCurrentFileProperties}
+            />
           </>
         ) : (
           <>
-           <div className="flex-grow flex flex-col items-center justify-center">
-              <div className="text-lg mt-12 mb-4 font-bold">No endpoint selected</div>
-              <div className="text-md">👈 Create or select an endpoint from the list</div>
+            <div className="flex-grow flex flex-col items-center justify-center">
+              <div className="text-lg mt-12 mb-4 font-bold">
+                No endpoint selected
+              </div>
+              <div className="text-md">
+                👈 Create or select an endpoint from the list
+              </div>
             </div>
           </>
         )}
@@ -60,13 +68,22 @@ export default function CenterContent({
         {activeFile ? (
           <>
             <EditorHeader />
-            <Editor fileUri={fileUri} prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
+            <Editor
+              fileUri={fileUri}
+              prependText={prependCode}
+              findReplace={findReplace}
+              setCurrentFileProperties={setCurrentFileProperties}
+            />
           </>
         ) : (
           <>
-           <div className="flex-grow flex flex-col items-center justify-center">
-              <div className="text-lg mt-12 mb-4 font-bold">No file selected</div>
-              <div className="text-md">👈 Create or select a file from the list</div>
+            <div className="flex-grow flex flex-col items-center justify-center">
+              <div className="text-lg mt-12 mb-4 font-bold">
+                No file selected
+              </div>
+              <div className="text-md">
+                👈 Create or select a file from the list
+              </div>
             </div>
           </>
         )}

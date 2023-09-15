@@ -9,11 +9,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 
-export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: boolean, setIsVisible: any }) {
-
+export default function PackageInfo({
+  isVisible,
+  setIsVisible,
+}: {
+  isVisible: boolean;
+  setIsVisible: any;
+}) {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
-  const [installedPackages, setInstalledPackages] = useState<string[]>([]); 
+  const [installedPackages, setInstalledPackages] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState(null);
 
   const { npmSearch, getPackageJson } = useApi();
@@ -21,22 +26,26 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   const { setPostMessage, domain } = useContext(SwizzleContext);
 
   useEffect(() => {
-    if(domain == null || domain == undefined || domain == "") {return};
+    if (domain == null || domain == undefined || domain == "") {
+      return;
+    }
     getPackageJson().then((data) => {
       if (data == undefined || data.dependencies == undefined) {
         return;
       }
       const dependencies = Object.keys(data.dependencies).map((key) => {
-        return key
+        return key;
       });
       setInstalledPackages(dependencies);
-    })
+    });
   }, [domain]);
 
   let debounceTimer;
 
   useEffect(() => {
-    if (query == "") { return }
+    if (query == "") {
+      return;
+    }
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       npmSearch(query).then((data) => {
@@ -52,24 +61,24 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   const handleInputChange = (inputValue) => {
     setQuery(inputValue);
   };
-  
+
   useEffect(() => {
     setSelectedOption(null);
     setItems([]);
-  }, [isVisible])
+  }, [isVisible]);
 
   useEffect(() => {
-    console.log(selectedOption)
-    if(selectedOption == null) return;
+    console.log(selectedOption);
+    if (selectedOption == null) return;
     addPackageToProject(selectedOption.value);
     toast.success(`Added ${selectedOption.value} to project`);
-  }, [selectedOption])
+  }, [selectedOption]);
 
   const addPackageToProject = (message) => {
-    const messageBody = {type: "addPackage", packageName: message};
-    setPostMessage(messageBody)
+    const messageBody = { type: "addPackage", packageName: message };
+    setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
-  }
+  };
 
   const renderSearchField = () => {
     return (
@@ -139,51 +148,52 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
           }),
         }}
       />
-    )  
-  }
+    );
+  };
 
   return (
     <ToastWindow
-        isHintWindowVisible={isVisible}
-        showHintWindowIfOpen={() => setIsVisible(true)}
-        hideHintWindow={() => setIsVisible(false)}
-        title={""}
-        titleClass="text-md font-bold"
-        isLarge={false}
-        content={(
-          //table of packages
-          <div>
-            {renderSearchField()}
-            <div className="flex flex-col items-center justify-center mt-3">
-              <table className="w-full">
-                <thead>
-                  <tr>
-                    <th className="text-left">Current Packages</th>
-                    <th className="text-left"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {installedPackages.map((packageName) => {
-                    return (
-                      <tr key={packageName}>
-                        <td>{packageName}</td>
-                        <td className="opacity-70 hover:opacity-100 cursor-pointer"><FontAwesomeIcon
+      isHintWindowVisible={isVisible}
+      showHintWindowIfOpen={() => setIsVisible(true)}
+      hideHintWindow={() => setIsVisible(false)}
+      title={""}
+      titleClass="text-md font-bold"
+      isLarge={false}
+      content={
+        //table of packages
+        <div>
+          {renderSearchField()}
+          <div className="flex flex-col items-center justify-center mt-3">
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="text-left">Current Packages</th>
+                  <th className="text-left"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {installedPackages.map((packageName) => {
+                  return (
+                    <tr key={packageName}>
+                      <td>{packageName}</td>
+                      <td className="opacity-70 hover:opacity-100 cursor-pointer">
+                        <FontAwesomeIcon
                           className="ml-auto"
                           icon={faTrash}
                           onClick={() => {
                             /* Handle deletion here */
                           }}
-                        /></td>
-                      </tr>
-                    )
-                  }
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        )}
-        position={"bottom-left"}
-      />
+        </div>
+      }
+      position={"bottom-left"}
+    />
   );
 }

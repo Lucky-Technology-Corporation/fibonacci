@@ -8,10 +8,7 @@ import Dropdown from "../../Utilities/Dropdown";
 import DocumentJSON from "./DocumentJSON";
 import { toast } from "react-hot-toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowUp,
-  faArrowDown,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { v4 as uuidv4 } from "uuid";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
@@ -23,8 +20,7 @@ export default function DatabaseView({
 }: {
   activeCollection: string;
 }) {
-  const { getDocuments, deleteCollection, runQuery } =
-    useApi();
+  const { getDocuments, deleteCollection, runQuery } = useApi();
 
   const { activeProject, environment } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -54,21 +50,21 @@ export default function DatabaseView({
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [didSearch, setDidSearch] = useState<boolean>(false)
+  const [didSearch, setDidSearch] = useState<boolean>(false);
 
   const [filterName, setFilterName] = useState<string>("");
 
   useEffect(() => {
     if (searchQuery == "") {
-      resetCollection()
+      resetCollection();
     }
   }, [filterName]);
 
   const resetCollection = () => {
-    setDidSearch(false)
-    setCurrentPage(0)
+    setDidSearch(false);
+    setCurrentPage(0);
     fetchData(0);
-  }
+  };
 
   const fetchData = (page: number) => {
     if (!activeCollection || activeCollection == "") return;
@@ -106,7 +102,7 @@ export default function DatabaseView({
       delete object["_id"];
       setJSONEditorData(object);
       setIsJSONEditorVisible(true);
-    } 
+    }
   };
 
   const onJSONChangeHandler = (newData: any) => {
@@ -166,38 +162,49 @@ export default function DatabaseView({
 
   //This refreshes the data when the active collection changes. In the future, we should use a context provider
   useEffect(() => {
-    console.log("refreshing data...")
+    console.log("refreshing data...");
     setCurrentPage(0);
     fetchData(currentPage);
   }, [activeCollection, activeProject, environment]);
 
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;
-    if(didSearch){
-      runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection, currentPage)
-    } else{
+    if (didSearch) {
+      runQuery(
+        searchQuery,
+        filterName,
+        activeCollection,
+        sortedByColumn,
+        sortDirection,
+        currentPage,
+      );
+    } else {
       fetchData(currentPage);
     }
   }, [currentPage, sortedByColumn, sortDirection]);
 
-
   const runSearch = async () => {
-    if(filterName == ""){
-      toast.error("Please select a filter")
-      return
+    if (filterName == "") {
+      toast.error("Please select a filter");
+      return;
     }
-    runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
-    .then((data) => {
-      setDidSearch(true)
-      setData(data.documents || []);
-      setKeys(data.keys.sort() || []);
-      setTotalDocs(data.pagination.total_documents);
-    })
-    .catch((e) => {
-      console.log(e);
-      setError(e);
-    })
-
+    runQuery(
+      searchQuery,
+      filterName,
+      activeCollection,
+      sortedByColumn,
+      sortDirection,
+    )
+      .then((data) => {
+        setDidSearch(true);
+        setData(data.documents || []);
+        setKeys(data.keys.sort() || []);
+        setTotalDocs(data.pagination.total_documents);
+      })
+      .catch((e) => {
+        console.log(e);
+        setError(e);
+      });
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
@@ -245,7 +252,9 @@ export default function DatabaseView({
 
   return (
     <div>
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div
+        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
+      >
         <div>
           <div className={`font-bold text-base`}>{activeCollection}</div>
           <div className={`text-sm mt-0.5`}>
@@ -287,12 +296,23 @@ export default function DatabaseView({
         <Dropdown
           className="ml-4"
           onSelect={setFilterName}
-          children={keys.filter(k => k !== "_id").map((key) => {
-            if(key == "_swizzle_uid"){ return { id: key, name: "userId" } }
-            else{ return { id: key, name: ("Filter " + key) } }
-          })}
+          children={keys
+            .filter((k) => k !== "_id")
+            .map((key) => {
+              if (key == "_swizzle_uid") {
+                return { id: key, name: "userId" };
+              } else {
+                return { id: key, name: "Filter " + key };
+              }
+            })}
           direction="right"
-          title={("Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId"))}
+          title={
+            "Filter " +
+            (keys.filter((key) => key == filterName)[0] || "").replace(
+              "_swizzle_uid",
+              "userId",
+            )
+          }
         />
         <input
           type="text"
@@ -308,13 +328,13 @@ export default function DatabaseView({
             }
           }}
         />
-        <Button
-          text={"Search"}
-          onClick={runSearch}
-        />
+        <Button text={"Search"} onClick={runSearch} />
       </div>
 
-      <div className="max-w-full overflow-x-auto" style={{width: "calc(100vw - 240px - 12px)"}}>
+      <div
+        className="max-w-full overflow-x-auto"
+        style={{ width: "calc(100vw - 240px - 12px)" }}
+      >
         <table
           className="table-auto my-4 ml-4 block"
           style={{ tableLayout: "auto" }}
@@ -391,14 +411,20 @@ export default function DatabaseView({
       {data.length == 0 && currentPage == 0 ? (
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
-          {!didSearch ? <Button
-            text="Delete this collection"
-            onClick={deleteCollectionHandler}
-          /> :
-           <Button
-            text="Reset search"
-            onClick={() => { setSearchQuery(""); resetCollection() }}
-          />}
+          {!didSearch ? (
+            <Button
+              text="Delete this collection"
+              onClick={deleteCollectionHandler}
+            />
+          ) : (
+            <Button
+              text="Reset search"
+              onClick={() => {
+                setSearchQuery("");
+                resetCollection();
+              }}
+            />
+          )}
         </div>
       ) : (
         <></>

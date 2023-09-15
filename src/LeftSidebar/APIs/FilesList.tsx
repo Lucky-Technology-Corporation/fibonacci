@@ -17,18 +17,25 @@ export default function FilesList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullFileList, setFullFileList] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
-  const { activeProject, setPostMessage, activeFile, setActiveFile } = useContext(SwizzleContext);
+  const { activeProject, setPostMessage, activeFile, setActiveFile } =
+    useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles("files")
       .then((data) => {
-        if(data == undefined || data.children == undefined || data.children.length == 0) { return }
+        if (
+          data == undefined ||
+          data.children == undefined ||
+          data.children.length == 0
+        ) {
+          return;
+        }
         const transformedEndpoints = data.children.map((endpoint: any) => {
-          return endpoint.name
-        })
+          return endpoint.name;
+        });
         setFullFileList(transformedEndpoints);
         setFiles(transformedEndpoints);
-        setActiveFile(transformedEndpoints[0])
+        setActiveFile(transformedEndpoints[0]);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -38,7 +45,7 @@ export default function FilesList({ active }: { active: boolean }) {
 
   //Used to filter the endopint list
   useEffect(() => {
-    if(searchFilter == "") {
+    if (searchFilter == "") {
       setFiles(fullFileList);
       return;
     }
@@ -49,13 +56,12 @@ export default function FilesList({ active }: { active: boolean }) {
   }, [searchFilter]);
 
   const formatFileName = (file: string) => {
-    return file
-  }
+    return file;
+  };
 
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-
       <div className="flex ml-2 mt-2">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
@@ -65,7 +71,13 @@ export default function FilesList({ active }: { active: boolean }) {
             setSearchFilter(e.target.value);
           }}
         />
-        <FontAwesomeIcon icon={faXmarkCircle} className={`w-3 h-3 m-auto text-[#525363] cursor-pointer hover:text-[#D9D9D9] ${searchFilter == "" ? "hidden" : "" }`} onClick={() => setSearchFilter("")} />
+        <FontAwesomeIcon
+          icon={faXmarkCircle}
+          className={`w-3 h-3 m-auto text-[#525363] cursor-pointer hover:text-[#D9D9D9] ${
+            searchFilter == "" ? "hidden" : ""
+          }`}
+          onClick={() => setSearchFilter("")}
+        />
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex">
@@ -79,18 +91,20 @@ export default function FilesList({ active }: { active: boolean }) {
         <div className="flex items-center">HTML</div>
       </div>
       <div className="ml-1">
-        {files.filter(f => f.includes(".html")).map((endpoint) => {  
-          return (
-            <FileItem
-              key={endpoint}
-              path={formatFileName(endpoint)}
-              active={endpoint == activeFile}
-              onClick={() => {
-                setActiveFile(endpoint);
-              }}
-            />
-          );
-        })}
+        {files
+          .filter((f) => f.includes(".html"))
+          .map((endpoint) => {
+            return (
+              <FileItem
+                key={endpoint}
+                path={formatFileName(endpoint)}
+                active={endpoint == activeFile}
+                onClick={() => {
+                  setActiveFile(endpoint);
+                }}
+              />
+            );
+          })}
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex">
@@ -104,18 +118,20 @@ export default function FilesList({ active }: { active: boolean }) {
         <div className="flex items-center">CSS</div>
       </div>
       <div className="ml-1">
-        {files.filter(e => e.includes(".css")).map((file) => {  
-          return (
-            <FileItem
-              key={file}
-              path={formatFileName(file)}
-              active={file == activeFile}
-              onClick={() => {
-                setActiveFile(file);
-              }}
-            />
-          );
-        })}
+        {files
+          .filter((e) => e.includes(".css"))
+          .map((file) => {
+            return (
+              <FileItem
+                key={file}
+                path={formatFileName(file)}
+                active={file == activeFile}
+                onClick={() => {
+                  setActiveFile(file);
+                }}
+              />
+            );
+          })}
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex">
@@ -129,22 +145,28 @@ export default function FilesList({ active }: { active: boolean }) {
         <div className="flex items-center">JS</div>
       </div>
       <div className="ml-1">
-        {files.filter(e => e.includes(".js")).map((file) => {  
-          return (
-            <FileItem
-              key={file}
-              path={formatFileName(file)}
-              active={file == activeFile}
-              onClick={() => {
-                setActiveFile(file);
-              }}
-            />
-          );
-        })}
+        {files
+          .filter((e) => e.includes(".js"))
+          .map((file) => {
+            return (
+              <FileItem
+                key={file}
+                path={formatFileName(file)}
+                active={file == activeFile}
+                onClick={() => {
+                  setActiveFile(file);
+                }}
+              />
+            );
+          })}
       </div>
 
-
-      <FileWizard isVisible={isVisible} setIsVisible={setIsVisible} setFiles={setFiles} setFullFiles={setFullFileList} />
+      <FileWizard
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
+        setFiles={setFiles}
+        setFullFiles={setFullFileList}
+      />
     </div>
   );
 }

@@ -7,7 +7,8 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint, environment, activeProject } = useContext(SwizzleContext);
+  const { testDomain, activeEndpoint, environment, activeProject } =
+    useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(
@@ -18,16 +19,26 @@ export default function useApi() {
 
   const getFile = async (fileName: string) => {
     try {
-      if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
-      if(testDomain.includes("localhost")) {return []};
-      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/code/file_contents?path=code/${fileName}`, {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      const response = await axios.get(
+        `${testDomain.replace(
+          "https",
+          "http",
+        )}:1234/code/file_contents?path=code/${fileName}`,
+        {
           headers: {
-              Authorization: authHeader(),
+            Authorization: authHeader(),
           },
-      })
+        },
+      );
       return response.data;
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return "";
     }
   };
@@ -36,84 +47,104 @@ export default function useApi() {
     //TODO: pull in code from imported files
     //TODO: split files into chunks an summarize long functions
     try {
-      const fileName = activeEndpoint.replace(/\//g, '-');
-      const fileContents = await getFile("user-dependencies/" + fileName + ".js")
+      const fileName = activeEndpoint.replace(/\//g, "-");
+      const fileContents = await getFile(
+        "user-dependencies/" + fileName + ".js",
+      );
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/file`, 
+        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/file`,
         {
           userQuery: userQuery,
           aiAction: aiAction,
-          fileContents: fileContents
+          fileContents: fileContents,
         },
         {
           headers: {
             Authorization: authHeader(),
           },
-        })
+        },
+      );
       return response.data;
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return "";
     }
-  }
+  };
 
   const getAutocheckResponse = async () => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, '-');
-      const fileContents = await getFile("user-dependencies/" + fileName + ".js")
+      const fileName = activeEndpoint.replace(/\//g, "-");
+      const fileContents = await getFile(
+        "user-dependencies/" + fileName + ".js",
+      );
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`, 
+        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`,
         {
-          fileContents: fileContents
+          fileContents: fileContents,
         },
         {
           headers: {
             Authorization: authHeader(),
           },
-        })
+        },
+      );
       return response.data;
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return "";
     }
-  }
+  };
 
   const getPackageJson = async () => {
     try {
-      if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
-      if(testDomain.includes("localhost")) {return []};
-      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/code/package.json`, {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      const response = await axios.get(
+        `${testDomain.replace("https", "http")}:1234/code/package.json`,
+        {
           headers: {
-              Authorization: authHeader(),
+            Authorization: authHeader(),
           },
-      })
+        },
+      );
       return response.data;
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return [];
     }
   };
 
   const getFiles = async (fileTypes) => {
-    try{
-      if(testDomain == null || testDomain == undefined || testDomain == "") {return []};
-      if(testDomain.includes("localhost")) {return []};
-      
-      var path = "table_of_contents";
-      if(fileTypes.toLowerCase() == "files"){
-        path = "table_of_files"
+    try {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
       }
-      
-      const response = await axios.get(`${testDomain.replace("https", "http")}:1234/${path}`, {
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+
+      var path = "table_of_contents";
+      if (fileTypes.toLowerCase() == "files") {
+        path = "table_of_files";
+      }
+
+      const response = await axios.get(
+        `${testDomain.replace("https", "http")}:1234/${path}`,
+        {
           headers: {
-              Authorization: authHeader(),
+            Authorization: authHeader(),
           },
-      })
+        },
+      );
       return response.data;
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return [];
     }
   };
@@ -126,5 +157,14 @@ export default function useApi() {
     return true;
   };
 
-  return { createAPI, updateEndpoint, getFiles, npmSearch, getPackageJson, getFile, getAIResponseToFile, getAutocheckResponse };
+  return {
+    createAPI,
+    updateEndpoint,
+    getFiles,
+    npmSearch,
+    getPackageJson,
+    getFile,
+    getAIResponseToFile,
+    getAutocheckResponse,
+  };
 }

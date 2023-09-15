@@ -68,14 +68,14 @@
   stroke-dashoffset: 0;
 }
 
-input[type="text"]::placeholder{
+input[type="text"]::placeholder {
   opacity: 0.5;
 }
 
 .tremor-Card-root {
   background-color: #181922 !important;
 }
-.bg-tremor-background{
+.bg-tremor-background {
   background-color: #181922 !important;
 }
 

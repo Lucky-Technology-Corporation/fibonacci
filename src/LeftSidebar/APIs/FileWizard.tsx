@@ -12,33 +12,33 @@ export default function APIWizard({
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
-  setFiles: React.Dispatch<React.SetStateAction<any[]>>
-  setFullFiles: React.Dispatch<React.SetStateAction<any[]>>
+  setFiles: React.Dispatch<React.SetStateAction<any[]>>;
+  setFullFiles: React.Dispatch<React.SetStateAction<any[]>>;
 }) {
   const [inputValue, setInputValue] = useState("");
   const [step, setStep] = useState(0);
   const [selectedMethod, setSelectedMethod] = useState<string>("GET");
-  const {setPostMessage} = useContext(SwizzleContext);
+  const { setPostMessage } = useContext(SwizzleContext);
 
-  const templateOptions = [
-    { id: "blank", name: "Blank" },
-  ];
+  const templateOptions = [{ id: "blank", name: "Blank" }];
 
   const chooseType = (type: string) => {
     setStep(1);
   };
 
   const createHandler = () => {
-    var cleanInputValue = inputValue
-    if(inputValue == ""){
+    var cleanInputValue = inputValue;
+    if (inputValue == "") {
       toast.error("Please enter a value");
       return;
     }
-    if(inputValue.includes("/")){
-      toast.error("Subdirectories are not supported yet. Please enter a name without a slash");
+    if (inputValue.includes("/")) {
+      toast.error(
+        "Subdirectories are not supported yet. Please enter a name without a slash",
+      );
       return;
     }
-    
+
     let isDuplicate = false;
     setFullFiles((files: any[]) => {
       if (!files.includes(inputValue)) {
@@ -47,7 +47,7 @@ export default function APIWizard({
       isDuplicate = true;
       return files;
     });
-    
+
     setFiles((files: any[]) => {
       if (!files.includes(inputValue)) {
         return [...files, inputValue];
@@ -56,12 +56,12 @@ export default function APIWizard({
       return files;
     });
 
-    if(isDuplicate) {
+    if (isDuplicate) {
       toast.error("That file already exists");
       return;
     }
-    setPostMessage({type: "newFile", fileName: "user-hosting/" + inputValue})
-    setIsVisible(false)
+    setPostMessage({ type: "newFile", fileName: "user-hosting/" + inputValue });
+    setIsVisible(false);
   };
 
   useEffect(() => {
@@ -95,8 +95,7 @@ export default function APIWizard({
         <div className="inline-block align-bottom bg-[#32333b] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
           <div className="bg-[#32333b] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
-              {
-                step == 0 ? (
+              {step == 0 ? (
                 <>
                   <h3
                     className="text-lg leading-6 font-medium text-[#D9D9D9]"

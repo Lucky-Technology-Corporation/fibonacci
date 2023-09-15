@@ -148,15 +148,15 @@ export default function DatabaseRow({
                   position="bottom-right"
                 />
               ) : (value || "").toString().startsWith("https://") &&
-                  editing !== key &&
-                  (value || "").toString().match(/\.(jpeg|jpg|png|gif)$/) ? (
+                editing !== key &&
+                (value || "").toString().match(/\.(jpeg|jpg|png|gif)$/) ? (
                 <img
                   src={value}
                   className="h-8 w-8 rounded-md cursor-pointer"
                   onClick={() => {
-                    if(!shouldBlockEdits.includes(key)) {
+                    if (!shouldBlockEdits.includes(key)) {
                       setupEditing(key);
-                    } else{
+                    } else {
                       window.open(value, "_blank");
                     }
                   }}

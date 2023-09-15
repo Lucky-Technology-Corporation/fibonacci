@@ -2,14 +2,14 @@ import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { useContext } from "react";
-import { useSignOut } from 'react-auth-kit'
+import { useSignOut } from "react-auth-kit";
 
 const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { activeProject, environment } = useContext(SwizzleContext);
-  const signOut = useSignOut()
+  const { activeProject, environment} = useContext(SwizzleContext);
+  const signOut = useSignOut();
 
   const getCollections = async () => {
     if (activeProject == "") return;
@@ -30,6 +30,7 @@ export default function useApi() {
     pageSize: number = 20,
     sortByKey: string = "",
     sortDirection: string = "asc",
+    active_endpoint: string = "",
   ) => {
     try {
       if (activeProject == "") return;
@@ -40,6 +41,9 @@ export default function useApi() {
       }
       if (sortByKey !== "") {
         queryString += `&sort=${sortByKey}&sortDirection=${sortDirection}`;
+      }
+      if (active_endpoint !== "") {
+        queryString += `&active_endpoint=${active_endpoint}`;
       }
 
       const response = await axios.get(
@@ -241,8 +245,8 @@ export default function useApi() {
       });
       return response.data;
     } catch (e: any) {
-      if(e.response.status == 401) {
-        signOut()
+      if (e.response.status == 401) {
+        signOut();
       }
       console.error(e);
       return null;

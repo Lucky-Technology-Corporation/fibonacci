@@ -1,4 +1,3 @@
-
 export default function FileItem({
   active = false,
   path,

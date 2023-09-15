@@ -13,7 +13,8 @@ import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 export default function UserTableView() {
   const { getDocuments } = useApi();
 
-  const { activeProject, activeProjectName, environment } = useContext(SwizzleContext);
+  const { activeProject, activeProjectName, environment } =
+    useContext(SwizzleContext);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -173,7 +174,9 @@ export default function UserTableView() {
 
   return (
     <div>
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div
+        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
+      >
         <div>
           <div className={`font-bold text-base`}>{activeProjectName} users</div>
           <div className={`text-sm mt-0.5`}>

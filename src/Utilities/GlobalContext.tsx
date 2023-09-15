@@ -10,13 +10,13 @@ export const GlobalContextProvider = ({ children }) => {
   const [isFree, setIsFree] = useState(false);
   const [domain, setDomain] = useState("");
   const [testDomain, setTestDomain] = useState("");
-  const [prodDomain, setProdDomain] = useState(""); 
+  const [prodDomain, setProdDomain] = useState("");
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
   const [activeEndpoint, setActiveEndpoint] = useState("");
   const [activeFile, setActiveFile] = useState("");
-  const [ideReady, setIdeReady] = useState(false); 
+  const [ideReady, setIdeReady] = useState(false);
 
   return (
     <SwizzleContext.Provider
@@ -31,7 +31,7 @@ export const GlobalContextProvider = ({ children }) => {
         setIsFree,
         domain,
         setDomain,
-        testDomain, 
+        testDomain,
         setTestDomain,
         prodDomain,
         setProdDomain,
@@ -48,7 +48,7 @@ export const GlobalContextProvider = ({ children }) => {
         ideReady,
         setIdeReady,
         activeFile,
-        setActiveFile
+        setActiveFile,
       }}
     >
       {children}

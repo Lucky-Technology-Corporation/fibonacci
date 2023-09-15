@@ -7,7 +7,7 @@ export default function SectionAction({
 }: {
   text: string;
   onClick: MouseEventHandler<HTMLDivElement>;
-  className: string
+  className: string;
 }) {
   return (
     <>

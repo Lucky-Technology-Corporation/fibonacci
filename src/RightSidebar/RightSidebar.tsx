@@ -14,14 +14,14 @@ import useApi from "../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`
-const signatureNoAuth = `async (request, result)`
+const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`;
+const signatureNoAuth = `async (request, result)`;
 
 const signatureNoDb = `async (request, result) => {
-`
+`;
 const signatureWithDb = `async (request, result) => {
   const db = getDb()
-`
+`;
 
 export default function RightSidebar({
   selectedTab,
@@ -36,14 +36,17 @@ export default function RightSidebar({
 }) {
   const programmaticDbUpdateRef = useRef(false);
   const programmaticAuthUpdateRef = useRef(false);
-    
+
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isDBChecked, setIsDBChecked] = useState(false);
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
-  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
+  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] =
+    useState(false);
   const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
-  const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
+  const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(
+    null,
+  );
 
   const { ideReady } = useContext(SwizzleContext);
   const { getAutocheckResponse } = useApi();
@@ -52,10 +55,10 @@ export default function RightSidebar({
     if (programmaticAuthUpdateRef.current) {
       programmaticAuthUpdateRef.current = false;
     } else {
-      if(isAuthChecked){
-        setFindReplace([signatureNoAuth, signatureWithAuth])
+      if (isAuthChecked) {
+        setFindReplace([signatureNoAuth, signatureWithAuth]);
       } else {
-        setFindReplace([signatureWithAuth, signatureNoAuth])
+        setFindReplace([signatureWithAuth, signatureNoAuth]);
       }
     }
   }, [isAuthChecked]);
@@ -63,34 +66,32 @@ export default function RightSidebar({
   useEffect(() => {
     if (programmaticDbUpdateRef.current) {
       programmaticDbUpdateRef.current = false;
-    } else {  
-      if(isDBChecked){
-        setFindReplace([signatureNoDb, signatureWithDb])
+    } else {
+      if (isDBChecked) {
+        setFindReplace([signatureNoDb, signatureWithDb]);
       } else {
-        setFindReplace([signatureWithDb, signatureNoDb])
+        setFindReplace([signatureWithDb, signatureNoDb]);
       }
     }
   }, [isDBChecked]);
 
   useEffect(() => {
-    if(currentFileProperties == undefined) return;
-    
-    if(currentFileProperties.hasGetDb !== isDBChecked){
+    if (currentFileProperties == undefined) return;
+
+    if (currentFileProperties.hasGetDb !== isDBChecked) {
       programmaticDbUpdateRef.current = true;
-      setIsDBChecked(currentFileProperties.hasGetDb)
+      setIsDBChecked(currentFileProperties.hasGetDb);
     }
-    if(currentFileProperties.hasPassportAuth !== isAuthChecked){
+    if (currentFileProperties.hasPassportAuth !== isAuthChecked) {
       programmaticAuthUpdateRef.current = true;
-      setIsAuthChecked(currentFileProperties.hasPassportAuth)
+      setIsAuthChecked(currentFileProperties.hasPassportAuth);
     }
-  }, [currentFileProperties])
+  }, [currentFileProperties]);
 
   return (
     <div
-      className={`w-[200px] text-sm ${
-        selectedTab == Page.Apis ? "" : "hidden"
-      }
-      ${ideReady ? "": "opacity-50 pointer-events-none"}
+      className={`w-[200px] text-sm ${selectedTab == Page.Apis ? "" : "hidden"}
+      ${ideReady ? "" : "opacity-50 pointer-events-none"}
       `}
     >
       <div className="flex flex-col items-center pt-4 h-full px-4">
@@ -108,13 +109,13 @@ export default function RightSidebar({
           text="Test"
         />
         {currentWindow === "test" && (
-          <TestWindow 
+          <TestWindow
             shouldShowTestWindow={() => setShouldShowTestWindow(false)}
             //hideTestWindow={() => setShouldShowTestWindow(false)}
-            setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)} 
+            setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)}
             setCurrentWindow={setCurrentWindow}
             //savedTests={useApi().getTests()}
-        />
+          />
         )}
         {currentWindow === "newTest" && (
           <NewTestWindow
@@ -125,40 +126,49 @@ export default function RightSidebar({
         )}
         <div className="h-2" />
         <IconTextButton
-          onClick={() => { 
+          onClick={() => {
             toast.promise(getAutocheckResponse(), {
               loading: "Running autocheck...",
               success: (data) => {
-                if(data == "") {
+                if (data == "") {
                   toast.error("Error running autocheck");
                   return;
                 }
-                return "Done"
+                return "Done";
               },
-              error: "Error running autocheck"
-            })
+              error: "Error running autocheck",
+            });
           }}
           icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
           text="Autocheck"
         />
 
-
         <div className="h-4" />
         <div className="font-bold">Configuration</div>
         <div className="h-2" />
         <IconTextButton
-          onClick={() => {setShouldShowSecretsWindow(true)}}
+          onClick={() => {
+            setShouldShowSecretsWindow(true);
+          }}
           icon={<img src="/lock.svg" className="w-3 h-3 m-auto" />}
           text="Secrets"
         />
-        <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
+        <SecretInfo
+          isVisible={shouldShowSecretsWindow}
+          setIsVisible={setShouldShowSecretsWindow}
+        />
         <div className="h-2" />
         <IconTextButton
-          onClick={() => {setShouldShowPackagesWindow(true)}}
+          onClick={() => {
+            setShouldShowPackagesWindow(true);
+          }}
           icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
           text="Packages"
         />
-        <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow}  />
+        <PackageInfo
+          isVisible={shouldShowPackagesWindow}
+          setIsVisible={setShouldShowPackagesWindow}
+        />
         <div className="h-6" />
         <div className="font-bold">Available Variables</div>
         <div className="h-1" />
@@ -185,7 +195,6 @@ export default function RightSidebar({
           />
           <DBInfo show={isDBChecked} />
         </div>
-
 
         {/* <div className='text-left w-full space-y-2'>
               <div className="font-bold flex justify-between"><div>Recent requests</div><div className="mr-2 text-xl mt-[-4px] font-medium cursor-pointer"></div></div>

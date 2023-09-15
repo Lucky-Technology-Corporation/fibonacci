@@ -11,7 +11,9 @@ export default function useApi() {
 
   const getData = async (startDate: string, endDate: string) => {
     try {
-      if (!activeProject) { return }
+      if (!activeProject) {
+        return;
+      }
       const body = {
         start: startDate,
         end: endDate,

@@ -128,7 +128,9 @@ export default function ObjectTableView() {
 
   return (
     <div>
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div
+        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
+      >
         <div>
           <div className={`font-bold text-base`}>Storage</div>
           <div className={`text-sm mt-0.5`}>

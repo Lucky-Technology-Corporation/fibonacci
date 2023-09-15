@@ -42,19 +42,19 @@ export default function LogsPage() {
     {
       id: "code",
       name: "Response Code",
-    }
+    },
   ];
 
   useEffect(() => {
-    console.log("getting logs for " + environment)
+    console.log("getting logs for " + environment);
     setPage(0);
-    setOffset(0)
+    setOffset(0);
     setFilterQuery(null);
     setSearchQuery("");
     setNextPageToken(null);
 
     getLogs(offset, filterName, filterQuery).then((data) => {
-      console.log(data)
+      console.log(data);
       if (data) {
         setMessages(data);
       }
@@ -117,21 +117,22 @@ export default function LogsPage() {
       setFilterName(null);
     }
 
-    getLogs(offset, filterName, filterQuery, nextPageToken).then((data) => {
-      if (data && data.results != null) {
-        setMessages(data.results);
-        setNextPageToken(data.next_page_token);
-      } else if (data) {
-        setMessages(data);
-      } else {
-        setMessages([]);
-      }
-    }).catch((e) => {
-      console.log(e);
-      toast.error("Error fetching logs");
-    });
+    getLogs(offset, filterName, filterQuery, nextPageToken)
+      .then((data) => {
+        if (data && data.results != null) {
+          setMessages(data.results);
+          setNextPageToken(data.next_page_token);
+        } else if (data) {
+          setMessages(data);
+        } else {
+          setMessages([]);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        toast.error("Error fetching logs");
+      });
   }, [offset, filterQuery]);
-
 
   const runSearch = () => {
     setFilterQuery(searchQuery);
@@ -139,7 +140,9 @@ export default function LogsPage() {
 
   return (
     <div className="h-full overflow-scroll">
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div
+        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
+      >
         <div>
           <div className={`font-bold text-base`}>Logs</div>
           <div className={`text-sm mt-0.5`}>
@@ -163,7 +166,9 @@ export default function LogsPage() {
       <div className={`flex pr-2 h-9 mb-4`}>
         <Dropdown
           className="ml-4"
-          onSelect={(id: string) => {setFilterName(id)}}
+          onSelect={(id: string) => {
+            setFilterName(id);
+          }}
           children={searchTypes}
           direction="left"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
