@@ -19,7 +19,6 @@ type CenterContentProps = {
   setDidDeploy: (didDeploy: boolean) => void;
   activeCollection: string;
   activeLogsPage: string;
-  fileUri: string;
 };
 
 export default function CenterContent({
@@ -31,7 +30,6 @@ export default function CenterContent({
   setDidDeploy,
   activeCollection,
   activeLogsPage,
-  fileUri,
 }: CenterContentProps) {
   const { activeEndpoint, activeFile } = useContext(SwizzleContext);
 
@@ -41,12 +39,7 @@ export default function CenterContent({
         {activeEndpoint ? (
           <>
             <EditorHeader />
-            <Editor
-              fileUri={fileUri}
-              prependText={prependCode}
-              findReplace={findReplace}
-              setCurrentFileProperties={setCurrentFileProperties}
-            />
+            <Editor prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
           </>
         ) : (
           <>
@@ -68,12 +61,7 @@ export default function CenterContent({
         {activeFile ? (
           <>
             <EditorHeader />
-            <Editor
-              fileUri={fileUri}
-              prependText={prependCode}
-              findReplace={findReplace}
-              setCurrentFileProperties={setCurrentFileProperties}
-            />
+            <Editor prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
           </>
         ) : (
           <>
