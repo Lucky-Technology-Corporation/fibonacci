@@ -1,6 +1,6 @@
 import Button from "../Utilities/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFlask, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faFlask, faTrash, faPlay } from "@fortawesome/free-solid-svg-icons";
 import useTestApi from "../API/TestingAPI";
 import { useEffect, useState, useContext } from "react";
 import NewTestWindow from "./NewTestWindow";
@@ -139,12 +139,7 @@ export default function TestWindow({
           >
             <div className="flex itmes justify-left mx-2">
               <button onClick={() => runSingleTest(testDoc)}>
-                <img
-                  src="playbutton.svg"
-                  alt="playbutton"
-                  className="w-4 h-4 mr-2 mt-2"
-                />
-              </button>
+              <FontAwesomeIcon icon={faPlay} size="lg" style={{color: "#41d373",}} />              </button>
 
               <Button
                 text={testDoc.test_name}
