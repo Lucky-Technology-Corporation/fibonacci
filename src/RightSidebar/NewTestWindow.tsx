@@ -135,9 +135,9 @@ export default function NewTestWindow({
         <div className="font-bold my-2 text-md">Query Parameters</div>
         <div className="flex w-full mb-2">
           <InputWithPrefix
-            prefix={"/" + (activeEndpoint.split("/")[1] || "") + "?"}
+            prefix={"/" + (activeEndpoint.split("/")[1] || "")}
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
-            placeholder={"key=value&key2=value2"}
+            placeholder={"?key=value&key2=value2"}
             value={queryParameters}
             onChange={(e) => {
               setQueryParameters(e.target.value);
