@@ -11,7 +11,7 @@ export default function Editor({
   setCurrentFileProperties: (properties: any) => void;
 }) {
   const iframeRef = useRef(null);
-  const { testDomain, postMessage, setIdeReady, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
 
   useEffect(() => {
     console.log("file uri changed to " + JSON.stringify(postMessage));
@@ -28,13 +28,6 @@ export default function Editor({
       return;
     iframeRef.current.contentWindow.postMessage(message, "*");
   };
-
-  // useEffect(() => {
-  //   console.log("file uri changed to " + fileUri)
-  //   if(fileUri == undefined || fileUri == "") return;
-  //   const message = { fileUri: fileUri, type: "openFile" };
-  //   postMessageToIframe(message);
-  // }, [fileUri]);
 
   useEffect(() => {
     const message = { content: prependText, type: "prependText" };
@@ -101,7 +94,7 @@ export default function Editor({
           height: "calc(100% + 100px)",
           marginLeft: "-48px",
           marginRight: "-48px",
-          marginTop: "-78px",
+          marginTop: "-68px",
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>

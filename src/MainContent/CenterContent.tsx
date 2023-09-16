@@ -33,73 +33,56 @@ export default function CenterContent({
 }: CenterContentProps) {
   const { activeEndpoint, activeFile } = useContext(SwizzleContext);
 
-  if (selectedTab === Page.Apis) {
-    return (
-      <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
-        {activeEndpoint ? (
-          <>
+  return (
+    <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
+      
+      <div style={{ display: (selectedTab === Page.Apis || selectedTab === Page.Hosting) ? 'block' : 'none' }}>
+        <div style={{ display: (activeEndpoint || activeFile) ? 'block' : 'none' }}>
             <EditorHeader />
             <Editor prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
-          </>
-        ) : (
-          <>
-            <div className="flex-grow flex flex-col items-center justify-center">
-              <div className="text-lg mt-12 mb-4 font-bold">
-                No endpoint selected
-              </div>
-              <div className="text-md">
-                👈 Create or select an endpoint from the list
-              </div>
+        </div>
+        <div style={{ display: (!activeEndpoint && selectedTab === Page.Apis) ? 'block' : 'none' }}>
+          <div className="flex-grow flex flex-col items-center justify-center">
+            <div className="text-lg mt-12 mb-4 font-bold">
+              No endpoint selected
             </div>
-          </>
-        )}
-      </div>
-    );
-  } else if (selectedTab === Page.Hosting) {
-    return (
-      <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
-        {activeFile ? (
-          <>
-            <EditorHeader />
-            <Editor prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
-          </>
-        ) : (
-          <>
-            <div className="flex-grow flex flex-col items-center justify-center">
-              <div className="text-lg mt-12 mb-4 font-bold">
-                No file selected
-              </div>
-              <div className="text-md">
-                👈 Create or select a file from the list
-              </div>
+            <div className="text-md">
+              👈 Create or select an endpoint from the list
             </div>
-          </>
-        )}
+          </div>
+        </div>
+        <div style={{ display: (!activeFile && selectedTab === Page.Hosting) ? 'block' : 'none' }}>
+          <div className="flex-grow flex flex-col items-center justify-center">
+            <div className="text-lg mt-12 mb-4 font-bold">
+              No file selected
+            </div>
+            <div className="text-md">
+              👈 Create or select a file from the list
+            </div>
+          </div>
+        </div>
       </div>
-    );
-  } else if (selectedTab == Page.Auth) {
-    return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
-        <UserTableView />
+
+      <div style={{ display: selectedTab === Page.Auth ? 'block' : 'none' }}>
+        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
+          <UserTableView />
+        </div>
       </div>
-    );
-  } else if (selectedTab == Page.Db) {
-    return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
-        <DatabaseView activeCollection={activeCollection} />
+      <div style={{ display: selectedTab === Page.Db ? 'block' : 'none' }}>
+        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
+          <DatabaseView activeCollection={activeCollection} />
+        </div>
       </div>
-    );
-  } else if (selectedTab == Page.Storage) {
-    return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
-        <ObjectTableView />
+      <div style={{ display: selectedTab === Page.Storage ? 'block' : 'none' }}>
+        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
+          <ObjectTableView />
+        </div>
       </div>
-    );
-  } else if (selectedTab == Page.Logs) {
-    return (
-      <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
-        <MonitoringPage activeLogsPage={activeLogsPage} />
+      <div style={{ display: selectedTab === Page.Logs ? 'block' : 'none' }}>
+        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
+          <MonitoringPage activeLogsPage={activeLogsPage} />
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

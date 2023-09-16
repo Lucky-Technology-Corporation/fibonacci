@@ -58,6 +58,12 @@ export default function EndpointList({ active }: { active: boolean }) {
     setEndpoints(filteredEndpoints);
   }, [searchFilter]);
 
+  useEffect(() => {
+    if(active && endpoints && endpoints.length > 0 && activeEndpoint == undefined){
+      setActiveEndpoint(endpoints[0]);
+    }
+  }, [active, endpoints]);
+
   const formatEndpointName = (endpoint: string) => {
     return "/" + endpoint.split("/")[1];
   };

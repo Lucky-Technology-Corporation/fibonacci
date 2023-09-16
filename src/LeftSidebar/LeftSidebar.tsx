@@ -39,7 +39,7 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
-  const { environment, setActiveEndpoint, activeEndpoint, setPostMessage } =
+  const { environment, setActiveEndpoint, activeEndpoint, activeFile, setPostMessage } =
     useContext(SwizzleContext);
 
   //File management + sidebar management code
@@ -59,19 +59,41 @@ export default function LeftSidebar({
   }, [activeEndpoint]);
 
   useEffect(() => {
+    if (programmatiFileUpdateRef.current) {
+      programmatiFileUpdateRef.current = false;
+      return;
+    }
+    if (activeFile == undefined || activeFile == "") return;
+    setPostMessage({
+      type: "openFile",
+      fileName: `user-hosting/${activeFile}`,
+    });
+  }, [activeFile]);
+
+  useEffect(() => {
     if (
       currentFileProperties == undefined ||
-      currentFileProperties.fileUri == undefined ||
-      !currentFileProperties.fileUri.includes("user-dependencies")
-    )
-      return;
-    const newEndpoint = currentFileProperties.fileUri
-      .split("user-dependencies/")[1]
-      .replace(".js", "")
-      .replace(/-/g, "/");
-    if (newEndpoint == activeEndpoint) return;
-    programmatiFileUpdateRef.current = true;
-    setActiveEndpoint(newEndpoint);
+      currentFileProperties.fileUri == undefined
+    ){ return; }
+    
+    if (currentFileProperties.fileUri.includes("user-dependencies")){
+      const newEndpoint = currentFileProperties.fileUri
+        .split("user-dependencies/")[1]
+        .replace(".js", "")
+        .replace(/-/g, "/");
+      if (newEndpoint == activeEndpoint) return;
+      programmatiFileUpdateRef.current = true;
+      setActiveEndpoint(newEndpoint);
+    }
+    
+    if(currentFileProperties.fileUri.includes("user-hosting")){ 
+      const newFile = currentFileProperties.fileUri
+        .split("user-hosting/")[1]
+      if (newFile == activeFile) return;
+      programmatiFileUpdateRef.current = true;
+      setActiveEndpoint(newFile);
+    }
+
   }, [currentFileProperties]);
 
   return (
