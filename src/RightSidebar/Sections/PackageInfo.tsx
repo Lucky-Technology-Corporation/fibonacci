@@ -8,6 +8,7 @@ import ToastWindow from "../../Utilities/Toast/ToastWindow";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
+import Button from "../../Utilities/Button";
 
 export default function PackageInfo({
   isVisible,
@@ -87,7 +88,7 @@ export default function PackageInfo({
         onChange={setSelectedOption}
         onInputChange={handleInputChange}
         options={items}
-        placeholder="Add package"
+        placeholder="Serach NPM..."
         styles={{
           input: (provided, state) => ({
             ...provided,
@@ -155,13 +156,23 @@ export default function PackageInfo({
     <ToastWindow
       isHintWindowVisible={isVisible}
       showHintWindowIfOpen={() => setIsVisible(true)}
-      hideHintWindow={() => setIsVisible(false)}
+      hideHintWindow={() => {}}
       title={""}
       titleClass="text-md font-bold"
       isLarge={false}
       content={
         //table of packages
-        <div>
+        <div className="overflow-scroll max-h-[70vh]">
+          <div className="flex mb-2 space-between">
+            <div className="font-bold text-lg">Packages</div>
+            <Button
+              text="Close"
+              onClick={() => {
+                setIsVisible(false);
+              }}
+              className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
+            />
+          </div>
           {renderSearchField()}
           <div className="flex flex-col items-center justify-center mt-3">
             <table className="w-full">
