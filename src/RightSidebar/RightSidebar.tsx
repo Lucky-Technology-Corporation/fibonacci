@@ -13,6 +13,8 @@ import TestWindow from "./TestWindow";
 import useApi from "../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import ToastWindow from "../Utilities/Toast/ToastWindow";
+import AutocheckInfo from "./Sections/AutocheckInfo";
 
 const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`;
 const signatureNoAuth = `async (request, result)`;
@@ -47,6 +49,7 @@ export default function RightSidebar({
   const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(
     null,
   );
+  const [autocheckResponse, setAutocheckResponse] = useState("");
 
   const { ideReady } = useContext(SwizzleContext);
   const { getAutocheckResponse } = useApi();
@@ -134,6 +137,7 @@ export default function RightSidebar({
                   toast.error("Error running autocheck");
                   return;
                 }
+                setAutocheckResponse(data.recommendation_text);
                 return "Done";
               },
               error: "Error running autocheck",
@@ -141,6 +145,11 @@ export default function RightSidebar({
           }}
           icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
           text="Autocheck"
+        />
+        <AutocheckInfo
+          isVisible={autocheckResponse != ""}
+          setIsVisible={(show: boolean) => { if(!show){ setAutocheckResponse("") }}}
+          autocheckResponse={autocheckResponse}
         />
 
         <div className="h-4" />

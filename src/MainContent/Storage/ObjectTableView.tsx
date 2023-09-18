@@ -47,6 +47,12 @@ export default function ObjectTableView() {
       sortDirection,
     )
       .then((data) => {
+        if(data == null){
+          setData([]);
+          setKeys([]);
+          setTotalDocs(0);
+          return;
+        }
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);

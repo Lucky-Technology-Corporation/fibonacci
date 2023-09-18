@@ -86,7 +86,7 @@ export default function useApi() {
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`,
         {
-          fileContents: fileContents,
+          file_contents: fileContents,
         },
         {
           headers: {
