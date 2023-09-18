@@ -39,7 +39,7 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
-  const { environment, setActiveEndpoint, activeEndpoint, activeFile, setPostMessage } =
+  const { environment, setEnvironment, setActiveEndpoint, activeEndpoint, activeFile, setPostMessage } =
     useContext(SwizzleContext);
 
   //File management + sidebar management code
@@ -138,6 +138,25 @@ export default function LeftSidebar({
           ) : (
             <div className="text-sm font-bold m-auto">Production View</div>
           )}
+          <Switch
+          className="ml-1 scale-75"
+          onChange={() => {
+            setEnvironment(environment == "test" ? "prod" : "test");
+          }}
+          checked={environment == "test"}
+          uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
+          checkedIcon={
+            <FontAwesomeIcon
+              icon={faFlask}
+              className="ml-2.5"
+              color="#ffffff"
+            />
+          }
+          offColor="#474752"
+          onColor="#f39c12"
+          onHandleColor="#d2d3e0"
+          offHandleColor="#d2d3e0"
+        />
         </div>
 
         <div className="flex">

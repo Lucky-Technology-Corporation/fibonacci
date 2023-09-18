@@ -14,7 +14,6 @@ export default function ProjectSelector() {
   const { createProject } = useApi();
   const {
     projects,
-    setProjects,
     activeProject,
     setActiveProject,
     activeProjectName,
@@ -27,7 +26,6 @@ export default function ProjectSelector() {
     setIsCreatingProject,
     isCreatingProject,
     environment,
-    setEnvironment,
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -116,25 +114,7 @@ export default function ProjectSelector() {
           className={`${isCreatingProject ? "opacity-70" : ""}`}
           title={activeProjectName}
         />
-        <Switch
-          className="ml-1 scale-75"
-          onChange={() => {
-            setEnvironment(environment == "test" ? "prod" : "test");
-          }}
-          checked={environment == "test"}
-          uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
-          checkedIcon={
-            <FontAwesomeIcon
-              icon={faFlask}
-              className="ml-2.5"
-              color="#ffffff"
-            />
-          }
-          offColor="#474752"
-          onColor="#f39c12"
-          onHandleColor="#d2d3e0"
-          offHandleColor="#d2d3e0"
-        />
+        
       </div>
 
       <FullPageModal
