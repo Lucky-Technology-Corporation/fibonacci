@@ -37,7 +37,7 @@ export default function AnalyticsPage() {
     if (activeProject == null) {
       return;
     }
-    console.log("fetching...")
+    console.log("fetching...");
     fetchAndProcessData();
   }, [dateRange, activeProject, environment]);
 

@@ -18,7 +18,7 @@ export default function APIWizard({
   const [inputValue, setInputValue] = useState("");
   const [step, setStep] = useState(0);
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
-  const {setPostMessage, setActiveEndpoint} = useContext(SwizzleContext);
+  const { setPostMessage, setActiveEndpoint } = useContext(SwizzleContext);
 
   const methods: any = [
     { id: "get", name: "GET" },
@@ -183,70 +183,69 @@ export default function APIWizard({
                       </button>
                     </div>
                   </div>
-                  </>
-                ) : (
-                  <>
-                    <h3
-                      className="text-lg leading-6 font-medium text-[#D9D9D9]"
-                      id="modal-title"
+                </>
+              ) : (
+                <>
+                  <h3
+                    className="text-lg leading-6 font-medium text-[#D9D9D9]"
+                    id="modal-title"
+                  >
+                    Choose template
+                  </h3>
+                  <div className="mt-1">
+                    <p className="text-sm text-[#D9D9D9]">
+                      What are you building?
+                    </p>
+                  </div>
+                  <div className="mt-3 mb-2 flex">
+                    <div className="w-full mb-2">
+                      <ReactSearchAutocomplete
+                        items={templateOptions}
+                        // onSelect={handleOnSelect}
+                        autoFocus
+                        placeholder="Blank endpoint"
+                        styling={{
+                          border: "1px solid #525363",
+                          lineColor: "#525363",
+                          borderRadius: "0.375rem",
+                          boxShadow: "none",
+                          backgroundColor: "#32333b",
+                          hoverBackgroundColor: "#525363",
+                          color: "#D9D9D9",
+                          fontSize: "0.875rem",
+                          iconColor: "#D9D9D9",
+                          placeholderColor: "#D9D9D9",
+                          zIndex: 1000,
+                        }}
+                        showIcon={false}
+                      />
+                    </div>
+                  </div>
+                  <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        createHandler();
+                      }}
+                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
                     >
-                      Choose template
-                    </h3>
-                    <div className="mt-1">
-                      <p className="text-sm text-[#D9D9D9]">
-                        What are you building?
-                      </p>
-                    </div>
-                    <div className="mt-3 mb-2 flex">
-                      <div className="w-full mb-2">
-                        <ReactSearchAutocomplete
-                          items={templateOptions}
-                          // onSelect={handleOnSelect}
-                          autoFocus
-                          placeholder="Blank endpoint"
-                          styling={{
-                            border: "1px solid #525363",
-                            lineColor: "#525363",
-                            borderRadius: "0.375rem",
-                            boxShadow: "none",
-                            backgroundColor: "#32333b",
-                            hoverBackgroundColor: "#525363",
-                            color: "#D9D9D9",
-                            fontSize: "0.875rem",
-                            iconColor: "#D9D9D9",
-                            placeholderColor: "#D9D9D9",
-                            zIndex: 1000,
-                          }}
-                          showIcon={false}
-                        />
-                      </div>
-                    </div>
-                    <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          createHandler();
-                        }}
-                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
-                      >
-                        Create
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsVisible(false);
-                          setTimeout(function () {
-                            setStep(0);
-                          }, 200);
-                        }}
-                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                )
-              }
+                      Create
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsVisible(false);
+                        setTimeout(function () {
+                          setStep(0);
+                        }, 200);
+                      }}
+                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -75,7 +75,14 @@ export default function useTestApi() {
         throw new Error("No active endpoint selected");
       }
 
-      const allTests = await useApi().getDocuments(activeCollection, -1, 20, "", "asc", activeEndpoint);
+      const allTests = await useApi().getDocuments(
+        activeCollection,
+        -1,
+        20,
+        "",
+        "asc",
+        activeEndpoint,
+      );
 
       const responses = [];
       for (const testDoc of allTests) {

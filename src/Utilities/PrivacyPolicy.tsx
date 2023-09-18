@@ -1,9 +1,23 @@
-export default function PrivacyPolicy({app_name, company_name, company_address, contact_email}: {app_name: string, company_name: string, company_address: string, contact_email: string}){
-    const date = new Date();
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = date.toLocaleDateString('en-US', options);
+export default function PrivacyPolicy({
+  app_name,
+  company_name,
+  company_address,
+  contact_email,
+}: {
+  app_name: string;
+  company_name: string;
+  company_address: string;
+  contact_email: string;
+}) {
+  const date = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  const formattedDate = date.toLocaleDateString("en-US", options);
 
-    return `
+  return `
     <html>
     <head><title>Privacy Policy</title></head>
     <body>
@@ -222,5 +236,5 @@ export default function PrivacyPolicy({app_name, company_name, company_address, 
     </ul>
     </body>
     </html>  
-`
+`;
 }

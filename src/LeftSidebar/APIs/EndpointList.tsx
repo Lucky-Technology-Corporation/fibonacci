@@ -59,7 +59,12 @@ export default function EndpointList({ active }: { active: boolean }) {
   }, [searchFilter]);
 
   useEffect(() => {
-    if(active && endpoints && endpoints.length > 0 && activeEndpoint == undefined){
+    if (
+      active &&
+      endpoints &&
+      endpoints.length > 0 &&
+      activeEndpoint == undefined
+    ) {
       setActiveEndpoint(endpoints[0]);
     }
   }, [active, endpoints]);

@@ -44,7 +44,7 @@ export default function FilesList({ active }: { active: boolean }) {
   }, [activeProject]);
 
   useEffect(() => {
-    if(active && files && files.length > 0 && activeFile == undefined){
+    if (active && files && files.length > 0 && activeFile == undefined) {
       setActiveFile(files[0]);
     }
   }, [active, files]);

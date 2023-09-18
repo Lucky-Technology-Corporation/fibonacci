@@ -36,13 +36,30 @@ export default function CenterContent({
 
   return (
     <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
-      
-      <div style={{ display: (selectedTab === Page.Apis || selectedTab === Page.Hosting) ? 'block' : 'none' }}>
-        <div style={{ display: (activeEndpoint || activeFile) ? 'block' : 'none' }}>
-            <EditorHeader />
-            <Editor prependText={prependCode} findReplace={findReplace} setCurrentFileProperties={setCurrentFileProperties} />
+      <div
+        style={{
+          display:
+            selectedTab === Page.Apis || selectedTab === Page.Hosting
+              ? "block"
+              : "none",
+        }}
+      >
+        <div
+          style={{ display: activeEndpoint || activeFile ? "block" : "none" }}
+        >
+          <EditorHeader />
+          <Editor
+            prependText={prependCode}
+            findReplace={findReplace}
+            setCurrentFileProperties={setCurrentFileProperties}
+          />
         </div>
-        <div style={{ display: (!activeEndpoint && selectedTab === Page.Apis) ? 'block' : 'none' }}>
+        <div
+          style={{
+            display:
+              !activeEndpoint && selectedTab === Page.Apis ? "block" : "none",
+          }}
+        >
           <div className="flex-grow flex flex-col items-center justify-center">
             <div className="text-lg mt-12 mb-4 font-bold">
               No endpoint selected
@@ -52,11 +69,14 @@ export default function CenterContent({
             </div>
           </div>
         </div>
-        <div style={{ display: (!activeFile && selectedTab === Page.Hosting) ? 'block' : 'none' }}>
+        <div
+          style={{
+            display:
+              !activeFile && selectedTab === Page.Hosting ? "block" : "none",
+          }}
+        >
           <div className="flex-grow flex flex-col items-center justify-center">
-            <div className="text-lg mt-12 mb-4 font-bold">
-              No file selected
-            </div>
+            <div className="text-lg mt-12 mb-4 font-bold">No file selected</div>
             <div className="text-md">
               👈 Create or select a file from the list
             </div>
@@ -64,22 +84,22 @@ export default function CenterContent({
         </div>
       </div>
 
-      <div style={{ display: selectedTab === Page.Auth ? 'block' : 'none' }}>
+      <div style={{ display: selectedTab === Page.Auth ? "block" : "none" }}>
         <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
           <UserTableView />
         </div>
       </div>
-      <div style={{ display: selectedTab === Page.Db ? 'block' : 'none' }}>
+      <div style={{ display: selectedTab === Page.Db ? "block" : "none" }}>
         <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
           <DatabaseView activeCollection={activeCollection} />
         </div>
       </div>
-      <div style={{ display: selectedTab === Page.Storage ? 'block' : 'none' }}>
+      <div style={{ display: selectedTab === Page.Storage ? "block" : "none" }}>
         <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
           <ObjectTableView />
         </div>
       </div>
-      <div style={{ display: selectedTab === Page.Logs ? 'block' : 'none' }}>
+      <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
         <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
           <MonitoringPage activeLogsPage={activeLogsPage} />
         </div>

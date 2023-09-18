@@ -11,8 +11,7 @@ export default function TestWindow({
   shouldShowTestWindow,
   setShouldShowNewTestWindow,
   setCurrentWindow,
-} 
-: {
+}: {
   shouldShowTestWindow: any;
   setShouldShowNewTestWindow: any;
   setCurrentWindow: any;
@@ -27,13 +26,24 @@ export default function TestWindow({
     setCurrentWindow(null);
     shouldShowTestWindow();
   };
+  type TestType = {
+    test_name: string;
+    query_parameters: object;
+    queryParametersString: string;
+    user_id: string;
+    body: object;
+    bodyString: string;
+    endpoint: string;
+    _id: string;
+  };
 
-  const { domain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
+  const { domain, activeProject, activeEndpoint, environment } =
+    useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
-  const [tests, setTests] = useState([]);
+  const [tests, setTests] = useState<TestType[]>([]);
   const [testResults, setTestResults] = useState({});
   const api = useTestApi();
-  
+
   const runSingleTest = async (testDoc) => {
     try {
       const result = await api.runTest(testDoc);
@@ -56,6 +66,7 @@ export default function TestWindow({
     for (let testDoc of tests) {
       try {
         const result = await api.runTest(testDoc);
+        console.log("result run all: ")
         const status = result.status;
         newResults[testDoc._id] = status;
       } catch (error) {
@@ -64,6 +75,7 @@ export default function TestWindow({
       }
     }
     setTestResults(newResults);
+    console.log(newResults);
   };
 
   function getColorByStatus(statusCode) {
@@ -99,6 +111,7 @@ export default function TestWindow({
         shouldShowNewTestWindow={showNewTestWindow}
         hideNewTestWindow={() => setShowNewTestWindow(false)}
         savedTests={tests}
+        setTests={setTests}
       />
     );
   }
@@ -111,7 +124,6 @@ export default function TestWindow({
         transition: "opacity 0.1s",
         marginTop: "-8px",
       }}
-      //ref={myRef}
     >
       <div className="flex items-center justify-between px-4 py-2 pb-1">
         <div className="flex flex-col items-start">
@@ -128,7 +140,7 @@ export default function TestWindow({
         <Button
           text="+ New Request"
           onClick={handleNewRequestClick}
-          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         />
       </div>
       <div className="px-4 pb-2 text-sm">
@@ -139,7 +151,12 @@ export default function TestWindow({
           >
             <div className="flex itmes justify-left mx-2">
               <button onClick={() => runSingleTest(testDoc)}>
-              <FontAwesomeIcon icon={faPlay} size="lg" style={{color: "#41d373",}} />              </button>
+                <FontAwesomeIcon
+                  icon={faPlay}
+                  size="lg"
+                  style={{ color: "#41d373" }}
+                />{" "}
+              </button>
 
               <Button
                 text={testDoc.test_name}
@@ -147,9 +164,9 @@ export default function TestWindow({
                   setShowNewTestWindow(true);
                   setTestDoc(testDoc);
                 }}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
               />
-              <div className="px-4 py-2 text-sm font-bold">
+              <div className="px-4 text-sm font-bold">
                 <div className="mt-2">
                   <div className="flex items-center">
                     {testResults[testDoc._id] !== undefined && (
@@ -166,18 +183,20 @@ export default function TestWindow({
               </div>
             </div>
             <FontAwesomeIcon
-              className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all"
+              className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all cursor-pointer"
               icon={faTrash}
               onClick={() => {
-                api.deleteTest(activeCollection, testDoc._id)
+                api
+                  .deleteTest(activeCollection, testDoc._id)
                   .then(() => {
-                    setTests(prevTests => prevTests.filter(test => test._id !== testDoc._id));
+                    setTests((prevTests) =>
+                      prevTests.filter((test) => test._id !== testDoc._id),
+                    );
                   })
                   .catch((error) => {
                     console.error("Error deleting test:", error);
                   });
               }}
-              
             />
           </div>
         ))}
@@ -186,12 +205,12 @@ export default function TestWindow({
         <Button
           text="Cancel"
           onClick={handleCancelClick}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
         />
         <Button
           text="Run All"
           onClick={runAllTests}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
         />
       </div>
     </div>

@@ -1,5 +1,4 @@
-const InputWithPrefix = ({
-  prefix,
+const UserIdInfo = ({
   className,
   placeholder,
   value,
@@ -13,7 +12,6 @@ const InputWithPrefix = ({
         show ? "opacity-100" : "opacity-0 h-0"
       }`}
     >
-      <span className="flex items-center px-1 pr-0">{prefix}</span>
       <input
         className={`flex-1 min-w-0 px-2 pl-0 bg-transparent outline-0 placeholder-opacity-25`}
         type="text"
@@ -26,4 +24,4 @@ const InputWithPrefix = ({
   );
 };
 
-export default InputWithPrefix;
+export default UserIdInfo;

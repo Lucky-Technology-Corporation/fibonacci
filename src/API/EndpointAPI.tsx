@@ -17,9 +17,11 @@ export default function useApi() {
     return response.data.objects;
   };
 
-  const updateSecret = async (secretName: string, secretValue: string, environment: string) => {
-    
-  }
+  const updateSecret = async (
+    secretName: string,
+    secretValue: string,
+    environment: string,
+  ) => {};
 
   const getFile = async (fileName: string) => {
     try {

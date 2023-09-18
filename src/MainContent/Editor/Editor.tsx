@@ -45,10 +45,9 @@ export default function Editor({
     postMessageToIframe(message);
   }, [findReplace]);
 
-
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
-      console.log("EXTENSION READY")
+      console.log("EXTENSION READY");
       setIdeReady(true);
       const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
       postMessageToIframe(message);
@@ -58,12 +57,12 @@ export default function Editor({
         fileUri: event.data.fileUri,
         hasPassportAuth: event.data.hasPassportAuth,
         hasGetDb: event.data.hasGetDb,
-      })
+      });
       //React to the viewed file changing - update the currently selected endpoint
       console.log("fileChanged");
       console.log(event.data);
     }
-  }
+  };
 
   //Resend the file name when ready
   useEffect(() => {
@@ -71,9 +70,9 @@ export default function Editor({
 
     //On unmount, save the file and remove the event listener
     return () => {
-      console.log("unmount listener")
+      console.log("unmount listener");
       window.removeEventListener("message", messageHandler);
-      const message = { type: "saveFile"}
+      const message = { type: "saveFile" };
       postMessageToIframe(message);
       setIdeReady(false);
     };

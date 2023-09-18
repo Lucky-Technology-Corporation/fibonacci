@@ -8,7 +8,7 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { activeProject, environment} = useContext(SwizzleContext);
+  const { activeProject, environment } = useContext(SwizzleContext);
   const signOut = useSignOut();
 
   const getCollections = async () => {

@@ -29,7 +29,6 @@ export default function Dashboard() {
   //Active logs page handler
   const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
 
-
   //Initialization code...
   const { isFree, projects, activeProject, setProjects, isCreatingProject } =
     useContext(SwizzleContext);

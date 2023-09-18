@@ -6,6 +6,11 @@ import InputWithPrefix from "../Utilities/InputWithPrefix";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useTestApi from "../API/TestingAPI";
 import e from "express";
+import CodeEditor from "@uiw/react-textarea-code-editor";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import Checkbox from "../Utilities/Checkbox";
+import UserIdInfo from "./Sections/UserIdInfo";
+import BodyInfo from "./Sections/BodyInfo";
 
 export default function NewTestWindow({
   id,
@@ -16,6 +21,7 @@ export default function NewTestWindow({
   shouldShowNewTestWindow,
   hideNewTestWindow,
   savedTests,
+  setTests,
 }: {
   id?: string;
   testTitle?: string;
@@ -24,12 +30,19 @@ export default function NewTestWindow({
   savedBody?: string;
   shouldShowNewTestWindow: boolean;
   hideNewTestWindow: any;
-  savedTests?: string[];
+  savedTests?: any[];
+  setTests?: (newTests: any) => void;
 }) {
   const [testName, setTestName] = useState(testTitle || "");
   const [queryParameters, setQueryParameters] = useState(
     savedQueryParameters || "",
   );
+  const [isQueryParamsChecked, setIsQueryParamsChecked] = useState(
+    !!savedQueryParameters,
+  );
+  const [isUserIdChecked, setIsUserIdChecked] = useState(!!savedUserId);
+  const [isBodyChecked, setIsBodyChecked] = useState(!!savedBody);
+
   const [userId, setUserId] = useState(savedUserId || "");
   const [body, setBody] = useState(savedBody || "");
   const { activeEndpoint } = useContext(SwizzleContext);
@@ -77,14 +90,30 @@ export default function NewTestWindow({
       user_id: userId,
       body: bodyObject,
       bodyString: body,
-      endpoint: activeEndpoint
+      endpoint: activeEndpoint,
     };
 
     try {
       if (id) {
         await updateTest(activeCollection, id, documentToCreate);
+        if (setTests) {
+          setTests((prevTests) => {
+            return prevTests.map((test) => {
+              if (test._id === id) {
+                return {
+                  ...documentToCreate,
+                  _id: id,
+                };
+              }
+              return test;
+            });
+          });
+        }
       } else {
         await createTest(activeCollection, documentToCreate);
+        if (setTests) {
+          setTests((prevTests) => [...prevTests, documentToCreate]);
+        }
       }
     } catch (error) {
       console.error("Error saving test:", error);
@@ -132,9 +161,15 @@ export default function NewTestWindow({
             }}
           />
         </div>
-        <div className="font-bold my-2 text-md">Query Parameters</div>
-        <div className="flex w-full mb-2">
+        <div className="mt-2 mb-2">
+          <Checkbox
+            id="queryparams"
+            label="Query Parameters"
+            isChecked={isQueryParamsChecked}
+            setIsChecked={setIsQueryParamsChecked}
+          />
           <InputWithPrefix
+            show={isQueryParamsChecked}
             prefix={"/" + (activeEndpoint.split("/")[1] || "")}
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
             placeholder={"?key=value&key2=value2"}
@@ -149,10 +184,15 @@ export default function NewTestWindow({
             }}
           />
         </div>
-        <div className="font-bold my-2">User ID (optional)</div>
-        <div className="flex w-full mb-2">
-          <input
-            type="text"
+        <div className="mb-2">
+          <Checkbox
+            id="userid"
+            label="User ID"
+            isChecked={isUserIdChecked}
+            setIsChecked={setIsUserIdChecked}
+          />
+          <UserIdInfo
+            show={isUserIdChecked}
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
             placeholder={"507f1f77bcf86cd799439011"}
             value={userId}
@@ -166,11 +206,17 @@ export default function NewTestWindow({
             }}
           />
         </div>
-        <div className="font-bold my-2 text-md">Body</div>
-        <div className="flex w-full mb-2 h-32">
-          <textarea
-            className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
-            placeholder={"{ }"}
+
+        <div className="mb-2">
+          <Checkbox
+            id="body"
+            label="Body"
+            isChecked={isBodyChecked}
+            setIsChecked={setIsBodyChecked}
+          />
+          <BodyInfo
+            className="text-s flex-grow bg-transparent"
+            placeholder="{ }"
             value={body}
             onChange={(e) => {
               setBody(e.target.value);
@@ -180,6 +226,7 @@ export default function NewTestWindow({
                 saveTest();
               }
             }}
+            show={isBodyChecked}
           />
         </div>
 
@@ -189,12 +236,12 @@ export default function NewTestWindow({
         <Button
           text="Cancel"
           onClick={hideNewTestWindow}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
         />
         <Button
           text="Save"
           onClick={saveTest}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
         />
       </div>
     </div>

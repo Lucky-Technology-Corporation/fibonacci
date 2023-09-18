@@ -39,8 +39,14 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
-  const { environment, setEnvironment, setActiveEndpoint, activeEndpoint, activeFile, setPostMessage } =
-    useContext(SwizzleContext);
+  const {
+    setEnvironment,
+    environment,
+    setActiveEndpoint,
+    activeEndpoint,
+    activeFile,
+    setPostMessage,
+  } = useContext(SwizzleContext);
 
   //File management + sidebar management code
   const programmatiFileUpdateRef = useRef(false);
@@ -90,9 +96,11 @@ export default function LeftSidebar({
     if (
       currentFileProperties == undefined ||
       currentFileProperties.fileUri == undefined
-    ){ return; }
-    
-    if (currentFileProperties.fileUri.includes("user-dependencies")){
+    ) {
+      return;
+    }
+
+    if (currentFileProperties.fileUri.includes("user-dependencies")) {
       const newEndpoint = currentFileProperties.fileUri
         .split("user-dependencies/")[1]
         .replace(".js", "")
@@ -101,15 +109,13 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = true;
       setActiveEndpoint(newEndpoint);
     }
-    
-    if(currentFileProperties.fileUri.includes("user-hosting")){ 
-      const newFile = currentFileProperties.fileUri
-        .split("user-hosting/")[1]
+
+    if (currentFileProperties.fileUri.includes("user-hosting")) {
+      const newFile = currentFileProperties.fileUri.split("user-hosting/")[1];
       if (newFile == activeFile) return;
       programmatiFileUpdateRef.current = true;
       setActiveEndpoint(newFile);
     }
-
   }, [currentFileProperties]);
 
   return (
