@@ -245,10 +245,10 @@ export default function useApi() {
       });
       return response.data;
     } catch (e: any) {
-      if (e.response.status == 401) {
+      console.error(e)
+      if (e.response && e.response.status == 401) {
         signOut();
       }
-      console.error(e);
       return null;
     }
   };
