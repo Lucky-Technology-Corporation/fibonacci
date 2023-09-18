@@ -56,7 +56,7 @@ export default function PackageInfo({
           }),
         );
       });
-    }, 500);
+    }, 250);
   }, [query]);
 
   const handleInputChange = (inputValue) => {
@@ -88,7 +88,7 @@ export default function PackageInfo({
         onChange={setSelectedOption}
         onInputChange={handleInputChange}
         options={items}
-        placeholder="Serach NPM..."
+        placeholder="Search NPM..."
         styles={{
           input: (provided, state) => ({
             ...provided,

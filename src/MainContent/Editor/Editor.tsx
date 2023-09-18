@@ -14,7 +14,7 @@ export default function Editor({
   const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
 
   useEffect(() => {
-    console.log("file uri changed to " + JSON.stringify(postMessage));
+    console.log("Posting this message: " + JSON.stringify(postMessage));
     if (postMessage == null) return;
     postMessageToIframe(postMessage);
   }, [postMessage]);
@@ -50,8 +50,8 @@ export default function Editor({
     if (event.data.type === "extensionReady") {
       console.log("EXTENSION READY")
       setIdeReady(true);
-      // const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
-      // postMessageToIframe(message);
+      const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
+      postMessageToIframe(message);
     }
     if (event.data.type === "fileChanged") {
       setCurrentFileProperties({

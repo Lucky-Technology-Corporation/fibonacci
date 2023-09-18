@@ -12,7 +12,7 @@ export default function useApi() {
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(
-      `https://registry.npmjs.com/-/v1/search?text=${query}&size=5`,
+      `https://registry.npmjs.com/-/v1/search?text=${query}&size=10`,
     );
     return response.data.objects;
   };

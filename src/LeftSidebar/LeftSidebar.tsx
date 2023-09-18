@@ -46,6 +46,34 @@ export default function LeftSidebar({
   const programmatiFileUpdateRef = useRef(false);
 
   useEffect(() => {
+   openActiveEndpoint()
+  }, [activeEndpoint]);
+
+  useEffect(() => {
+    openActiveFile()
+  }, [activeFile]);
+
+  useEffect(() => {
+    if(selectedTab == Page.Hosting){
+      openActiveFile()
+    } else if(selectedTab == Page.Apis){
+      openActiveEndpoint()
+    }
+  }, [selectedTab])
+
+  const openActiveFile = () => {
+    if (programmatiFileUpdateRef.current) {
+      programmatiFileUpdateRef.current = false;
+      return;
+    }
+    if (activeFile == undefined || activeFile == "") return;
+    setPostMessage({
+      type: "openFile",
+      fileName: `user-hosting/${activeFile}`,
+    });
+  }
+
+  const openActiveEndpoint = () => {
     if (programmatiFileUpdateRef.current) {
       programmatiFileUpdateRef.current = false;
       return;
@@ -56,19 +84,7 @@ export default function LeftSidebar({
       type: "openFile",
       fileName: `user-dependencies/${fileName}.js`,
     });
-  }, [activeEndpoint]);
-
-  useEffect(() => {
-    if (programmatiFileUpdateRef.current) {
-      programmatiFileUpdateRef.current = false;
-      return;
-    }
-    if (activeFile == undefined || activeFile == "") return;
-    setPostMessage({
-      type: "openFile",
-      fileName: `user-hosting/${activeFile}`,
-    });
-  }, [activeFile]);
+  }
 
   useEffect(() => {
     if (
