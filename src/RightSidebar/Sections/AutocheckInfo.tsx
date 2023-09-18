@@ -61,7 +61,7 @@ export default function AutocheckInfo({
               />
             </div>
 
-            <div className="flex mt-3"
+            <div className="mt-3"
               dangerouslySetInnerHTML={{ __html: formatTextToHTML(autocheckResponse) }}
             >
             </div>
