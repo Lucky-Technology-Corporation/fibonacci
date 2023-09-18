@@ -9,6 +9,7 @@ import LogsDrawer from "./Editor/LogsDrawer";
 import MonitoringPage from "./Logs/MonitoringPage";
 import { useContext } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import NotificationPage from "./Notifications/NotificationPage";
 
 type CenterContentProps = {
   selectedTab: Page;
@@ -81,6 +82,11 @@ export default function CenterContent({
       <div style={{ display: selectedTab === Page.Logs ? 'block' : 'none' }}>
         <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
           <MonitoringPage activeLogsPage={activeLogsPage} />
+        </div>
+      </div>
+      <div style={{ display: selectedTab === Page.Notifications ? 'block' : 'none' }}>
+        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
+          <NotificationPage />
         </div>
       </div>
     </div>

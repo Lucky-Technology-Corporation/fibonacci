@@ -178,6 +178,16 @@ export default function LeftSidebar({
         />
 
         <SectionTitle
+          icon="auth.svg"
+          text="Auth"
+          active={selectedTab == Page.Auth}
+          onClick={() => {
+            setSelectedTab(Page.Auth);
+          }}
+        />
+
+
+        <SectionTitle
           icon="cloud.svg"
           text="APIs"
           active={selectedTab == Page.Apis}
@@ -196,15 +206,6 @@ export default function LeftSidebar({
           }}
         />
         <FilesList active={selectedTab == Page.Hosting} />
-
-        <SectionTitle
-          icon="auth.svg"
-          text="Auth"
-          active={selectedTab == Page.Auth}
-          onClick={() => {
-            setSelectedTab(Page.Auth);
-          }}
-        />
 
         <SectionTitle
           icon="database.svg"
@@ -226,6 +227,16 @@ export default function LeftSidebar({
           active={selectedTab == Page.Storage}
           onClick={() => {
             setSelectedTab(Page.Storage);
+          }}
+        />
+
+
+        <SectionTitle
+          icon="bell.svg"
+          text="Notifications"
+          active={selectedTab == Page.Notifications}
+          onClick={() => {
+            setSelectedTab(Page.Notifications);
           }}
         />
 

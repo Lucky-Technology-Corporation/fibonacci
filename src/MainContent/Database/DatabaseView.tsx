@@ -104,6 +104,11 @@ export default function DatabaseView({
       setIsJSONEditorVisible(true);
     }
   };
+  
+  const openNewDocumentWithData = (data: any) => {
+    setJSONEditorData(data);
+    setIsJSONEditorVisible(true);
+  }
 
   const onJSONChangeHandler = (newData: any) => {
     if (editingDocumentId) {
@@ -278,7 +283,7 @@ export default function DatabaseView({
             shouldShowSaveHint ? "hidden" : ""
           }`}
         >
-          <Dropdown
+          {/* <Dropdown
             className="ml-2"
             onSelect={createObjectHandler}
             children={[
@@ -289,6 +294,12 @@ export default function DatabaseView({
             ]}
             direction="right"
             title="Create"
+          /> */}
+          <Button
+            text="+ Add"
+            onClick={() => {
+              createObjectHandler("json");
+            }}
           />
         </div>
       </div>
@@ -398,6 +409,7 @@ export default function DatabaseView({
           collection={activeCollection}
           addHiddenRow={addHiddenRow}
           setTotalDocs={setTotalDocs}
+          openNewDocumentWithData={openNewDocumentWithData}
         />
         <DocumentJSON
           document={jsonEditorData}

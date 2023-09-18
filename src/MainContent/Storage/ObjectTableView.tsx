@@ -84,7 +84,7 @@ export default function ObjectTableView() {
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const uploadFileHandler = (e: any) => {
+  const uploadFileHandler = () => {
     fileInputRef.current?.click();
   };
   const handleFileChange = (e) => {
@@ -144,7 +144,7 @@ export default function ObjectTableView() {
           </div>
         </div>
         <div className={`flex h-10 mt-1 mr-[-16px] text-sm`}>
-          <Dropdown
+          {/* <Dropdown
             className="ml-2"
             onSelect={uploadFileHandler}
             children={[
@@ -155,6 +155,10 @@ export default function ObjectTableView() {
             ]}
             direction="right"
             title="Upload"
+          /> */}
+          <Button
+            text={"Upload"}
+            onClick={uploadFileHandler}
           />
           <input
             type="file"

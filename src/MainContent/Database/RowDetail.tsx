@@ -11,6 +11,7 @@ export default function RowDetail({
   deleteAction = "delete",
   shouldHideCopy = false,
   setTotalDocs,
+  openNewDocumentWithData = () => {},
 }: {
   collection: string;
   data: any;
@@ -19,6 +20,7 @@ export default function RowDetail({
   deleteAction?: "delete" | "deactivate";
   shouldHideCopy?: boolean;
   setTotalDocs: React.Dispatch<React.SetStateAction<number>>;
+  openNewDocumentWithData?: (data: any) => void;
 }) {
   const { deleteDocument, updateDocument } = useApi();
 
@@ -30,6 +32,15 @@ export default function RowDetail({
     niceData = castValues(niceData);
     navigator.clipboard.writeText(JSON.stringify(niceData, null, 2));
     toast.success("Copied JSON to clipboard!");
+  };
+
+  const runDuplicate = () => {
+    clickPosition = { x: 0, y: 0 };
+    setIsHintWindowVisible(false);
+    var niceData = { ...data };
+    delete niceData._id;
+    niceData = castValues(niceData);
+    openNewDocumentWithData(niceData);
   };
 
   const runDeleteDocument = () => {
@@ -139,11 +150,18 @@ export default function RowDetail({
       <table>
         <tbody className="divide-y divide-[#85869833]">
           {!shouldHideCopy && (
+            <>
+            <tr onClick={runDuplicate}>
+              <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
+                <div className="">Duplicate</div>
+              </td>
+            </tr>
             <tr onClick={copyJSON}>
               <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
                 <div className="">Copy JSON</div>
               </td>
             </tr>
+            </>
           )}
           <tr onClick={runDeleteDocument}>
             <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">

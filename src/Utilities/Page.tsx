@@ -6,4 +6,5 @@ export enum Page {
   Auth = "auth",
   Storage = "storage",
   Hosting = "hosting",
+  Notifications = "notifications",
 }
