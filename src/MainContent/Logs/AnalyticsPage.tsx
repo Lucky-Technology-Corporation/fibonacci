@@ -44,7 +44,7 @@ export default function AnalyticsPage() {
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (
       <Card className="dark-tremor h-90">
-        <Title className="mb-2">{title}</Title>
+        <Title className="mb-2 text-[#cccccc]">{title}</Title>
         <LineChart
           className="dark-tremor"
           data={chartdata}

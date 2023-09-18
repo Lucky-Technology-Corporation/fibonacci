@@ -78,6 +78,15 @@ input[type="text"]::placeholder {
 .bg-tremor-background {
   background-color: #181922 !important;
 }
+.text-tremor-content-emphasis{
+  color: #cccccc !important;
+}
+.ui-selected\:bg-tremor-background-muted[data-headlessui-state~="selected"]{
+  background-color: #33343f !important;
+}
+.ui-selected\:bg-tremor-background-muted[data-headlessui-state~="active"]{
+  background-color: #33343f !important;
+}
 
 @keyframes wave {
   50% {
