@@ -32,10 +32,7 @@ export default function useApi() {
         return [];
       }
       const response = await axios.get(
-        `${testDomain.replace(
-          "https",
-          "http",
-        )}:1234/code/file_contents?path=code/${fileName}`,
+        `${testDomain}:1234/code/file_contents?path=code/${fileName}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -112,7 +109,7 @@ export default function useApi() {
         return [];
       }
       const response = await axios.get(
-        `${testDomain.replace("https", "http")}:1234/code/package.json`,
+        `${testDomain}:1234/code/package.json`,
         {
           headers: {
             Authorization: authHeader(),
@@ -141,7 +138,7 @@ export default function useApi() {
       }
 
       const response = await axios.get(
-        `${testDomain.replace("https", "http")}:1234/${path}`,
+        `${testDomain}:1234/${path}`,
         {
           headers: {
             Authorization: authHeader(),

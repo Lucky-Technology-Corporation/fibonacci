@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
 import Button from "../../Utilities/Button";
+import useApi from "../../API/SettingsAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
+import toast from "react-hot-toast";
 
 export default function SecretInfo({
   isVisible,
@@ -19,11 +22,69 @@ export default function SecretInfo({
     productionValue: string;
   }
 
-  const [newSecretVisible, setNewSecretVisible] = useState<boolean>(false);
-  const [secrets, setSecrets] = useState<Secret[]>([
-    { name: "testName", testValue: "testValue", productionValue: "prodValue" },
-  ]);
+  const {getSecrets, saveSecrets} = useApi()
+  const { activeProject } = useContext(SwizzleContext);
 
+  const [newSecretVisible, setNewSecretVisible] = useState<boolean>(false);
+  const [secrets, setSecrets] = useState<Secret[]>([]);
+
+  const [newSecretName, setNewSecretName] = useState<string>("");
+  const [newSecretTestValue, setNewSecretTestValue] = useState<string>("");
+  const [newSecretProductionValue, setNewSecretProductionValue] = useState<string>("");
+
+  useEffect(() => {
+    getSecrets().then((secrets) => {
+      if(secrets == null) return;
+      
+      const shapedSecretArray = Object.keys(secrets.test).map(key => ({
+        name: key,
+        testValue: secrets.test[key],
+        productionValue: secrets.prod[key] == true ? "(hidden for security)" : secrets.prod[key]
+      })).filter(secret => !secret.name.startsWith("SWIZZLE_"));
+
+      setSecrets(shapedSecretArray)
+    })
+  }, [activeProject])
+
+  const deleteSecret = (name: string) => {
+    setSecrets(secrets.filter((secret) => secret.name != name));
+  };
+
+  const updateSecret = (name: string, key: 'testValue' | 'productionValue', newValue: string) => {
+    const updatedSecrets = secrets.map(secret => {
+      if (secret.name === name) {
+        return { ...secret, [key]: newValue };
+      }
+      return secret;
+    });
+    setSecrets(updatedSecrets);
+  };
+
+
+  const setNewSecrets = () => {
+    const secretsObject = secrets.reduce((acc, secret) => {
+      acc.test[secret.name] = secret.testValue;
+      acc.prod[secret.name] = secret.productionValue;
+      return acc;
+    }, { test: {}, prod: {} });
+    return saveSecrets(secretsObject)
+  };
+
+  const createNewSecret = () => {
+    setSecrets([
+      ...secrets,
+      {
+        name: newSecretName,
+        testValue: newSecretTestValue,
+        productionValue: newSecretProductionValue,
+      },
+    ]);
+    setNewSecretName("");
+    setNewSecretTestValue("");
+    setNewSecretProductionValue("");
+    return setNewSecrets()
+  };
+  
   return (
     <>
       <ToastWindow
@@ -32,61 +93,75 @@ export default function SecretInfo({
         hideHintWindow={() => {}}
         title={""}
         titleClass="text-md font-bold"
-        isLarge={false}
+        isLarge={true}
+        overrideLeftMargin={-426}
+        overrideTopMargin={-4}
         content={
           <div className="overflow-scroll max-h-[70vh]">
             <div className="flex mb-2 space-between">
               <div className="font-bold text-lg">Secrets</div>
-              <Button
-                text="Close"
-                onClick={() => {
-                  setIsVisible(false);
-                }}
-                className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
-              />
+              <div className="flex items-end ml-auto">
+                <Button
+                  text="New Secret"
+                  onClick={() => {
+                    setNewSecretVisible(true);
+                    setIsVisible(false);
+                  }}
+                  className="px-5 py-1 mr-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
+                />
+                <Button
+                  text="Save"
+                  onClick={() => {
+                    toast.promise(setNewSecrets(), {
+                      loading: "Saving secrets...",
+                      success: () => {
+                        setIsVisible(false);
+                        return "Secrets saved";
+                      },
+                      error: "Failed to save secrets",
+                    });
+                  }}
+                  className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
+                />
+              </div>
             </div>
 
-            <div className="flex flex-col items-center justify-center mt-3">
-              <table className="w-full">
-                <tbody className="space-y-2">
-                  {secrets.map((secret) => {
-                    return (
-                      <>
-                        <tr key={secret.name}>
-                          <td className="font-bold">{secret.name}</td>
-                          <td className="opacity-70 hover:opacity-100 cursor-pointer">
-                            <FontAwesomeIcon
-                              className="ml-auto"
-                              icon={faTrash}
-                              onClick={() => {
-                                /* Handle deletion here */
-                              }}
-                            />
-                          </td>
-                        </tr>
-                        <tr key={secret.name + "test"}>
-                          <td className="">Test</td>
-                          <td className="">
-                            <input
-                              className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-1"
-                              placeholder="Test value"
-                            />
-                          </td>
-                        </tr>
-                        <tr key={secret.name + "prod"}>
-                          <td className="">Production</td>
-                          <td className="">
-                            <input
-                              className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-1"
-                              placeholder="Production value"
-                            />
-                          </td>
-                        </tr>
-                      </>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div className="flex flex-col items-center justify-center mt-5">
+              {secrets.map((secret) => {
+                return (
+                  <div key={secret.name} className="flex flex-col w-full mb-4">
+                    <div className="flex justify-between items-center pb-2">
+                      <span className="font-bold flex-1">{secret.name}</span>
+                      <div className="opacity-70 hover:opacity-100 cursor-pointer">
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          onClick={() => {
+                            deleteSecret(secret.name);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="w-1/4">Test</span>
+                      <input
+                        className="w-3/4 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-1"
+                        placeholder="Test value"
+                        value={secret.testValue}
+                        onChange={(e) => updateSecret(secret.name, 'testValue', e.target.value)}                  
+                      />
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="w-1/4">Production</span>
+                      <input
+                        className="w-3/4 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-1"
+                        placeholder="Production value"
+                        value={secret.productionValue}
+                        onChange={(e) => updateSecret(secret.name, 'productionValue', e.target.value)}                  
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         }
@@ -105,6 +180,8 @@ export default function SecretInfo({
                 <input
                   className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                   placeholder=""
+                  value={newSecretName}
+                  onChange={(e) => setNewSecretName(e.target.value)}
                 />
               </div>
               <div className="w-full">
@@ -114,6 +191,8 @@ export default function SecretInfo({
                 <textarea
                   className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                   placeholder=""
+                  value={newSecretTestValue}
+                  onChange={(e) => setNewSecretTestValue(e.target.value)}
                 />
               </div>
               <div className="w-full">
@@ -123,12 +202,23 @@ export default function SecretInfo({
                 <textarea
                   className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                   placeholder=""
+                  value={newSecretProductionValue}
+                  onChange={(e) => setNewSecretProductionValue(e.target.value)}
                 />
               </div>
             </div>
           ),
           confirmText: "Create",
-          confirmHandler: () => {},
+          confirmHandler: () =>{
+            toast.promise(createNewSecret(), {
+              loading: "Creating secret...",
+              success: () => {
+                setIsVisible(false);
+                return "Secret saved";
+              },
+              error: "Failed to save secret",
+            });
+          },
           shouldShowInput: false,
           placeholder: "", //unused since shouldShowInput is false
         }}

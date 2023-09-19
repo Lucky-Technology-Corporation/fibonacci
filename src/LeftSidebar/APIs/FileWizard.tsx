@@ -43,10 +43,10 @@ export default function APIWizard({
   const [template, setTemplate] = useState<string>("blank");
   const [overrideRender, setOverrideRender] = useState<ReactNode | null>(null);
 
-  const [appName, setAppName] = useState<string>("")
-  const [companyName, setCompanyName] = useState<string>("")
-  const [companyAddress, setCompanyAddress] = useState<string>("")
-  const [contactEmail, setContactEmail] = useState<string>("")
+  const [appName, setAppName] = useState("")
+  const [companyName, setCompanyName] = useState("")
+  const [companyAddress, setCompanyAddress] = useState("")
+  const [contactEmail, setContactEmail] = useState("")
 
   const createHandler = () => {
     if (inputValue == "") {
@@ -88,7 +88,7 @@ export default function APIWizard({
     } else if(template == "terms") {
       setOverrideRender(getTermsInputs())
     }
-    else{
+    if(template == "blank"){
       setIsVisible(false);
     }
   };
@@ -134,7 +134,7 @@ export default function APIWizard({
         <input
           type="text"
           value={companyAddress}
-          onChange={(e) => setCompanyAddress(e.target.value.trim())}
+          onChange={(e) => setCompanyAddress(e.target.value)}
           className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
           placeholder={`Company address`}
         />
@@ -206,7 +206,7 @@ export default function APIWizard({
         <input
           type="text"
           value={companyAddress}
-          onChange={(e) => setCompanyAddress(e.target.value.trim())}
+          onChange={(e) => setCompanyAddress(e.target.value)}
           className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
           placeholder={`Company address`}
         />
@@ -317,6 +317,7 @@ export default function APIWizard({
                     <button
                       type="button"
                       onClick={() => {
+                        setOverrideRender(null)
                         setIsVisible(false);
                       }}
                       className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"

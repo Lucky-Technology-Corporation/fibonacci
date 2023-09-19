@@ -7,6 +7,8 @@ export default function ToastWindow({
   content,
   isLarge = false,
   position,
+  overrideLeftMargin,
+  overrideTopMargin,
 }: {
   isHintWindowVisible: boolean;
   showHintWindowIfOpen: () => void;
@@ -21,8 +23,14 @@ export default function ToastWindow({
     | "bottom-left"
     | "bottom-right"
     | "bottom-center";
+  overrideLeftMargin?: number;
+  overrideTopMargin?: number;
 }) {
+
   const getMargin = () => {
+    if (overrideLeftMargin) {
+      return overrideLeftMargin;
+    }
     var pixels = isLarge ? 608 : 358;
     switch (position) {
       case "top-left":
@@ -41,6 +49,9 @@ export default function ToastWindow({
   };
 
   const getTopMargin = () => {
+    if (overrideTopMargin) {
+      return overrideTopMargin;
+    }
     switch (position) {
       case "top-left":
         return "-28px";

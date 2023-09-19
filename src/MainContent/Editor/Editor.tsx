@@ -83,11 +83,7 @@ export default function Editor({
     <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
       <iframe
         ref={iframeRef}
-        src={`${testDomain.replace(
-          "https",
-          "http",
-        )}:3000/#/home/swizzle_prod_user/code`}
-        // src={`http://localhost:3000`}
+        src={`${testDomain.replace("http", "https").replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code`}
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",
