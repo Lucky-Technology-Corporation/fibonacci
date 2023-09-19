@@ -17,7 +17,7 @@ export default function useTestApi() {
 
   const { domain, activeProject, activeEndpoint, environment } =
     useContext(SwizzleContext);
-  const BASE_URL_USER = domain;
+  const BASE_URL_USER = domain.replace("https://", "https://runner.");
   //const BASE_URL_USER = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1'
   const activeCollection = "_swizzle_usertests";
 
