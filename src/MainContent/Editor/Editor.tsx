@@ -77,8 +77,9 @@ export default function Editor({
       setIdeReady(false);
     };
   }, []);
-
+  
   return (
+    (testDomain == undefined) ? <div className="m-auto mt-4">Something went wrong</div> :
     <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
       <iframe
         ref={iframeRef}
