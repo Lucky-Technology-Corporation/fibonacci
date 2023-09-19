@@ -6,6 +6,7 @@ import { useEffect, useState, useContext } from "react";
 import NewTestWindow from "./NewTestWindow";
 import Dot from "../Utilities/Dot";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { StatusCodes, getReasonPhrase } from 'http-status-codes';
 
 export default function TestWindow({
   shouldShowTestWindow,
@@ -42,46 +43,78 @@ export default function TestWindow({
   const activeCollection = "_swizzle_usertests";
   const [tests, setTests] = useState<TestType[]>([]);
   const [testResults, setTestResults] = useState({});
+  const [statusText, setStatusText] = useState({});
+  const [testResponses, setTestResponses] = useState({});
+
   const api = useTestApi();
 
   const runSingleTest = async (testDoc) => {
     try {
       const result = await api.runTest(testDoc);
+      console.log("result: " + result)
       const status = result.status;
+      const statusTeext = result.statusText;
       setTestResults((prevResults) => ({
         ...prevResults,
         [testDoc._id]: status,
       }));
+      setTestResponses((prevResponses) => ({
+        ...prevResponses,
+        [testDoc._id]: result.data
+       
+        }));
+        setStatusText((prevResponses) => ({
+          ...prevResponses,
+          [testDoc._id]: getReasonPhrase(result.status)
+          }));
+        console.log(result.data)
     } catch (error) {
       console.error("Error running test:", error);
+      const errorStatus = error.response ? error.response.status : "Network Error";
       setTestResults((prevResults) => ({
         ...prevResults,
-        [testDoc._id]: "Error occurred.",
+        [testDoc._id]: errorStatus,
       }));
+      setTestResponses((prevResponses) => ({
+        ...prevResponses,
+        [testDoc._id]: error.data
+        }));
+        setStatusText((prevResponses) => ({
+          ...prevResponses,
+          [testDoc._id]: getReasonPhrase(error.response.status)
+          }));
     }
   };
 
   const runAllTests = async () => {
     let newResults = {};
+    let newResponses = {};
+    let newStatusText = {};
     for (let testDoc of tests) {
       try {
         const result = await api.runTest(testDoc);
-        console.log("result run all: ")
         const status = result.status;
         newResults[testDoc._id] = status;
+        newResponses[testDoc._id] = result.data;
+        newStatusText[testDoc._id] = getReasonPhrase(result.status)
       } catch (error) {
         console.error("Error running test:", error);
-        newResults[testDoc._id] = "Error occurred.";
+        const errorStatus = error.response ? error.response.status : "Network Error";
+        newResults[testDoc._id] = errorStatus;
+        newResponses[testDoc._id] = error.data;
+        newStatusText[testDoc._id] = getReasonPhrase(error.response.status)
       }
     }
     setTestResults(newResults);
-    console.log(newResults);
+    setTestResponses(newResponses);
+    setStatusText(newStatusText);
   };
 
   function getColorByStatus(statusCode) {
     if (statusCode >= 200 && statusCode < 300) return "green";
     if (statusCode >= 400 && statusCode < 500) return "yellow";
     if (statusCode >= 500) return "red";
+    console.log(statusCode)
     return "gray";
   }
 
@@ -95,7 +128,7 @@ export default function TestWindow({
       .catch((error) => {
         console.error("Error fetching tests:", error);
       });
-  }, []);
+  }, [activeEndpoint]);
 
   const [showNewTestWindow, setShowNewTestWindow] = useState(false);
   const [testDoc, setTestDoc] = useState(null);
@@ -143,13 +176,17 @@ export default function TestWindow({
           className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         />
       </div>
+    
       <div className="px-4 pb-2 text-sm">
         {tests?.map((testDoc, index) => (
+          <div className="flex flex-col"
+          key={index}>
           <div
-            key={index}
+            
             className="flex items-center justify-between mt-3 pb-2"
           >
-            <div className="flex itmes justify-left mx-2">
+            
+            <div className="flex items justify-left mx-2">
               <button onClick={() => runSingleTest(testDoc)}>
                 <FontAwesomeIcon
                   icon={faPlay}
@@ -166,21 +203,7 @@ export default function TestWindow({
                 }}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
               />
-              <div className="px-4 text-sm font-bold">
-                <div className="mt-2">
-                  <div className="flex items-center">
-                    {testResults[testDoc._id] !== undefined && (
-                      <>
-                        <span>Result: {testResults[testDoc._id]}</span>
-                        <Dot
-                          className="ml-2"
-                          color={getColorByStatus(testResults[testDoc._id])}
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
+              
             </div>
             <FontAwesomeIcon
               className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all cursor-pointer"
@@ -198,6 +221,25 @@ export default function TestWindow({
                   });
               }}
             />
+            </div>
+            <div className="px-2 text-sm font-bold">
+                <div className="ml-2 mt-2 mb-2">
+                  <div className="flex items-center">
+                    {testResults[testDoc._id] !== undefined && (
+                      <>
+                      <Dot
+                          className="ml-2"
+                          color={getColorByStatus(testResults[testDoc._id])}
+                        />
+                        <span>{testResults[testDoc._id]}</span>
+                        <span className="ml-2">{statusText[testDoc._id]}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            {testResponses[testDoc._id] !== undefined && (
+            <pre className="font-mono text-xs ml-4">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>)}
           </div>
         ))}
       </div>

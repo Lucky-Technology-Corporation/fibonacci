@@ -23,6 +23,7 @@
     "chart.js": "^4.3.3",
     "d3": "^7.8.5",
     "github-oauth-popup": "^1.2.0",
+    "http-status-codes": "^2.2.0",
     "install": "^0.13.0",
     "jwt-decode": "^3.1.2",
     "lottie-react": "^2.4.0",
