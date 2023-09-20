@@ -117,8 +117,9 @@ export default function TestWindow({
     api
       .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
       .then((response) => {
-        console.log("API Response:", response.documents);
-        setTests(response.documents);
+        if(response && response.documents){
+          setTests(response.documents);
+        }
       })
       .catch((error) => {
         console.error("Error fetching tests:", error);
@@ -250,7 +251,7 @@ export default function TestWindow({
         <Button
           text="Run All"
           onClick={runAllTests}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
+          className={`${tests == null || tests.length == 0 ? "hidden" : "block"} mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
         />
       </div>
     </div>
