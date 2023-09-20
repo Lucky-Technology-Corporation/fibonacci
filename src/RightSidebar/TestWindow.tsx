@@ -6,8 +6,8 @@ import { useEffect, useState, useContext } from "react";
 import NewTestWindow from "./NewTestWindow";
 import Dot from "../Utilities/Dot";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import { StatusCodes, getReasonPhrase } from 'http-status-codes';
-import LoadingIcons from 'react-loading-icons'
+import { getReasonPhrase } from "http-status-codes";
+import LoadingIcons from "react-loading-icons";
 
 export default function TestWindow({
   shouldShowTestWindow,
@@ -55,25 +55,22 @@ export default function TestWindow({
 
     try {
       const result = await api.runTest(testDoc);
-      console.log("result: " + result)
+      console.log("result: " + result);
       const status = result.status;
       setTestResults((prevResults) => ({
         ...prevResults,
         [testDoc._id]: status,
-        
       }));
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: result.data
-       
-        }));
-        setStatusText((prevResponses) => ({
-          ...prevResponses,
-          [testDoc._id]: getReasonPhrase(result.status)
-          }));
-        console.log(result.data)
-        setLoadingTests((prevLoadingTests) => prevLoadingTests.filter(id => id !== testDoc._id));
-
+        [testDoc._id]: result.data,
+      }));
+      setStatusText((prevResponses) => ({
+        ...prevResponses,
+        [testDoc._id]: getReasonPhrase(result.status),
+      }));
+      console.log(result.data);
+      setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     } catch (error) {
       console.error("Error running test:", error);
       const errorStatus = error.response ? error.response.status : "Network Error";
@@ -83,15 +80,14 @@ export default function TestWindow({
       }));
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: error.data
-        }));
-        
-        setStatusText((prevResponses) => ({
-          ...prevResponses,
-          [testDoc._id]: error.response? getReasonPhrase(error.response.status) : "Network or other error"
-          }));
-          setLoadingTests((prevLoadingTests) => prevLoadingTests.filter(id => id !== testDoc._id));
+        [testDoc._id]: error.data,
+      }));
 
+      setStatusText((prevResponses) => ({
+        ...prevResponses,
+        [testDoc._id]: error.response ? getReasonPhrase(error.response.status) : "Network or other error",
+      }));
+      setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     }
   };
 
@@ -102,13 +98,12 @@ export default function TestWindow({
     }
     setRunningAllTests(false);
   };
-  
 
   function getColorByStatus(statusCode) {
     if (statusCode >= 200 && statusCode < 300) return "green";
     if (statusCode >= 400 && statusCode < 500) return "yellow";
     if (statusCode >= 500) return "red";
-    console.log(statusCode)
+    console.log(statusCode);
     return "gray";
   }
 
@@ -116,7 +111,7 @@ export default function TestWindow({
     api
       .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
       .then((response) => {
-        if(response && response.documents){
+        if (response && response.documents) {
           setTests(response.documents);
         }
       })
@@ -169,71 +164,62 @@ export default function TestWindow({
           className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         />
       </div>
-    
+
       <div className="px-4 pb-2 text-sm">
         {tests?.map((testDoc, index) => (
-          <div className="flex flex-col"
-          key={index}>
-          <div
-            
-            className="flex items-center justify-between mt-4 pb-2"
-          >
-            
-            <div className="flex items justify-left mx-2 ">
-              <button onClick={() => runSingleTest(testDoc)}>
-              {loadingTests.includes(testDoc._id) ? (
-    <div><LoadingIcons.Circles style={{ width: '13px', height: '15px' }}/></div> 
-  ) : (
-                <FontAwesomeIcon
-                  icon={faPlay}
-                  size="lg"
-                  style={{ color: "#41d373" }}
-                /> )}
-              </button>
+          <div className="flex flex-col" key={index}>
+            <div className="flex items-center justify-between mt-4 pb-2">
+              <div className="flex items justify-left mx-2 ">
+                <button onClick={() => runSingleTest(testDoc)}>
+                  {loadingTests.includes(testDoc._id) ? (
+                    <div>
+                      <LoadingIcons.Circles style={{ width: "13px", height: "15px" }} />
+                    </div>
+                  ) : (
+                    <FontAwesomeIcon icon={faPlay} size="lg" style={{ color: "#41d373" }} />
+                  )}
+                </button>
 
-              <Button
-                text={testDoc.test_name}
+                <Button
+                  text={testDoc.test_name}
+                  onClick={() => {
+                    setShowNewTestWindow(true);
+                    setTestDoc(testDoc);
+                  }}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
+                />
+              </div>
+              <FontAwesomeIcon
+                className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all cursor-pointer"
+                icon={faTrash}
                 onClick={() => {
-                  setShowNewTestWindow(true);
-                  setTestDoc(testDoc);
+                  api
+                    .deleteTest(activeCollection, testDoc._id)
+                    .then(() => {
+                      setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
+                    })
+                    .catch((error) => {
+                      console.error("Error deleting test:", error);
+                    });
                 }}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
               />
-              
-            </div>
-            <FontAwesomeIcon
-              className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all cursor-pointer"
-              icon={faTrash}
-              onClick={() => {
-                api
-                  .deleteTest(activeCollection, testDoc._id)
-                  .then(() => {
-                    setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
-                  })
-                  .catch((error) => {
-                    console.error("Error deleting test:", error);
-                  });
-              }}
-            />
             </div>
             <div className="px-2 text-sm font-bold">
-                <div className="ml-2 mt-2 mb-2">
-                  <div className="flex items-center">
-                    {testResults[testDoc._id] !== undefined && (
-                      <>
-                      <Dot
-                          className="ml-0"
-                          color={getColorByStatus(testResults[testDoc._id])}
-                        />
-                        <span>{testResults[testDoc._id]}</span>
-                        <span className="ml-2">{statusText[testDoc._id]}</span>
-                      </>
-                    )}
-                  </div>
+              <div className="ml-2 mt-2 mb-2">
+                <div className="flex items-center">
+                  {testResults[testDoc._id] !== undefined && (
+                    <>
+                      <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
+                      <span>{testResults[testDoc._id]}</span>
+                      <span className="ml-2">{statusText[testDoc._id]}</span>
+                    </>
+                  )}
                 </div>
               </div>
+            </div>
             {testResponses[testDoc._id] !== undefined && (
-            <pre className="font-mono text-xs ml-4 mb-2">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>)}
+              <pre className="font-mono text-xs ml-4 mb-2">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>
+            )}
           </div>
         ))}
       </div>
@@ -246,7 +232,9 @@ export default function TestWindow({
         <Button
           text="Run All"
           onClick={runAllTests}
-          className={`${tests == null || tests.length == 0 ? "hidden" : "block"} mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
+          className={`${
+            tests == null || tests.length == 0 ? "hidden" : "block"
+          } mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
         />
       </div>
     </div>

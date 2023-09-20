@@ -78,13 +78,13 @@ input[type="text"]::placeholder {
 .bg-tremor-background {
   background-color: #181922 !important;
 }
-.text-tremor-content-emphasis{
+.text-tremor-content-emphasis {
   color: #cccccc !important;
 }
-.ui-selected\:bg-tremor-background-muted[data-headlessui-state~="selected"]{
+.ui-selected\:bg-tremor-background-muted[data-headlessui-state~="selected"] {
   background-color: #33343f !important;
 }
-.ui-selected\:bg-tremor-background-muted[data-headlessui-state~="active"]{
+.ui-selected\:bg-tremor-background-muted[data-headlessui-state~="active"] {
   background-color: #33343f !important;
 }
 
@@ -121,6 +121,6 @@ input[type="text"]::placeholder {
 }
 
 .scrollable-div {
-  max-height: 400px;      /* or any other height */
-  overflow-y: auto;       /* or 'scroll' if you always want to display the scrollbar */
+  max-height: 400px; /* or any other height */
+  overflow-y: auto; /* or 'scroll' if you always want to display the scrollbar */
 }
