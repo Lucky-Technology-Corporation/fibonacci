@@ -16,7 +16,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     productionValue: string;
   }
 
-  const { getSecrets, saveSecrets } = useApi();
+  const { getSecrets, saveSecrets, deleteSecret } = useApi();
   const { activeProject } = useContext(SwizzleContext);
 
   const [newSecretVisible, setNewSecretVisible] = useState<boolean>(false);
@@ -48,8 +48,17 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     }
   }, [activeProject, isVisible]);
 
-  const deleteSecret = (name: string) => {
+  const deleteSingleSecret = (name: string) => {
     setSecrets(secrets.filter((secret) => secret.name != name));
+    toast.promise(deleteSecret(name), 
+      { 
+        loading: "Deleting secret...",
+        success: () => {
+          return "Secret deleted";
+        },
+        error: "Failed to delete secret",
+      }
+    );
   };
 
   const updateSecret = (name: string, key: "testValue" | "productionValue", newValue: string) => {
@@ -78,25 +87,40 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     setIsVisible(false);
   };
 
-  const setNewSecrets = () => {
-    console.log(secrets)
-    const secretsObject = secrets.reduce(
-      (acc, secret) => {
+  const editSecrets = () => {
+    const newSecrets = secrets.reduce((acc, secret) => {
+      if (locallyChangedSecrets.includes(secret.name + "-testValue")) {
         acc.test[secret.name] = secret.testValue;
+      }
+      if (locallyChangedSecrets.includes(secret.name + "-productionValue")) {
         if (secret.productionValue != "(hidden for security)") {
           acc.prod[secret.name] = secret.productionValue;
         }
-        return acc;
+      }
+      return acc;
+    }, { test: {}, prod: {} });
+    return saveSecrets(newSecrets);
+  }
+
+  const setNewSecrets = (name: string, testValue: string, prodValue: string) => {
+    const secrets = {
+      test: {
+        [name]: testValue,
       },
-      { test: {}, prod: {} },
-    );
-    console.log(secrets)
-    console.log("saving these secrets")
-    console.log(secretsObject)
-    return saveSecrets(secretsObject);
+      prod: {
+        [name]: prodValue,
+      },
+    };
+  
+    console.log(JSON.stringify(secrets));
+    return saveSecrets(secrets);  
   };
 
   const createNewSecret = () => {
+    if(secrets.find((secret) => secret.name == newSecretName) != null){ 
+      toast.error("A secret with that name already exists");
+      return Promise.reject();
+    }
     setSecrets([
       ...secrets,
       {
@@ -109,12 +133,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     setNewSecretTestValue("");
     setNewSecretProductionValue("");
 
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        setNewSecrets();
-        resolve();
-      }, 250);
-    });
+    return setNewSecrets(newSecretName, newSecretTestValue, newSecretProductionValue);
   };
 
   return (
@@ -125,7 +144,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         hideHintWindow={() => {}}
         title={""}
         titleClass="text-md font-bold"
-        isLarge={true}
+        isLarge={false}
         overrideLeftMargin={-426}
         overrideTopMargin={-4}
         content={
@@ -133,15 +152,6 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
             <div className="flex mb-2 space-between">
               <div className="flex">
                 <div className="font-bold text-lg mr-2">Secrets</div>
-                <Button
-                  text="+ New"
-                  onClick={() => {
-                    //confirm changes...
-                    setNewSecretVisible(true);
-                    closeWindow();
-                  }}
-                  className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
-                />
               </div>
               <div className="flex items-end ml-auto">
                 <Button
@@ -154,7 +164,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                 <Button
                   text="Save"
                   onClick={() => {
-                    toast.promise(setNewSecrets(), {
+                    toast.promise(editSecrets(), {
                       loading: "Saving secrets...",
                       success: () => {
                         closeWindow();
@@ -178,7 +188,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                         <FontAwesomeIcon
                           icon={faTrash}
                           onClick={() => {
-                            deleteSecret(secret.name);
+                            deleteSingleSecret(secret.name);
                           }}
                         />
                       </div>
@@ -214,6 +224,17 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                   </div>
                 );
               })}
+            </div>
+            <div>
+              <Button
+                text="+ New Secret"
+                onClick={() => {
+                  //confirm changes...
+                  setNewSecretVisible(true);
+                  closeWindow();
+                }}
+                className="px-5 py-1 mb-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
+              />
             </div>
           </div>
         }

@@ -45,6 +45,8 @@ export default function AutocheckInfo({
         title={""}
         titleClass="text-md font-bold"
         isLarge={false}
+        overrideLeftMargin={-180}
+        overrideTopMargin={-2}
         content={
           <div className="overflow-scroll max-h-[70vh]">
             <div className="flex mb-2 space-between">
@@ -58,7 +60,7 @@ export default function AutocheckInfo({
               />
             </div>
 
-            <div className="mt-3" dangerouslySetInnerHTML={{ __html: formatTextToHTML(autocheckResponse) }}></div>
+            <div className="mt-3 mb-2" dangerouslySetInnerHTML={{ __html: formatTextToHTML(autocheckResponse) }}></div>
           </div>
         }
         position={"bottom-left"}
