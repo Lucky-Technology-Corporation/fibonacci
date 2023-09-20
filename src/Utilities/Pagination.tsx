@@ -1,10 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faArrowRight,
-  faArrowsRotate,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
 
 interface PaginationProps {
   currentPage: number;
@@ -37,19 +33,13 @@ const Pagination = ({
   return totalDocs ? (
     <div className="flex items-center">
       {currentPage >= 1 && (
-        <button
-          className={btnStyles}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
+        <button className={btnStyles} onClick={() => handlePageChange(currentPage - 1)}>
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
       )}
       <span className="mx-2">{`${startDocument} – ${endDocument} of ${totalDocs}`}</span>
       {!isLastPage && (
-        <button
-          className={btnStyles}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
+        <button className={btnStyles} onClick={() => handlePageChange(currentPage + 1)}>
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
       )}
@@ -60,19 +50,13 @@ const Pagination = ({
   ) : (
     <div className="flex items-center">
       {currentPage >= 1 && (
-        <button
-          className={btnStyles}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
+        <button className={btnStyles} onClick={() => handlePageChange(currentPage - 1)}>
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
       )}
       <span className="mx-2">{`${startDocument} – ${endDocument}`}</span>
       {!isLastPage && (
-        <button
-          className={btnStyles}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
+        <button className={btnStyles} onClick={() => handlePageChange(currentPage + 1)}>
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
       )}

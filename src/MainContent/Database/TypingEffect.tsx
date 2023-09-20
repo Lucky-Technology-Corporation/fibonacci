@@ -14,9 +14,7 @@ const phrases = [
   `deleteMany({ "state": "CA" })`,
 ];
 
-const useTypingEffect = (
-  setSearchPlaceholder: React.Dispatch<React.SetStateAction<string>>,
-) => {
+const useTypingEffect = (setSearchPlaceholder: React.Dispatch<React.SetStateAction<string>>) => {
   let phraseIndex = 0;
   let charIndex = 0;
   let isDeleting = false;

@@ -12,6 +12,7 @@ export default function RowDetail({
   shouldHideCopy = false,
   setTotalDocs,
   openNewDocumentWithData = () => {},
+  secondDeleteFunction = null,
 }: {
   collection: string;
   data: any;
@@ -21,6 +22,7 @@ export default function RowDetail({
   shouldHideCopy?: boolean;
   setTotalDocs: React.Dispatch<React.SetStateAction<number>>;
   openNewDocumentWithData?: (data: any) => void;
+  secondDeleteFunction?: (data: any) => Promise<any>;
 }) {
   const { deleteDocument, updateDocument } = useApi();
 
@@ -47,11 +49,14 @@ export default function RowDetail({
     clickPosition = { x: 0, y: 0 };
     setIsHintWindowVisible(false);
     if (deleteAction == "delete") {
-      const c = confirm(
-        "Are you sure you want to delete this document? This cannot be undone.",
-      );
+      const c = confirm("Are you sure you want to delete this document? This cannot be undone.");
       if (c) {
-        toast.promise(deleteDocument(collection, data._id), {
+        var promiseArray = [deleteDocument(collection, data._id)];
+        if (secondDeleteFunction != null) {
+          promiseArray.push(secondDeleteFunction(data));
+        }
+
+        toast.promise(Promise.all(promiseArray), {
           loading: "Deleting document...",
           success: () => {
             addHiddenRow(data._id);
@@ -77,9 +82,7 @@ export default function RowDetail({
           },
         });
       } else {
-        const c = confirm(
-          "Are you sure you want to deactivate this user? They will not be able to sign in anymore.",
-        );
+        const c = confirm("Are you sure you want to deactivate this user? They will not be able to sign in anymore.");
         if (c) {
           var newData = { ...data };
           newData._deactivated = true;
@@ -96,16 +99,11 @@ export default function RowDetail({
     }
   };
 
-  const [isHintWindowVisible, setIsHintWindowVisible] = useState(
-    clickPosition.x > 0 && clickPosition.y > 0,
-  );
+  const [isHintWindowVisible, setIsHintWindowVisible] = useState(clickPosition.x > 0 && clickPosition.y > 0);
   const modalRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         clickPosition = { x: 0, y: 0 };
         setIsHintWindowVisible(false);
       }
@@ -151,16 +149,16 @@ export default function RowDetail({
         <tbody className="divide-y divide-[#85869833]">
           {!shouldHideCopy && (
             <>
-            <tr onClick={runDuplicate}>
-              <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
-                <div className="">Duplicate</div>
-              </td>
-            </tr>
-            <tr onClick={copyJSON}>
-              <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
-                <div className="">Copy JSON</div>
-              </td>
-            </tr>
+              <tr onClick={runDuplicate}>
+                <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
+                  <div className="">Duplicate</div>
+                </td>
+              </tr>
+              <tr onClick={copyJSON}>
+                <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
+                  <div className="">Copy JSON</div>
+                </td>
+              </tr>
             </>
           )}
           <tr onClick={runDeleteDocument}>

@@ -43,12 +43,9 @@ export default function RightSidebar({
   const [isDBChecked, setIsDBChecked] = useState(false);
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
-  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] =
-    useState(false);
+  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
-  const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(
-    null,
-  );
+  const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
   const [autocheckResponse, setAutocheckResponse] = useState("");
 
   const { ideReady } = useContext(SwizzleContext);
@@ -93,117 +90,110 @@ export default function RightSidebar({
 
   return (
     <div
-      className={`w-[200px] text-sm ${selectedTab == Page.Apis ? "" : "hidden"}
+      className={`w-[200px] text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
       ${ideReady ? "" : "opacity-50 pointer-events-none"}
       `}
     >
       <div className="flex flex-col items-center pt-4 h-full px-4">
         <DeployButton />
-        <div className="h-4" />
-        <div className="font-bold">Testing</div>
-        <div className="h-2" />
 
-        <IconTextButton
-          onClick={() => {
-            setCurrentWindow("test");
-            setShouldShowTestWindow(true);
-          }}
-          icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
-          text="Test"
-        />
-        {currentWindow === "test" && (
-          <TestWindow
-            shouldShowTestWindow={() => setShouldShowTestWindow(false)}
-            //hideTestWindow={() => setShouldShowTestWindow(false)}
-            setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)}
-            setCurrentWindow={setCurrentWindow}
-            //savedTests={useApi().getTests()}
-          />
-        )}
-        {currentWindow === "newTest" && (
-          <NewTestWindow
-            shouldShowNewTestWindow={shouldShowNewTestWindow}
-            hideNewTestWindow={() => setShouldShowNewTestWindow(false)}
-            savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
-          />
-        )}
-        <div className="h-2" />
-        <IconTextButton
-          onClick={() => {
-            toast.promise(getAutocheckResponse(), {
-              loading: "Running autocheck...",
-              success: (data) => {
-                if (data == "") {
-                  toast.error("Error running autocheck");
-                  return;
+        {selectedTab == Page.Apis && (
+          <>
+            <div className="h-4" />
+            <div className="font-bold">Testing</div>
+            <div className="h-2" />
+
+            <IconTextButton
+              onClick={() => {
+                setCurrentWindow("test");
+                setShouldShowTestWindow(true);
+              }}
+              icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
+              text="Test"
+            />
+            {currentWindow === "test" && (
+              <TestWindow
+                shouldShowTestWindow={() => setShouldShowTestWindow(false)}
+                //hideTestWindow={() => setShouldShowTestWindow(false)}
+                setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)}
+                setCurrentWindow={setCurrentWindow}
+                //savedTests={useApi().getTests()}
+              />
+            )}
+            {currentWindow === "newTest" && (
+              <NewTestWindow
+                shouldShowNewTestWindow={shouldShowNewTestWindow}
+                hideNewTestWindow={() => setShouldShowNewTestWindow(false)}
+                savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
+              />
+            )}
+            <div className="h-2" />
+            <IconTextButton
+              onClick={() => {
+                toast.promise(getAutocheckResponse(), {
+                  loading: "Running autocheck...",
+                  success: (data) => {
+                    if (data == "") {
+                      toast.error("Error running autocheck");
+                      return;
+                    }
+                    setAutocheckResponse(data.recommendation_text);
+                    return "Done";
+                  },
+                  error: "Error running autocheck",
+                });
+              }}
+              icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
+              text="Autocheck"
+            />
+            <AutocheckInfo
+              isVisible={autocheckResponse != ""}
+              setIsVisible={(show: boolean) => {
+                if (!show) {
+                  setAutocheckResponse("");
                 }
-                setAutocheckResponse(data.recommendation_text);
-                return "Done";
-              },
-              error: "Error running autocheck",
-            });
-          }}
-          icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
-          text="Autocheck"
-        />
-        <AutocheckInfo
-          isVisible={autocheckResponse != ""}
-          setIsVisible={(show: boolean) => { if(!show){ setAutocheckResponse("") }}}
-          autocheckResponse={autocheckResponse}
-        />
+              }}
+              autocheckResponse={autocheckResponse}
+            />
 
-        <div className="h-4" />
-        <div className="font-bold">Configuration</div>
-        <div className="h-2" />
-        <IconTextButton
-          onClick={() => {
-            setShouldShowSecretsWindow(true);
-          }}
-          icon={<img src="/lock.svg" className="w-3 h-3 m-auto" />}
-          text="Secrets"
-        />
-        <SecretInfo
-          isVisible={shouldShowSecretsWindow}
-          setIsVisible={setShouldShowSecretsWindow}
-        />
-        <div className="h-2" />
-        <IconTextButton
-          onClick={() => {
-            setShouldShowPackagesWindow(true);
-          }}
-          icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
-          text="Packages"
-        />
-        <PackageInfo
-          isVisible={shouldShowPackagesWindow}
-          setIsVisible={setShouldShowPackagesWindow}
-        />
-        <div className="h-6" />
-        <div className="font-bold">Available Variables</div>
-        <div className="h-1" />
-        <div className="text-left w-full">
-          <RequestInfo show={true} />
-        </div>
-        <div className="h-3" />
-        <div className="text-left w-full space-y-2">
-          <Checkbox
-            id="auth"
-            label="Authentication"
-            isChecked={isAuthChecked}
-            setIsChecked={setIsAuthChecked}
-          />
-          <AuthInfo show={isAuthChecked} />
-        </div>
-        <div className="h-2" />
-        <div className="text-left w-full space-y-2">
-          <Checkbox
-            id="db"
-            label="Database"
-            isChecked={isDBChecked}
-            setIsChecked={setIsDBChecked}
-          />
-          <DBInfo show={isDBChecked} />
-        </div>
+            <div className="h-4" />
+            <div className="font-bold">Configuration</div>
+            <div className="h-2" />
+            <IconTextButton
+              onClick={() => {
+                setShouldShowSecretsWindow(true);
+              }}
+              icon={<img src="/lock.svg" className="w-3 h-3 m-auto" />}
+              text="Secrets"
+            />
+            <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
+            <div className="h-2" />
+            <IconTextButton
+              onClick={() => {
+                setShouldShowPackagesWindow(true);
+              }}
+              icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
+              text="Packages"
+            />
+            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
+            <div className="h-6" />
+            <div className="font-bold">Available Variables</div>
+            <div className="h-1" />
+            <div className="text-left w-full">
+              <RequestInfo show={true} />
+            </div>
+            <div className="h-3" />
+            <div className="text-left w-full space-y-2">
+              <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
+              <AuthInfo show={isAuthChecked} />
+            </div>
+            <div className="h-2" />
+            <div className="text-left w-full space-y-2">
+              <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
+              <DBInfo show={isDBChecked} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

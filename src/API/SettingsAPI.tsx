@@ -11,58 +11,60 @@ export default function useApi() {
 
   const updateApns = async (p8Key: string, key_id: string, team_id: string) => {
     try {
-      const response = await axios.post(`${BASE_URL}/projects/${activeProject}/${environment}/setNotificationKeys`, 
-      { "p8_key_base64": p8Key, "key_id": key_id, "developer_id": team_id },
-      {
-        headers: {
-          Authorization: authHeader(),
+      const response = await axios.post(
+        `${BASE_URL}/projects/${activeProject}/${environment}/setNotificationKeys`,
+        { p8_key_base64: p8Key, key_id: key_id, developer_id: team_id },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e: any) {
-      console.error(e)
+      console.error(e);
       return null;
     }
   };
 
   const getSecrets = async () => {
     try {
-      if(activeProject == null){ return null; }
-      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/${environment}/secrets`, 
-      {
+      if (activeProject == null) {
+        return null;
+      }
+      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/${environment}/secrets`, {
         headers: {
           Authorization: authHeader(),
         },
       });
-      console.log(response.data)
+      console.log(response.data);
       return response.data;
     } catch (e: any) {
-      console.error(e)
+      console.error(e);
       return null;
     }
-  }
+  };
 
   const saveSecrets = async (newSecrets: any) => {
     try {
-      if(activeProject == null){ return null; }
-      const response = await axios.patch(`${BASE_URL}/projects/${activeProject}/${environment}/secrets`, 
-      newSecrets,
-      {
+      if (activeProject == null) {
+        return null;
+      }
+      const response = await axios.patch(`${BASE_URL}/projects/${activeProject}/${environment}/secrets`, newSecrets, {
         headers: {
           Authorization: authHeader(),
         },
       });
       return response.data;
     } catch (e: any) {
-      console.error(e)
+      console.error(e);
       return null;
     }
-  }
-
+  };
 
   return {
     updateApns,
     getSecrets,
-    saveSecrets
+    saveSecrets,
   };
 }

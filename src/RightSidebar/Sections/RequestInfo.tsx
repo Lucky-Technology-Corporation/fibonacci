@@ -9,9 +9,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
   return (
     <>
       <div
-        className={`flex-col items-center justify-between ${
-          show ? "opacity-100" : "opacity-0 h-0"
-        }`}
+        className={`flex-col items-center justify-between ${show ? "opacity-100" : "opacity-0 h-0"}`}
         style={{ transition: "opacity 0.3s" }}
       >
         <InfoItem
@@ -87,8 +85,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
                     },
                     {
                       name: "response.status(400).send({})",
-                      description:
-                        "Define the status code sent back to the frontend",
+                      description: "Define the status code sent back to the frontend",
                     },
                     {
                       name: "response.redirect(url)",

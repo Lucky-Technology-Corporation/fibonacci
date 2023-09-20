@@ -34,12 +34,8 @@ export default function NewTestWindow({
   setTests?: (newTests: any) => void;
 }) {
   const [testName, setTestName] = useState(testTitle || "");
-  const [queryParameters, setQueryParameters] = useState(
-    savedQueryParameters || "",
-  );
-  const [isQueryParamsChecked, setIsQueryParamsChecked] = useState(
-    !!savedQueryParameters,
-  );
+  const [queryParameters, setQueryParameters] = useState(savedQueryParameters || "");
+  const [isQueryParamsChecked, setIsQueryParamsChecked] = useState(!!savedQueryParameters);
   const [isUserIdChecked, setIsUserIdChecked] = useState(!!savedUserId);
   const [isBodyChecked, setIsBodyChecked] = useState(!!savedBody);
 
@@ -125,9 +121,7 @@ export default function NewTestWindow({
   return (
     <div
       className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
-        shouldShowNewTestWindow
-          ? "opacity-100"
-          : "opacity-0 pointer-events-none"
+        shouldShowNewTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
         transition: "opacity 0.1s",
@@ -185,12 +179,7 @@ export default function NewTestWindow({
           />
         </div>
         <div className="mb-2">
-          <Checkbox
-            id="userid"
-            label="User ID"
-            isChecked={isUserIdChecked}
-            setIsChecked={setIsUserIdChecked}
-          />
+          <Checkbox id="userid" label="User ID" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />
           <UserIdInfo
             show={isUserIdChecked}
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
@@ -208,12 +197,7 @@ export default function NewTestWindow({
         </div>
 
         <div className="mb-2">
-          <Checkbox
-            id="body"
-            label="Body"
-            isChecked={isBodyChecked}
-            setIsChecked={setIsBodyChecked}
-          />
+          <Checkbox id="body" label="Body" isChecked={isBodyChecked} setIsChecked={setIsBodyChecked} />
           <BodyInfo
             className="text-s flex-grow bg-transparent"
             placeholder="{ }"

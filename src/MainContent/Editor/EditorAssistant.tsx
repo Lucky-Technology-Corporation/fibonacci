@@ -7,16 +7,12 @@ export default function EditorAssistant({
 }) {
   const ReturnKey = () => {
     return (
-      <div className="bg-[#2F303A] border-[#525363] border rounded-sm px-1 mr-1.5 py-0.5 text-xs font-bold">
-        RETURN
-      </div>
+      <div className="bg-[#2F303A] border-[#525363] border rounded-sm px-1 mr-1.5 py-0.5 text-xs font-bold">RETURN</div>
     );
   };
   const DeleteKey = () => {
     return (
-      <div className="bg-[#2F303A] border-[#525363] border rounded-sm px-1 mr-1.5 py-0.5 text-xs font-bold">
-        DELETE
-      </div>
+      <div className="bg-[#2F303A] border-[#525363] border rounded-sm px-1 mr-1.5 py-0.5 text-xs font-bold">DELETE</div>
     );
   };
   return (

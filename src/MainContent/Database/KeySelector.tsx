@@ -13,10 +13,7 @@ export default function KeySelector({ keys }: { keys: string[] }) {
       <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] ring-1 ring-inset ring-[#525363]">
           {keys[0]}
-          <ChevronDownIcon
-            className="-mr-1 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
+          <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
 
@@ -36,10 +33,7 @@ export default function KeySelector({ keys }: { keys: string[] }) {
                 {({ active }) => (
                   <a
                     href="#"
-                    className={classNames(
-                      active ? "bg-[#85869833]" : "text-[#D9D9D9] ",
-                      "block px-4 py-2 text-sm",
-                    )}
+                    className={classNames(active ? "bg-[#85869833]" : "text-[#D9D9D9] ", "block px-4 py-2 text-sm")}
                   >
                     {key}
                   </a>

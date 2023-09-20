@@ -7,9 +7,7 @@ export default function AuthSettings({ active }: { active: boolean }) {
 
   //Fetch from backend and populate it here.
   return (
-    <div
-      className={`flex-col w-full px-2 mt-2 text-sm ${active ? "" : "hidden"}`}
-    >
+    <div className={`flex-col w-full px-2 mt-2 text-sm ${active ? "" : "hidden"}`}>
       <SectionAction
         text="Auth Settings"
         onClick={() => {

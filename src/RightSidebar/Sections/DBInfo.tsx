@@ -44,31 +44,21 @@ export default function DBInfo({ show }: { show: boolean }) {
                 <br />
                 <span
                   className="font-bold font-mono text-xs break-all cursor-pointer"
-                  onClick={() =>
-                    copyText(
-                      `await db.collection("users").insertOne({"name": "Jimmy"})`,
-                    )
-                  }
+                  onClick={() => copyText(`await db.collection("users").insertOne({"name": "Jimmy"})`)}
                 >{`await db.collection("users").insertOne({"name": "Jimmy"})`}</span>
                 <div className="w-full h-2"></div>
                 <span className="underline">Get a document</span>
                 <br />
                 <span
                   className="font-bold font-mono text-xs break-all cursor-pointer"
-                  onClick={() =>
-                    copyText(
-                      `const user = await db.collection("users").findOne({"id", "0001"})`,
-                    )
-                  }
+                  onClick={() => copyText(`const user = await db.collection("users").findOne({"id", "0001"})`)}
                 >{`const user = await db.collection("users").findOne({"name", "Jimmy"})`}</span>
                 <div className="w-full h-2"></div>
                 <span className="underline">Update the document</span>
                 <br />
                 <span
                   className="font-bold font-mono text-xs break-all cursor-pointer"
-                  onClick={() =>
-                    copyText(`await user.update({"name": "Steve"})`)
-                  }
+                  onClick={() => copyText(`await user.update({"name": "Steve"})`)}
                 >{`await user.update({"name": "Steve"})`}</span>
               </div>
             ),

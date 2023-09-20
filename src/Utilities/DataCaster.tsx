@@ -16,10 +16,7 @@ export function castValues(input: any): any {
     }
 
     // Check if it can be casted to a boolean
-    else if (
-      input.toLowerCase() === "true" ||
-      input.toLowerCase() === "false"
-    ) {
+    else if (input.toLowerCase() === "true" || input.toLowerCase() === "false") {
       output = input.toLowerCase() === "true";
     }
 

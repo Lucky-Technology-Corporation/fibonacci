@@ -10,13 +10,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import toast from "react-hot-toast";
 import Button from "../../Utilities/Button";
 
-export default function PackageInfo({
-  isVisible,
-  setIsVisible,
-}: {
-  isVisible: boolean;
-  setIsVisible: any;
-}) {
+export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: boolean; setIsVisible: any }) {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
   const [installedPackages, setInstalledPackages] = useState<string[]>([]);
@@ -122,11 +116,7 @@ export default function PackageInfo({
           }),
           option: (provided, state) => ({
             ...provided,
-            backgroundColor: state.isSelected
-              ? "#525363"
-              : state.isFocused
-              ? "#525363"
-              : "#32333b",
+            backgroundColor: state.isSelected ? "#525363" : state.isFocused ? "#525363" : "#32333b",
             color: "#D9D9D9",
             fontSize: "0.875rem",
             zIndex: 1000,

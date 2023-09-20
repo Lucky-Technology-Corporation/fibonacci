@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useApi from "../API/EndpointAPI";
 
 export default function DeployButton({}: {}) {
   const [deployProgress, setDeployProgress] = useState(0);
   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
+
+  const { deploy } = useApi();
 
   const teaseDeploy = () => {
     if (!isDeploymentInProgress) {
@@ -18,6 +21,14 @@ export default function DeployButton({}: {}) {
 
   //fake, for demo purposes
   const runDeploy = () => {
+    deploy();
+
+    toast.promise(deploy(), {
+      loading: "Deploying...",
+      success: "Deployed!",
+      error: "Error deploying",
+    });
+
     setIsDeploymentInProgress(true);
 
     const element = document.getElementById("deploy-progress-bar");
@@ -38,9 +49,6 @@ export default function DeployButton({}: {}) {
       if (element) {
         element.style.transition = "width 0.2s ease-out";
       }
-      toast.success("Deployed to test environment", {
-        icon: "🧪",
-      });
     }, 3200);
 
     setTimeout(() => {
@@ -52,23 +60,12 @@ export default function DeployButton({}: {}) {
   //Command-S deploy trigger
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        (window.navigator.platform.match("Mac")
-          ? event.metaKey
-          : event.ctrlKey) &&
-        event.key === "s"
-      ) {
+      if ((window.navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey) && event.key === "s") {
         event.preventDefault();
         if (window.navigator.platform.match("Mac")) {
-          toast(
-            "Reloading test environment (Shift-⌘-S to deploy to production)",
-            { icon: "⏳" },
-          );
+          toast("Reloading test environment (Shift-⌘-S to deploy to production)", { icon: "⏳" });
         } else {
-          toast(
-            "Reloading test environment (Shift-Ctrl-S to deploy to production)",
-            { icon: "⏳" },
-          );
+          toast("Reloading test environment (Shift-Ctrl-S to deploy to production)", { icon: "⏳" });
         }
         runDeploy();
       }
@@ -97,16 +94,8 @@ export default function DeployButton({}: {}) {
         onMouseLeave={resetDeploy}
         onClick={runDeploy}
       >
-        <img
-          src="rocket.svg"
-          alt="rocket"
-          className="w-4 h-4 inline-block mr-2"
-        />
-        {deployProgress > 8
-          ? deployProgress == 100
-            ? "Deployed!"
-            : "Deploying..."
-          : "Deploy"}
+        <img src="rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
+        {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
       </button>
     </div>
   );

@@ -13,10 +13,11 @@ const formatDateIfISO8601 = (date: string): string => {
     const dateTime = new Date(date);
     const formattedDate = `${
       dateTime.getMonth() + 1
-    }/${dateTime.getDate()}/${dateTime.getFullYear()}, ${dateTime.toLocaleTimeString(
-      "en-US",
-      { hour: "2-digit", minute: "2-digit", hour12: true },
-    )}`;
+    }/${dateTime.getDate()}/${dateTime.getFullYear()}, ${dateTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })}`;
     return formattedDate;
   }
   return date;
@@ -71,10 +72,7 @@ export default function DatabaseRow({
   const modalRef = useRef<HTMLTableRowElement | null>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         endEditing();
       }
     }
@@ -97,26 +95,15 @@ export default function DatabaseRow({
   };
 
   return (
-    <tr
-      className="hover:bg-[#85869822]"
-      ref={modalRef}
-      key={rowKey}
-      style={style}
-    >
+    <tr className="hover:bg-[#85869822]" ref={modalRef} key={rowKey} style={style}>
       <td className={`font-mono border-none`} key={`${rowKey}-${0}`}>
-        <EllipsisVerticalIcon
-          onClick={showDetailView}
-          className="h-5 m-auto py-0.5 cursor-pointer text-[#D9D9D9]"
-        />
+        <EllipsisVerticalIcon onClick={showDetailView} className="h-5 m-auto py-0.5 cursor-pointer text-[#D9D9D9]" />
       </td>
       {keys
         .filter((k) => !shouldHideFields.includes(k))
         .map((key, index) => {
           const originalValue = rowValues[key];
-          const isObject =
-            typeof originalValue === "object" &&
-            originalValue !== null &&
-            !Array.isArray(originalValue);
+          const isObject = typeof originalValue === "object" && originalValue !== null && !Array.isArray(originalValue);
 
           let value = originalValue;
           if (typeof originalValue === "string") {
@@ -124,18 +111,12 @@ export default function DatabaseRow({
           }
           return (
             <td
-              className={`font-mono p-1 border-none ${
-                editing === key ? "bg-[#383842]" : ""
-              }`}
+              className={`font-mono p-1 border-none ${editing === key ? "bg-[#383842]" : ""}`}
               key={`${rowKey}-${index + 1}`}
             >
               {isObject ? (
                 <InfoItem
-                  content={
-                    <div className="text-xs font-mono underline decoration-dotted">
-                      Object
-                    </div>
-                  }
+                  content={<div className="text-xs font-mono underline decoration-dotted">Object</div>}
                   toast={{
                     title: "",
                     content: (
@@ -147,7 +128,7 @@ export default function DatabaseRow({
                   }}
                   position="bottom-right"
                 />
-              ) : (value || "").toString().startsWith("https://") &&
+              ) : (value || "").toString().startsWith("http") &&
                 editing !== key &&
                 (value || "").toString().match(/\.(jpeg|jpg|png|gif)$/) ? (
                 <img
@@ -167,8 +148,7 @@ export default function DatabaseRow({
                   className={`w-full bg-transparent border-0 outline-0 text-xs ${
                     shouldShowStrikethrough ? "line-through" : ""
                   } ${
-                    ((value || "").toString().startsWith("https://") &&
-                      shouldBlockEdits.includes(key)) ||
+                    ((value || "").toString().startsWith("https://") && shouldBlockEdits.includes(key)) ||
                     shouldBlockEdits.includes(key)
                       ? "cursor-pointer"
                       : ""

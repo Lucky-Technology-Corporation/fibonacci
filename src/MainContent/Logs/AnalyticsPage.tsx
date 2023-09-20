@@ -45,13 +45,7 @@ export default function AnalyticsPage() {
     return (
       <Card className="dark-tremor h-90">
         <Title className="mb-2 text-[#cccccc]">{title}</Title>
-        <LineChart
-          className="dark-tremor"
-          data={chartdata}
-          index="date"
-          categories={categories}
-          yAxisWidth={40}
-        />
+        <LineChart className="dark-tremor" data={chartdata} index="date" categories={categories} yAxisWidth={40} />
       </Card>
     );
   };
@@ -59,10 +53,7 @@ export default function AnalyticsPage() {
   return (
     <div className="no-focus-ring">
       <div className="ml-10">
-        <DateRangePicker
-          value={dateRange}
-          onValueChange={setDateRange}
-        ></DateRangePicker>
+        <DateRangePicker value={dateRange} onValueChange={setDateRange}></DateRangePicker>
       </div>
       <div className="p-5 pt-2 flex flex-row space-x-2">
         {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}

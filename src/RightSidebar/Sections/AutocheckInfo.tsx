@@ -9,35 +9,32 @@ import Button from "../../Utilities/Button";
 export default function AutocheckInfo({
   isVisible,
   setIsVisible,
-  autocheckResponse
+  autocheckResponse,
 }: {
   isVisible: boolean;
   setIsVisible: any;
-  autocheckResponse: ReactNode
+  autocheckResponse: ReactNode;
 }) {
-
-
   function formatTextToHTML(text) {
-    const lines = text.split('\n');
-    let formattedHTML = '';
-  
+    const lines = text.split("\n");
+    let formattedHTML = "";
+
     let isCodeBlock = false;
-  
+
     lines.forEach((line) => {
-      if (line.startsWith('```')) {
+      if (line.startsWith("```")) {
         isCodeBlock = !isCodeBlock;
-        formattedHTML += isCodeBlock ? '<pre><code>' : '</code></pre>';
+        formattedHTML += isCodeBlock ? "<pre><code>" : "</code></pre>";
       } else if (isCodeBlock) {
-        formattedHTML += line + '\n';
+        formattedHTML += line + "\n";
       } else {
-        formattedHTML += line.replace(/`([^`]+)`/g, '<code>$1</code>');
-        formattedHTML += '<br>';
+        formattedHTML += line.replace(/`([^`]+)`/g, "<code>$1</code>");
+        formattedHTML += "<br>";
       }
     });
-  
+
     return formattedHTML;
   }
-  
 
   return (
     <>
@@ -61,10 +58,7 @@ export default function AutocheckInfo({
               />
             </div>
 
-            <div className="mt-3"
-              dangerouslySetInnerHTML={{ __html: formatTextToHTML(autocheckResponse) }}
-            >
-            </div>
+            <div className="mt-3" dangerouslySetInnerHTML={{ __html: formatTextToHTML(autocheckResponse) }}></div>
           </div>
         }
         position={"bottom-left"}

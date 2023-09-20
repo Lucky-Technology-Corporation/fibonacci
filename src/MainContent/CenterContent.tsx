@@ -38,15 +38,10 @@ export default function CenterContent({
     <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
       <div
         style={{
-          display:
-            selectedTab === Page.Apis || selectedTab === Page.Hosting
-              ? "block"
-              : "none",
+          display: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "block" : "none",
         }}
       >
-        <div
-          style={{ display: activeEndpoint || activeFile ? "block" : "none" }}
-        >
+        <div style={{ display: activeEndpoint || activeFile ? "block" : "none" }}>
           <EditorHeader />
           <Editor
             prependText={prependCode}
@@ -56,30 +51,22 @@ export default function CenterContent({
         </div>
         <div
           style={{
-            display:
-              !activeEndpoint && selectedTab === Page.Apis ? "block" : "none",
+            display: !activeEndpoint && selectedTab === Page.Apis ? "block" : "none",
           }}
         >
           <div className="flex-grow flex flex-col items-center justify-center">
-            <div className="text-lg mt-12 mb-4 font-bold">
-              No endpoint selected
-            </div>
-            <div className="text-md">
-              👈 Create or select an endpoint from the list
-            </div>
+            <div className="text-lg mt-12 mb-4 font-bold">No endpoint selected</div>
+            <div className="text-md">👈 Create or select an endpoint from the list</div>
           </div>
         </div>
         <div
           style={{
-            display:
-              !activeFile && selectedTab === Page.Hosting ? "block" : "none",
+            display: !activeFile && selectedTab === Page.Hosting ? "block" : "none",
           }}
         >
           <div className="flex-grow flex flex-col items-center justify-center">
             <div className="text-lg mt-12 mb-4 font-bold">No file selected</div>
-            <div className="text-md">
-              👈 Create or select a file from the list
-            </div>
+            <div className="text-md">👈 Create or select a file from the list</div>
           </div>
         </div>
       </div>
@@ -104,7 +91,7 @@ export default function CenterContent({
           <MonitoringPage activeLogsPage={activeLogsPage} />
         </div>
       </div>
-      <div style={{ display: selectedTab === Page.Notifications ? 'block' : 'none' }}>
+      <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>
         <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
           <NotificationPage />
         </div>

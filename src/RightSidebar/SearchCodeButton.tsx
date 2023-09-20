@@ -13,9 +13,7 @@ const codeSnippets = {
 const SearchCodeButton = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [matchingCode, setMatchingCode] = useState<
-    { endpoint: string; snippet: string }[]
-  >([]);
+  const [matchingCode, setMatchingCode] = useState<{ endpoint: string; snippet: string }[]>([]);
 
   const handleSearch = () => {
     const matches = Object.keys(codeSnippets)

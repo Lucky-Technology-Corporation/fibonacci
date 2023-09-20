@@ -11,14 +11,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../../Utilities/Pagination";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+import SearchBar from "../Shared/SearchBar";
+import toast from "react-hot-toast";
 
 export default function ObjectTableView() {
-  const { getDocuments } = useApi();
-  const { uploadFile } = useStorageApi();
+  const { getDocuments, runQuery } = useApi();
+  const { uploadFile, deleteFile } = useStorageApi();
 
-  const { activeProject, domain, environment } = useContext(SwizzleContext);
+  const { activeProject, domain, testDomain, environment } = useContext(SwizzleContext);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
-
   const [rowDetailData, setRowDetailData] = useState<any>({});
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
     x: 0,
@@ -36,18 +38,74 @@ export default function ObjectTableView() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const [filterName, setFilterName] = useState<string>("fileName");
+
+  //Drag and drop to upload code
+  const [dragging, setDragging] = useState(false);
+  const eventRegistered = useRef(false);
+
+  useEffect(() => {
+    if (!activeProject || !environment) return;
+    if (eventRegistered.current) return;
+    eventRegistered.current = true;
+
+    const preventDefaults = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDragEnterLeave = (e) => {
+      preventDefaults(e);
+      setDragging(e.type === "dragenter" || e.type === "dragover");
+    };
+
+    const handleDrop = (e) => {
+      preventDefaults(e);
+      setDragging(false);
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    };
+
+    // Add event listeners
+    ["dragenter", "dragover", "dragleave"].forEach((eventName) => {
+      document.addEventListener(eventName, handleDragEnterLeave, false);
+    });
+
+    document.addEventListener("drop", handleDrop, { once: true });
+
+    // Cleanup
+    return () => {
+      ["dragenter", "dragover", "dragleave"].forEach((eventName) => {
+        document.removeEventListener(eventName, handleDragEnterLeave, false);
+      });
+      document.removeEventListener("drop", handleDrop, false);
+    };
+  }, [activeProject, environment]);
+
+  const handleFiles = (files) => {
+    console.log("handleFiles called"); // Debug line
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      uploadFile(file);
+    }
+  };
+
+  const [baseUrl, setBaseUrl] = useState<string>("");
+  useEffect(() => {
+    if (environment == "test") {
+      setBaseUrl(testDomain.replace("http", "https").replace("https://", "https://runner."));
+    } else {
+      setBaseUrl(domain.replace("http", "https").replace("https://", "https://runner."));
+    }
+  }, [environment, activeProject]);
+
   const ITEMS_PER_PAGE = 20;
 
   const fetchData = (page: number) => {
-    getDocuments(
-      "_swizzle_storage",
-      page,
-      ITEMS_PER_PAGE,
-      sortedByColumn,
-      sortDirection,
-    )
+    getDocuments("_swizzle_storage", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
-        if(data == null){
+        if (data == null) {
           setData([]);
           setKeys([]);
           setTotalDocs(0);
@@ -79,8 +137,21 @@ export default function ObjectTableView() {
     setIsRefreshing(false);
   };
 
-  const runSearch = () => {
-    // run search
+  const runSearch = async () => {
+    if (filterName == "") {
+      toast.error("Please select a filter");
+      return;
+    }
+    runQuery(searchQuery, filterName, "_swizzle_storage", sortedByColumn, sortDirection)
+      .then((data) => {
+        setData(data.documents || []);
+        setKeys(data.keys.sort() || []);
+        setTotalDocs(data.pagination.total_documents);
+      })
+      .catch((e) => {
+        console.log(e);
+        setError(e);
+      });
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -105,9 +176,7 @@ export default function ObjectTableView() {
 
   const didClickSortColumn = (key: string) => {
     if (sortedByColumn === key) {
-      setSortDirection((prevSortDirection) =>
-        prevSortDirection === "asc" ? "desc" : "asc",
-      );
+      setSortDirection((prevSortDirection) => (prevSortDirection === "asc" ? "desc" : "asc"));
     } else {
       setSortDirection("asc");
     }
@@ -116,89 +185,42 @@ export default function ObjectTableView() {
   };
 
   if (error) {
-    return (
-      <NiceInfo
-        title="Failed to load data"
-        subtitle="Check your connection and try again"
-      />
-    );
+    return <NiceInfo title="Failed to load data" subtitle="Check your connection and try again" />;
   }
   if (!data) {
-    return (
-      <NiceInfo
-        title="Loading data"
-        subtitle="Please wait while we load your data"
-      />
-    );
+    return <NiceInfo title="Loading data" subtitle="Please wait while we load your data" />;
+  }
+
+  if (dragging) {
+    return <NiceInfo title="Drop to upload" subtitle="Your file will be uploaded to the public storage bucket" />;
   }
 
   return (
     <div>
-      <div
-        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
-      >
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Storage</div>
-          <div className={`text-sm mt-0.5`}>
-            Store images and other files under 16 MB
-          </div>
+          <div className={`text-sm mt-0.5`}>Drag and drop files to upload them</div>
         </div>
         <div className={`flex h-10 mt-1 mr-[-16px] text-sm`}>
-          {/* <Dropdown
-            className="ml-2"
-            onSelect={uploadFileHandler}
-            children={[
-              {
-                id: "json",
-                name: "File",
-              },
-            ]}
-            direction="right"
-            title="Upload"
-          /> */}
-          <Button
-            text={"Upload"}
-            onClick={uploadFileHandler}
-          />
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
+          <Button text={"Upload"} onClick={uploadFileHandler} />
+          <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
         </div>
       </div>
       <div className={`flex pr-2 h-8 ${data.length == 0 ? "hidden" : ""}`}>
-        <input
-          type="text"
-          className="text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]"
-          placeholder={"Filter users"}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          onKeyDown={(event) => {
-            if (event.key == "Enter") {
-              runSearch();
-            }
-          }}
+        <SearchBar
+          keys={keys}
+          filterName={filterName}
+          setFilterName={setFilterName}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          runSearch={runSearch}
         />
-        <Button text={"Search"} onClick={runSearch} />
       </div>
-      <div
-        className="max-w-full overflow-x-auto"
-        style={{ width: "calc(100vw - 240px - 12px)" }}
-      >
-        <table
-          className="table-auto flex-grow my-4 ml-4"
-          style={{ tableLayout: "auto", minWidth: "100%" }}
-        >
+      <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 12px)" }}>
+        <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: "auto", minWidth: "100%" }}>
           <thead className="bg-[#85869822]">
-            <tr
-              className={`font-mono text-xs ${
-                keys.length == 0 ? "hidden" : ""
-              }`}
-            >
+            <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 w-6 cursor-pointer"></th>
               {keys
                 .filter((k) => k != "data")
@@ -206,20 +228,14 @@ export default function ObjectTableView() {
                   <th
                     className={`text-left py-1.5 cursor-pointer`}
                     style={{
-                      minWidth: `${getEstimatedColumnWidth(
-                        keys.length - 1,
-                        key,
-                      )}px`,
+                      minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px`,
                     }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
                     {key == "_id" ? <>File</> : key}
                     {sortedByColumn === key && (
-                      <FontAwesomeIcon
-                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
-                        className="ml-5"
-                      />
+                      <FontAwesomeIcon icon={sortDirection === "asc" ? faArrowUp : faArrowDown} className="ml-5" />
                     )}
                   </th>
                 ))}
@@ -228,13 +244,13 @@ export default function ObjectTableView() {
           <tbody className="divide-y divide-[#85869833]">
             {data.map((row: any, _: number) => (
               <DatabaseRow
-                // style={{display: hiddenRows.includes(row._id) ? "none" : "table-row"}}
+                style={{ display: hiddenRows.includes(row._id) ? "none" : "table-row" }}
                 collection={"_swizzle_storage"}
                 key={row._id}
                 rowKey={row._id}
                 keys={keys}
                 data={Object.entries(row).reduce((result, [key, value]) => {
-                  const fileURL = `https://${domain}/swizzle/db/storage/${value}/${row.fileName}`;
+                  const fileURL = `${baseUrl}/swizzle/db/storage/${value}/${row.fileName}`;
                   return {
                     ...result,
                     [key]: key === "_id" ? fileURL : value,
@@ -257,6 +273,9 @@ export default function ObjectTableView() {
           addHiddenRow={addHiddenRow}
           shouldHideCopy={true}
           setTotalDocs={setTotalDocs}
+          secondDeleteFunction={(data: any) => {
+            return deleteFile(data.fileName);
+          }}
         />
       </div>
       {data.length == 0 && (

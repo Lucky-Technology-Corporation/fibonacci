@@ -58,8 +58,7 @@ export default function APIWizard({
       console.log("STARTS WITH SLASH");
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-");
     }
-    const fileName =
-      selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
+    const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
     const newEndpointName = fileName.replace(/-/g, "/").replace(".js", "");
 
     let isDuplicate = false;
@@ -102,23 +101,15 @@ export default function APIWizard({
 
   return (
     <div
-      className={`fixed z-50 inset-0 overflow-y-auto ${
-        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed z-50 inset-0 overflow-y-auto ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
       style={{ transition: "opacity 0.2s" }}
     >
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          aria-hidden="true"
-        ></div>
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
         <div className="inline-block align-bottom bg-[#32333b] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
@@ -126,10 +117,7 @@ export default function APIWizard({
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               {step == 0 ? (
                 <>
-                  <h3
-                    className="text-lg leading-6 font-medium text-[#D9D9D9]"
-                    id="modal-title"
-                  >
+                  <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
                     Standard API
                   </h3>
                   <div className="mt-1">
@@ -186,16 +174,11 @@ export default function APIWizard({
                 </>
               ) : (
                 <>
-                  <h3
-                    className="text-lg leading-6 font-medium text-[#D9D9D9]"
-                    id="modal-title"
-                  >
+                  <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
                     Choose template
                   </h3>
                   <div className="mt-1">
-                    <p className="text-sm text-[#D9D9D9]">
-                      What are you building?
-                    </p>
+                    <p className="text-sm text-[#D9D9D9]">What are you building?</p>
                   </div>
                   <div className="mt-3 mb-2 flex">
                     <div className="w-full mb-2">

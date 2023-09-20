@@ -72,5 +72,11 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
     "worker-loader": "^3.0.8"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 2,
+    "jsxBracketSameLine": true,
+    "arrowParens": "always"
   }
 }

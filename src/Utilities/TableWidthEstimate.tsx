@@ -1,7 +1,4 @@
-export const getEstimatedColumnWidth = (
-  numColumns: number,
-  columnName: string = "",
-) => {
+export const getEstimatedColumnWidth = (numColumns: number, columnName: string = "") => {
   var MIN_COLUMN_WIDTH = 120;
   const columnNameWidth = columnName.length * 10;
   if (columnNameWidth > MIN_COLUMN_WIDTH) {

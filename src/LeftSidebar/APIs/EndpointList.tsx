@@ -15,18 +15,13 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
-  const { activeProject, activeEndpoint, setActiveEndpoint } =
-    useContext(SwizzleContext);
+  const { activeProject, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles("endpoints")
       .then((data) => {
         console.log(data);
-        if (
-          data == undefined ||
-          data.children == undefined ||
-          data.children.length == 0
-        ) {
+        if (data == undefined || data.children == undefined || data.children.length == 0) {
           return;
         }
         const transformedEndpoints = data.children
@@ -59,12 +54,7 @@ export default function EndpointList({ active }: { active: boolean }) {
   }, [searchFilter]);
 
   useEffect(() => {
-    if (
-      active &&
-      endpoints &&
-      endpoints.length > 0 &&
-      activeEndpoint == undefined
-    ) {
+    if (active && endpoints && endpoints.length > 0 && activeEndpoint == undefined) {
       setActiveEndpoint(endpoints[0]);
     }
   }, [active, endpoints]);

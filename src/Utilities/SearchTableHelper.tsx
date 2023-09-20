@@ -20,12 +20,8 @@ export const getSearchTableHelper = (
                 border: "2px solid transparent", // Initially transparent
                 borderRadius: "8px", // Add this for rounded corners
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "#85869833")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "transparent")
-              }
+              onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#85869833")}
+              onMouseLeave={(e) => (e.currentTarget.style.borderColor = "transparent")}
             >
               <div className="font-mono pl-1">{row.endpoint}</div>
               <div className="py-1 pl-2">{row.snippet || ""}</div>

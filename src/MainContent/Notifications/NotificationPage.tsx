@@ -10,17 +10,12 @@ export default function AnalyticsPage() {
 
   return (
     <div className="h-full overflow-scroll">
-        <div
-            className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
-        >
-            <div>
-                <div className={`font-bold text-base`}>Notifications</div>
-                <div className={`text-sm mt-0.5`}>
-                    Setup and send notifications to your users
-                </div>
-            </div>
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+        <div>
+          <div className={`font-bold text-base`}>Notifications</div>
+          <div className={`text-sm mt-0.5`}>Setup and send notifications to your users</div>
         </div>
+      </div>
     </div>
-
-);
+  );
 }

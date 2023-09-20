@@ -6,12 +6,7 @@ import { SwizzleContext } from "../GlobalContext";
 type ToastProps = {
   title: string;
   content: React.ReactNode;
-  position?:
-    | "top-left"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-right"
-    | "bottom-center";
+  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
   isLarge?: boolean;
 };
 
@@ -22,12 +17,7 @@ export default function InfoItem({
 }: {
   content: React.ReactNode;
   toast: ToastProps;
-  position:
-    | "top-left"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-right"
-    | "bottom-center";
+  position: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
   isLarge?: boolean;
 }) {
   const [id, setId] = useState(Math.random().toString(36).substring(7));

@@ -114,7 +114,6 @@ export default function ProjectSelector() {
           className={`${isCreatingProject ? "opacity-70" : ""}`}
           title={activeProjectName}
         />
-        
       </div>
 
       <FullPageModal

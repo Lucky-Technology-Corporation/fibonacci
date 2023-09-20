@@ -17,17 +17,12 @@ export default function FilesList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullFileList, setFullFileList] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
-  const { activeProject, setPostMessage, activeFile, setActiveFile } =
-    useContext(SwizzleContext);
+  const { activeProject, setPostMessage, activeFile, setActiveFile } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles("files")
       .then((data) => {
-        if (
-          data == undefined ||
-          data.children == undefined ||
-          data.children.length == 0
-        ) {
+        if (data == undefined || data.children == undefined || data.children.length == 0) {
           return;
         }
         const transformedEndpoints = data.children.map((endpoint: any) => {

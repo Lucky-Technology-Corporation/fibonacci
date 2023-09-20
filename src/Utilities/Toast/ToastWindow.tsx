@@ -17,16 +17,10 @@ export default function ToastWindow({
   titleClass?: string;
   content: React.ReactNode;
   isLarge?: boolean;
-  position?:
-    | "top-left"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-right"
-    | "bottom-center";
+  position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
   overrideLeftMargin?: number;
   overrideTopMargin?: number;
 }) {
-
   const getMargin = () => {
     if (overrideLeftMargin) {
       return overrideLeftMargin;

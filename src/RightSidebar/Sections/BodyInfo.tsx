@@ -2,14 +2,7 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useState, useEffect } from "react";
 
-const BodyInfo = ({
-  className,
-  placeholder,
-  value,
-  onChange,
-  onKeyDown,
-  show,
-}) => {
+const BodyInfo = ({ className, placeholder, value, onChange, onKeyDown, show }) => {
   const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
@@ -21,11 +14,7 @@ const BodyInfo = ({
     }
   }, [value]);
   return (
-    <div
-      className={`mt-2 flex flex-col ${className} ${
-        show ? "opacity-100 h-32" : "opacity-0 h-0"
-      }`}
-    >
+    <div className={`mt-2 flex flex-col ${className} ${show ? "opacity-100 h-32" : "opacity-0 h-0"}`}>
       <CodeEditor
         className={className}
         placeholder="{ }"
@@ -35,8 +24,7 @@ const BodyInfo = ({
         data-color-mode="dark"
         style={{
           fontSize: 12,
-          fontFamily:
-            "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+          fontFamily: "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
           borderRadius: 4,
           border: "1px solid #525363",
           maxHeight: "50vh",

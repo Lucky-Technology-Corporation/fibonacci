@@ -30,8 +30,7 @@ export default function Dashboard() {
   const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
 
   //Initialization code...
-  const { isFree, projects, activeProject, setProjects, isCreatingProject } =
-    useContext(SwizzleContext);
+  const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
   const { getProjects } = useApi();
 
   useEffect(() => {
@@ -45,9 +44,7 @@ export default function Dashboard() {
 
         // Move active project to the top, if it exists
         if (activeProject != null && activeProject != "") {
-          const projectIndex = flexibleData.findIndex(
-            (project: any) => project.id == activeProject,
-          );
+          const projectIndex = flexibleData.findIndex((project: any) => project.id == activeProject);
           if (projectIndex != -1) {
             const project = flexibleData[projectIndex];
             flexibleData.splice(projectIndex, 1);
@@ -112,11 +109,7 @@ export default function Dashboard() {
     } else {
       return (
         <div className="w-full mt-12 text-center">
-          <Lottie
-            animationData={dog}
-            loop={true}
-            className="w-48 h-48 m-auto"
-          />
+          <Lottie animationData={dog} loop={true} className="w-48 h-48 m-auto" />
           <div className="mt-[-32px]">Preparing your dashboard...</div>
         </div>
       );

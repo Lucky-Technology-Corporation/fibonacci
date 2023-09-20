@@ -39,8 +39,7 @@ export default function TestWindow({
     _id: string;
   };
 
-  const { domain, activeProject, activeEndpoint, environment } =
-    useContext(SwizzleContext);
+  const { domain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
   const [tests, setTests] = useState<TestType[]>([]);
   const [testResults, setTestResults] = useState({});
@@ -162,9 +161,7 @@ export default function TestWindow({
               Test
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">
-            Send requests in test mode
-          </div>
+          <div className="text-sm text-gray-400 mt-1">Send requests in test mode</div>
         </div>
         <Button
           text="+ New Request"
@@ -211,9 +208,7 @@ export default function TestWindow({
                 api
                   .deleteTest(activeCollection, testDoc._id)
                   .then(() => {
-                    setTests((prevTests) =>
-                      prevTests.filter((test) => test._id !== testDoc._id),
-                    );
+                    setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
                   })
                   .catch((error) => {
                     console.error("Error deleting test:", error);

@@ -13,14 +13,11 @@ export default function useApi() {
 
   const getCollections = async () => {
     if (activeProject == "") return;
-    const response = await axios.get(
-      `${BASE_URL}/projects/${activeProject}/${environment}/collections`,
-      {
-        headers: {
-          Authorization: authHeader(),
-        },
+    const response = await axios.get(`${BASE_URL}/projects/${activeProject}/${environment}/collections`, {
+      headers: {
+        Authorization: authHeader(),
       },
-    );
+    });
     return response.data;
   };
 
@@ -61,11 +58,7 @@ export default function useApi() {
     }
   };
 
-  const updateDocument = async (
-    activeCollection: string,
-    id: string,
-    data: any,
-  ) => {
+  const updateDocument = async (activeCollection: string, id: string, data: any) => {
     var newDocument = data;
     delete newDocument._id;
     if (activeProject == "") return;
@@ -150,14 +143,11 @@ export default function useApi() {
   const deleteCollection = async (name: string) => {
     try {
       if (activeProject == "") return;
-      const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${name}`,
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
+      const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/${environment}/collections/${name}`, {
+        headers: {
+          Authorization: authHeader(),
         },
-      );
+      });
       return response.data;
     } catch (e: any) {
       console.error(e);
@@ -225,7 +215,7 @@ export default function useApi() {
   const createProject = async (name: string) => {
     const response = await axios.post(
       `${BASE_URL}/projects`,
-      { name },
+      { name, deploy_production: true },
       {
         headers: {
           Authorization: authHeader(),
@@ -245,7 +235,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e: any) {
-      console.error(e)
+      console.error(e);
       if (e.response && e.response.status == 401) {
         signOut();
       }

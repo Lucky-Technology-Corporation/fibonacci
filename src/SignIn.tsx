@@ -52,19 +52,15 @@ export default function SignIn() {
     <>
       <img src="/logo_offwhite.png" className="w-20 mt-8 mb-2 m-auto" />
       <div className="m-auto text-center text-3xl mb-2 font-bold">Swizzle</div>
-      <div className="m-auto text-center text-lg mb-8">
-        Sign in to get started
-      </div>
+      <div className="m-auto text-center text-lg mb-8">Sign in to get started</div>
       <div
         className="w-64 cursor-pointer text-center bg-black border-[#525363] hover:border-[#6f7082] hover:text-white border rounded-md p-3 text-lg font-medium m-auto"
         onClick={() => {
-          location.href =
-            "https://github.com/login/oauth/authorize?client_id=d95918858b376aa1aa40";
+          location.href = "https://github.com/login/oauth/authorize?client_id=d95918858b376aa1aa40";
         }}
       >
         <div className="flex m-auto w-fit">
-          <img src="/github.svg" className="w-6 h-6 mr-2 m-auto" /> Sign in with
-          Github
+          <img src="/github.svg" className="w-6 h-6 mr-2 m-auto" /> Sign in with Github
         </div>
       </div>
     </>

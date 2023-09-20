@@ -168,8 +168,7 @@ export default function DocumentJSON({
               style={{
                 fontSize: 12,
                 // backgroundColor: "#32333b",
-                fontFamily:
-                  "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+                fontFamily: "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
                 borderRadius: 4,
                 border: "1px solid #525363",
                 maxHeight: "50vh",

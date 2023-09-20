@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useApi from "../API/EndpointAPI";
 
 export default function CodeCheckButton({}: {}) {
   const [deployProgress, setDeployProgress] = useState(0);
   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
+  const { deploy } = useApi();
 
   const teaseDeploy = () => {
     if (!isDeploymentInProgress) {
@@ -18,6 +20,8 @@ export default function CodeCheckButton({}: {}) {
 
   //fake, for demo purposes
   const runDeploy = () => {
+    deploy();
+
     setIsDeploymentInProgress(true);
 
     const element = document.getElementById("deploy-progress-bar");
@@ -38,8 +42,8 @@ export default function CodeCheckButton({}: {}) {
       if (element) {
         element.style.transition = "width 0.2s ease-out";
       }
-      toast.success("Deployed to test environment", {
-        icon: "🧪",
+      toast.success("Deployed!", {
+        icon: "🫡",
       });
     }, 3200);
 
@@ -65,16 +69,8 @@ export default function CodeCheckButton({}: {}) {
         onMouseLeave={resetDeploy}
         onClick={runDeploy}
       >
-        <img
-          src="rocket.svg"
-          alt="rocket"
-          className="w-4 h-4 inline-block mr-2"
-        />
-        {deployProgress > 8
-          ? deployProgress == 100
-            ? "Deployed!"
-            : "Deploying..."
-          : "Code Check"}
+        <img src="rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
+        {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Code Check"}
       </button>
     </div>
   );

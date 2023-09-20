@@ -1,10 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import CollectionItem from "./CollectionItem";
 import useApi from "../../API/DatabaseAPI";
 import SectionAction from "../SectionAction";

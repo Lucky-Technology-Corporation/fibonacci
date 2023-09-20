@@ -14,12 +14,9 @@ import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+import SearchBar from "../Shared/SearchBar";
 
-export default function DatabaseView({
-  activeCollection,
-}: {
-  activeCollection: string;
-}) {
+export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
   const { getDocuments, deleteCollection, runQuery } = useApi();
 
   const { activeProject, environment } = useContext(SwizzleContext);
@@ -68,13 +65,7 @@ export default function DatabaseView({
 
   const fetchData = (page: number) => {
     if (!activeCollection || activeCollection == "") return;
-    getDocuments(
-      activeCollection,
-      page,
-      ITEMS_PER_PAGE,
-      sortedByColumn,
-      sortDirection,
-    )
+    getDocuments(activeCollection, page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
@@ -104,18 +95,16 @@ export default function DatabaseView({
       setIsJSONEditorVisible(true);
     }
   };
-  
+
   const openNewDocumentWithData = (data: any) => {
     setJSONEditorData(data);
     setIsJSONEditorVisible(true);
-  }
+  };
 
   const onJSONChangeHandler = (newData: any) => {
     if (editingDocumentId) {
       // If editing an existing document, update the specific document in the state
-      const updatedData = data.map((d: any) =>
-        d._id === editingDocumentId ? { ...newData, _id: d._id } : d,
-      );
+      const updatedData = data.map((d: any) => (d._id === editingDocumentId ? { ...newData, _id: d._id } : d));
       setData(updatedData);
     } else {
       if (Array.isArray(newData)) {
@@ -150,9 +139,7 @@ export default function DatabaseView({
   };
 
   const deleteCollectionHandler = () => {
-    const c = confirm(
-      "Are you sure you want to delete this collection? This cannot be undone.",
-    );
+    const c = confirm("Are you sure you want to delete this collection? This cannot be undone.");
     if (c) {
       toast.promise(deleteCollection(activeCollection), {
         loading: "Deleting collection...",
@@ -175,14 +162,7 @@ export default function DatabaseView({
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;
     if (didSearch) {
-      runQuery(
-        searchQuery,
-        filterName,
-        activeCollection,
-        sortedByColumn,
-        sortDirection,
-        currentPage,
-      );
+      runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection, currentPage);
     } else {
       fetchData(currentPage);
     }
@@ -193,13 +173,7 @@ export default function DatabaseView({
       toast.error("Please select a filter");
       return;
     }
-    runQuery(
-      searchQuery,
-      filterName,
-      activeCollection,
-      sortedByColumn,
-      sortDirection,
-    )
+    runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
       .then((data) => {
         setDidSearch(true);
         setData(data.documents || []);
@@ -223,9 +197,7 @@ export default function DatabaseView({
 
   const didClickSortColumn = (key: string) => {
     if (sortedByColumn === key) {
-      setSortDirection((prevSortDirection) =>
-        prevSortDirection === "asc" ? "desc" : "asc",
-      );
+      setSortDirection((prevSortDirection) => (prevSortDirection === "asc" ? "desc" : "asc"));
     } else {
       setSortDirection("asc");
     }
@@ -235,31 +207,14 @@ export default function DatabaseView({
 
   if (!activeCollection)
     return (
-      <NiceInfo
-        title="Select a collection"
-        subtitle="Select (or create) a collection on the left to get started"
-      />
+      <NiceInfo title="Select a collection" subtitle="Select (or create) a collection on the left to get started" />
     );
-  if (error)
-    return (
-      <NiceInfo
-        title="Failed to load data"
-        subtitle="Check your connection and try again"
-      />
-    );
-  if (!data)
-    return (
-      <NiceInfo
-        title="Loading data"
-        subtitle="Please wait while we load your data"
-      />
-    );
+  if (error) return <NiceInfo title="Failed to load data" subtitle="Check your connection and try again" />;
+  if (!data) return <NiceInfo title="Loading data" subtitle="Please wait while we load your data" />;
 
   return (
     <div>
-      <div
-        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
-      >
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>{activeCollection}</div>
           <div className={`text-sm mt-0.5`}>
@@ -278,23 +233,7 @@ export default function DatabaseView({
         <div className="text-sm w-20">
           <DatabaseEditorHint isVisible={shouldShowSaveHint} />
         </div>
-        <div
-          className={`flex h-10 mt-1 mr-[-16px] text-sm ${
-            shouldShowSaveHint ? "hidden" : ""
-          }`}
-        >
-          {/* <Dropdown
-            className="ml-2"
-            onSelect={createObjectHandler}
-            children={[
-              {
-                id: "json",
-                name: "Document",
-              },
-            ]}
-            direction="right"
-            title="Create"
-          /> */}
+        <div className={`flex h-10 mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
           <Button
             text="+ Add"
             onClick={() => {
@@ -303,59 +242,22 @@ export default function DatabaseView({
           />
         </div>
       </div>
+
       <div className={`flex pr-2 h-8 ${data.length == 0 ? "hidden" : ""}`}>
-        <Dropdown
-          className="ml-4"
-          onSelect={setFilterName}
-          children={keys
-            .filter((k) => k !== "_id")
-            .map((key) => {
-              if (key == "_swizzle_uid") {
-                return { id: key, name: "userId" };
-              } else {
-                return { id: key, name: "Filter " + key };
-              }
-            })}
-          direction="right"
-          title={
-            "Filter " +
-            (keys.filter((key) => key == filterName)[0] || "").replace(
-              "_swizzle_uid",
-              "userId",
-            )
-          }
+        <SearchBar
+          keys={keys}
+          filterName={filterName}
+          setFilterName={setFilterName}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          runSearch={runSearch}
         />
-        <input
-          type="text"
-          className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
-          placeholder={"Search"}
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          onKeyDown={(event) => {
-            if (event.key == "Enter") {
-              runSearch();
-            }
-          }}
-        />
-        <Button text={"Search"} onClick={runSearch} />
       </div>
 
-      <div
-        className="max-w-full overflow-x-auto"
-        style={{ width: "calc(100vw - 240px - 12px)" }}
-      >
-        <table
-          className="table-auto my-4 ml-4 block"
-          style={{ tableLayout: "auto" }}
-        >
+      <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 12px)" }}>
+        <table className="table-auto my-4 ml-4 block" style={{ tableLayout: "auto" }}>
           <thead className="bg-[#85869822]">
-            <tr
-              className={`font-mono text-xs ${
-                keys.length == 0 ? "hidden" : ""
-              }`}
-            >
+            <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 w-6"></th>
               {keys
                 .filter((k) => k != "_id")
@@ -363,20 +265,14 @@ export default function DatabaseView({
                   <th
                     className={`cursor-pointer text-left py-1.5`}
                     style={{
-                      minWidth: `${getEstimatedColumnWidth(
-                        keys.length - 1,
-                        key,
-                      )}px`,
+                      minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px`,
                     }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
                   >
                     {key == "_swizzle_uid" ? "userId" : key}
                     {sortedByColumn === key && (
-                      <FontAwesomeIcon
-                        icon={sortDirection === "asc" ? faArrowUp : faArrowDown}
-                        className="ml-5"
-                      />
+                      <FontAwesomeIcon icon={sortDirection === "asc" ? faArrowUp : faArrowDown} className="ml-5" />
                     )}
                   </th>
                 ))}
@@ -424,10 +320,7 @@ export default function DatabaseView({
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
           {!didSearch ? (
-            <Button
-              text="Delete this collection"
-              onClick={deleteCollectionHandler}
-            />
+            <Button text="Delete this collection" onClick={deleteCollectionHandler} />
           ) : (
             <Button
               text="Reset search"

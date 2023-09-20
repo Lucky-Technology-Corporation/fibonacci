@@ -11,14 +11,15 @@ export default function useStorageApi() {
 
   const uploadFile = async (file: any) => {
     try {
-      if (!activeProject) {
-        throw new Error("No active project selected");
+      if (activeProject == null || activeProject == "") {
+        console.error("No active project");
+        return null;
       }
       const fileName = file.name;
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/storage/public/${fileName}`, //TODO: change this
+        `${BASE_URL}/projects/${activeProject}/${environment}/storage/public/${fileName}`,
         formData,
         {
           headers: {
@@ -30,9 +31,30 @@ export default function useStorageApi() {
       return response.data;
     } catch (error) {
       console.error("Error uploading the file:", error);
-      throw error; // If you want to re-throw the error to the calling function
+      return null;
     }
   };
 
-  return { uploadFile };
+  const deleteFile = async (fileName: string) => {
+    try {
+      if (activeProject == null || activeProject == "") {
+        console.error("No active project");
+        return null;
+      }
+      const response = await axios.delete(
+        `${BASE_URL}/projects/${activeProject}/${environment}/storage/public/${fileName}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading the file:", error);
+      return null;
+    }
+  };
+
+  return { uploadFile, deleteFile };
 }

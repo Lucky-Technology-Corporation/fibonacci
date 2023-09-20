@@ -86,10 +86,7 @@ export default function LogsPage() {
   useEffect(() => {
     if (isStreaming) {
       setWsUrl(
-        "ws://localhost:4000/api/v1/projects/" +
-          activeProject +
-          "/monitoring/logs/stream?token=" +
-          authHeader(),
+        "ws://localhost:4000/api/v1/projects/" + activeProject + "/monitoring/logs/stream?token=" + authHeader(),
       );
     } else {
       setWsUrl(null);
@@ -140,14 +137,10 @@ export default function LogsPage() {
 
   return (
     <div className="h-full overflow-scroll">
-      <div
-        className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}
-      >
+      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Logs</div>
-          <div className={`text-sm mt-0.5`}>
-            Click any request to see its logs
-          </div>
+          <div className={`text-sm mt-0.5`}>Click any request to see its logs</div>
         </div>
         {/* <div className="flex">
                <div className="text-sm m-auto mr-2">
@@ -176,13 +169,7 @@ export default function LogsPage() {
         <input
           type="text"
           className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
-          placeholder={
-            "Filter by " +
-            searchTypes
-              .filter((type) => type.id == filterName)[0]
-              .name.toLowerCase() +
-            "..."
-          }
+          placeholder={"Filter by " + searchTypes.filter((type) => type.id == filterName)[0].name.toLowerCase() + "..."}
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -202,9 +189,7 @@ export default function LogsPage() {
             <tr className="border-b border-[#4C4F6B]">
               <th className="text-left py-1 pl-4 w-12 font-light">Retry</th>
               <th className="text-left py-1 pl-4 font-light">Timestamp</th>
-              <th className="text-left py-1 pl-4 font-light max-w-1/2">
-                Endpoint
-              </th>
+              <th className="text-left py-1 pl-4 font-light max-w-1/2">Endpoint</th>
               <th className="text-left py-1 pl-4 font-light">Result</th>
               <th className="text-left py-1 pl-4 font-light">User</th>
               <th className="text-left py-1 pl-4 font-light">Request</th>

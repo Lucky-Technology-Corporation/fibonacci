@@ -20,12 +20,7 @@ export default function Editor({
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
-    if (
-      iframeRef == null ||
-      iframeRef.current == null ||
-      iframeRef.current.contentWindow == null
-    )
-      return;
+    if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null) return;
     iframeRef.current.contentWindow.postMessage(message, "*");
   };
 
@@ -77,13 +72,17 @@ export default function Editor({
       setIdeReady(false);
     };
   }, []);
-  
-  return (
-    (testDomain == undefined) ? <div className="m-auto mt-4">Something went wrong</div> :
+
+  return testDomain == undefined ? (
+    <div className="m-auto mt-4">Something went wrong</div>
+  ) : (
     <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
       <iframe
         ref={iframeRef}
-        src={`${testDomain.replace("http", "https").replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code`}
+        // src={`${testDomain}:3000/#/home/swizzle_prod_user/code`}
+        src={`${testDomain
+          .replace("http", "https")
+          .replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code`}
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",

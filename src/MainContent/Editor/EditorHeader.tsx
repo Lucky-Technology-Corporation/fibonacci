@@ -63,11 +63,7 @@ export default function EndpointHeader() {
 
           <input
             className="grow mx-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
-            placeholder={
-              AICommand == "ask"
-                ? "Ask any question..."
-                : "Change this code to..."
-            }
+            placeholder={AICommand == "ask" ? "Ask any question..." : "Change this code to..."}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />

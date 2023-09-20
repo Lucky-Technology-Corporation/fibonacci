@@ -4,14 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
-export default function SearchModal({
-  searchTerm,
-  handleSearch,
-  setTerm,
-  matchingCode,
-  isModalOpen,
-  setModalOpen,
-}) {
+export default function SearchModal({ searchTerm, handleSearch, setTerm, matchingCode, isModalOpen, setModalOpen }) {
   const isHintWindowVisible = isModalOpen;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

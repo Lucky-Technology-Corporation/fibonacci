@@ -1,10 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import LogsItem from "./LogsItem";
 
 export default function Logslist({

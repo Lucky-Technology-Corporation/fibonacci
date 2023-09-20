@@ -34,10 +34,7 @@ export default function Dropdown({
   }, [children]);
 
   return (
-    <Menu
-      as="div"
-      className={`${className} relative inline-block text-left mt-2"`}
-    >
+    <Menu as="div" className={`${className} relative inline-block text-left mt-2"`}>
       <div>
         <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#85869833] hover:bg-[#85869855] ring-1 ring-inset ring-[#525363]">
           {title
@@ -47,10 +44,7 @@ export default function Dropdown({
                   name: "Loading...",
                 }
               ).name}
-          <ChevronDownIcon
-            className="-mr-1 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
+          <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
         </Menu.Button>
       </div>
 

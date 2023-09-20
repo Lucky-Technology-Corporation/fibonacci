@@ -19,27 +19,18 @@ export default function useApi() {
         end: endDate,
       };
 
-      const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/monitoring`,
-        body,
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
+      const response = await axios.post(`${BASE_URL}/projects/${activeProject}/${environment}/monitoring`, body, {
+        headers: {
+          Authorization: authHeader(),
         },
-      );
+      });
       return response.data;
     } catch (e) {
       console.log(e);
     }
   };
 
-  const getLogs = async (
-    offset: number,
-    filterKey?: string,
-    filterQuery?: string,
-    pageToken?: string,
-  ) => {
+  const getLogs = async (offset: number, filterKey?: string, filterQuery?: string, pageToken?: string) => {
     try {
       if (!activeProject) {
         throw new Error("No active project selected");

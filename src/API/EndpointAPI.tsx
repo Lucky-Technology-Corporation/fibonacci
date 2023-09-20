@@ -7,21 +7,28 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint, environment, activeProject } =
-    useContext(SwizzleContext);
+  const { testDomain, activeEndpoint, environment, activeProject } = useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
-    const response = await axios.get(
-      `https://registry.npmjs.com/-/v1/search?text=${query}&size=10`,
-    );
+    const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
     return response.data.objects;
   };
 
-  const updateSecret = async (
-    secretName: string,
-    secretValue: string,
-    environment: string,
-  ) => {};
+  const updateSecret = async (secretName: string, secretValue: string, environment: string) => {};
+
+  const deploy = async () => {
+    try {
+      const response = await axios.post(`${testDomain}:1234/push_to_production`, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      return response.data;
+    } catch (e) {
+      console.log(e);
+      return "";
+    }
+  };
 
   const getFile = async (fileName: string) => {
     try {
@@ -31,14 +38,11 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(
-        `${testDomain}:1234/code/file_contents?path=code/${fileName}`,
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
+      const response = await axios.get(`${testDomain}:1234/code/file_contents?path=code/${fileName}`, {
+        headers: {
+          Authorization: authHeader(),
         },
-      );
+      });
       return response.data;
     } catch (e) {
       console.log(e);
@@ -51,9 +55,7 @@ export default function useApi() {
     //TODO: split files into chunks an summarize long functions
     try {
       const fileName = activeEndpoint.replace(/\//g, "-");
-      const fileContents = await getFile(
-        "user-dependencies/" + fileName + ".js",
-      );
+      const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/${environment}/assistant/file`,
@@ -78,9 +80,7 @@ export default function useApi() {
   const getAutocheckResponse = async () => {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-");
-      const fileContents = await getFile(
-        "user-dependencies/" + fileName + ".js",
-      );
+      const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`,
@@ -108,14 +108,11 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(
-        `${testDomain}:1234/code/package.json`,
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
+      const response = await axios.get(`${testDomain}:1234/code/package.json`, {
+        headers: {
+          Authorization: authHeader(),
         },
-      );
+      });
       return response.data;
     } catch (e) {
       console.log(e);
@@ -137,14 +134,11 @@ export default function useApi() {
         path = "table_of_files";
       }
 
-      const response = await axios.get(
-        `${testDomain}:1234/${path}`,
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
+      const response = await axios.get(`${testDomain}:1234/${path}`, {
+        headers: {
+          Authorization: authHeader(),
         },
-      );
+      });
       return response.data;
     } catch (e) {
       console.log(e);
@@ -169,5 +163,6 @@ export default function useApi() {
     getFile,
     getAIResponseToFile,
     getAutocheckResponse,
+    deploy,
   };
 }

@@ -49,23 +49,15 @@ export default function FullPageModal({
 
   return (
     <div
-      className={`fixed z-50 inset-0 overflow-y-auto ${
-        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed z-50 inset-0 overflow-y-auto ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
       style={{ transition: "opacity 0.2s" }}
     >
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          aria-hidden="true"
-        ></div>
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
         <div
@@ -75,22 +67,13 @@ export default function FullPageModal({
         >
           <div className="bg-[#32333b] px-4 pt-5 pb-2 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
-              <h3
-                className="text-lg leading-6 font-medium text-[#D9D9D9]"
-                id="modal-title"
-              >
+              <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
                 {modalDetails.title}
               </h3>
               <div className="mt-1">
-                <div className="text-sm text-[#D9D9D9]">
-                  {modalDetails.description}
-                </div>
+                <div className="text-sm text-[#D9D9D9]">{modalDetails.description}</div>
               </div>
-              <div
-                className={`mt-3 mb-2 ${
-                  modalDetails.shouldShowInput ? "" : "hidden"
-                }`}
-              >
+              <div className={`mt-3 mb-2 ${modalDetails.shouldShowInput ? "" : "hidden"}`}>
                 <input
                   type="text"
                   value={inputValue}

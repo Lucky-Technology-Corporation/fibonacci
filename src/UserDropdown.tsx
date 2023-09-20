@@ -15,8 +15,7 @@ function classNames(...classes: string[]) {
 export default function UserDropdown() {
   const signOut = useSignOut();
   const auth = useAuthUser();
-  const { setActiveProject, setActiveProjectName, isFree, setIsFree } =
-    useContext(SwizzleContext);
+  const { setActiveProject, setActiveProjectName, isFree, setIsFree } = useContext(SwizzleContext);
 
   const [isVisible, setIsVisible] = useState(false);
   const addCreditCard = () => {
@@ -42,10 +41,7 @@ export default function UserDropdown() {
 
   return (
     <>
-      <Menu
-        as="div"
-        className="fixed bottom-4 left-6 w-44 inline-block text-left"
-      >
+      <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
         <div
           className={`${
             isFree ? "" : "hidden"
@@ -59,10 +55,7 @@ export default function UserDropdown() {
         <div>
           <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#33333c] ring-1 ring-inset ring-[#525363]">
             {auth()?.user}
-            <ChevronDownIcon
-              className="-mr-1 h-5 w-5 text-gray-400"
-              aria-hidden="true"
-            />
+            <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
           </Menu.Button>
         </div>
 
@@ -106,9 +99,8 @@ export default function UserDropdown() {
           title: "💳 Add a credit card",
           description: (
             <>
-              Unskew the page by adding a credit card. You will only be charged
-              for the compute you use. For more details, see our{" "}
-              <a href="">pricing page</a>
+              Unskew the page by adding a credit card. You will only be charged for the compute you use. For more
+              details, see our <a href="">pricing page</a>
             </>
           ),
           placeholder: "Card number",

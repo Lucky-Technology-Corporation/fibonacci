@@ -36,9 +36,8 @@ export default function AuthInfo({ show }: { show: boolean }) {
             content: (
               <div className="text-gray-400">
                 If the request is made from a client that has not signed in,{" "}
-                <span className="font-bold font-mono">request.user</span> will
-                be <span className="font-bold font-mono">null</span>.
-                <div className="h-4"></div>
+                <span className="font-bold font-mono">request.user</span> will be{" "}
+                <span className="font-bold font-mono">null</span>.<div className="h-4"></div>
                 Otherwise, you can access the following properties:
                 {getTableHelper(
                   [

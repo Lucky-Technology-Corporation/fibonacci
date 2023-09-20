@@ -15,10 +15,8 @@ export default function useTestApi() {
     deleteDocument: deleteTest,
   } = useApi();
 
-  const { domain, activeProject, activeEndpoint, environment } =
-    useContext(SwizzleContext);
-  const BASE_URL_USER = domain.replace("http://", "https://runner.");
-  //const BASE_URL_USER = 'https://euler-i733tg4iuq-uc.a.run.app/api/v1'
+  const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
+  const BASE_URL_USER = testDomain.replace("http", "https").replace("https://", "https://runner.");
   const activeCollection = "_swizzle_usertests";
 
   const runTest = async (testDoc) => {
@@ -75,14 +73,7 @@ export default function useTestApi() {
         throw new Error("No active endpoint selected");
       }
 
-      const allTests = await useApi().getDocuments(
-        activeCollection,
-        -1,
-        20,
-        "",
-        "asc",
-        activeEndpoint,
-      );
+      const allTests = await useApi().getDocuments(activeCollection, -1, 20, "", "asc", activeEndpoint);
 
       const responses = [];
       for (const testDoc of allTests) {

@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { Page } from "../Utilities/Page";
 import SectionTitle from "./SectionTitle";
 import CollectionList from "./Database/CollectionList";
@@ -39,33 +32,27 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
-  const {
-    setEnvironment,
-    environment,
-    setActiveEndpoint,
-    activeEndpoint,
-    activeFile,
-    setPostMessage,
-  } = useContext(SwizzleContext);
+  const { setEnvironment, environment, setActiveEndpoint, activeEndpoint, activeFile, setPostMessage } =
+    useContext(SwizzleContext);
 
   //File management + sidebar management code
   const programmatiFileUpdateRef = useRef(false);
 
   useEffect(() => {
-   openActiveEndpoint()
+    openActiveEndpoint();
   }, [activeEndpoint]);
 
   useEffect(() => {
-    openActiveFile()
+    openActiveFile();
   }, [activeFile]);
 
   useEffect(() => {
-    if(selectedTab == Page.Hosting){
-      openActiveFile()
-    } else if(selectedTab == Page.Apis){
-      openActiveEndpoint()
+    if (selectedTab == Page.Hosting) {
+      openActiveFile();
+    } else if (selectedTab == Page.Apis) {
+      openActiveEndpoint();
     }
-  }, [selectedTab])
+  }, [selectedTab]);
 
   const openActiveFile = () => {
     if (programmatiFileUpdateRef.current) {
@@ -77,7 +64,7 @@ export default function LeftSidebar({
       type: "openFile",
       fileName: `user-hosting/${activeFile}`,
     });
-  }
+  };
 
   const openActiveEndpoint = () => {
     if (programmatiFileUpdateRef.current) {
@@ -90,13 +77,10 @@ export default function LeftSidebar({
       type: "openFile",
       fileName: `user-dependencies/${fileName}.js`,
     });
-  }
+  };
 
   useEffect(() => {
-    if (
-      currentFileProperties == undefined ||
-      currentFileProperties.fileUri == undefined
-    ) {
+    if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) {
       return;
     }
 
@@ -138,31 +122,23 @@ export default function LeftSidebar({
             offHandleColor="#d2d3e0"
           /> */}
           {environment == "test" ? (
-            <div className="text-sm font-bold m-auto text-[#f39c12]">
-              Test View
-            </div>
+            <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div>
           ) : (
             <div className="text-sm font-bold m-auto">Production View</div>
           )}
           <Switch
-          className="ml-1 scale-75"
-          onChange={() => {
-            setEnvironment(environment == "test" ? "prod" : "test");
-          }}
-          checked={environment == "test"}
-          uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
-          checkedIcon={
-            <FontAwesomeIcon
-              icon={faFlask}
-              className="ml-2.5"
-              color="#ffffff"
-            />
-          }
-          offColor="#474752"
-          onColor="#f39c12"
-          onHandleColor="#d2d3e0"
-          offHandleColor="#d2d3e0"
-        />
+            className="ml-1 scale-75"
+            onChange={() => {
+              setEnvironment(environment == "test" ? "prod" : "test");
+            }}
+            checked={environment == "test"}
+            uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
+            checkedIcon={<FontAwesomeIcon icon={faFlask} className="ml-2.5" color="#ffffff" />}
+            offColor="#474752"
+            onColor="#f39c12"
+            onHandleColor="#d2d3e0"
+            offHandleColor="#d2d3e0"
+          />
         </div>
 
         <div className="flex">
@@ -177,11 +153,7 @@ export default function LeftSidebar({
             setSelectedTab(Page.Logs);
           }}
         />
-        <LogsList
-          active={selectedTab == Page.Logs}
-          activePage={activeLogsPage}
-          setActivePage={setActiveLogsPage}
-        />
+        <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
 
         <SectionTitle
           icon="auth.svg"
@@ -191,7 +163,6 @@ export default function LeftSidebar({
             setSelectedTab(Page.Auth);
           }}
         />
-
 
         <SectionTitle
           icon="cloud.svg"
@@ -235,7 +206,6 @@ export default function LeftSidebar({
             setSelectedTab(Page.Storage);
           }}
         />
-
 
         <SectionTitle
           icon="bell.svg"
