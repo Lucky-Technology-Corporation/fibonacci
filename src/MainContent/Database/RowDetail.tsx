@@ -12,7 +12,7 @@ export default function RowDetail({
   shouldHideCopy = false,
   setTotalDocs,
   openNewDocumentWithData = () => {},
-  secondDeleteFunction = null,
+  deleteFunction = null,
 }: {
   collection: string;
   data: any;
@@ -22,7 +22,7 @@ export default function RowDetail({
   shouldHideCopy?: boolean;
   setTotalDocs: React.Dispatch<React.SetStateAction<number>>;
   openNewDocumentWithData?: (data: any) => void;
-  secondDeleteFunction?: (data: any) => Promise<any>;
+  deleteFunction?: (data: any) => Promise<any>;
 }) {
   const { deleteDocument, updateDocument } = useApi();
 
@@ -51,20 +51,29 @@ export default function RowDetail({
     if (deleteAction == "delete") {
       const c = confirm("Are you sure you want to delete this document? This cannot be undone.");
       if (c) {
-        var promiseArray = [deleteDocument(collection, data._id)];
-        if (secondDeleteFunction != null) {
-          promiseArray.push(secondDeleteFunction(data));
+
+        if (deleteFunction != null) {
+          toast.promise(deleteFunction(data), {
+            loading: "Deleting...",
+            success: () => {
+              addHiddenRow(data._id);
+              setTotalDocs((totalDocs) => totalDocs - 1);
+              return "Deleted";
+            },
+            error: "Failed to delete",
+          });
+        } else{
+          toast.promise(deleteDocument(collection, data._id), {
+            loading: "Deleting...",
+            success: () => {
+              addHiddenRow(data._id);
+              setTotalDocs((totalDocs) => totalDocs - 1);
+              return "Deleted";
+            },
+            error: "Failed to delete",
+          });
         }
 
-        toast.promise(Promise.all(promiseArray), {
-          loading: "Deleting document...",
-          success: () => {
-            addHiddenRow(data._id);
-            setTotalDocs((totalDocs) => totalDocs - 1);
-            return "Document deleted";
-          },
-          error: "Failed to delete document",
-        });
       }
     } else if (deleteAction == "deactivate") {
       if (data._deactivated) {

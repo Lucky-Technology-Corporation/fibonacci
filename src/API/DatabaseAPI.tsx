@@ -13,7 +13,7 @@ export default function useApi() {
 
   const getCollections = async () => {
     if (activeProject == "") return;
-    const response = await axios.get(`${BASE_URL}/projects/${activeProject}/${environment}/collections`, {
+    const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections?env=${environment}`, {
       headers: {
         Authorization: authHeader(),
       },
@@ -32,7 +32,7 @@ export default function useApi() {
     try {
       if (activeProject == "") return;
       if (activeCollection == "") return;
-      var queryString = "?";
+      var queryString = `?env=${environment}&`;
       if (page !== -1) {
         queryString += `page=${page}&pageSize=${pageSize}`;
       }
@@ -44,7 +44,7 @@ export default function useApi() {
       }
 
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}${queryString}`,
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -65,7 +65,7 @@ export default function useApi() {
     if (activeCollection == "") return;
     try {
       const response = await axios.patch(
-        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}/${id}`,
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
         { document: data },
         {
           headers: {
@@ -87,7 +87,7 @@ export default function useApi() {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}`,
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}?env=${environment}`,
         { documents: [newDocument] },
         {
           headers: {
@@ -107,7 +107,7 @@ export default function useApi() {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/${environment}/collections/${activeCollection}/${id}`,
+        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -125,7 +125,7 @@ export default function useApi() {
     try {
       if (activeProject == "") return;
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/collections`,
+        `${BASE_URL}/projects/${activeProject}/collections?env=${environment}`,
         { name: name },
         {
           headers: {
@@ -143,7 +143,7 @@ export default function useApi() {
   const deleteCollection = async (name: string) => {
     try {
       if (activeProject == "") return;
-      const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/${environment}/collections/${name}`, {
+      const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/collections/${name}?env=${environment}`, {
         headers: {
           Authorization: authHeader(),
         },
@@ -198,7 +198,7 @@ export default function useApi() {
         queryObject["sort_direction"] = sortDirection;
       }
 
-      var url = `${BASE_URL}/projects/${activeProject}/${environment}/collections/${collectionName}/search`;
+      var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/search?env=${environment}`;
 
       const response = await axios.post(url, queryObject, {
         headers: {

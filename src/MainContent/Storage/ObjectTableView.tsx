@@ -83,8 +83,8 @@ export default function ObjectTableView() {
     };
   }, [activeProject, environment]);
 
+
   const handleFiles = (files) => {
-    console.log("handleFiles called"); // Debug line
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       uploadFile(file);
@@ -109,14 +109,17 @@ export default function ObjectTableView() {
           setData([]);
           setKeys([]);
           setTotalDocs(0);
+          setIsRefreshing(false);
           return;
         }
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
+        setIsRefreshing(false);
       })
       .catch((e) => {
         console.log(e);
+        setIsRefreshing(false);
         setError(e);
       });
   };
@@ -134,7 +137,6 @@ export default function ObjectTableView() {
     setIsRefreshing(true);
     setCurrentPage(0);
     fetchData(currentPage);
-    setIsRefreshing(false);
   };
 
   const runSearch = async () => {
@@ -250,7 +252,7 @@ export default function ObjectTableView() {
                 rowKey={row._id}
                 keys={keys}
                 data={Object.entries(row).reduce((result, [key, value]) => {
-                  const fileURL = `${baseUrl}/swizzle/db/storage/${value}/${row.fileName}`;
+                  const fileURL = `${baseUrl}/swizzle/db/storage/${value}/${row._id}.${row.fileExtension}`;
                   return {
                     ...result,
                     [key]: key === "_id" ? fileURL : value,
@@ -273,7 +275,7 @@ export default function ObjectTableView() {
           addHiddenRow={addHiddenRow}
           shouldHideCopy={true}
           setTotalDocs={setTotalDocs}
-          secondDeleteFunction={(data: any) => {
+          deleteFunction={(data: any) => {
             return deleteFile(data.fileName);
           }}
         />

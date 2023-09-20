@@ -58,7 +58,7 @@ export default function useApi() {
       const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/file`,
+        `${BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
         {
           userQuery: userQuery,
           aiAction: aiAction,
@@ -83,7 +83,7 @@ export default function useApi() {
       const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/assistant/autocheck`,
+        `${BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
         {
           file_contents: fileContents,
         },

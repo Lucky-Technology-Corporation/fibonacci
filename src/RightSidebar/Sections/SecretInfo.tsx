@@ -79,6 +79,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
   };
 
   const setNewSecrets = () => {
+    console.log(secrets)
     const secretsObject = secrets.reduce(
       (acc, secret) => {
         acc.test[secret.name] = secret.testValue;
@@ -89,6 +90,9 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
       },
       { test: {}, prod: {} },
     );
+    console.log(secrets)
+    console.log("saving these secrets")
+    console.log(secretsObject)
     return saveSecrets(secretsObject);
   };
 
@@ -104,7 +108,13 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     setNewSecretName("");
     setNewSecretTestValue("");
     setNewSecretProductionValue("");
-    return setNewSecrets();
+
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        setNewSecrets();
+        resolve();
+      }, 250);
+    });
   };
 
   return (

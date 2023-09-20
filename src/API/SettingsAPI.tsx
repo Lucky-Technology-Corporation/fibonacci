@@ -12,7 +12,7 @@ export default function useApi() {
   const updateApns = async (p8Key: string, key_id: string, team_id: string) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/setNotificationKeys`,
+        `${BASE_URL}/projects/${activeProject}/setNotificationKeys?env=${environment}`,
         { p8_key_base64: p8Key, key_id: key_id, developer_id: team_id },
         {
           headers: {
@@ -32,7 +32,7 @@ export default function useApi() {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/${environment}/secrets`, {
+      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {
         headers: {
           Authorization: authHeader(),
         },
@@ -50,7 +50,7 @@ export default function useApi() {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.patch(`${BASE_URL}/projects/${activeProject}/${environment}/secrets`, newSecrets, {
+      const response = await axios.patch(`${BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, newSecrets, {
         headers: {
           Authorization: authHeader(),
         },

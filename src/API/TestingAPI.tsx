@@ -26,7 +26,7 @@ export default function useTestApi() {
       }
 
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/${environment}/testing/spoofJwt?user_id=${testDoc.userId}`,
+        `${BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
         {
           headers: {
             Authorization: authHeader(),

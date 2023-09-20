@@ -19,7 +19,7 @@ export default function useStorageApi() {
       const formData = new FormData();
       formData.append("file", file);
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/${environment}/storage/public/${fileName}`,
+        `${BASE_URL}/projects/${activeProject}/storage/public/${fileName}?env=${environment}`,
         formData,
         {
           headers: {
@@ -42,7 +42,7 @@ export default function useStorageApi() {
         return null;
       }
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/${environment}/storage/public/${fileName}`,
+        `${BASE_URL}/projects/${activeProject}/storage/public/${fileName}?env=${environment}`,
         {
           headers: {
             Authorization: authHeader(),
