@@ -62,9 +62,28 @@ export default function useApi() {
     }
   };
 
+  const deleteSecret = async (secretName: string) => {
+    try {
+      if (activeProject == null) {
+        return null;
+      }
+      const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
+
   return {
     updateApns,
     getSecrets,
     saveSecrets,
+    deleteSecret
   };
 }

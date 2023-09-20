@@ -12,7 +12,7 @@ export default function EndpointHeader() {
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
-  const [AICommand, setAICommand] = useState<string>("do");
+  const [AICommand, setAICommand] = useState<string>("ask");
 
   const { getAIResponseToFile } = useApi();
 
@@ -55,7 +55,8 @@ export default function EndpointHeader() {
             onSelect={setAICommand}
             children={[
               { id: "ask", name: "Ask" },
-              { id: "do", name: "Do" },
+              { id: "create", name: "Create" },
+              { id: "edit", name: "Edit" },
             ]}
             direction="right"
             title={AICommand.charAt(0).toUpperCase() + AICommand.slice(1)}
