@@ -119,3 +119,8 @@ input[type="text"]::placeholder {
   border-color: #525363 !important;
   /* You can add more styles if needed */
 }
+
+.scrollable-div {
+  max-height: 400px;      /* or any other height */
+  overflow-y: auto;       /* or 'scroll' if you always want to display the scrollbar */
+}

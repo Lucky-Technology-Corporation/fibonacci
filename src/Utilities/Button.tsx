@@ -4,7 +4,7 @@ export default function Button({
   className,
   children,
 }: {
-  text: string;
+  text: any;
   onClick: () => void;
   className?: string;
   children?: any;

@@ -7,6 +7,7 @@ import NewTestWindow from "./NewTestWindow";
 import Dot from "../Utilities/Dot";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { StatusCodes, getReasonPhrase } from 'http-status-codes';
+import LoadingIcons from 'react-loading-icons'
 
 export default function TestWindow({
   shouldShowTestWindow,
@@ -45,18 +46,22 @@ export default function TestWindow({
   const [testResults, setTestResults] = useState({});
   const [statusText, setStatusText] = useState({});
   const [testResponses, setTestResponses] = useState({});
+  const [loadingTests, setLoadingTests] = useState([]);
+  const [runningAllTests, setRunningAllTests] = useState(false);
 
   const api = useTestApi();
 
   const runSingleTest = async (testDoc) => {
+    setLoadingTests((prevLoadingTests) => [...prevLoadingTests, testDoc._id]);
+
     try {
       const result = await api.runTest(testDoc);
       console.log("result: " + result)
       const status = result.status;
-      const statusTeext = result.statusText;
       setTestResults((prevResults) => ({
         ...prevResults,
         [testDoc._id]: status,
+        
       }));
       setTestResponses((prevResponses) => ({
         ...prevResponses,
@@ -68,6 +73,8 @@ export default function TestWindow({
           [testDoc._id]: getReasonPhrase(result.status)
           }));
         console.log(result.data)
+        setLoadingTests((prevLoadingTests) => prevLoadingTests.filter(id => id !== testDoc._id));
+
     } catch (error) {
       console.error("Error running test:", error);
       const errorStatus = error.response ? error.response.status : "Network Error";
@@ -79,36 +86,24 @@ export default function TestWindow({
         ...prevResponses,
         [testDoc._id]: error.data
         }));
+        
         setStatusText((prevResponses) => ({
           ...prevResponses,
-          [testDoc._id]: getReasonPhrase(error.response.status)
+          [testDoc._id]: error.response? getReasonPhrase(error.response.status) : "Network or other error"
           }));
+          setLoadingTests((prevLoadingTests) => prevLoadingTests.filter(id => id !== testDoc._id));
+
     }
   };
 
   const runAllTests = async () => {
-    let newResults = {};
-    let newResponses = {};
-    let newStatusText = {};
+    setRunningAllTests(true);
     for (let testDoc of tests) {
-      try {
-        const result = await api.runTest(testDoc);
-        const status = result.status;
-        newResults[testDoc._id] = status;
-        newResponses[testDoc._id] = result.data;
-        newStatusText[testDoc._id] = getReasonPhrase(result.status)
-      } catch (error) {
-        console.error("Error running test:", error);
-        const errorStatus = error.response ? error.response.status : "Network Error";
-        newResults[testDoc._id] = errorStatus;
-        newResponses[testDoc._id] = error.data;
-        newStatusText[testDoc._id] = getReasonPhrase(error.response.status)
-      }
+      await runSingleTest(testDoc);
     }
-    setTestResults(newResults);
-    setTestResponses(newResponses);
-    setStatusText(newStatusText);
+    setRunningAllTests(false);
   };
+  
 
   function getColorByStatus(statusCode) {
     if (statusCode >= 200 && statusCode < 300) return "green";
@@ -150,7 +145,7 @@ export default function TestWindow({
   }
   return (
     <div
-      className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
+      className={`scrollable-div z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
         shouldShowTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
@@ -183,16 +178,19 @@ export default function TestWindow({
           key={index}>
           <div
             
-            className="flex items-center justify-between mt-3 pb-2"
+            className="flex items-center justify-between mt-4 pb-2"
           >
             
-            <div className="flex items justify-left mx-2">
+            <div className="flex items justify-left mx-2 ">
               <button onClick={() => runSingleTest(testDoc)}>
+              {loadingTests.includes(testDoc._id) ? (
+    <div><LoadingIcons.Circles style={{ width: '13px', height: '15px' }}/></div> 
+  ) : (
                 <FontAwesomeIcon
                   icon={faPlay}
                   size="lg"
                   style={{ color: "#41d373" }}
-                />{" "}
+                /> )}
               </button>
 
               <Button
@@ -228,7 +226,7 @@ export default function TestWindow({
                     {testResults[testDoc._id] !== undefined && (
                       <>
                       <Dot
-                          className="ml-2"
+                          className="ml-0"
                           color={getColorByStatus(testResults[testDoc._id])}
                         />
                         <span>{testResults[testDoc._id]}</span>
@@ -239,7 +237,7 @@ export default function TestWindow({
                 </div>
               </div>
             {testResponses[testDoc._id] !== undefined && (
-            <pre className="font-mono text-xs ml-4">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>)}
+            <pre className="font-mono text-xs ml-4 mb-2">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>)}
           </div>
         ))}
       </div>
