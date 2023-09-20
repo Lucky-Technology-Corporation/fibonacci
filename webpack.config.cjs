@@ -6,13 +6,13 @@ const Dotenv = require("dotenv-webpack");
 
 module.exports = {
   entry: "./src/main.tsx",
-  devServer: {
-    static: path.join(__dirname, "dist"),
-    historyApiFallback: true, // this allows routing for react-router
-    compress: true,
-    port: 3000, // or whatever port you want
-    contentBase: path.resolve(__dirname, "public"),
-  },
+  // devServer: {
+  //   static: path.join(__dirname, "dist"),
+  //   historyApiFallback: true, // this allows routing for react-router
+  //   compress: true,
+  //   port: 3000, // or whatever port you want
+  //   contentBase: path.resolve(__dirname, "public"),
+  // },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",

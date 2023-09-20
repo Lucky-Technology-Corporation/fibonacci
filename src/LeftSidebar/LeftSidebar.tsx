@@ -110,17 +110,6 @@ export default function LeftSidebar({
           <h1 className="font-bold text-md">Swizzle</h1>
         </div>
         <div className="flex mt-2">
-          {/* <Switch
-            className="m-auto mr-0.5 scale-75"
-            onChange={() => { setEnvironment(environment == "test" ? "prod" : "test") }}
-            checked={environment == 'test'}
-            uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
-            checkedIcon={<FontAwesomeIcon icon={faFlask} className="ml-2.5" color="#ffffff" />}
-            offColor="#474752"
-            onColor="#f39c12"
-            onHandleColor="#d2d3e0"
-            offHandleColor="#d2d3e0"
-          /> */}
           {environment == "test" ? (
             <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div>
           ) : (

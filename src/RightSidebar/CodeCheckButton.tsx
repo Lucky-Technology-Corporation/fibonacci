@@ -20,7 +20,6 @@ export default function CodeCheckButton({}: {}) {
 
   //fake, for demo purposes
   const runDeploy = () => {
-    deploy();
 
     setIsDeploymentInProgress(true);
 
