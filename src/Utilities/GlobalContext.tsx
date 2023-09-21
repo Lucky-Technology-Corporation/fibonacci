@@ -17,6 +17,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [activeEndpoint, setActiveEndpoint] = useState("");
   const [activeFile, setActiveFile] = useState("");
   const [ideReady, setIdeReady] = useState(false);
+  const [testDeployStatus, setTestDeployStatus] = useState("live");
+  const [prodDeployStatus, setProdDeployStatus] = useState("pending");
 
   return (
     <SwizzleContext.Provider
@@ -49,6 +51,10 @@ export const GlobalContextProvider = ({ children }) => {
         setIdeReady,
         activeFile,
         setActiveFile,
+        testDeployStatus,
+        setTestDeployStatus,
+        prodDeployStatus,
+        setProdDeployStatus,
       }}
     >
       {children}
