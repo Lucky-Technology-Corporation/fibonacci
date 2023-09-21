@@ -75,6 +75,13 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
     setInstalledPackages([...installedPackages, message]);
   };
 
+  const removePackageFromProject = (message) => {
+    const messageBody = { type: "removePackage", packageName: message };
+    setPostMessage(messageBody);
+    setInstalledPackages(installedPackages.filter((item) => item !== message));
+  };
+
+
   const renderSearchField = () => {
     return (
       <Select
@@ -182,7 +189,8 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
                           className="ml-auto"
                           icon={faTrash}
                           onClick={() => {
-                            /* Handle deletion here */
+                            removePackageFromProject(packageName)
+                            toast.success(`Removed ${selectedOption.value} from project`);
                           }}
                         />
                       </td>
