@@ -35,7 +35,6 @@ export default function EndpointHeader() {
     return toast.promise(askQuestion(prompt, AICommand), {
       loading: "Generating code...",
       success: (data) => {
-        console.log(data);
         return "Done";
       },
       error: "Error generating code",

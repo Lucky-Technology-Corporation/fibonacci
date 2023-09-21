@@ -111,8 +111,6 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         [name]: prodValue,
       },
     };
-  
-    console.log(JSON.stringify(secrets));
     return saveSecrets(secrets);  
   };
 

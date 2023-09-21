@@ -41,8 +41,6 @@ export default function useTestApi() {
       const endpointPath = "/" + activeEndpoint.split("/")[1];
       const url = `${BASE_URL_USER}${endpointPath}?${testDoc.queryParametersString}`;
       const body = testDoc.body;
-      console.log(header);
-      console.log(url);
 
       switch (method) {
         case "GET":
@@ -96,7 +94,6 @@ export default function useTestApi() {
         },
         data: body,
       });
-      console.log(response);
       return response;
     } catch (error) {
       console.error("Error running GET test:", error);

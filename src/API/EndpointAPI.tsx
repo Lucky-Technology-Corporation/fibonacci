@@ -34,7 +34,7 @@ export default function useApi() {
       return jwt;
       
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   }
@@ -73,7 +73,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
@@ -93,7 +93,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
@@ -118,7 +118,7 @@ export default function useApi() {
       );
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
@@ -146,7 +146,7 @@ export default function useApi() {
   //     );
   //     return response.data;
   //   } catch (e) {
-  //     console.log(e);
+  //     console.error(e);
   //     return "";
   //   }
   // };
@@ -169,7 +169,7 @@ export default function useApi() {
       );
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
@@ -189,7 +189,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return [];
     }
   };
@@ -215,7 +215,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return [];
     }
   };

@@ -55,7 +55,6 @@ export default function TestWindow({
 
     try {
       const result = await api.runTest(testDoc);
-      console.log("result: " + result);
       const status = result.status;
       setTestResults((prevResults) => ({
         ...prevResults,
@@ -69,7 +68,6 @@ export default function TestWindow({
         ...prevResponses,
         [testDoc._id]: getReasonPhrase(result.status),
       }));
-      console.log(result.data);
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     } catch (error) {
       console.error("Error running test:", error);

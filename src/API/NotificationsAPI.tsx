@@ -22,14 +22,15 @@ export default function useApi() {
             }
 
             const url = `${BASE_URL}/projects/${activeProject}/setNotificationKeys`
-            const response = await axios.post(url, payload, {
+            await axios.post(url, payload, {
                 headers: {
                     Authorization: authHeader(),  
                 },
-            });            console.log(response)
-
+            });
+            return true
         } catch (error) {
             console.error("Error posting notification key", error);
+            return false
         }
     }
     return {setNotificationKey}

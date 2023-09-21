@@ -63,7 +63,6 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   }, [isVisible]);
 
   useEffect(() => {
-    console.log(selectedOption);
     if (selectedOption == null) return;
     addPackageToProject(selectedOption.value);
     toast.success(`Added ${selectedOption.value} to project`);

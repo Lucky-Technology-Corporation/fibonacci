@@ -20,7 +20,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   useEffect(() => {
     getFiles("endpoints")
       .then((data) => {
-        console.log(data);
         if (data == undefined || data.children == undefined || data.children.length == 0) {
           return;
         }
@@ -37,7 +36,7 @@ export default function EndpointList({ active }: { active: boolean }) {
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
-        console.log(e);
+        console.error(e);
       });
   }, [activeProject]);
 

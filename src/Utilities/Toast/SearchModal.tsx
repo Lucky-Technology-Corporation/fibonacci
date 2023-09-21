@@ -30,9 +30,11 @@ export default function SearchModal({ searchTerm, handleSearch, setTerm, matchin
     endpoint: code.endpoint,
     snippet: code.snippet,
   }));
+
   const handleRowClick = (row: { endpoint: string; snippet?: string }) => {
-    console.log(row.endpoint);
+    //No op right now?
   };
+  
   const table = getSearchTableHelper(matchingRows, handleRowClick);
 
   return (

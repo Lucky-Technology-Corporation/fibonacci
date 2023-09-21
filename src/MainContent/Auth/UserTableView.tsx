@@ -58,7 +58,7 @@ export default function UserTableView() {
         setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setError(e);
       });
   };
@@ -85,7 +85,7 @@ export default function UserTableView() {
         setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setError(e);
       });
   };
@@ -154,7 +154,7 @@ export default function UserTableView() {
         setKeys(data.keys.sort() || []);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setError(e);
       });
   }, [sortedByColumn, sortDirection]);

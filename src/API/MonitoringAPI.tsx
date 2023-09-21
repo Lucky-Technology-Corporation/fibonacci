@@ -26,7 +26,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -54,7 +54,7 @@ export default function useApi() {
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -75,7 +75,7 @@ export default function useApi() {
       );
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
