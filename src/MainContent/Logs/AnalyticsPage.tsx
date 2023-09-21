@@ -78,8 +78,10 @@ export default function AnalyticsPage() {
           <DateRangePicker value={dateRange} onValueChange={setDateRange}></DateRangePicker>
         </div>
         <div className="p-4 pt-0 flex flex-row space-x-2">
+        {data.length > 0 && (<>
           {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
           {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
+        </>)}
         </div>
       </div>
     </div>

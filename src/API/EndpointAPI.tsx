@@ -19,13 +19,13 @@ export default function useApi() {
 
   const exchangeJwt = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/projects/${activeProject}/fermat/jwt`, {
+      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/fermat/jwt`, {
         headers: {
           Authorization: authHeader(),
         },
       });
       
-      const jwt = response.data.jwt;
+      const jwt = response.data.fermat_token;
       if(jwt == undefined || jwt == null || jwt == ""){
         return "";
       }

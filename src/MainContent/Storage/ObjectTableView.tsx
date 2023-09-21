@@ -88,12 +88,13 @@ export default function ObjectTableView() {
   }, [activeProject, environment]);
 
 
-  const handleFiles = (files) => {
+  const handleFiles = async (files) => {
     console.log("handle files")
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       console.log("upload file")
-      uploadFile(file);
+      await uploadFile(file);
+      fetchData(currentPage);
     }
   };
 
