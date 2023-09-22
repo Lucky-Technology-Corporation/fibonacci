@@ -56,13 +56,13 @@ export default function AnalyticsPage() {
     <div className="">
 
       <div className="flex flex-row items-center ml-10 mb-8 pt-2">
-        <div> 
-          <Title className="font-bold text-[#cccccc]">{activeProjectName}</Title>
-          <span>Last deployment 2 hours ago</span>
+        <div className="flex-col mr-4"> 
+          <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
+          {/* <div className="text-xs">Last deployment 2 hours ago</div> */}
         </div>
-        <div className="flex flex-col items-start ml-6 space-y-0.5">
-          <div className="flex justify-between w-full"><div className="flex w-32"><Dot className="ml-0" color={testDeployStatus == "live" ? "green" : "yellow"} />Test API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => { copyText(testDomain)}}>{testDomain}</div></div>
-          <div className="flex justify-between w-full"><div className="flex w-32"><Dot className="ml-0" color={prodDeployStatus == "live" ? "green" : "yellow"} />Production API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => {copyText(prodDomain)}}>{prodDomain}</div></div>
+        <div className="flex items-start ml-6 space-x-6">
+          <div className="flex-col"><div className="flex"><Dot className="ml-0" color={testDeployStatus == "live" ? "green" : "yellow"} />Test API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => { copyText(testDomain)}}>{testDomain}</div></div>
+          <div className="flex-col"><div className="flex"><Dot className="ml-0" color={prodDeployStatus == "live" ? "green" : "yellow"} />Production API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => {copyText(prodDomain)}}>{prodDomain}</div></div>
         </div>
         <Button
           className="ml-auto mr-10 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
