@@ -80,11 +80,11 @@ export default function RightSidebar({
 
     if (currentFileProperties.hasGetDb !== isDBChecked) {
       programmaticDbUpdateRef.current = true;
-      setIsDBChecked(currentFileProperties.hasGetDb);
+      setIsDBChecked(!!currentFileProperties.hasGetDb);
     }
     if (currentFileProperties.hasPassportAuth !== isAuthChecked) {
       programmaticAuthUpdateRef.current = true;
-      setIsAuthChecked(currentFileProperties.hasPassportAuth);
+      setIsAuthChecked(!!currentFileProperties.hasPassportAuth);
     }
   }, [currentFileProperties]);
 
