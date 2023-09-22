@@ -58,7 +58,6 @@ export default function AnalyticsPage() {
       <div className="flex flex-row items-center ml-10 mb-8 pt-2">
         <div className="flex-col mr-4"> 
           <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
-          {/* <div className="text-xs">Last deployment 2 hours ago</div> */}
         </div>
         <div className="flex items-start ml-6 space-x-6">
           <div className="flex-col"><div className="flex"><Dot className="ml-0" color={testDeployStatus == "live" ? "green" : "yellow"} />Test API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => { copyText(testDomain)}}>{testDomain}</div></div>
@@ -72,16 +71,22 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="no-focus-ring pt-2">
-        {/* <Title className="ml-10 mb-4 text-[#cccccc]">Analytics</Title> */}
-        <div className="ml-10">
-          <DateRangePicker value={dateRange} onValueChange={setDateRange}></DateRangePicker>
+        {data.length > 0 ? (<>
+          <div className="ml-10">
+            <DateRangePicker value={dateRange} onValueChange={setDateRange}></DateRangePicker>
+          </div>
+          <div className="p-4 pt-0 flex flex-row space-x-2">
+            {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
+            {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
+          </div>
+        </>)
+      : (
+        <div className="">
+          <div className="flex flex-col items-center justify-center mt-48 opacity-70">
+            You'll see analytics here once you've deployed your API.
+          </div>
         </div>
-        <div className="p-4 pt-0 flex flex-row space-x-2">
-        {data.length > 0 && (<>
-          {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
-          {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
-        </>)}
-        </div>
+      )}
       </div>
     </div>
   );
