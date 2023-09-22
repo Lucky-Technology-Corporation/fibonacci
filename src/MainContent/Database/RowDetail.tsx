@@ -51,7 +51,6 @@ export default function RowDetail({
     if (deleteAction == "delete") {
       const c = confirm("Are you sure you want to delete this document? This cannot be undone.");
       if (c) {
-
         if (deleteFunction != null) {
           toast.promise(deleteFunction(data), {
             loading: "Deleting...",
@@ -62,7 +61,7 @@ export default function RowDetail({
             },
             error: "Failed to delete",
           });
-        } else{
+        } else {
           toast.promise(deleteDocument(collection, data._id), {
             loading: "Deleting...",
             success: () => {
@@ -73,7 +72,6 @@ export default function RowDetail({
             error: "Failed to delete",
           });
         }
-
       }
     } else if (deleteAction == "deactivate") {
       if (data._deactivated) {

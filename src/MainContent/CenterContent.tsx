@@ -35,7 +35,7 @@ export default function CenterContent({
   const { activeEndpoint, activeFile } = useContext(SwizzleContext);
 
   return (
-    <div className="m-0 mr-1 text-sm whitespace-pre-line max-h-[100vh]">
+    <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
       <div
         style={{
           display: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "block" : "none",
@@ -92,7 +92,7 @@ export default function CenterContent({
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>
-        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh]">
+        <div className="m-2 ml-3 text-sm whitespace-pre-line max-h-[100vh]">
           <NotificationPage />
         </div>
       </div>

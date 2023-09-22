@@ -143,11 +143,14 @@ export default function useApi() {
   const deleteCollection = async (name: string) => {
     try {
       if (activeProject == "") return;
-      const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/collections/${name}?env=${environment}`, {
-        headers: {
-          Authorization: authHeader(),
+      const response = await axios.delete(
+        `${BASE_URL}/projects/${activeProject}/collections/${name}?env=${environment}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e: any) {
       console.error(e);

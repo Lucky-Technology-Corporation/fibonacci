@@ -50,11 +50,15 @@ export default function useApi() {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.patch(`${BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, newSecrets, {
-        headers: {
-          Authorization: authHeader(),
+      const response = await axios.patch(
+        `${BASE_URL}/projects/${activeProject}/secrets?env=${environment}`,
+        newSecrets,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e: any) {
       console.error(e);
@@ -67,11 +71,14 @@ export default function useApi() {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.delete(`${BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`, {
-        headers: {
-          Authorization: authHeader(),
+      const response = await axios.delete(
+        `${BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e: any) {
       console.error(e);
@@ -79,11 +86,10 @@ export default function useApi() {
     }
   };
 
-
   return {
     updateApns,
     getSecrets,
     saveSecrets,
-    deleteSecret
+    deleteSecret,
   };
 }

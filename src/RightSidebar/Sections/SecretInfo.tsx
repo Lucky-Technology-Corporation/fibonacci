@@ -50,15 +50,13 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
 
   const deleteSingleSecret = (name: string) => {
     setSecrets(secrets.filter((secret) => secret.name != name));
-    toast.promise(deleteSecret(name), 
-      { 
-        loading: "Deleting secret...",
-        success: () => {
-          return "Secret deleted";
-        },
-        error: "Failed to delete secret",
-      }
-    );
+    toast.promise(deleteSecret(name), {
+      loading: "Deleting secret...",
+      success: () => {
+        return "Secret deleted";
+      },
+      error: "Failed to delete secret",
+    });
   };
 
   const updateSecret = (name: string, key: "testValue" | "productionValue", newValue: string) => {
@@ -88,19 +86,22 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
   };
 
   const editSecrets = () => {
-    const newSecrets = secrets.reduce((acc, secret) => {
-      if (locallyChangedSecrets.includes(secret.name + "-testValue")) {
-        acc.test[secret.name] = secret.testValue;
-      }
-      if (locallyChangedSecrets.includes(secret.name + "-productionValue")) {
-        if (secret.productionValue != "(hidden for security)") {
-          acc.prod[secret.name] = secret.productionValue;
+    const newSecrets = secrets.reduce(
+      (acc, secret) => {
+        if (locallyChangedSecrets.includes(secret.name + "-testValue")) {
+          acc.test[secret.name] = secret.testValue;
         }
-      }
-      return acc;
-    }, { test: {}, prod: {} });
+        if (locallyChangedSecrets.includes(secret.name + "-productionValue")) {
+          if (secret.productionValue != "(hidden for security)") {
+            acc.prod[secret.name] = secret.productionValue;
+          }
+        }
+        return acc;
+      },
+      { test: {}, prod: {} },
+    );
     return saveSecrets(newSecrets);
-  }
+  };
 
   const setNewSecrets = (name: string, testValue: string, prodValue: string) => {
     const secrets = {
@@ -111,13 +112,13 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         [name]: prodValue,
       },
     };
-  
+
     console.log(JSON.stringify(secrets));
-    return saveSecrets(secrets);  
+    return saveSecrets(secrets);
   };
 
   const createNewSecret = () => {
-    if(secrets.find((secret) => secret.name == newSecretName) != null){ 
+    if (secrets.find((secret) => secret.name == newSecretName) != null) {
       toast.error("A secret with that name already exists");
       return Promise.reject();
     }

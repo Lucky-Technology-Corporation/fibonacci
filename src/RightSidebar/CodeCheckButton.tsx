@@ -20,7 +20,6 @@ export default function CodeCheckButton({}: {}) {
 
   //fake, for demo purposes
   const runDeploy = () => {
-
     setIsDeploymentInProgress(true);
 
     const element = document.getElementById("deploy-progress-bar");
