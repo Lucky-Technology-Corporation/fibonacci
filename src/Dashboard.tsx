@@ -55,7 +55,7 @@ export default function Dashboard() {
       })
       .catch((e) => {
         toast.error("Error fetching projects");
-        console.log(e);
+        console.error(e);
       });
   }, []);
 

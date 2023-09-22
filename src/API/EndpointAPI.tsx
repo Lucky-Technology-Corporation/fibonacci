@@ -2,30 +2,78 @@ import axios from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import jwt_decode from "jwt-decode";
 
 const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint, environment, activeProject } = useContext(SwizzleContext);
+  const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } = useContext(SwizzleContext);
+
+
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
     return response.data.objects;
   };
 
-  const updateSecret = async (secretName: string, secretValue: string, environment: string) => {};
+  const exchangeJwt = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/fermat/jwt`, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      
+      const jwt = response.data.fermat_token;
+      if(jwt == undefined || jwt == null || jwt == ""){
+        return "";
+      }
+
+      setFermatJwt(jwt);
+      return jwt;
+      
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+
+  const getFermatJwt = async () => {
+    if(fermatJwt == ""){
+      const jwt = await exchangeJwt();
+      if(jwt == ""){
+        return "";
+      }
+      return "Bearer " + jwt;
+    } else{
+
+      let decoded = jwt_decode(fermatJwt) as any;
+      let exp = decoded.exp;
+      let now = Date.now() / 1000;
+      if(exp < now){
+        const jwt = await exchangeJwt();
+        if(jwt == ""){
+          return "";
+        }
+        return "Bearer " + jwt;
+      }
+
+      return "Bearer " + fermatJwt;
+    }
+  }
+
 
   const deploy = async () => {
     try {
       const response = await axios.post(`${testDomain}:1234/push_to_production`, {
         headers: {
-          Authorization: authHeader(),
+          Authorization: await getFermatJwt(),
         },
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
@@ -40,29 +88,27 @@ export default function useApi() {
       }
       const response = await axios.get(`${testDomain}:1234/code/file_contents?path=code/${fileName}`, {
         headers: {
-          Authorization: authHeader(),
+          Authorization: await getFermatJwt(),
         },
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
 
-  const getAIResponseToFile = async (userQuery: string, aiAction: string) => {
-    //TODO: pull in code from imported files
-    //TODO: split files into chunks an summarize long functions
+  const askQuestion = async (userQuery: string, fileName: string) => {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-");
-      const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
+        `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         {
           userQuery: userQuery,
-          aiAction: aiAction,
-          fileContents: fileContents,
+          fermatDomain: testDomain,
+          fermatJwt: await getFermatJwt(),
+          currentFile: "user-dependencies/" + fileName + ".js",
         },
         {
           headers: {
@@ -72,10 +118,38 @@ export default function useApi() {
       );
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
+
+
+  // const getAIResponseToFile = async (userQuery: string, aiAction: string) => {
+  //   //TODO: pull in code from imported files
+  //   //TODO: split files into chunks an summarize long functions
+  //   try {
+  //     const fileName = activeEndpoint.replace(/\//g, "-");
+  //     const fileContents = await getFile("user-dependencies/" + fileName + ".js");
+
+  //     const response = await axios.post(
+  //       `${BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
+  //       {
+  //         userQuery: userQuery,
+  //         aiAction: aiAction,
+  //         fileContents: fileContents,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: authHeader(),
+  //         },
+  //       },
+  //     );
+  //     return response.data;
+  //   } catch (e) {
+  //     console.error(e);
+  //     return "";
+  //   }
+  // };
 
   const getAutocheckResponse = async () => {
     try {
@@ -95,7 +169,7 @@ export default function useApi() {
       );
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return "";
     }
   };
@@ -110,12 +184,12 @@ export default function useApi() {
       }
       const response = await axios.get(`${testDomain}:1234/code/package.json`, {
         headers: {
-          Authorization: authHeader(),
+          Authorization: await getFermatJwt(),
         },
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return [];
     }
   };
@@ -136,12 +210,12 @@ export default function useApi() {
 
       const response = await axios.get(`${testDomain}:1234/${path}`, {
         headers: {
-          Authorization: authHeader(),
+          Authorization: await getFermatJwt(),
         },
       });
       return response.data;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return [];
     }
   };
@@ -161,7 +235,7 @@ export default function useApi() {
     npmSearch,
     getPackageJson,
     getFile,
-    getAIResponseToFile,
+    askQuestion,
     getAutocheckResponse,
     deploy,
   };

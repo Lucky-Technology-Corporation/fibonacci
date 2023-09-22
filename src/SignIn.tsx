@@ -12,7 +12,7 @@ export default function SignIn() {
       let decoded = jwt_decode(token) as any;
       return decoded.github_user || decoded.name;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       console.log("Couldn't get name from JWT");
       return "Anonymous";
     }

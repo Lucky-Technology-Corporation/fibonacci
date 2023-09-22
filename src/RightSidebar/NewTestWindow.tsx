@@ -48,7 +48,6 @@ export default function NewTestWindow({
 
   useEffect(() => {
     function handleClickOutside(event) {
-      console.log("click outside");
       if (myRef.current && !myRef.current.contains(event.target)) {
         hideNewTestWindow();
       }

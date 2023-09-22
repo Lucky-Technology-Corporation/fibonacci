@@ -34,7 +34,7 @@ export default function FilesList({ active }: { active: boolean }) {
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
-        console.log(e);
+        console.error(e);
       });
   }, [activeProject]);
 

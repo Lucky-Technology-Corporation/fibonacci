@@ -14,7 +14,7 @@ export default function EndpointHeader() {
   const [prompt, setPrompt] = useState<string>("");
   const [AICommand, setAICommand] = useState<string>("ask");
 
-  const { getAIResponseToFile } = useApi();
+  const { askQuestion } = useApi();
 
   useEffect(() => {
     if (activeEndpoint == undefined) return;
@@ -32,10 +32,9 @@ export default function EndpointHeader() {
   };
 
   const runQuery = async () => {
-    return toast.promise(getAIResponseToFile(prompt, AICommand), {
+    return toast.promise(askQuestion(prompt, AICommand), {
       loading: "Generating code...",
       success: (data) => {
-        console.log(data);
         return "Done";
       },
       error: "Error generating code",

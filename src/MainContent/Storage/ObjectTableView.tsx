@@ -43,14 +43,8 @@ export default function ObjectTableView() {
 
   //Drag and drop to upload code
   const [dragging, setDragging] = useState(false);
-  // const eventRegistered = useRef(false);
 
   useEffect(() => {
-    // if (eventRegistered.current || !activeProject || !environment) return;
-    // eventRegistered.current = true;
-
-    console.log("mounted ", activeProject, environment);
-
     const preventDefaults = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -62,7 +56,6 @@ export default function ObjectTableView() {
     };
 
     const handleDrop = (e) => {
-      console.log("handle drop");
       preventDefaults(e);
       setDragging(false);
       const files = e.dataTransfer.files;
@@ -82,16 +75,15 @@ export default function ObjectTableView() {
         document.removeEventListener(eventName, handleDragEnterLeave, false);
       });
       document.removeEventListener("drop", handleDrop, false);
-      console.log("unmounted ", activeProject, environment);
     };
   }, [activeProject, environment]);
 
-  const handleFiles = (files) => {
-    console.log("handle files");
+
+  const handleFiles = async (files) => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      console.log("upload file");
-      uploadFile(file);
+      await uploadFile(file);
+      fetchData(currentPage);
     }
   };
 
@@ -122,7 +114,7 @@ export default function ObjectTableView() {
         setIsRefreshing(false);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setIsRefreshing(false);
         setError(e);
       });
@@ -155,7 +147,7 @@ export default function ObjectTableView() {
         setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setError(e);
       });
   };

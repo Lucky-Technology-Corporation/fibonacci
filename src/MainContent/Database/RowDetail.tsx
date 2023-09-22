@@ -84,7 +84,7 @@ export default function RowDetail({
             return "User reactivated";
           },
           error: (e: any) => {
-            console.log(e);
+            console.error(e);
             return "Failed to reactivate this user";
           },
         });

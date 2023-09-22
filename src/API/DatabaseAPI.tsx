@@ -218,7 +218,7 @@ export default function useApi() {
   const createProject = async (name: string) => {
     const response = await axios.post(
       `${BASE_URL}/projects`,
-      { name }, //deploy_production: true
+      { name, deploy_production: true },
       {
         headers: {
           Authorization: authHeader(),

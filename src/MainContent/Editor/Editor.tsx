@@ -14,7 +14,6 @@ export default function Editor({
   const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
 
   useEffect(() => {
-    console.log("Posting this message: " + JSON.stringify(postMessage));
     if (postMessage == null) return;
     postMessageToIframe(postMessage);
   }, [postMessage]);
@@ -26,7 +25,6 @@ export default function Editor({
 
   useEffect(() => {
     const message = { content: prependText, type: "prependText" };
-    console.log(message);
     postMessageToIframe(message);
   }, [prependText]);
 
@@ -42,7 +40,6 @@ export default function Editor({
 
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
-      console.log("EXTENSION READY");
       setIdeReady(true);
       const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
       postMessageToIframe(message);
@@ -53,9 +50,6 @@ export default function Editor({
         hasPassportAuth: event.data.hasPassportAuth,
         hasGetDb: event.data.hasGetDb,
       });
-      //React to the viewed file changing - update the currently selected endpoint
-      console.log("fileChanged");
-      console.log(event.data);
     }
   };
 
@@ -65,7 +59,6 @@ export default function Editor({
 
     //On unmount, save the file and remove the event listener
     return () => {
-      console.log("unmount listener");
       window.removeEventListener("message", messageHandler);
       const message = { type: "saveFile" };
       postMessageToIframe(message);

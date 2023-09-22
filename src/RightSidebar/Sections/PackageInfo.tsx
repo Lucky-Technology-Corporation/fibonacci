@@ -63,7 +63,6 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   }, [isVisible]);
 
   useEffect(() => {
-    console.log(selectedOption);
     if (selectedOption == null) return;
     addPackageToProject(selectedOption.value);
     toast.success(`Added ${selectedOption.value} to project`);
@@ -74,6 +73,13 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
   };
+
+  const removePackageFromProject = (message) => {
+    const messageBody = { type: "removePackage", packageName: message };
+    setPostMessage(messageBody);
+    setInstalledPackages(installedPackages.filter((item) => item !== message));
+  };
+
 
   const renderSearchField = () => {
     return (
@@ -182,7 +188,8 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
                           className="ml-auto"
                           icon={faTrash}
                           onClick={() => {
-                            /* Handle deletion here */
+                            removePackageFromProject(packageName)
+                            toast.success(`Removed ${selectedOption.value} from project`);
                           }}
                         />
                       </td>

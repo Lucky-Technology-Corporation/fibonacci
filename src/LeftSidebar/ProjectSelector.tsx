@@ -53,9 +53,6 @@ export default function ProjectSelector() {
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
 
-    //TODO: Remove this
-    console.log(project);
-
     setTestDomain(project.test_swizzle_domain);
     setProdDomain(project.prod_swizzle_domain);
 

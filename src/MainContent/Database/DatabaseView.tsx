@@ -72,7 +72,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setError(e);
       });
   };
@@ -154,7 +154,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
   //This refreshes the data when the active collection changes. In the future, we should use a context provider
   useEffect(() => {
-    console.log("refreshing data...");
     setCurrentPage(0);
     fetchData(currentPage);
   }, [activeCollection, activeProject, environment]);
@@ -181,7 +180,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         setError(e);
       });
   };

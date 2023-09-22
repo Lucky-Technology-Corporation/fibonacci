@@ -46,7 +46,6 @@ export default function LogsPage() {
   ];
 
   useEffect(() => {
-    console.log("getting logs for " + environment);
     setPage(0);
     setOffset(0);
     setFilterQuery(null);
@@ -54,7 +53,6 @@ export default function LogsPage() {
     setNextPageToken(null);
 
     getLogs(offset, filterName, filterQuery).then((data) => {
-      console.log(data);
       if (data) {
         setMessages(data);
       }
@@ -68,7 +66,7 @@ export default function LogsPage() {
   const { lastMessage, getWebSocket, readyState } = useWebSocket(wsUrl, {
     onError: (e) => {
       toast.error("Error connecting to logs stream");
-      console.log(e);
+      console.error(e);
       setTimeout(() => {
         setIsStreaming(false);
       }, 200);
@@ -126,7 +124,7 @@ export default function LogsPage() {
         }
       })
       .catch((e) => {
-        console.log(e);
+        console.error(e);
         toast.error("Error fetching logs");
       });
   }, [offset, filterQuery]);
