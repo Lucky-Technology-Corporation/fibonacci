@@ -7,7 +7,7 @@ import NotificationsTable from "./NotificationsTable";
 import SampleNotification from "./SampleNotification";
 import useApi from "../../API/DatabaseAPI"
 
-export default function NotificationControls({ setShowSetUp, setSavedKeyID, setSavedTeamID, setSavedP8Key, setSavedBundleID }) {
+export default function NotificationControls({ setShowSetUp }) {
   const api = useNotificationApi();
   const dbApi = useApi();
   const [allUsers, setAllUsers] = useState(false);
@@ -36,20 +36,6 @@ export default function NotificationControls({ setShowSetUp, setSavedKeyID, setS
     fetchNotifData();
   }
 
-  const settings = async () => {
-    try {
-        const savedSettings = await api.getNotificationKeys();
-        setSavedP8Key(savedSettings.data.p8_key_base64)
-        setSavedKeyID(savedSettings.data.key_id)
-        setSavedTeamID(savedSettings.data.developer_id)
-        setSavedBundleID(savedSettings.data.bundle_id)
-        console.log(savedSettings)
-    } catch (error) {
-        console.error("Error fetching saved notif keys", error)
-    }
-    setShowSetUp(true);
-
-  };
 
   const handleUsers = (event) => {
     const ids = event.target.value.split(',').map(id => id.trim());
@@ -83,7 +69,7 @@ export default function NotificationControls({ setShowSetUp, setSavedKeyID, setS
         <div className="font-bold text-base">Push Notifications</div>
         <Button
           text="Settings"
-          onClick={() => settings()}
+          onClick={() => setShowSetUp(true)}
           className="w-30 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#33333c] text-base font-medium hover:bg-[#44464f] sm:text-sm cursor-pointer"
         />
       </div>

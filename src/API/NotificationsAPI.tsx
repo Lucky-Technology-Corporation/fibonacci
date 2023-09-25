@@ -13,7 +13,7 @@ export default function useNotificationApi() {
   const sendNotification = async (title, body, users) => {
     try {
         if (!activeProject) {
-            throw new Error ("No active project selected");
+            return null
         }
 
         const payload = {
@@ -23,13 +23,11 @@ export default function useNotificationApi() {
         };
 
         const url = `${BASE_URL}/projects/${activeProject}/notification?env=${environment}`;
-        const response = await axios.post(url, payload, {
+        await axios.post(url, payload, {
             headers: {
               Authorization: authHeader(),
             },
-          });
-        console.log(response);
-
+        });
     } catch (error) {
         console.error("Error sending notification", error)
     }
@@ -39,15 +37,17 @@ export default function useNotificationApi() {
   const getNotificationKeys = async () => {
     try {
         if (!activeProject) {
-            throw new Error("No active project selected");
+          return null
         }
 
         const url = `${BASE_URL}/projects/${activeProject}/getNotificationKeys`;
-        const response = await axios.get(url, 
-            {headers: {
-                Authorization: authHeader(),
-              } });
-        return response
+        const response = await axios.get(url, { 
+          headers: {
+            Authorization: authHeader(),
+          } 
+        });
+
+        return response.data
     } catch (error) {
         console.error("Error getting saved settings", error)
     }
@@ -56,7 +56,7 @@ export default function useNotificationApi() {
   const setNotificationKey = async (p8Key, keyID, teamID, bundleID) => {
     try {
       if (!activeProject) {
-        throw new Error("No active project selected");
+        return null
       }
 
       const payload = {
@@ -67,12 +67,13 @@ export default function useNotificationApi() {
       };
 
       const url = `${BASE_URL}/projects/${activeProject}/setNotificationKeys`;
-      const response = await axios.post(url, payload, {
+      
+      await axios.post(url, payload, {
         headers: {
           Authorization: authHeader(),
         },
       });
-      console.log(response);
+
     } catch (error) {
       console.error("Error posting notification key", error);
     }

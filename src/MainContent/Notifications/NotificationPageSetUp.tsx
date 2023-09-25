@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import useNotificationApi from "../../API/NotificationsAPI";
 import Button from "../../Utilities/Button";
+import toast from "react-hot-toast";
 
 type NotificationPageSetUpProps = {
   setShowSetUp: (value: boolean) => void;
@@ -52,15 +53,14 @@ export default function NotificationPageSetUp({ setShowSetUp, savedP8Key, savedK
   };
 
   const save = async (p8Key, keyID, teamID, bundleID) => {
-    console.log("Save function triggered"); // Add this line
-
-    try {
+      try {
         await api.setNotificationKey(p8Key, keyID, teamID, bundleID);
         setShowSetUp(false);
-    } catch (error) {
+      } catch (error) {
+        toast.error("Error saving settings");
         console.error("Error in saving:", error);
-    }
-};
+      }
+  };
 
 
   return (
