@@ -22,10 +22,10 @@ export default function NotificationPage() {
         } else {
           const isEmpty = Object.values(savedSettings).every(val => val === "");
           setShowSetUp(isEmpty);
-          setSavedP8Key(savedSettings.data.p8_key_base64)
-          setSavedKeyID(savedSettings.data.key_id)
-          setSavedTeamID(savedSettings.data.developer_id)
-          setSavedBundleID(savedSettings.data.bundle_id)
+          setSavedP8Key(savedSettings.p8_key_base64)
+          setSavedKeyID(savedSettings.key_id)
+          setSavedTeamID(savedSettings.developer_id)
+          setSavedBundleID(savedSettings.bundle_id)
         } 
         
     } catch (error) {
