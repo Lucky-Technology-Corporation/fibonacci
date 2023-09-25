@@ -25,7 +25,7 @@ const NotificationsTable: React.FunctionComponent<NotificationsTableProps> = ({ 
         </tr>
       </thead>
       <tbody>
-        {notifications.map((notification, index) => (
+        {notifications.slice().reverse().map((notification, index) => (
           <tr key={index}>
             <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{notification.time}</td>
             <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{notification.title}</td>

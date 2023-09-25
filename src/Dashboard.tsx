@@ -11,6 +11,7 @@ import Lottie from "lottie-react";
 import dog from "../public/dog.json";
 import useApi from "./API/DatabaseAPI";
 import Lobby from "./Blockrain/Lobby";
+import useNotificationApi from "./API/NotificationsAPI";
 
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
@@ -28,10 +29,13 @@ export default function Dashboard() {
   const [activeCollection, setActiveCollection] = useState<string>("");
   //Active logs page handler
   const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
+  const [showSetUp, setShowSetUp] = useState(true);
+  const notificationApi = useNotificationApi();
 
   //Initialization code...
   const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
   const { getProjects } = useApi();
+
 
   useEffect(() => {
     getProjects()
@@ -58,6 +62,25 @@ export default function Dashboard() {
         console.error(e);
       });
   }, []);
+
+  useEffect(() => {
+    const fetchNotificationKeys = async () => {
+        try {
+          console.log("trying to get notification keys for setup")
+            const response = await notificationApi.getNotificationKeys();
+            if (!response || Object.values(response).every(val => !val)) {
+                setShowSetUp(true);
+            } else {
+                setShowSetUp(false);
+            }
+        } catch (error) {
+            console.error("Failed to fetch notification keys:", error);
+        }
+    };
+
+    fetchNotificationKeys();
+}, [activeProject]);
+
 
   if (isAuthenticated()) {
     if (isCreatingProject) {
@@ -95,6 +118,8 @@ export default function Dashboard() {
               setDidDeploy={setDidDeploy}
               activeCollection={activeCollection}
               activeLogsPage={activeLogsPage}
+              showSetUp={showSetUp}
+              setShowSetUp={setShowSetUp}
             />
 
             <RightSidebar

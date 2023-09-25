@@ -36,6 +36,23 @@ export default function useNotificationApi() {
 
   };
 
+  const getNotificationKeys = async () => {
+    try {
+        if (!activeProject) {
+            throw new Error("No active project selected");
+        }
+
+        const url = `${BASE_URL}/projects/${activeProject}/getNotificationKeys`;
+        const response = await axios.get(url, 
+            {headers: {
+                Authorization: authHeader(),
+              } });
+        return response
+    } catch (error) {
+        console.error("Error getting saved settings", error)
+    }
+  }
+
   const setNotificationKey = async (p8Key, keyID, teamID, bundleID) => {
     try {
       if (!activeProject) {
@@ -60,5 +77,5 @@ export default function useNotificationApi() {
       console.error("Error posting notification key", error);
     }
   };
-  return { setNotificationKey, sendNotification };
+  return { setNotificationKey, sendNotification, getNotificationKeys };
 }

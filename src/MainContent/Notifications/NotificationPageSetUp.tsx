@@ -1,17 +1,23 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useRef } from "react";
 import useNotificationApi from "../../API/NotificationsAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
 import Button from "../../Utilities/Button";
 
-export default function NotificationPageSetUp() {
+type NotificationPageSetUpProps = {
+  setShowSetUp: (value: boolean) => void;
+  savedP8Key?: string;
+  savedKeyID?: string;
+  savedTeamID?: string; 
+  savedBundleID?: string;
+}
+
+export default function NotificationPageSetUp({ setShowSetUp, savedP8Key, savedKeyID, savedTeamID, savedBundleID }: NotificationPageSetUpProps) {
   const api = useNotificationApi();
-  const { activeProject } = useContext(SwizzleContext);
   const fileInputRef = useRef(null);
   const [fileUploaded, setFileUploaded] = useState(false);
-  const [p8Key, setp8Key] = useState("");
-  const [teamID, setTeamID] = useState("");
-  const [keyID, setKeyID] = useState("");
-  const [bundleID, setBundleID] = useState("");
+  const [p8Key, setp8Key] = useState(savedP8Key || "");
+  const [teamID, setTeamID] = useState(savedTeamID || "");
+  const [keyID, setKeyID] = useState(savedKeyID || "");
+  const [bundleID, setBundleID] = useState(savedBundleID || "");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -46,8 +52,16 @@ export default function NotificationPageSetUp() {
   };
 
   const save = async (p8Key, keyID, teamID, bundleID) => {
-    api.setNotificationKey(p8Key, keyID, teamID, bundleID);
-  };
+    console.log("Save function triggered"); // Add this line
+
+    try {
+        await api.setNotificationKey(p8Key, keyID, teamID, bundleID);
+        setShowSetUp(false);
+    } catch (error) {
+        console.error("Error in saving:", error);
+    }
+};
+
 
   return (
     <div className="h-full overflow-scroll">
@@ -70,24 +84,24 @@ export default function NotificationPageSetUp() {
             />
             <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
           </div>
-          <div className={`w-1/2 text-center ${fileUploaded ? "text-green-500" : ""}`}>
-            {fileUploaded ? "Uploaded" : "Not uploaded yet"}
+          <div className={`w-1/2 text-center ${fileUploaded || savedP8Key ? "text-green-500" : ""}`}>
+            {(fileUploaded || savedP8Key) ? "Uploaded" : "Not uploaded yet"}
           </div>
         </div>
 
         <input
           className="bg-transparent border-[#525363] w-80 border rounded outline-none focus:border-[#68697a] p-2"
-          placeholder="Key ID"
+          placeholder={savedKeyID || "Key ID"}
           onChange={handleKeyIDChange}
         />
         <input
           className="bg-transparent border-[#525363] w-80 border rounded outline-none focus:border-[#68697a] p-2"
-          placeholder="Team ID"
+          placeholder={savedTeamID || "Team ID"}
           onChange={handleTeamIDChange}
         />
         <input
           className="bg-transparent border-[#525363] w-80 border rounded outline-none focus:border-[#68697a] p-2"
-          placeholder="Bundle ID"
+          placeholder={savedBundleID || "Bundle ID"}
           onChange={handleBundleIDChange}
         />
       </div>

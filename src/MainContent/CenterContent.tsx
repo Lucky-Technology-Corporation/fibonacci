@@ -7,12 +7,12 @@ import UserTableView from "./Auth/UserTableView";
 import ObjectTableView from "./Storage/ObjectTableView";
 import LogsDrawer from "./Editor/LogsDrawer";
 import MonitoringPage from "./Logs/MonitoringPage";
-import { useContext } from "react";
+import { useContext, useState, useEffect} from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import NotificationPage from "./Notifications/NotificationPage";
 
 type CenterContentProps = {
-  selectedTab: Page;
+  selectedTab: Page; 
   prependCode: string;
   findReplace: string[];
   setCurrentFileProperties: (properties: any) => void;
@@ -20,6 +20,8 @@ type CenterContentProps = {
   setDidDeploy: (didDeploy: boolean) => void;
   activeCollection: string;
   activeLogsPage: string;
+  showSetUp: boolean;
+  setShowSetUp: (value: boolean) => void;
 };
 
 export default function CenterContent({
@@ -31,9 +33,13 @@ export default function CenterContent({
   setDidDeploy,
   activeCollection,
   activeLogsPage,
+  showSetUp, 
+  setShowSetUp,
 }: CenterContentProps) {
   const { activeEndpoint, activeFile } = useContext(SwizzleContext);
-
+  
+  
+  
   return (
     <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
       <div
@@ -93,7 +99,7 @@ export default function CenterContent({
       </div>
       <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>
         <div className="m-2 ml-3 text-sm whitespace-pre-line max-h-[100vh]">
-          <NotificationPage />
+          <NotificationPage showSetUp={showSetUp} setShowSetUp={setShowSetUp}/>
         </div>
       </div>
     </div>
