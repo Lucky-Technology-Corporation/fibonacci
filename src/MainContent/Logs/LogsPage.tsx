@@ -52,11 +52,19 @@ export default function LogsPage() {
     setSearchQuery("");
     setNextPageToken(null);
 
-    getLogs(offset, filterName, filterQuery).then((data) => {
-      if (data) {
-        setMessages(data);
-      }
-    });
+    console.log("Loading from main");
+    toast.promise(
+      getLogs(offset, filterName, filterQuery).then((data) => {
+        if (data) {
+          setMessages(data);
+        }
+      }), {
+        loading: "Loading...",
+        success: "Loaded",
+        error: "Failed to load logs",
+    })
+
+
   }, [filterName, environment, activeProject]);
 
   useEffect(() => {
@@ -91,42 +99,50 @@ export default function LogsPage() {
     }
   }, [isStreaming]);
 
-  //Disconnect websocket when component unmounts
-  useEffect(() => {
-    setFilterQuery(null);
-    setNextPageToken(null);
+  // //Disconnect websocket when component unmounts
+  // useEffect(() => {
+  //   setFilterQuery(null);
+  //   setNextPageToken(null);
 
-    getLogs(offset, filterName, filterQuery).then((data) => {
-      if (data) {
-        setMessages(data);
-      }
-    });
-    return () => {
-      setWsUrl(null);
-    };
-  }, []);
+  //   getLogs(offset, filterName, filterQuery).then((data) => {
+  //     if (data) {
+  //       setMessages(data);
+  //     }
+  //   });
+  //   return () => {
+  //     setWsUrl(null);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (filterQuery == "") {
       setNextPageToken(null);
-      setFilterName(null);
+      setFilterName("log");
+      return
     }
+    console.log("Filtering by " + filterName + ": " + filterQuery);
+    toast.promise(
+      getLogs(offset, filterName, filterQuery, nextPageToken)
+        .then((data) => {
+          if (data && data.results != null) {
+            setMessages(data.results);
+            setNextPageToken(data.next_page_token);
+          } else if (data) {
+            setMessages(data);
+          } else {
+            setMessages([]);
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          toast.error("Error fetching logs");
+        }), {
+          loading: "Loading",
+          success: "Loaded",
+          error: "Failed to load logs",
+    });
 
-    getLogs(offset, filterName, filterQuery, nextPageToken)
-      .then((data) => {
-        if (data && data.results != null) {
-          setMessages(data.results);
-          setNextPageToken(data.next_page_token);
-        } else if (data) {
-          setMessages(data);
-        } else {
-          setMessages([]);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        toast.error("Error fetching logs");
-      });
+      
   }, [offset, filterQuery]);
 
   const runSearch = () => {
@@ -134,7 +150,7 @@ export default function LogsPage() {
   };
 
   return (
-    <div className="h-full overflow-scroll">
+    <div className="h-full overflow-scroll min-h-[50vh]">
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Logs</div>
@@ -204,7 +220,7 @@ export default function LogsPage() {
           </tbody>
         </table>
       </div>
-      <div className="mt-4 m-auto w-fit">
+      <div className="mt-4 m-auto w-fit mb-8">
         <Pagination
           currentPage={page}
           itemsPerPage={20}

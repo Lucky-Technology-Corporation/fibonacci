@@ -17,6 +17,7 @@ export default function UserDropdown() {
   const auth = useAuthUser();
   const { setActiveProject, setActiveProjectName, isFree, setIsFree } = useContext(SwizzleContext);
 
+  const [inviteVisible, setInviteVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const addCreditCard = () => {
     setIsVisible(true);
@@ -36,6 +37,17 @@ export default function UserDropdown() {
         return "Added credit card!";
       },
       error: "Failed to add credit card",
+    });
+  };
+
+  const didInvite = () => {
+    toast.promise(delay(1000), {
+      loading: "Inviting...",
+      success: () => {
+        setIsVisible(false);
+        return "Invited!";
+      },
+      error: "Failed to invite",
     });
   };
 
@@ -70,6 +82,23 @@ export default function UserDropdown() {
         >
           <Menu.Items className="absolute left-0 bottom-8 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
+            <Menu.Item>
+                {({ active }) => (
+                  <a
+                    href="#"
+                    className={classNames(
+                      active ? "" : "text-[#D9D9D9] ",
+                      "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
+                    )}
+                    onClick={() => {
+                      setInviteVisible(true);
+                    }}
+                  >
+                    Invite Collaborators
+                  </a>
+                )}
+              </Menu.Item>
+
               <Menu.Item>
                 {({ active }) => (
                   <a
@@ -109,6 +138,24 @@ export default function UserDropdown() {
           shouldShowInput: true,
         }}
       />
+
+      <FullPageModal
+        isVisible={inviteVisible}
+        setIsVisible={setInviteVisible}
+        modalDetails={{
+          title: "Invite",
+          description: (
+            <>
+              Invite a team member to collaborate on this project.
+            </>
+          ),
+          placeholder: "Email",
+          confirmText: "Invite",
+          confirmHandler: didInvite,
+          shouldShowInput: true,
+        }}
+      />
+
     </>
   );
 }
