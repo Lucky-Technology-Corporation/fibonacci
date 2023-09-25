@@ -55,7 +55,6 @@ export default function APIWizard({
       return;
     }
     if (inputValue.startsWith("/")) {
-      console.log("STARTS WITH SLASH");
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-");
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";

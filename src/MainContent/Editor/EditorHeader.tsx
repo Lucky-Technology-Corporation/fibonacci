@@ -13,6 +13,7 @@ export default function EndpointHeader() {
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
   const [AICommand, setAICommand] = useState<string>("ask");
+  const [response, setResponse] = useState<string>("");
 
   const { askQuestion } = useApi();
 
@@ -35,6 +36,7 @@ export default function EndpointHeader() {
     return toast.promise(askQuestion(prompt, AICommand), {
       loading: "Generating code...",
       success: (data) => {
+        setResponse(data.recommendation_text)
         return "Done";
       },
       error: "Error generating code",
@@ -44,6 +46,7 @@ export default function EndpointHeader() {
   return (
     <>
       {activeEndpoint && (
+        <div className="flex-col">
         <div
           className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
             ideReady ? "" : "opacity-50 pointer-events-none"
@@ -75,20 +78,23 @@ export default function EndpointHeader() {
               runQuery();
             }}
           />
-
-          <div>
-            {/* <Dropdown
-            className="text-xs font-sans"
-            children={[{id: "swift", name: "Swift"}, {id: "js", name: "JavaScript"}]}
-            title="Frontend Code"
-            onSelect={(option) => {
-              const snippet = getSnippetForLanguage(option);
-              copyText(snippet)
-            }}
-          /> */}
+      
+       
           </div>
+          {response != "" && (
+            <div className={`border-[#525363] ml-1 border-b w-full bg-[#181922] p-4 shadow-md transition-all duration-300 ease-in-out transform ${(response != "") ? 'translate-y-0' : '-translate-y-full'}`}>
+              <p>{response}</p>
+              
+              <div className="w-16 ml-auto"><Button
+                text="Dismiss"
+                onClick={() => {setResponse("")}}
+              /></div>
+            </div>
+          )}
         </div>
       )}
+
+
     </>
   );
 }

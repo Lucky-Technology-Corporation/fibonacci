@@ -105,10 +105,10 @@ export default function useApi() {
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         {
-          userQuery: userQuery,
-          fermatDomain: testDomain,
-          fermatJwt: await getFermatJwt(),
-          currentFile: "user-dependencies/" + fileName + ".js",
+          user_query: userQuery,
+          fermat_domain: testDomain,
+          fermat_jwt: await getFermatJwt(),
+          current_file: "user-dependencies/" + fileName + ".js",
         },
         {
           headers: {
