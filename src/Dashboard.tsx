@@ -11,7 +11,6 @@ import Lottie from "lottie-react";
 import dog from "../public/dog.json";
 import useApi from "./API/DatabaseAPI";
 import Lobby from "./Blockrain/Lobby";
-import useNotificationApi from "./API/NotificationsAPI";
 
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();

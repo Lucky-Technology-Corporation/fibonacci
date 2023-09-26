@@ -283,7 +283,7 @@ export default function ObjectTableView() {
       )}
 
       <div className={` ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
-        <div className="pagination-controls flex justify-center items-center py-4">
+        <div className="pagination-controls flex justify-center items-center py-4 mb-4">
           {data && data.length > 0 && (
             <Pagination
               currentPage={currentPage}

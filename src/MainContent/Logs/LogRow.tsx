@@ -65,7 +65,7 @@ export default function LogRow({ message }: { message: any }) {
             <div>{message.responseCode}</div>
           </div>
         </td>
-        <td className={`text-left pl-4 ${message.userId == null ? "" : "font-bold underline decoration-dotted"}`}>
+        <td className={`text-left pl-4 ${message.userId == null ? "" : ""}`}>
           {message.userId || "None"}
         </td>
         <td className="text-left pl-4">
