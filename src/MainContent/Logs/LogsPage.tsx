@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/20/solid";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import LogRow from "./LogRow";
 import Switch from "react-switch";
 import useWebSocket from "react-use-websocket";
@@ -16,6 +16,7 @@ export default function LogsPage() {
   const authHeader = useAuthHeader();
   const { getLogs } = useApi();
 
+  const isRefreshingFresh = useRef(false)
   const [messages, setMessages] = useState([]);
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
@@ -45,59 +46,65 @@ export default function LogsPage() {
     },
   ];
 
-  useEffect(() => {
+
+  const freshLogs = async () => {
+    isRefreshingFresh.current = true
+
     setPage(0);
     setOffset(0);
     setFilterQuery(null);
     setSearchQuery("");
     setNextPageToken(null);
 
-    console.log("Loading from main");
-    toast.promise(
-      getLogs(offset, filterName, filterQuery).then((data) => {
-        if (data) {
-          setMessages(data);
-        }
-      }), {
-        loading: "Loading...",
-        success: "Loaded",
-        error: "Failed to load logs",
+    getLogs(0, filterName, null).then((data) => {
+      if (data) {
+        isRefreshingFresh.current = false
+        setMessages(data);
+        return true
+      }
     })
+    .catch((e) => {
+      isRefreshingFresh.current = false
+      console.error(e);
+      return false
+    })
+  };
 
-
+  useEffect(() => {
+    freshLogs()
   }, [filterName, environment, activeProject]);
 
   useEffect(() => {
     setOffset(page * 20);
   }, [page]);
 
-  const { lastMessage, getWebSocket, readyState } = useWebSocket(wsUrl, {
-    onError: (e) => {
-      toast.error("Error connecting to logs stream");
-      console.error(e);
-      setTimeout(() => {
-        setIsStreaming(false);
-      }, 200);
-    },
-  });
+  // const { lastMessage, getWebSocket, readyState } = useWebSocket(wsUrl, {
+  //   onError: (e) => {
+  //     toast.error("Error connecting to logs stream");
+  //     console.error(e);
+  //     setTimeout(() => {
+  //       setIsStreaming(false);
+  //     }, 200);
+  //   },
+  // });
 
-  //Handle incoming messages
-  useEffect(() => {
-    if (lastMessage !== null) {
-      console.log("Received a message from the server:", lastMessage.data);
-    }
-  }, [lastMessage]);
+  // //Handle incoming messages
+  // useEffect(() => {
+  //   if (lastMessage !== null) {
+  //     console.log("Received a message from the server:", lastMessage.data);
+  //   }
+  // }, [lastMessage]);
 
   //Connect/disconnect websocket when switch is toggled
-  useEffect(() => {
-    if (isStreaming) {
-      setWsUrl(
-        "ws://localhost:4000/api/v1/projects/" + activeProject + "/monitoring/logs/stream?token=" + authHeader(),
-      );
-    } else {
-      setWsUrl(null);
-    }
-  }, [isStreaming]);
+  // useEffect(() => {
+  //   if (isStreaming) {
+  //     setWsUrl(
+  //       "ws://localhost:4000/api/v1/projects/" + activeProject + "/monitoring/logs/stream?token=" + authHeader(),
+  //     );
+  //   } else {
+  //     setWsUrl(null);
+  //   }
+  // }, [isStreaming]);
 
   // //Disconnect websocket when component unmounts
   // useEffect(() => {
@@ -120,13 +127,16 @@ export default function LogsPage() {
       setFilterName("log");
       return
     }
-    console.log("Filtering by " + filterName + ": " + filterQuery);
+
+    if(isRefreshingFresh.current){
+      return
+    }
+
     toast.promise(
       getLogs(offset, filterName, filterQuery, nextPageToken)
         .then((data) => {
           if (data && data.results != null) {
             setMessages(data.results);
-            setNextPageToken(data.next_page_token);
           } else if (data) {
             setMessages(data);
           } else {
@@ -135,14 +145,11 @@ export default function LogsPage() {
         })
         .catch((e) => {
           console.error(e);
-          toast.error("Error fetching logs");
         }), {
           loading: "Loading",
           success: "Loaded",
           error: "Failed to load logs",
-    });
-
-      
+        });
   }, [offset, filterQuery]);
 
   const runSearch = () => {
@@ -180,6 +187,20 @@ export default function LogsPage() {
           direction="left"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
         />
+        {(filterQuery != null && filterQuery != "") && (
+          <Button
+            className="px-5 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            text="Clear"
+            onClick={() => {toast.promise(freshLogs(), {
+                loading: "Loading...",
+                success: () => {
+                  return "Done";
+                },
+                error: "Failed to load. Try reloading the page",
+              })
+            }}
+          />
+        )}
         <input
           type="text"
           className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}

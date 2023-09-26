@@ -36,9 +36,12 @@ export default function useApi() {
         throw new Error("No active project selected");
       }
 
+      var unwrapResults = false
+
       var url = `${BASE_URL}/projects/${activeProject}/monitoring/logs?env=${environment}&offset=${offset}&limit=20`;
       if (filterKey && filterQuery) {
         if (filterKey == "log") {
+          unwrapResults = true
           url = `${BASE_URL}/projects/${activeProject}/monitoring/logs/search?env=${environment}&search_string=${filterQuery}${
             pageToken ? `&page_token=${pageToken}` : ""
           }`;
@@ -52,6 +55,11 @@ export default function useApi() {
           Authorization: authHeader(),
         },
       });
+
+      if(unwrapResults){
+        return response.data.results
+      }
+
       return response.data;
     } catch (e) {
       console.error(e);
