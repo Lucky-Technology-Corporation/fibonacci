@@ -23,13 +23,16 @@ export default function useNotificationApi() {
         };
 
         const url = `${BASE_URL}/projects/${activeProject}/notification?env=${environment}`;
-        await axios.post(url, payload, {
+        const response = await axios.post(url, payload, {
             headers: {
               Authorization: authHeader(),
             },
         });
+
+        return response.data
     } catch (error) {
         console.error("Error sending notification", error)
+        return null
     }
 
   };

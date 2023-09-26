@@ -6,6 +6,7 @@ import Checkbox from "../../Utilities/Checkbox";
 import NotificationsTable from "./NotificationsTable";
 import SampleNotification from "./SampleNotification";
 import useApi from "../../API/DatabaseAPI"
+import toast from "react-hot-toast";
 
 export default function NotificationControls({ setShowSetUp }) {
   const api = useNotificationApi();
@@ -17,13 +18,16 @@ export default function NotificationControls({ setShowSetUp }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [users, setUsers] = useState([]);
+  const notificationRef = useRef(null);
 
   const send = async () => {
     if (allUsers) {
         const docs = dbApi.getDocuments("_swizzle_users")
         console.log(docs)
     }
-    api.sendNotification(title, body, users); 
+    runAnimation()
+
+    const result = await api.sendNotification(title, body, users); 
 
     const documentToCreate = {
         title: title,
@@ -63,6 +67,20 @@ export default function NotificationControls({ setShowSetUp }) {
     fetchNotifData();
   }, [activeProject, environment]);
 
+  const runAnimation = () => {
+    const element = notificationRef.current;
+    element.classList.add("wooshUp");
+
+    setTimeout(() => {
+      element.classList.remove("wooshUp");
+      element.classList.add("fadeIn");
+    }, 800); // Remove wooshUp and add fadeIn after 1 second
+
+    setTimeout(() => {
+      element.classList.remove("fadeIn");
+    }, 200); 
+  }
+
   return (
     <div className="h-full w-full overflow-scroll">
       <div className="pr-2 mx-4 mb-4 mt-1 flex justify-between items-center">
@@ -74,11 +92,13 @@ export default function NotificationControls({ setShowSetUp }) {
         />
       </div>
       <div className="w-full flex justify-center">
+        <div ref={notificationRef}>
         <SampleNotification
             setBody={setBody}
             body={body}
             setTitle={setTitle}
             title={title} />
+          </div>
       </div>
 
       <div className="flex justify-center space-x-4 items-center">

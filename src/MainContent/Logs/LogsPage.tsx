@@ -13,7 +13,6 @@ import Dropdown from "../../Utilities/Dropdown";
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
-  const authHeader = useAuthHeader();
   const { getLogs } = useApi();
 
   const isRefreshingFresh = useRef(false)
