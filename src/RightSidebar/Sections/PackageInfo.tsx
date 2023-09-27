@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 import Select from "react-select";
@@ -35,14 +35,14 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
     });
   }, [domain]);
 
-  let debounceTimer;
+  const debounceTimer = useRef(null);
 
   useEffect(() => {
     if (query == "") {
       return;
     }
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
       npmSearch(query).then((data) => {
         setItems(
           data.map((item) => {
@@ -50,7 +50,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
           }),
         );
       });
-    }, 250);
+    }, 200);
   }, [query]);
 
   const handleInputChange = (inputValue) => {
