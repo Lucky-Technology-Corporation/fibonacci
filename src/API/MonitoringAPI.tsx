@@ -30,15 +30,23 @@ export default function useApi() {
     }
   };
 
+  const analyzeError = async (message: any) => {
+    return ""
+  }
+
   const getLogs = async (offset: number, filterKey?: string, filterQuery?: string, pageToken?: string) => {
     try {
       if (!activeProject) {
-        throw new Error("No active project selected");
+        console.error("No active project selected");
+        return
       }
+
+      var unwrapResults = false
 
       var url = `${BASE_URL}/projects/${activeProject}/monitoring/logs?env=${environment}&offset=${offset}&limit=20`;
       if (filterKey && filterQuery) {
         if (filterKey == "log") {
+          unwrapResults = true
           url = `${BASE_URL}/projects/${activeProject}/monitoring/logs/search?env=${environment}&search_string=${filterQuery}${
             pageToken ? `&page_token=${pageToken}` : ""
           }`;
@@ -52,6 +60,11 @@ export default function useApi() {
           Authorization: authHeader(),
         },
       });
+
+      if(unwrapResults){
+        return response.data.results
+      }
+
       return response.data;
     } catch (e) {
       console.error(e);
@@ -63,7 +76,8 @@ export default function useApi() {
   const getLogDetails = async (requestId: string) => {
     try {
       if (!activeProject) {
-        throw new Error("No active project selected");
+        console.error("No active project selected");
+        return
       }
       const response = await axios.get(
         `${BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}?env=${environment}`,
@@ -83,5 +97,6 @@ export default function useApi() {
     getData,
     getLogs,
     getLogDetails,
+    analyzeError,
   };
 }

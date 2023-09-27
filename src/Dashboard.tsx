@@ -16,10 +16,6 @@ export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
-  //Auth checkbox handler
-  const [prepndCode, setPrependCode] = useState("");
-  //Find and replace handler
-  const [findReplace, setFindReplace] = useState([]);
   //Current file properties handler
   const [currentFileProperties, setCurrentFileProperties] = useState<any>({});
   //Deploy state handler
@@ -90,8 +86,6 @@ export default function Dashboard() {
 
             <CenterContent
               selectedTab={selectedTab}
-              prependCode={prepndCode}
-              findReplace={findReplace}
               setCurrentFileProperties={setCurrentFileProperties}
               didDeploy={didDeploy}
               setDidDeploy={setDidDeploy}
@@ -101,8 +95,6 @@ export default function Dashboard() {
 
             <RightSidebar
               selectedTab={selectedTab}
-              setPrependCode={setPrependCode}
-              setFindReplace={setFindReplace}
               currentFileProperties={currentFileProperties}
             />
           </div>

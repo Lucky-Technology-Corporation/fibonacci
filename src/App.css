@@ -94,6 +94,34 @@ input[type="text"]::placeholder {
   }
 }
 
+@keyframes wooshUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100vh);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.wooshUp {
+  animation: wooshUp 0.8s ease-in forwards;
+}
+
+.fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
 /* Dot */
 .glow-green {
   box-shadow:

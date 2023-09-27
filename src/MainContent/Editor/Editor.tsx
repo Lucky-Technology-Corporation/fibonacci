@@ -1,17 +1,19 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import useApi from "../../API/EndpointAPI";
 
 export default function Editor({
-  prependText,
-  findReplace,
   setCurrentFileProperties,
 }: {
-  prependText: string;
-  findReplace: string[]; //[find, replace]
   setCurrentFileProperties: (properties: any) => void;
 }) {
+
   const iframeRef = useRef(null);
-  const { testDomain, postMessage, setIdeReady } = useContext(SwizzleContext);
+  const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
+  
+  const { testDomain, postMessage, setIdeReady, activeProject } = useContext(SwizzleContext);
+
+  const {getFermatJwt} = useApi()
 
   useEffect(() => {
     if (postMessage == null) return;
@@ -21,22 +23,8 @@ export default function Editor({
   const postMessageToIframe = (message) => {
     if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null) return;
     iframeRef.current.contentWindow.postMessage(message, "*");
+    console.log("message sent", message)
   };
-
-  useEffect(() => {
-    const message = { content: prependText, type: "prependText" };
-    postMessageToIframe(message);
-  }, [prependText]);
-
-  useEffect(() => {
-    if (findReplace == undefined || findReplace.length != 2) return;
-    const message = {
-      findText: findReplace[0],
-      replaceText: findReplace[1],
-      type: "findAndReplace",
-    };
-    postMessageToIframe(message);
-  }, [findReplace]);
 
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
@@ -65,6 +53,31 @@ export default function Editor({
       setIdeReady(false);
     };
   }, []);
+  
+  // useEffect(() => {
+  //   if(activeProject == undefined || activeProject == "") return
+  //   // const getUrl = async () => {
+  //   //   const fermatJwt = await getFermatJwt()
+  //   //   setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace("Bearer ", "")}`)
+  //   // }
+  //   // getUrl()
+
+  //   async function getSrc() {
+  //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {
+  //       method: 'GET',
+  //       headers: {
+  //         // Here you can set any headers you want
+  //         Authorization: await getFermatJwt(),
+  //       }
+  //     });
+  //     const blob = await res.blob();
+  //     const urlObject = URL.createObjectURL(blob);
+  //     document.querySelector('iframe').setAttribute("src", urlObject)
+  //   }
+
+  //   getSrc();
+
+  // }, [activeProject])
 
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
@@ -72,10 +85,7 @@ export default function Editor({
     <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
       <iframe
         ref={iframeRef}
-        // src={`${testDomain}:3000/#/home/swizzle_prod_user/code`}
-        src={`${testDomain
-          .replace("http", "https")
-          .replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code`}
+        src={`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`}
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",

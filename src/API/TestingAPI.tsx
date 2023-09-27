@@ -16,13 +16,14 @@ export default function useTestApi() {
   } = useApi();
 
   const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
-  const BASE_URL_USER = testDomain.replace("http", "https").replace("https://", "https://runner.");
+  const BASE_URL_USER = testDomain.replace("https://", "https://runner.");
   const activeCollection = "_swizzle_usertests";
 
   const runTest = async (testDoc) => {
     try {
       if (!activeEndpoint) {
-        throw new Error("No active endppoint selected");
+        console.error("No active project selected");
+        return
       }
 
       const response = await axios.get(
@@ -61,7 +62,7 @@ export default function useTestApi() {
       }
     } catch (error) {
       console.error("Error running test:", error);
-      throw error;
+      return null
     }
   };
 
@@ -82,7 +83,7 @@ export default function useTestApi() {
       return responses;
     } catch (error) {
       console.error("Error running all tests:", error);
-      throw error;
+      return null
     }
   };
 
@@ -97,7 +98,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running GET test:", error);
-      throw error;
+      return null
     }
   };
 
@@ -112,7 +113,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running POST test:", error);
-      throw error;
+      return null
     }
   };
 
@@ -127,7 +128,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running PUT test:", error);
-      throw error;
+      return null
     }
   };
 
@@ -142,7 +143,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running DELETE test:", error);
-      throw error;
+      return null
     }
   };
 

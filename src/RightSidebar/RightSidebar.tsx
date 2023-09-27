@@ -15,25 +15,37 @@ import toast from "react-hot-toast";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import ToastWindow from "../Utilities/Toast/ToastWindow";
 import AutocheckInfo from "./Sections/AutocheckInfo";
+import NotificationInfo from "./Sections/NotificationInfo";
+import StorageInfo from "./Sections/StorageInfo";
 
-const signatureWithAuth = `passport.authenticate('jwt', { session: false }), async (request, result)`;
-const signatureNoAuth = `async (request, result)`;
+const noDb = `const router = express.Router();
+`;
+const withDb = `const router = express.Router();
+const { db } = require('swizzle-js');
+`;
+const justDb = `const { db } = require('swizzle-js');
+`
 
-const signatureNoDb = `async (request, result) => {
+const noNotificationImport = `const router = express.Router();
 `;
-const signatureWithDb = `async (request, result) => {
-  const db = getDb()
+const withNotificationImport = `const router = express.Router();
+const { sendNotification } = require('swizzle-js');
 `;
+const justNotificationImport = `const { sendNotification } = require('swizzle-js');
+`
+
+const noStorageImport = `const router = express.Router();
+`;
+const withStorageImport = `const router = express.Router();
+const { saveFile, getFile, deleteFile } = require('swizzle-js');
+`
+const justStorageImport = `const { saveFile, getFile, deleteFile } = require('swizzle-js');`
 
 export default function RightSidebar({
   selectedTab,
-  setPrependCode,
-  setFindReplace,
   currentFileProperties,
 }: {
   selectedTab: Page;
-  setPrependCode: (code: string) => void;
-  setFindReplace: (content: string[]) => void;
   currentFileProperties: any;
 }) {
   const programmaticDbUpdateRef = useRef(false);
@@ -41,6 +53,9 @@ export default function RightSidebar({
 
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isDBChecked, setIsDBChecked] = useState(false);
+  const [isNotificationsChecked, setIsNotificationsChecked] = useState(false);
+  const [isStorageChecked, setIsStorageChecked] = useState(false);
+
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
@@ -48,7 +63,7 @@ export default function RightSidebar({
   const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
   const [autocheckResponse, setAutocheckResponse] = useState("");
 
-  const { ideReady } = useContext(SwizzleContext);
+  const { ideReady, setPostMessage } = useContext(SwizzleContext);
   const { getAutocheckResponse } = useApi();
 
   useEffect(() => {
@@ -56,9 +71,20 @@ export default function RightSidebar({
       programmaticAuthUpdateRef.current = false;
     } else {
       if (isAuthChecked) {
-        setFindReplace([signatureNoAuth, signatureWithAuth]);
+        const firstMessage = {
+          findText: "optionalAuthentication",
+          replaceText: "requiredAuthentication",
+          type: "findAndReplace",
+        }
+        setPostMessage(firstMessage)
+
       } else {
-        setFindReplace([signatureWithAuth, signatureNoAuth]);
+        const firstMessage = {
+          findText: "requiredAuthentication",
+          replaceText: "optionalAuthentication",
+          type: "findAndReplace",
+        }
+        setPostMessage(firstMessage)
       }
     }
   }, [isAuthChecked]);
@@ -67,13 +93,69 @@ export default function RightSidebar({
     if (programmaticDbUpdateRef.current) {
       programmaticDbUpdateRef.current = false;
     } else {
+      var message = {}
       if (isDBChecked) {
-        setFindReplace([signatureNoDb, signatureWithDb]);
+        message = {
+          findText: noDb,
+          replaceText: withDb,
+          type: "findAndReplace",
+        }
       } else {
-        setFindReplace([signatureWithDb, signatureNoDb]);
+        message = {
+          findText: justDb,
+          replaceText: "",
+          type: "findAndReplace",
+        }
       }
+      setPostMessage(message)
     }
   }, [isDBChecked]);
+  
+  useEffect(() => {
+    if (programmaticAuthUpdateRef.current) {
+      programmaticAuthUpdateRef.current = false;
+    } else {
+      if (isNotificationsChecked) {
+        const firstMessage = {
+          findText: noNotificationImport,
+          replaceText: withNotificationImport,
+          type: "findAndReplace",
+        }
+        setPostMessage(firstMessage)
+
+      } else {
+        const firstMessage = {
+          findText: justNotificationImport,
+          replaceText: "",
+          type: "findAndReplace",
+        }
+        setPostMessage(firstMessage)
+      }
+    }
+  }, [isNotificationsChecked]);
+
+  useEffect(() => {
+    if (programmaticAuthUpdateRef.current) {
+      programmaticAuthUpdateRef.current = false;
+    } else {
+      if (isStorageChecked) {
+        const firstMessage = {
+          findText: noStorageImport,
+          replaceText: withStorageImport,
+          type: "findAndReplace",
+        }
+        setPostMessage(firstMessage)
+
+      } else {
+        const firstMessage = {
+          findText: justStorageImport,
+          replaceText: "",
+          type: "findAndReplace",
+        }
+        setPostMessage(firstMessage)
+      }
+    }
+  }, [isStorageChecked]);
 
   useEffect(() => {
     if (currentFileProperties == undefined) return;
@@ -114,10 +196,8 @@ export default function RightSidebar({
             {currentWindow === "test" && (
               <TestWindow
                 shouldShowTestWindow={() => setShouldShowTestWindow(false)}
-                //hideTestWindow={() => setShouldShowTestWindow(false)}
                 setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)}
                 setCurrentWindow={setCurrentWindow}
-                //savedTests={useApi().getTests()}
               />
             )}
             {currentWindow === "newTest" && (
@@ -185,12 +265,22 @@ export default function RightSidebar({
             <div className="h-3" />
             <div className="text-left w-full space-y-2">
               <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
-              <AuthInfo show={isAuthChecked} />
+              <AuthInfo show={true} />
             </div>
             <div className="h-2" />
             <div className="text-left w-full space-y-2">
               <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
               <DBInfo show={isDBChecked} />
+            </div>
+            <div className="h-2" />
+            <div className="text-left w-full space-y-2">
+              <Checkbox id="notifications" label="Push Notifications" isChecked={isNotificationsChecked} setIsChecked={setIsNotificationsChecked} />
+              <NotificationInfo show={isNotificationsChecked} />
+            </div>
+            <div className="h-2" />
+            <div className="text-left w-full space-y-2">
+              <Checkbox id="storage" label="Storage" isChecked={isStorageChecked} setIsChecked={setIsStorageChecked} />
+              <StorageInfo show={isStorageChecked} />
             </div>
           </>
         )}

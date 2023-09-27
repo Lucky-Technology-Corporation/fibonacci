@@ -69,6 +69,11 @@ export default function EndpointHeader() {
             placeholder={AICommand == "ask" ? "Ask any question..." : "Change this code to..."}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(event) => {
+              if (event.key == "Enter") {
+                runQuery();
+              }
+            }}
           />
 
           <Button

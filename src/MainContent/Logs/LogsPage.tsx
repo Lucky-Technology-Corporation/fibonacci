@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/20/solid";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import LogRow from "./LogRow";
 import Switch from "react-switch";
 import useWebSocket from "react-use-websocket";
@@ -10,12 +10,13 @@ import useApi from "../../API/MonitoringAPI";
 import Pagination from "../../Utilities/Pagination";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
+import FullPageModal from "../../Utilities/FullPageModal";
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
-  const authHeader = useAuthHeader();
   const { getLogs } = useApi();
 
+  const isRefreshingFresh = useRef(false)
   const [messages, setMessages] = useState([]);
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
@@ -25,6 +26,7 @@ export default function LogsPage() {
   const [filterName, setFilterName] = useState<string | undefined>("log");
   const [filterQuery, setFilterQuery] = useState<string | undefined>(null);
   const [nextPageToken, setNextPageToken] = useState<string | undefined>(null);
+  const [modalText, setModalText] = useState<string>("");
 
   const searchTypes = [
     {
@@ -45,88 +47,110 @@ export default function LogsPage() {
     },
   ];
 
-  useEffect(() => {
+
+  const freshLogs = async () => {
+    isRefreshingFresh.current = true
+
     setPage(0);
     setOffset(0);
     setFilterQuery(null);
     setSearchQuery("");
     setNextPageToken(null);
 
-    getLogs(offset, filterName, filterQuery).then((data) => {
+    getLogs(0, filterName, null).then((data) => {
       if (data) {
+        isRefreshingFresh.current = false
         setMessages(data);
+        return true
       }
-    });
+    })
+    .catch((e) => {
+      isRefreshingFresh.current = false
+      console.error(e);
+      return false
+    })
+  };
+
+  useEffect(() => {
+    freshLogs()
   }, [filterName, environment, activeProject]);
 
   useEffect(() => {
     setOffset(page * 20);
   }, [page]);
 
-  const { lastMessage, getWebSocket, readyState } = useWebSocket(wsUrl, {
-    onError: (e) => {
-      toast.error("Error connecting to logs stream");
-      console.error(e);
-      setTimeout(() => {
-        setIsStreaming(false);
-      }, 200);
-    },
-  });
+  // const { lastMessage, getWebSocket, readyState } = useWebSocket(wsUrl, {
+  //   onError: (e) => {
+  //     toast.error("Error connecting to logs stream");
+  //     console.error(e);
+  //     setTimeout(() => {
+  //       setIsStreaming(false);
+  //     }, 200);
+  //   },
+  // });
 
-  //Handle incoming messages
-  useEffect(() => {
-    if (lastMessage !== null) {
-      console.log("Received a message from the server:", lastMessage.data);
-    }
-  }, [lastMessage]);
+  // //Handle incoming messages
+  // useEffect(() => {
+  //   if (lastMessage !== null) {
+  //     console.log("Received a message from the server:", lastMessage.data);
+  //   }
+  // }, [lastMessage]);
 
   //Connect/disconnect websocket when switch is toggled
-  useEffect(() => {
-    if (isStreaming) {
-      setWsUrl(
-        "ws://localhost:4000/api/v1/projects/" + activeProject + "/monitoring/logs/stream?token=" + authHeader(),
-      );
-    } else {
-      setWsUrl(null);
-    }
-  }, [isStreaming]);
+  // useEffect(() => {
+  //   if (isStreaming) {
+  //     setWsUrl(
+  //       "ws://localhost:4000/api/v1/projects/" + activeProject + "/monitoring/logs/stream?token=" + authHeader(),
+  //     );
+  //   } else {
+  //     setWsUrl(null);
+  //   }
+  // }, [isStreaming]);
 
-  //Disconnect websocket when component unmounts
-  useEffect(() => {
-    setFilterQuery(null);
-    setNextPageToken(null);
+  // //Disconnect websocket when component unmounts
+  // useEffect(() => {
+  //   setFilterQuery(null);
+  //   setNextPageToken(null);
 
-    getLogs(offset, filterName, filterQuery).then((data) => {
-      if (data) {
-        setMessages(data);
-      }
-    });
-    return () => {
-      setWsUrl(null);
-    };
-  }, []);
+  //   getLogs(offset, filterName, filterQuery).then((data) => {
+  //     if (data) {
+  //       setMessages(data);
+  //     }
+  //   });
+  //   return () => {
+  //     setWsUrl(null);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (filterQuery == "") {
       setNextPageToken(null);
-      setFilterName(null);
+      setFilterName("log");
+      return
     }
 
-    getLogs(offset, filterName, filterQuery, nextPageToken)
-      .then((data) => {
-        if (data && data.results != null) {
-          setMessages(data.results);
-          setNextPageToken(data.next_page_token);
-        } else if (data) {
-          setMessages(data);
-        } else {
-          setMessages([]);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        toast.error("Error fetching logs");
-      });
+    if(isRefreshingFresh.current){
+      return
+    }
+
+    toast.promise(
+      getLogs(offset, filterName, filterQuery, nextPageToken)
+        .then((data) => {
+          if (data && data.results != null) {
+            setMessages(data.results);
+          } else if (data) {
+            setMessages(data);
+          } else {
+            setMessages([]);
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+        }), {
+          loading: "Loading",
+          success: "Loaded",
+          error: "Failed to load logs",
+        });
   }, [offset, filterQuery]);
 
   const runSearch = () => {
@@ -134,7 +158,22 @@ export default function LogsPage() {
   };
 
   return (
-    <div className="h-full overflow-scroll">
+    <div className="h-full overflow-scroll min-h-[50vh]">
+      
+      <div className={`${modalText == "" ? "hidden pointer-events-none" : ""} w-1/2 h-1/2 m-auto fixed left-1/4 top-1/4 border-[#525363] border bg-[#181922] rounded-md`}>
+        <Button
+          className="absolute right-6 top-4 text-md cursor-pointer font-bold  "
+          text="Close"
+          onClick={() => {
+            setModalText("");
+          }}
+        />
+
+        <div className="mt-8 px-4">
+          {modalText}
+        </div>
+      </div>
+
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Logs</div>
@@ -164,6 +203,20 @@ export default function LogsPage() {
           direction="left"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
         />
+        {(filterQuery != null && filterQuery != "") && (
+          <Button
+            className="px-5 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            text="Clear"
+            onClick={() => {toast.promise(freshLogs(), {
+                loading: "Loading...",
+                success: () => {
+                  return "Done";
+                },
+                error: "Failed to load. Try reloading the page",
+              })
+            }}
+          />
+        )}
         <input
           type="text"
           className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
@@ -185,8 +238,9 @@ export default function LogsPage() {
         <table className="w-full">
           <thead className="bg-[#85869822]">
             <tr className="border-b border-[#4C4F6B]">
-              <th className="text-left py-1 pl-4 w-12 font-light">Retry</th>
-              <th className="text-left py-1 pl-4 font-light">Timestamp</th>
+              <th className="text-center py-1 pl-4 w-12 font-light">Retry</th>
+              <th className="text-center py-1 pl-4 w-12 font-light">Fix</th>
+              <th className="text-left py-1 pl-4 font-light">Time</th>
               <th className="text-left py-1 pl-4 font-light max-w-1/2">Endpoint</th>
               <th className="text-left py-1 pl-4 font-light">Result</th>
               <th className="text-left py-1 pl-4 font-light">User</th>
@@ -198,13 +252,13 @@ export default function LogsPage() {
           </thead>
           <tbody className="overflow-y-scroll">
             {(messages || []).map((message, index) => {
-              return <LogRow key={index} message={message} />;
+              return <LogRow key={index} message={message} freshLogs={freshLogs} setModalText={setModalText} />;
             })}
             <tr></tr>
           </tbody>
         </table>
       </div>
-      <div className="mt-4 m-auto w-fit">
+      <div className="mt-4 m-auto w-fit mb-8">
         <Pagination
           currentPage={page}
           itemsPerPage={20}

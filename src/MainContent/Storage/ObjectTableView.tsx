@@ -90,9 +90,9 @@ export default function ObjectTableView() {
   const [baseUrl, setBaseUrl] = useState<string>("");
   useEffect(() => {
     if (environment == "test") {
-      setBaseUrl(testDomain.replace("http", "https").replace("https://", "https://runner."));
+      setBaseUrl(testDomain.replace("https://", "https://runner."));
     } else {
-      setBaseUrl(domain.replace("http", "https").replace("https://", "https://runner."));
+      setBaseUrl(domain.replace("https://", "https://runner."));
     }
   }, [environment, activeProject]);
 
@@ -283,7 +283,7 @@ export default function ObjectTableView() {
       )}
 
       <div className={` ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
-        <div className="pagination-controls flex justify-center items-center py-4">
+        <div className="pagination-controls flex justify-center items-center py-4 mb-4">
           {data && data.length > 0 && (
             <Pagination
               currentPage={currentPage}
