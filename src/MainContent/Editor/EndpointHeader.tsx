@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
 import Button from "../../Utilities/Button";
@@ -6,6 +6,7 @@ import Dropdown from "../../Utilities/Dropdown";
 import { copyText } from "../../Utilities/Copyable";
 import useApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
+import FloatingModal from "../../Utilities/FloatingModal";
 
 export default function EndpointHeader() {
   const { activeEndpoint, ideReady } = useContext(SwizzleContext);
@@ -13,7 +14,7 @@ export default function EndpointHeader() {
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
   const [AICommand, setAICommand] = useState<string>("ask");
-  const [response, setResponse] = useState<string>("");
+  const [response, setResponse] = useState<ReactNode | undefined>(null);
 
   const { askQuestion } = useApi();
 
@@ -36,7 +37,10 @@ export default function EndpointHeader() {
     return toast.promise(askQuestion(prompt, AICommand), {
       loading: "Generating code...",
       success: (data) => {
-        setResponse(data.recommendation_text)
+        if(response == null){
+          return "Something went wrong"
+        }
+        setResponse(<>{data.recommendation_text}</>)
         return "Done";
       },
       error: "Error generating code",
@@ -83,22 +87,14 @@ export default function EndpointHeader() {
               runQuery();
             }}
           />
-      
-       
           </div>
-          {response != "" && (
-            <div className={`border-[#525363] ml-1 border-b w-full bg-[#181922] p-4 shadow-md transition-all duration-300 ease-in-out transform ${(response != "") ? 'translate-y-0' : '-translate-y-full'}`}>
-              <p>{response}</p>
-              
-              <div className="w-16 ml-auto"><Button
-                text="Dismiss"
-                onClick={() => {setResponse("")}}
-              /></div>
-            </div>
-          )}
         </div>
       )}
 
+      <FloatingModal
+        content={response}
+        closeModal={() => {setResponse(null)}}
+      />
 
     </>
   );

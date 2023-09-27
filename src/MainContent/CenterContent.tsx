@@ -1,5 +1,5 @@
 import Editor from "./Editor/Editor";
-import EditorHeader from "./Editor/EditorHeader";
+import EndpointHeader from "./Editor/EndpointHeader";
 import { Method } from "../Utilities/Method";
 import { Page } from "../Utilities/Page";
 import DatabaseView from "./Database/DatabaseView";
@@ -40,7 +40,7 @@ export default function CenterContent({
         }}
       >
         <div style={{ display: activeEndpoint || activeFile ? "block" : "none" }}>
-          <EditorHeader />
+          <EndpointHeader />
           <Editor
             setCurrentFileProperties={setCurrentFileProperties}
           />

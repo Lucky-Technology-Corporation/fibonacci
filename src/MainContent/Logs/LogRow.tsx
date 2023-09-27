@@ -3,14 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import Dot from "../../Utilities/Dot";
 import IconButton from "../../Utilities/IconButton";
-import { useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import useApi from "../../API/MonitoringAPI";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function LogRow({ message, freshLogs, setModalText }: { message: any, freshLogs: () => {}, setModalText: (text: string) => void }) {
+export default function LogRow({ message, freshLogs, setModalText }: { message: any, freshLogs: () => {}, setModalText: (text: ReactNode) => void }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [logDetails, setLogDetails] = useState<[] | null>(null);
   const { getLogDetails, analyzeError } = useApi();
@@ -18,16 +18,48 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
 
   useEffect(() => {
     if (isExpanded && logDetails == null) {
-      getLogDetails(message.traceId).then((data) => {
-        if (data == null || data.logs == null) {
-          setLogDetails([]);
-          return;
-        }
-        setLogDetails(data.logs);
-      });
+      getLogText(message.traceId).then((logs) => {
+        setLogDetails(logs);
+      })
     }
   }, [isExpanded]);
 
+  const cache: { [traceId: string]: any[] } = {};
+  const inProgress: Set<string> = new Set();
+  
+  const getLogText = async (traceId: string) => {
+    // Check if it's already in cache
+    if (cache[traceId]) {
+      return cache[traceId];
+    }
+  
+    // Block if it's already being fetched
+    if (inProgress.has(traceId)) {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (cache[traceId]) {
+            clearInterval(interval);
+            resolve(cache[traceId]);
+          }
+        }, 100);
+      });
+    }
+  
+    inProgress.add(traceId);
+  
+    // Fetch data
+    const data = await getLogDetails(traceId);
+    inProgress.delete(traceId);
+  
+    if (data == null || data.logs == null) {
+      cache[traceId] = [];
+      return [];
+    }
+    
+    cache[traceId] = data.logs;
+    return data.logs;
+  };
+  
   useEffect(() => {
     setIsExpanded(false);
     setLogDetails(null);
@@ -56,9 +88,12 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
   }
 
   const fixRequest = async () => {
-    setModalText("heheh")
-    // const response = await analyzeError(message)
-    // setModalText(response)    
+    const logs = await getLogDetails(message.traceId)
+    const response = await analyzeError(logs, message)
+    if(response == null){
+      return "Something went wrong"
+    }
+    setModalText(<>{response.recommendation_text}</>)    
   }
 
   return (
@@ -82,7 +117,7 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
             
           }} />
         </td>
-        <td className="text-left pl-4">
+        <td className={`text-left pl-4 ${message.responseCode < 300 ? "opacity-50 pointer-events-none" : ""}`}>
           <IconButton icon={<FontAwesomeIcon icon={faWrench} className="py-1" />} onClick={() => {
 
             toast.promise(fixRequest(), {

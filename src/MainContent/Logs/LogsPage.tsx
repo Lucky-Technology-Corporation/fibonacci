@@ -1,5 +1,5 @@
 import { PauseIcon, PlayIcon } from "@heroicons/react/20/solid";
-import { useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import LogRow from "./LogRow";
 import Switch from "react-switch";
 import useWebSocket from "react-use-websocket";
@@ -11,6 +11,7 @@ import Pagination from "../../Utilities/Pagination";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 import FullPageModal from "../../Utilities/FullPageModal";
+import FloatingModal from "../../Utilities/FloatingModal";
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
@@ -26,7 +27,7 @@ export default function LogsPage() {
   const [filterName, setFilterName] = useState<string | undefined>("log");
   const [filterQuery, setFilterQuery] = useState<string | undefined>(null);
   const [nextPageToken, setNextPageToken] = useState<string | undefined>(null);
-  const [modalText, setModalText] = useState<string>("");
+  const [modalText, setModalText] = useState<ReactNode | undefined>(null);
 
   const searchTypes = [
     {
@@ -159,20 +160,6 @@ export default function LogsPage() {
 
   return (
     <div className="h-full overflow-scroll min-h-[50vh]">
-      
-      <div className={`${modalText == "" ? "hidden pointer-events-none" : ""} w-1/2 h-1/2 m-auto fixed left-1/4 top-1/4 border-[#525363] border bg-[#181922] rounded-md`}>
-        <Button
-          className="absolute right-6 top-4 text-md cursor-pointer font-bold  "
-          text="Close"
-          onClick={() => {
-            setModalText("");
-          }}
-        />
-
-        <div className="mt-8 px-4">
-          {modalText}
-        </div>
-      </div>
 
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
@@ -268,6 +255,13 @@ export default function LogsPage() {
           }}
         />
       </div>
+
+      <FloatingModal
+        content={modalText}
+        closeModal={() => {
+          setModalText(null);
+        }}
+      />
     </div>
   );
 }
