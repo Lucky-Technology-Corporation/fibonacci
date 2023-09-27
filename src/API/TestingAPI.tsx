@@ -16,7 +16,7 @@ export default function useTestApi() {
   } = useApi();
 
   const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
-  const BASE_URL_USER = testDomain.replace("http", "https").replace("https://", "https://runner.");
+  const BASE_URL_USER = testDomain.replace("https://", "https://runner.");
   const activeCollection = "_swizzle_usertests";
 
   const runTest = async (testDoc) => {

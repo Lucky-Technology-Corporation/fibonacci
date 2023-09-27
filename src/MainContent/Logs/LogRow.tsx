@@ -1,4 +1,4 @@
-import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import { faRotateRight, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import Dot from "../../Utilities/Dot";
@@ -10,10 +10,10 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function LogRow({ message, freshLogs }: { message: any, freshLogs: () => {} }) {
+export default function LogRow({ message, freshLogs, setModalText }: { message: any, freshLogs: () => {}, setModalText: (text: string) => void }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [logDetails, setLogDetails] = useState<[] | null>(null);
-  const { getLogDetails } = useApi();
+  const { getLogDetails, analyzeError } = useApi();
   const { domain } = useContext(SwizzleContext);
 
   useEffect(() => {
@@ -55,6 +55,12 @@ export default function LogRow({ message, freshLogs }: { message: any, freshLogs
     return freshLogs()
   }
 
+  const fixRequest = async () => {
+    setModalText("heheh")
+    // const response = await analyzeError(message)
+    // setModalText(response)    
+  }
+
   return (
     <>
       <tr
@@ -76,6 +82,18 @@ export default function LogRow({ message, freshLogs }: { message: any, freshLogs
             
           }} />
         </td>
+        <td className="text-left pl-4">
+          <IconButton icon={<FontAwesomeIcon icon={faWrench} className="py-1" />} onClick={() => {
+
+            toast.promise(fixRequest(), {
+              loading: "Looking at your code...",
+              success: "Found an answer",
+              error: "Couldn't find an answer",
+            });
+            
+          }} />
+        </td>
+
         <td className="text-left pl-4">{formatDate(message.createdAt)}</td>
         <td className="text-left pl-4">
           {message.method} {message.url.split("?")[0]}

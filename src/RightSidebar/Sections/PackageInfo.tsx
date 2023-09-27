@@ -189,7 +189,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
                           icon={faTrash}
                           onClick={() => {
                             removePackageFromProject(packageName)
-                            toast.success(`Removed ${selectedOption.value} from project`);
+                            toast.success(`Removed ${packageName} from project`);
                           }}
                         />
                       </td>

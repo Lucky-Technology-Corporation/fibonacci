@@ -13,8 +13,6 @@ import NotificationPage from "./Notifications/NotificationPage";
 
 type CenterContentProps = {
   selectedTab: Page; 
-  prependCode: string;
-  findReplace: string[];
   setCurrentFileProperties: (properties: any) => void;
   didDeploy: boolean;
   setDidDeploy: (didDeploy: boolean) => void;
@@ -24,8 +22,6 @@ type CenterContentProps = {
 
 export default function CenterContent({
   selectedTab,
-  prependCode,
-  findReplace,
   setCurrentFileProperties,
   didDeploy,
   setDidDeploy,
@@ -46,8 +42,6 @@ export default function CenterContent({
         <div style={{ display: activeEndpoint || activeFile ? "block" : "none" }}>
           <EditorHeader />
           <Editor
-            prependText={prependCode}
-            findReplace={findReplace}
             setCurrentFileProperties={setCurrentFileProperties}
           />
         </div>

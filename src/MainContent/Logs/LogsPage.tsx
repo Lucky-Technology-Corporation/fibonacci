@@ -10,6 +10,7 @@ import useApi from "../../API/MonitoringAPI";
 import Pagination from "../../Utilities/Pagination";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
+import FullPageModal from "../../Utilities/FullPageModal";
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
@@ -25,6 +26,7 @@ export default function LogsPage() {
   const [filterName, setFilterName] = useState<string | undefined>("log");
   const [filterQuery, setFilterQuery] = useState<string | undefined>(null);
   const [nextPageToken, setNextPageToken] = useState<string | undefined>(null);
+  const [modalText, setModalText] = useState<string>("");
 
   const searchTypes = [
     {
@@ -157,6 +159,21 @@ export default function LogsPage() {
 
   return (
     <div className="h-full overflow-scroll min-h-[50vh]">
+      
+      <div className={`${modalText == "" ? "hidden pointer-events-none" : ""} w-1/2 h-1/2 m-auto fixed left-1/4 top-1/4 border-[#525363] border bg-[#181922] rounded-md`}>
+        <Button
+          className="absolute right-6 top-4 text-md cursor-pointer font-bold  "
+          text="Close"
+          onClick={() => {
+            setModalText("");
+          }}
+        />
+
+        <div className="mt-8 px-4">
+          {modalText}
+        </div>
+      </div>
+
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Logs</div>
@@ -221,8 +238,9 @@ export default function LogsPage() {
         <table className="w-full">
           <thead className="bg-[#85869822]">
             <tr className="border-b border-[#4C4F6B]">
-              <th className="text-left py-1 pl-4 w-12 font-light">Retry</th>
-              <th className="text-left py-1 pl-4 font-light">Timestamp</th>
+              <th className="text-center py-1 pl-4 w-12 font-light">Retry</th>
+              <th className="text-center py-1 pl-4 w-12 font-light">Fix</th>
+              <th className="text-left py-1 pl-4 font-light">Time</th>
               <th className="text-left py-1 pl-4 font-light max-w-1/2">Endpoint</th>
               <th className="text-left py-1 pl-4 font-light">Result</th>
               <th className="text-left py-1 pl-4 font-light">User</th>
@@ -234,7 +252,7 @@ export default function LogsPage() {
           </thead>
           <tbody className="overflow-y-scroll">
             {(messages || []).map((message, index) => {
-              return <LogRow key={index} message={message} freshLogs={freshLogs} />;
+              return <LogRow key={index} message={message} freshLogs={freshLogs} setModalText={setModalText} />;
             })}
             <tr></tr>
           </tbody>

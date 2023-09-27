@@ -30,6 +30,10 @@ export default function useApi() {
     }
   };
 
+  const analyzeError = async (message: any) => {
+    return ""
+  }
+
   const getLogs = async (offset: number, filterKey?: string, filterQuery?: string, pageToken?: string) => {
     try {
       if (!activeProject) {
@@ -93,5 +97,6 @@ export default function useApi() {
     getData,
     getLogs,
     getLogDetails,
+    analyzeError,
   };
 }

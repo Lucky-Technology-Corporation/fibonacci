@@ -60,8 +60,8 @@ export default function AnalyticsPage() {
           <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
         </div>
         <div className="flex items-start ml-6 space-x-6">
-          <div className="flex-col"><div className="flex"><Dot className="ml-0" color={testDeployStatus == "live" ? "green" : "yellow"} />Test API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => { copyText(testDomain)}}>{testDomain}</div></div>
-          <div className="flex-col"><div className="flex"><Dot className="ml-0" color={prodDeployStatus == "live" ? "green" : "yellow"} />Production API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => {copyText(prodDomain)}}>{prodDomain}</div></div>
+          <div className="flex-col"><div className="flex"><Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />Test API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => { copyText(testDomain)}}>{testDomain}</div></div>
+          <div className="flex-col"><div className="flex"><Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />Production API</div><div className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto" onClick={() => {copyText(prodDomain)}}>{prodDomain}</div></div>
         </div>
         <Button
           className="ml-auto mr-10 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"

@@ -26,6 +26,8 @@ export default function ProjectSelector() {
     setIsCreatingProject,
     isCreatingProject,
     environment,
+    setTestDeployStatus,
+    setProdDeployStatus,
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -47,6 +49,9 @@ export default function ProjectSelector() {
   const setCurrentProject = (id: string) => {
     const project = projects.filter((p) => p.id == id)[0];
     if (project == null) return;
+
+    setTestDeployStatus(project.test_deployment_status);
+    setProdDeployStatus(project.prod_deployment_status);
 
     setActiveProject(project.id);
     setActiveProjectName(project.name);
@@ -110,6 +115,7 @@ export default function ProjectSelector() {
           }}
           className={`${isCreatingProject ? "opacity-70" : ""}`}
           title={activeProjectName}
+          direction="center"
         />
       </div>
 
