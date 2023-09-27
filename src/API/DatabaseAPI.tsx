@@ -27,20 +27,20 @@ export default function useApi() {
     pageSize: number = 20,
     sortByKey: string = "",
     sortDirection: string = "asc",
-    active_endpoint: string = "",
+    activeEndpoint: string = "",
   ) => {
     try {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       var queryString = `?env=${environment}&`;
       if (page !== -1) {
-        queryString += `page=${page}&pageSize=${pageSize}`;
+        queryString += `page=${page}&page_size=${pageSize}`;
       }
       if (sortByKey !== "") {
-        queryString += `&sort=${sortByKey}&sortDirection=${sortDirection}`;
+        queryString += `&sort=${sortByKey}&sort_direction=${sortDirection}`;
       }
-      if (active_endpoint !== "") {
-        queryString += `&active_endpoint=${active_endpoint}`;
+      if (activeEndpoint !== "") {
+        queryString += `&active_endpoint=${activeEndpoint}`;
       }
 
       const response = await axios.get(

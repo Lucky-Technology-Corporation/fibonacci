@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useApi from "../API/EndpointAPI";
+import DeployInfo from "./DeployInfo.tsx"
 
 export default function DeployButton({}: {}) {
   const [deployProgress, setDeployProgress] = useState(0);
   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
+  const [showDeployInfo, setShowDeployInfo] = useState(false);
 
   const { deploy } = useApi();
 
@@ -53,6 +55,7 @@ export default function DeployButton({}: {}) {
       setIsDeploymentInProgress(false);
       setDeployProgress(0);
     }, 3500);
+
   };
 
   //Command-S deploy trigger
@@ -75,26 +78,35 @@ export default function DeployButton({}: {}) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
   return (
     <div className="relative w-full mb-1">
-      <div
-        id="deploy-progress-bar"
-        className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
-        style={{
-          width: `${deployProgress}%`,
-          transition: "width 0.2s ease-out",
-        }}
-      />
       <button
         className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
         onMouseEnter={teaseDeploy}
         onMouseLeave={resetDeploy}
-        onClick={runDeploy}
+        onClick={() => {
+          runDeploy();
+          setShowDeployInfo(true);
+        }}
       >
         <img src="rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
-        {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
+        {deployProgress > 8
+          ? deployProgress == 100
+            ? "Deployed!"
+            : "Deploying..."
+          : "Deploy"}
       </button>
+  
+      {showDeployInfo && (
+        <div
+          className="absolute top-full right-0 mt-2" 
+        >
+          <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} />
+        </div>
+      )}
     </div>
   );
+  
+
+  
 }
