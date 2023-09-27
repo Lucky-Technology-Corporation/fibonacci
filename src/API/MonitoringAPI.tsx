@@ -33,7 +33,8 @@ export default function useApi() {
   const getLogs = async (offset: number, filterKey?: string, filterQuery?: string, pageToken?: string) => {
     try {
       if (!activeProject) {
-        throw new Error("No active project selected");
+        console.error("No active project selected");
+        return
       }
 
       var unwrapResults = false
@@ -71,7 +72,8 @@ export default function useApi() {
   const getLogDetails = async (requestId: string) => {
     try {
       if (!activeProject) {
-        throw new Error("No active project selected");
+        console.error("No active project selected");
+        return
       }
       const response = await axios.get(
         `${BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}?env=${environment}`,

@@ -234,7 +234,7 @@ export default function LogsPage() {
           </thead>
           <tbody className="overflow-y-scroll">
             {(messages || []).map((message, index) => {
-              return <LogRow key={index} message={message} />;
+              return <LogRow key={index} message={message} freshLogs={freshLogs} />;
             })}
             <tr></tr>
           </tbody>

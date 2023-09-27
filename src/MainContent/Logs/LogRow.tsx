@@ -3,14 +3,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 import Dot from "../../Utilities/Dot";
 import IconButton from "../../Utilities/IconButton";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import useApi from "../../API/MonitoringAPI";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function LogRow({ message }: { message: any }) {
+export default function LogRow({ message, freshLogs }: { message: any, freshLogs: () => {} }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [logDetails, setLogDetails] = useState<[] | null>(null);
   const { getLogDetails } = useApi();
+  const { domain } = useContext(SwizzleContext);
 
   useEffect(() => {
     if (isExpanded && logDetails == null) {
@@ -42,6 +46,15 @@ export default function LogRow({ message }: { message: any }) {
     return formattedDate;
   };
 
+  const retryRequest = async () => {
+    if(message.method == "GET"){
+      await axios.get(domain + message.url, { headers: message.headers })
+    } else if(message.method == "POST"){
+      await axios.post(domain + message.url, message.request, { headers: message.headers })
+    }
+    return freshLogs()
+  }
+
   return (
     <>
       <tr
@@ -53,7 +66,15 @@ export default function LogRow({ message }: { message: any }) {
         }}
       >
         <td className="text-left pl-4">
-          <IconButton icon={<FontAwesomeIcon icon={faRotateRight} className="py-1" />} onClick={() => {}} />
+          <IconButton icon={<FontAwesomeIcon icon={faRotateRight} className="py-1" />} onClick={() => {
+
+            toast.promise(retryRequest(), {
+              loading: "Retrying request...",
+              success: "Returned successfully",
+              error: "Returned with an error",
+            });
+            
+          }} />
         </td>
         <td className="text-left pl-4">{formatDate(message.createdAt)}</td>
         <td className="text-left pl-4">

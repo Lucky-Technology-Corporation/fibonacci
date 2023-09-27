@@ -66,7 +66,7 @@ export default function useApi() {
 
   const deploy = async () => {
     try {
-      const response = await axios.post(`${testDomain}:1234/push_to_production`, {
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/push_to_production`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -86,7 +86,7 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain}:1234/code/file_contents?path=code/${fileName}`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -182,7 +182,7 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain}:1234/code/package.json`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/package.json`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -208,7 +208,7 @@ export default function useApi() {
         path = "table_of_files";
       }
 
-      const response = await axios.get(`${testDomain}:1234/${path}`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },

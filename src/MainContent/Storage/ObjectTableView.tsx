@@ -90,9 +90,9 @@ export default function ObjectTableView() {
   const [baseUrl, setBaseUrl] = useState<string>("");
   useEffect(() => {
     if (environment == "test") {
-      setBaseUrl(testDomain.replace("http", "https").replace("https://", "https://runner."));
+      setBaseUrl(testDomain.replace("https://", "https://runner."));
     } else {
-      setBaseUrl(domain.replace("http", "https").replace("https://", "https://runner."));
+      setBaseUrl(domain.replace("https://", "https://runner."));
     }
   }, [environment, activeProject]);
 

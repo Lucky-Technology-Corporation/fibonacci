@@ -4,7 +4,7 @@ type Notification = {
   time: string;
   title: string;
   body: string;
-  recipients: number;
+  recipients: string[];
 };
 
 type NotificationsTableProps = {
@@ -27,10 +27,10 @@ const NotificationsTable: React.FunctionComponent<NotificationsTableProps> = ({ 
       <tbody>
         {notifications.slice().reverse().map((notification, index) => (
           <tr key={index}>
-            <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{notification.time}</td>
+            <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{new Date(notification.time).toLocaleString()}</td>
             <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{notification.title}</td>
             <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{notification.body}</td>
-            <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{notification.recipients}</td>
+            <td className="border-b border-gray-600 shadow-sm px-4 py-2 text-left">{(notification.recipients.length == 0 ? "All users" : notification.recipients.toString())}</td>
           </tr>
         ))}
       </tbody>

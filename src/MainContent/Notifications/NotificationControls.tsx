@@ -25,9 +25,10 @@ export default function NotificationControls({ setShowSetUp }) {
         const docs = dbApi.getDocuments("_swizzle_users")
         console.log(docs)
     }
+    
     runAnimation()
 
-    const result = await api.sendNotification(title, body, users); 
+    api.sendNotification(title, body, users); //await this later
 
     const documentToCreate = {
         title: title,
