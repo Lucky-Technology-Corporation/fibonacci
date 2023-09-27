@@ -105,6 +105,7 @@ export default function useApi() {
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         {
+          question_type: "code",
           user_query: userQuery,
           fermat_domain: testDomain.replace("https://", "http://"),
           fermat_jwt: await getFermatJwt(),
@@ -119,7 +120,7 @@ export default function useApi() {
       return response.data;
     } catch (e) {
       console.error(e);
-      return "";
+      return null;
     }
   };
 
