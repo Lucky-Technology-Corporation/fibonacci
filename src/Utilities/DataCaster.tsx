@@ -37,3 +37,8 @@ export function castValues(input: any): any {
 
   return output;
 }
+
+export function replaceCodeBlocks(str: string){
+  const regex = /(`{1,3})([^`]+)\1/g;
+  return str.replace(regex, '<span className="font-mono">$2</span>');
+};

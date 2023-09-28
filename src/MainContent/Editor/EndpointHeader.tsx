@@ -7,6 +7,7 @@ import { copyText } from "../../Utilities/Copyable";
 import useApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import FloatingModal from "../../Utilities/FloatingModal";
+import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 
 export default function EndpointHeader() {
   const { activeEndpoint, ideReady } = useContext(SwizzleContext);
@@ -35,12 +36,12 @@ export default function EndpointHeader() {
 
   const runQuery = async () => {
     return toast.promise(askQuestion(prompt, AICommand), {
-      loading: "Generating code...",
+      loading: "Looking through your project...",
       success: (data) => {
-        if(response == null){
+        if(data == null){
           return "Something went wrong"
         }
-        setResponse(<>{data.recommendation_text}</>)
+        setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />)    
         return "Done";
       },
       error: "Error generating code",

@@ -9,6 +9,7 @@ import useApi from "../../API/MonitoringAPI";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 
 export default function LogRow({ message, freshLogs, setModalText }: { message: any, freshLogs: () => {}, setModalText: (text: ReactNode) => void }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -93,7 +94,7 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
     if(response == null){
       return "Something went wrong"
     }
-    setModalText(<>{response.recommendation_text}</>)    
+    setModalText(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(response.recommendation_text) }} />)    
   }
 
   return (
