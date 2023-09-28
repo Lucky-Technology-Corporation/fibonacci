@@ -9,18 +9,18 @@ export default function useApi() {
     const authHeader = useAuthHeader();
     const { activeProject, environment } = useContext(SwizzleContext);
 
-    const getDeploymentStatus = async () => {
+    const listProjectBuilds = async (page, pageSize) => {
         if (activeProject == "") return;
-        const response = await axios.get(`${BASE_URL}/projects/${activeProject}/deploymentStaus?env=${environment}`, {
+        const response = await axios.get(`${BASE_URL}/projects/${activeProject}/build/list?page=${page}&page_size=${pageSize}`, {
             headers: {
               Authorization: authHeader(),
             },
           });
-          console.log("Deploy api response is: " + response);
+          console.log("List project builds is: " + response);
           return response;
     };
 
     return {
-        getDeploymentStatus,
+        listProjectBuilds,
     }
 }

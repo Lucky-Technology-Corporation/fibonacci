@@ -98,9 +98,7 @@ export default function DeployButton({}: {}) {
       </button>
   
       {showDeployInfo && (
-        <div
-          className="absolute top-full right-0 mt-2" 
-        >
+        <div className="absolute top-full right-0 mt-2">
           <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} />
         </div>
       )}
