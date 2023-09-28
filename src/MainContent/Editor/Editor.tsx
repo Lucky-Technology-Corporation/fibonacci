@@ -54,13 +54,13 @@ export default function Editor({
     };
   }, []);
   
-  // useEffect(() => {
-  //   if(activeProject == undefined || activeProject == "") return
-  //   // const getUrl = async () => {
-  //   //   const fermatJwt = await getFermatJwt()
-  //   //   setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace("Bearer ", "")}`)
-  //   // }
-  //   // getUrl()
+  useEffect(() => {
+    if(activeProject == undefined || activeProject == "") return
+    const getUrl = async () => {
+      const fermatJwt = await getFermatJwt()
+      setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace("Bearer ", "")}`)
+    }
+    getUrl()
 
   //   async function getSrc() {
   //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {
@@ -77,7 +77,7 @@ export default function Editor({
 
   //   getSrc();
 
-  // }, [activeProject])
+  }, [activeProject])
 
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
@@ -85,7 +85,7 @@ export default function Editor({
     <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
       <iframe
         ref={iframeRef}
-        src={`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`}
+        src={theiaUrl}
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",
