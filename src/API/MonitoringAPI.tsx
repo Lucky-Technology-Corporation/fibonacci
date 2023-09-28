@@ -32,20 +32,14 @@ export default function useApi() {
     }
   };
 
-  const analyzeError = async (logs: string, requestDetails: any) => {
+  const analyzeError = async (requestDetails: any) => {
     try {
-      var query = logs
-      if (query == undefined || query == "") {
-        query = "(no logs were printed)"
-      }
-
       var currentFile = requestDetails.method.toLowerCase() + requestDetails.url.replace(/\//g, '-') + ".js"
 
       const response = await axios.post(
         `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         {
           question_type: "log",
-          user_query: logs,
           other_context: JSON.stringify(requestDetails),
           current_file: currentFile,
           fermat_domain: testDomain.replace("https://", "http://"),

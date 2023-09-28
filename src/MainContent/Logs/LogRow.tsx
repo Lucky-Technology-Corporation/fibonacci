@@ -13,57 +13,11 @@ import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 
 export default function LogRow({ message, freshLogs, setModalText }: { message: any, freshLogs: () => {}, setModalText: (text: ReactNode) => void }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [logDetails, setLogDetails] = useState<[] | null>(null);
   const { getLogDetails, analyzeError } = useApi();
   const { domain } = useContext(SwizzleContext);
-
-  useEffect(() => {
-    if (isExpanded && logDetails == null) {
-      getLogText(message.traceId).then((logs) => {
-        setLogDetails(logs);
-      })
-    }
-  }, [isExpanded]);
-
-  const cache: { [traceId: string]: any[] } = {};
-  const inProgress: Set<string> = new Set();
-  
-  const getLogText = async (traceId: string) => {
-    // Check if it's already in cache
-    if (cache[traceId]) {
-      return cache[traceId];
-    }
-  
-    // Block if it's already being fetched
-    if (inProgress.has(traceId)) {
-      return new Promise((resolve) => {
-        const interval = setInterval(() => {
-          if (cache[traceId]) {
-            clearInterval(interval);
-            resolve(cache[traceId]);
-          }
-        }, 100);
-      });
-    }
-  
-    inProgress.add(traceId);
-  
-    // Fetch data
-    const data = await getLogDetails(traceId);
-    inProgress.delete(traceId);
-  
-    if (data == null || data.logs == null) {
-      cache[traceId] = [];
-      return [];
-    }
-    
-    cache[traceId] = data.logs;
-    return data.logs;
-  };
   
   useEffect(() => {
     setIsExpanded(false);
-    setLogDetails(null);
   }, [message]);
 
   const formatDate = (inputDateStr: string) => {
@@ -89,8 +43,7 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
   }
 
   const fixRequest = async () => {
-    const logs = await getLogDetails(message.traceId)
-    const response = await analyzeError(logs, message)
+    const response = await analyzeError(message)
     if(response == null){
       return "Something went wrong"
     }
@@ -185,15 +138,9 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
       </tr>
       <tr className={`${isExpanded ? "" : "hidden"} border-b border-[#4C4F6B]`}>
         <td colSpan={9} className="text-left pl-20 text-xs py-3 word-wrap max-w-full font-mono">
-          {logDetails == null
-            ? "Loading..."
-            : logDetails.length == 0
-            ? "No logs"
-            : logDetails.map((log: any, index) => (
-                <div className="font-mono" key={index}>
-                  {log.text}
-                </div>
-              ))}
+          <div className="font-mono">
+            {message.logs.join("\n")}
+          </div>
         </td>
       </tr>
     </>
