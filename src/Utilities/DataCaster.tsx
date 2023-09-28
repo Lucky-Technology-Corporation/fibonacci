@@ -39,6 +39,11 @@ export function castValues(input: any): any {
 }
 
 export function replaceCodeBlocks(str: string){
-  const regex = /(`{1,3})([^`]+)\1/g;
-  return str.replace(regex, '<span className="font-mono">$2</span>');
-};
+  const regex = /(`{1,3})(?:[a-zA-Z]*)\n?([^`]+)\1/g;
+  return str.replace(regex, (_, __, code) => {
+    const escapedCode = code
+      .replace(/ /g, '&nbsp;')
+      .replace(/\n/g, '<br>');
+    return `<span style="font-family: monospace;">${escapedCode}</span>`;
+  });
+}
