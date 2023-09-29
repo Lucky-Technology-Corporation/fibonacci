@@ -98,19 +98,32 @@ export default function useApi() {
     }
   };
 
-  const askQuestion = async (userQuery: string, fileName: string) => {
+  const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-");
 
-      const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
-        {
+      var body = {}
+      if(aiCommand == "ask"){
+        body = {
+          question_type: "edit",
+          user_query: userQuery,
+          fermat_domain: testDomain.replace("https://", "http://"),
+          fermat_jwt: await getFermatJwt(),
+          current_file: "user-dependencies/" + fileName + ".js",
+        }
+      } else if(aiCommand == "edit"){
+        body = {
           question_type: "code",
           user_query: userQuery,
           fermat_domain: testDomain.replace("https://", "http://"),
           fermat_jwt: await getFermatJwt(),
           current_file: "user-dependencies/" + fileName + ".js",
-        },
+        }
+      }
+
+      const response = await axios.post(
+        `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
+        body,
         {
           headers: {
             Authorization: authHeader(),

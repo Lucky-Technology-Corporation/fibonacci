@@ -14,7 +14,7 @@ export default function EndpointHeader() {
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
-  const [AICommand, setAICommand] = useState<string>("ask");
+  const [AICommand, setAICommand] = useState<string>("edit");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
 
   const { askQuestion } = useApi();
@@ -34,6 +34,12 @@ export default function EndpointHeader() {
     }
   };
 
+  const aiOptions = [
+    { id: "edit", name: "Edit" },
+    { id: "ask", name: "Answer" },
+    { id: "create", name: "Create" },
+  ]
+
   const runQuery = async () => {
     return toast.promise(askQuestion(prompt, AICommand), {
       loading: "Looking through your project...",
@@ -41,7 +47,12 @@ export default function EndpointHeader() {
         if(data == null){
           return "Something went wrong"
         }
-        setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />)    
+        if(data.recommendation_text != undefined && data.recommendation_text != ""){
+          setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />)    
+        }
+        if(data.recommendation_code != undefined && data.recommendation_code != ""){
+
+        }
         return "Done";
       },
       error: "Error generating code",
@@ -61,17 +72,17 @@ export default function EndpointHeader() {
             className="ml-4 "
             onSelect={setAICommand}
             children={[
-              { id: "ask", name: "Ask" },
-              { id: "create", name: "Create" },
               { id: "edit", name: "Edit" },
+              { id: "ask", name: "Answer" },
+              { id: "create", name: "Create" },
             ]}
             direction="right"
-            title={AICommand.charAt(0).toUpperCase() + AICommand.slice(1)}
+            title={aiOptions.filter(n => n.id == AICommand)[0].name}
           />
 
           <input
             className="grow mx-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
-            placeholder={AICommand == "ask" ? "Ask any question..." : "Change this code to..."}
+            placeholder={AICommand == "ask" ? "Ask any question..." : (AICommand == "edit" ? "Change this code to..." : "Create a new endpoint that...")}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(event) => {
