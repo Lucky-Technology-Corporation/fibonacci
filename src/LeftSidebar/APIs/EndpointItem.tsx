@@ -26,6 +26,9 @@ export default function EndpointItem({
     }
   };
 
+  console.log(path)
+  console.log(method)
+
   return (
     <>
       <div

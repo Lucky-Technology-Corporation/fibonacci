@@ -37,7 +37,7 @@ export default function EndpointHeader() {
   const aiOptions = [
     { id: "edit", name: "Edit" },
     { id: "ask", name: "Answer" },
-    { id: "create", name: "Create" },
+    // { id: "create", name: "Create" },
   ]
 
   const runQuery = async () => {
@@ -71,12 +71,8 @@ export default function EndpointHeader() {
           <Dropdown
             className="ml-4 "
             onSelect={setAICommand}
-            children={[
-              { id: "edit", name: "Edit" },
-              { id: "ask", name: "Answer" },
-              { id: "create", name: "Create" },
-            ]}
-            direction="right"
+            children={aiOptions}
+            direction="left"
             title={aiOptions.filter(n => n.id == AICommand)[0].name}
           />
 

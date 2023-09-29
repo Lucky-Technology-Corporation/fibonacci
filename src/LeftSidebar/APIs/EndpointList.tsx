@@ -7,7 +7,8 @@ import useApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faFolder, faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import pluralize from 'pluralize';
 
 export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -16,7 +17,47 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const { activeProject, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
+  const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
+  const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
+  const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
 
+  const toggleCollapse = (path: string) => {
+    setCollapsedFolders((prev) => ({
+      ...prev,
+      [path]: !prev[path],
+    }));
+  };
+  
+  const transformToNested = (endpointList) => {
+    const result = {};
+    endpointList.forEach((endpoint) => {
+      const [method, ...pathComponents] = endpoint.split('/');
+      const path = pathComponents.join('/');
+  
+      // Special case for root and root parameter
+      if (path === '' || path.startsWith(':')) {
+        if (!result['']) {
+          result[''] = [];
+        }
+        result[''].push(endpoint);
+        return;
+      }
+  
+      // For non-root endpoints
+      const rootName = path.split('/')[0];
+      const singularRoot = pluralize.singular(rootName);
+  
+      if (!result[singularRoot]) {
+        result[singularRoot] = [];
+      }
+  
+      // Push the full endpoint (e.g., "GET/message/:id") into the array
+      result[singularRoot].push(endpoint);
+    });
+    return result;
+  };
+  
+  
   useEffect(() => {
     getFiles("endpoints")
       .then((data) => {
@@ -25,7 +66,7 @@ export default function EndpointList({ active }: { active: boolean }) {
         }
         const transformedEndpoints = data.children
           .map((endpoint: any) => {
-            return endpoint.name.replace(/-/g, "/").replace(".js", "");
+            return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
           })
           .filter((endpoint: string) => {
             return endpoint != "_swizzle_blank";
@@ -33,6 +74,9 @@ export default function EndpointList({ active }: { active: boolean }) {
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
         setActiveEndpoint(transformedEndpoints[0]);
+
+        const nestedEndpoints = transformToNested(transformedEndpoints);
+        setFullEndpointObj(nestedEndpoints);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -99,21 +143,34 @@ export default function EndpointList({ active }: { active: boolean }) {
       </div>
 
       <div className="ml-1">
-        {endpoints
-          .filter((e) => !e.includes(".html"))
-          .map((endpoint) => {
-            return (
-              <EndpointItem
-                key={endpoint}
-                path={formatEndpointName(endpoint)}
-                method={getMethodType(endpoint)}
-                active={endpoint == activeEndpoint}
-                onClick={() => {
-                  setActiveEndpoint(endpoint);
-                }}
-              />
-            );
-          })}
+        {Object.keys(fullEndpointObj).map((path) => (
+          <div key={path} 
+            className={'vertical-line mt-4 ml-2 cursor-pointer'} 
+          >
+            <div onClick={() => {toggleCollapse(path); setHoveredFolder(null)}} className={`ml-2 ${hoveredFolder === path ? "text-white font-bold" : "font-base"}`}
+                onMouseEnter={() => setHoveredFolder(path)}
+                onMouseLeave={() => setHoveredFolder(null)}
+            >
+              <div className="font-mono text-xs flex">
+              <img src={(collapsedFolders[path] ? (hoveredFolder === path ? "/open.svg" : "/closed.svg") : (hoveredFolder === path ? "/closed.svg" : "/open.svg"))} className="w-6 h-6 mr-1 m-auto ml-0" />
+              <div className="m-auto ml-0">{path}</div>
+              </div>
+            </div>
+            {!collapsedFolders[path] && (
+              <div className="ml-2">
+                {fullEndpointObj[path].map((endpoint, index) => (
+                  <EndpointItem
+                    key={index}
+                    path={"/" + endpoint.split("/")[1]}
+                    method={endpoint.split("/")[0].toUpperCase() as Method}
+                    active={endpoint.split("/")[0].toUpperCase() + '/' + path == activeEndpoint}
+                    onClick={() => setActiveEndpoint(endpoint.split("/")[0] + '/' + path)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       <APIWizard
