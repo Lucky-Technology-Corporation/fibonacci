@@ -139,7 +139,7 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
       <tr className={`${isExpanded ? "" : "hidden"} border-b border-[#4C4F6B]`}>
         <td colSpan={9} className="text-left pl-20 text-xs py-3 word-wrap max-w-full font-mono">
           <div className="font-mono">
-            {message.logs.join("\n")}
+            {(message.logs || []).join("\n")}
           </div>
         </td>
       </tr>

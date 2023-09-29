@@ -36,10 +36,12 @@ export default function CenterContent({
     <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
       <div
         style={{
-          display: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "block" : "none",
+          opacity: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "1" : "0",
+          pointerEvents: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "auto" : "none",
+          height: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "" : "1px",
         }}
       >
-        <div style={{ display: activeEndpoint || activeFile ? "block" : "none" }}>
+        <div style={{ opacity: activeEndpoint || activeFile ? "1" : "0" }}>
           <EndpointHeader />
           <Editor
             setCurrentFileProperties={setCurrentFileProperties}
