@@ -25,10 +25,7 @@ export default function EndpointItem({
         return "text-purple-400";
     }
   };
-
-  console.log(path)
-  console.log(method)
-
+  
   return (
     <>
       <div

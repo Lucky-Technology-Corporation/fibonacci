@@ -71,8 +71,9 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = false;
       return;
     }
+    console.log("activeEndpoint", activeEndpoint)
     if (activeEndpoint == undefined || activeEndpoint == "") return;
-    const fileName = activeEndpoint.replace(/\//g, "-");
+    const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
     setPostMessage({
       type: "openFile",
       fileName: `user-dependencies/${fileName}.js`,
@@ -88,7 +89,8 @@ export default function LeftSidebar({
       const newEndpoint = currentFileProperties.fileUri
         .split("user-dependencies/")[1]
         .replace(".js", "")
-        .replace(/-/g, "/");
+        .replace(/-/g, "/")
+        .replace(/_/g, ":");
       if (newEndpoint == activeEndpoint) return;
       programmatiFileUpdateRef.current = true;
       setActiveEndpoint(newEndpoint);

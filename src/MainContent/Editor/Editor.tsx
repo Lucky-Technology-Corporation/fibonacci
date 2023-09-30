@@ -60,12 +60,14 @@ export default function Editor({
   
   useEffect(() => {
     if(activeProject == undefined || activeProject == "") return
-    console.log("activeProject", activeProject)
-    setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`)
-    return
+    // console.log("activeProject", activeProject)
+    // setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`)
+    // return
+
+    // /#/home/swizzle_prod_user/code
     const getUrl = async () => {
       const fermatJwt = await getFermatJwt()
-      setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace("Bearer ", "")}`)
+      setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`)
     }
     getUrl()
 

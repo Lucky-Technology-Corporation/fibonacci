@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import jwt_decode from "jwt-decode";
@@ -14,6 +14,10 @@ export default function useApi() {
     const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
     return response.data.objects;
   };
+
+  useEffect(() =>{
+    setFermatJwt("")
+  }, [activeProject])
 
   const exchangeJwt = async () => {
     try {
@@ -66,7 +70,7 @@ export default function useApi() {
 
   const deploy = async () => {
     try {
-      const response = await axios.post(`${testDomain.replace("https://", "http://")}:1234/push_to_production`, {
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/push_to_production`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -86,7 +90,7 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "http://")}:1234/code/file_contents?path=code/${fileName}`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -100,7 +104,7 @@ export default function useApi() {
 
   const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, "-");
+      const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
 
       var body = {}
       if(aiCommand == "ask"){
@@ -167,7 +171,7 @@ export default function useApi() {
 
   const getAutocheckResponse = async () => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, "-");
+      const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
       const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
@@ -196,7 +200,7 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "http://")}:1234/code/package.json`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/package.json`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -222,7 +226,7 @@ export default function useApi() {
         path = "table_of_files";
       }
 
-      const response = await axios.get(`${testDomain.replace("https://", "http://")}:1234/${path}`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },

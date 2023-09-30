@@ -163,8 +163,8 @@ export default function EndpointList({ active }: { active: boolean }) {
                     key={index}
                     path={"/" + endpoint.split("/")[1]}
                     method={endpoint.split("/")[0].toUpperCase() as Method}
-                    active={endpoint.split("/")[0].toUpperCase() + '/' + path == activeEndpoint}
-                    onClick={() => setActiveEndpoint(endpoint.split("/")[0] + '/' + path)}
+                    active={endpoint == activeEndpoint}
+                    onClick={() => setActiveEndpoint(endpoint)}
                   />
                 ))}
               </div>
