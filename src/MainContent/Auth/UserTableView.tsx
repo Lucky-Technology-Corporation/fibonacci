@@ -38,7 +38,7 @@ export default function UserTableView() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const ITEMS_PER_PAGE = 20;
-  const hiddenColumns = ["_deactivated", "deviceId", "created_ip", "updatedAt", "updated_ip", "isAnonymous"]
+  const hiddenColumns = ["_deactivated", "deviceId", "created_ip", "updatedAt", "updated_ip", "isAnonymous", "_swizzle_subscription", "countryCode"]
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
@@ -214,6 +214,7 @@ export default function UserTableView() {
               <th className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"></th>
               {/* country flag */}
               <th className="w-6"></th> 
+              <th className="w-32"></th>
               {keys
                 .filter((k) => hiddenColumns.indexOf(k) == -1)
                 .map((key, index) => (

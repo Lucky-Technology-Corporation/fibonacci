@@ -59,7 +59,7 @@ export default function SignIn() {
       <div
         className="w-64 cursor-pointer text-center bg-black border-[#525363] hover:border-[#6f7082] hover:text-white border rounded-md p-3 text-lg font-medium m-auto"
         onClick={() => {
-          location.href = "https://github.com/login/oauth/authorize?client_id=d95918858b376aa1aa40";
+          location.href = "https://github.com/login/oauth/authorize?client_id=" + process.env.GITHUB_CLIENT_ID;
         }}
       >
         <div className="flex m-auto w-fit">
