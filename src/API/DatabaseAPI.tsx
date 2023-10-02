@@ -4,7 +4,7 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 import { useContext } from "react";
 import { useSignOut } from "react-auth-kit";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
@@ -13,7 +13,7 @@ export default function useApi() {
 
   const getCollections = async () => {
     if (activeProject == "") return;
-    const response = await axios.get(`${BASE_URL}/projects/${activeProject}/collections?env=${environment}`, {
+    const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections?env=${environment}`, {
       headers: {
         Authorization: authHeader(),
       },
@@ -44,7 +44,7 @@ export default function useApi() {
       }
 
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -65,7 +65,7 @@ export default function useApi() {
     if (activeCollection == "") return;
     try {
       const response = await axios.patch(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
         { document: data },
         {
           headers: {
@@ -87,7 +87,7 @@ export default function useApi() {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}?env=${environment}`,
         { documents: [newDocument] },
         {
           headers: {
@@ -107,7 +107,7 @@ export default function useApi() {
       if (activeProject == "") return;
       if (activeCollection == "") return;
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -125,7 +125,7 @@ export default function useApi() {
     try {
       if (activeProject == "") return;
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/collections?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections?env=${environment}`,
         { name: name },
         {
           headers: {
@@ -144,7 +144,7 @@ export default function useApi() {
     try {
       if (activeProject == "") return;
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/collections/${name}?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${name}?env=${environment}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -161,7 +161,7 @@ export default function useApi() {
   // const runEnglishSearchQuery = async (query: string, exampleDoc: string) => {
   //   try {
   //     const response = await axios.post(
-  //       `${BASE_URL}/ai`,
+  //       `${NEXT_PUBLIC_BASE_URL}/ai`,
   //       {
   //         english_description: query,
   //         example_doc: exampleDoc,
@@ -201,7 +201,7 @@ export default function useApi() {
         queryObject["sort_direction"] = sortDirection;
       }
 
-      var url = `${BASE_URL}/projects/${activeProject}/collections/${collectionName}/search?env=${environment}`;
+      var url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${collectionName}/search?env=${environment}`;
 
       const response = await axios.post(url, queryObject, {
         headers: {
@@ -217,7 +217,7 @@ export default function useApi() {
 
   const createProject = async (name: string) => {
     const response = await axios.post(
-      `${BASE_URL}/projects`,
+      `${NEXT_PUBLIC_BASE_URL}/projects`,
       { name, deploy_production: true },
       {
         headers: {
@@ -231,7 +231,7 @@ export default function useApi() {
 
   const getProjects = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/projects`, {
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects`, {
         headers: {
           Authorization: authHeader(),
         },

@@ -4,7 +4,7 @@ import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import jwt_decode from "jwt-decode";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
@@ -21,7 +21,7 @@ export default function useApi() {
 
   const exchangeJwt = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/fermat/jwt`, {
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/fermat/jwt`, {
         headers: {
           Authorization: authHeader(),
         },
@@ -126,7 +126,7 @@ export default function useApi() {
       }
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         body,
         {
           headers: {
@@ -150,7 +150,7 @@ export default function useApi() {
   //     const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
   //     const response = await axios.post(
-  //       `${BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
+  //       `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
   //       {
   //         userQuery: userQuery,
   //         aiAction: aiAction,
@@ -175,7 +175,7 @@ export default function useApi() {
       const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
         {
           file_contents: fileContents,
         },

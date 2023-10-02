@@ -4,7 +4,7 @@ import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useApi from "./DatabaseAPI";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useTestApi() {
   const authHeader = useAuthHeader();
@@ -16,7 +16,7 @@ export default function useTestApi() {
   } = useApi();
 
   const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
-  const BASE_URL_USER = testDomain.replace("https://", "https://runner.");
+  const NEXT_PUBLIC_BASE_URL_USER = testDomain.replace("https://", "https://runner.");
   const activeCollection = "_swizzle_usertests";
 
   const runTest = async (testDoc) => {
@@ -27,7 +27,7 @@ export default function useTestApi() {
       }
 
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -40,7 +40,7 @@ export default function useTestApi() {
       const method = activeEndpoint.split("/")[0].toUpperCase();
       const header = `Bearer ${jwtToken}`;
       const endpointPath = "/" + activeEndpoint.split("/")[1];
-      const url = `${BASE_URL_USER}${endpointPath}?${testDoc.queryParametersString}`;
+      const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}?${testDoc.queryParametersString}`;
       const body = testDoc.body;
 
       switch (method) {
