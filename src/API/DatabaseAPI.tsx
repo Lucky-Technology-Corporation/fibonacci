@@ -231,6 +231,7 @@ export default function useApi() {
 
   const getProjects = async () => {
     try {
+      console.log(NEXT_PUBLIC_BASE_URL)
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects`, {
         headers: {
           Authorization: authHeader(),

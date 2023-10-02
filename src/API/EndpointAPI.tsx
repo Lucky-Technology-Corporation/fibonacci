@@ -15,10 +15,6 @@ export default function useApi() {
     return response.data.objects;
   };
 
-  useEffect(() =>{
-    setFermatJwt("")
-  }, [activeProject])
-
   const exchangeJwt = async () => {
     try {
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/fermat/jwt`, {

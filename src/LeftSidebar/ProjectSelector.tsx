@@ -28,6 +28,7 @@ export default function ProjectSelector() {
     environment,
     setTestDeployStatus,
     setProdDeployStatus,
+    setFermatJwt
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -57,6 +58,8 @@ export default function ProjectSelector() {
     setActiveProjectName(project.name);
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
+
+    setFermatJwt("")
 
     setTestDomain(project.test_swizzle_domain);
     setProdDomain(project.prod_swizzle_domain);
