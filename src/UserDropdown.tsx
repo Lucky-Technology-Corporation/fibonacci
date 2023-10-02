@@ -51,6 +51,10 @@ export default function UserDropdown() {
     });
   };
 
+  const openStripe = () => {
+    window.open("https://buy.stripe.com/dR617UeRDdgac3C8ww?client_reference_id=" + auth()?.developerId, "_blank");
+  }
+
   return (
     <>
       <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
@@ -82,7 +86,9 @@ export default function UserDropdown() {
         >
           <Menu.Items className="absolute left-0 bottom-8 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
-            <Menu.Item>
+
+
+              <Menu.Item>
                 {({ active }) => (
                   <a
                     href="#"

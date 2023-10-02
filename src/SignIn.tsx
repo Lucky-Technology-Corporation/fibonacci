@@ -18,8 +18,20 @@ export default function SignIn() {
     }
   };
 
+  const getIdFromJWT = (token: string) => {
+    try {
+      let decoded = jwt_decode(token) as any;
+      return decoded.developer_id;
+    } catch (e) {
+      console.error(e);
+      console.log("Couldn't get ID from JWT");
+      return "UNKNOWN";
+    }
+  }
+
   const signInWithJWT = (jwt: string) => {
     const userName = getNameFromJWT(jwt);
+    const id = getIdFromJWT(jwt);
     if (
       signIn({
         token: jwt,
@@ -27,6 +39,7 @@ export default function SignIn() {
         authState: {
           isAuthenticated: true,
           user: userName,
+          developerId: id,
         },
         tokenType: "Bearer",
       })
