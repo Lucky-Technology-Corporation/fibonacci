@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { ReactNode, useContext, useEffect } from "react";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import Dropdown from "../../Utilities/Dropdown";
 import { useState } from "react";
@@ -9,11 +9,15 @@ import FullPageModal from "../../Utilities/FullPageModal";
 import axios from "axios";
 import useApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
+import FloatingModal from "../../Utilities/FloatingModal";
+import Checkbox from "../../Utilities/Checkbox";
+import EndpointItem from "../../LeftSidebar/APIs/EndpointItem";
+import { Method } from "../../Utilities/Method";
 
 export default function AppCodePage() {
     const { activeProject, environment, figmaToken, setFigmaToken } = useContext(SwizzleContext);
 
-    const {getCodeFromFigma} = useApi()
+    const {getCodeFromFigma, getFiles} = useApi()
 
     const languages: any = [
         { id: "swift", name: "Swift" },
@@ -22,8 +26,12 @@ export default function AppCodePage() {
     ];
     const [selectedMethod, setSelectedMethod] = useState<string>("swift");
     const [isInputVisible, setIsInputVisible] = useState<boolean>(false);
+    const [modalInputContent, setModalInputContent] = useState<ReactNode>(null);
+    const [includedEndpoints, setIncludedEndpoints] = useState<string[]>([]);
 
     const authenticateAndOpen = () => {
+        toast.error("Figma code generation is in alpha. Your account only has access to beta or higher.")
+        return
         if(figmaToken == ""){
             const randomString = Math.random().toString(36).substring(7);
             location.href = `https://www.figma.com/oauth?client_id=4bYemRCF1wcQlAlSSDRvLD44VE3wxr&redirect_uri=https://usesilverback.com&scope=files:read&state=${randomString}&response_type=code`
@@ -37,13 +45,91 @@ export default function AppCodePage() {
         
     }
 
+    const openModelGenerator = async () => {
+        toast.promise(getFiles("endpoints"), {
+            loading: "Looking thorugh your project",
+            success: (data: any) => {
+                openModelGeneratorModal(data);
+                return "Created project map";
+            },
+            error: () => {
+                return "Failed to understand your project";
+            },
+        });
+    }
+    const openModelGeneratorModal = async (data: any) => {
+        if (data == undefined || data.children == undefined || data.children.length == 0) {
+            return;
+        }
+        const transformedEndpoints = data.children
+            .map((endpoint: any) => {
+                return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
+            })
+            .filter((endpoint: string) => {
+                return endpoint != "_swizzle_blank";
+            });
+
+        console.log(transformedEndpoints)
+
+        
+        const content = (
+            <div className="flex flex-col space-y-2">
+                <table>
+                    <tr>
+                        <th className="">
+                            Endpoint
+                        </th>
+                        <th className="">
+                            
+                        </th>
+                    </tr>
+                    {transformedEndpoints.map((endpoint: string) => {
+                        <tr>
+                            <td className="py-1 text-center">
+                            <EndpointItem
+                                key={endpoint}
+                                path={"/" + endpoint.split("/")[1]}
+                                method={endpoint.split("/")[0].toUpperCase() as Method}
+                            />
+                            </td>
+                            <td className="py-1 text-center">
+                                <Checkbox
+                                    id={endpoint}
+                                    label={includedEndpoints.includes(endpoint) ? "Included" : "Not included"}
+                                    isChecked={includedEndpoints.includes(endpoint)}
+                                    setIsChecked={(checked: boolean) => {
+                                        if (checked) {
+                                            setIncludedEndpoints([...includedEndpoints, endpoint]);
+                                        } else {
+                                            setIncludedEndpoints(includedEndpoints.filter((e) => e != endpoint));
+                                        }
+                                    }}
+                                />
+                            </td>
+                        </tr>
+                    })}
+                </table>
+                <div className="w-24 ml-auto">
+                    <Button
+                        text="Next"
+                        onClick={() => {}}
+                    />
+                </div>
+            </div>
+        )
+        setModalInputContent(content)
+    }
+
 
     return(
         <div className="h-full overflow-scroll min-h-[50vh]">
 
         <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
           <div>
-            <div className={`font-bold text-base`}>Frontend</div>
+            <div className={`font-bold text-base`}>
+                Frontend
+                <div className="m-auto ml-2 inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">Beta</div>
+            </div>
             <div className={`text-sm mt-0.5`}>Download pre-generated code linked to your backend</div>
           </div>
 
@@ -51,7 +137,7 @@ export default function AppCodePage() {
             className="my-auto"
             onSelect={(item: any) => {
                 if(item != "swift"){
-                    toast.error("Only Swift is supported for now")
+                    toast.error("Multi language code generation is in alpha. Your account only has access to beta or higher.")
                     return;
                 }
                 setSelectedMethod(item);
@@ -74,7 +160,7 @@ export default function AppCodePage() {
             </thead>
             <tbody className="overflow-y-scroll">
                 <tr>
-                    <td className="py-2 pl-2 underline decoration-dotted cursor-pointer">Model.swift</td>
+                    <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={openModelGenerator}>Model.swift</td>
                     <td className="py-2">Provides the functions that call your backend</td>
                     <td className="py-2 opacity-70 cursor-pointer hover:opacity-100"><FontAwesomeIcon icon={faTrash} /></td>
                 </tr>
@@ -88,6 +174,12 @@ export default function AppCodePage() {
             </tbody>
           </table>
         </div>
+
+        <FloatingModal
+            content={modalInputContent}
+            closeModal={() => {setModalInputContent(null)}}
+        />
+
         <FullPageModal
             isVisible={isInputVisible}
             setIsVisible={setIsInputVisible}

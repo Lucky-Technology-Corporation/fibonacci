@@ -139,7 +139,7 @@ export default function EndpointList({ active }: { active: boolean }) {
           }}
           className="max-w-[21px] mr-2"
         />
-        <div className="flex items-center">Endpoints</div>
+        <div className="flex items-center">APIs</div>
       </div>
 
       <div className="ml-1">
@@ -171,6 +171,17 @@ export default function EndpointList({ active }: { active: boolean }) {
             )}
           </div>
         ))}
+      </div>
+
+      <div className="font-semibold ml-2 mt-2 flex">
+        <SectionAction
+          text="+"
+          onClick={() => {
+            setIsVisible(true);
+          }}
+          className="max-w-[21px] mr-2"
+        />
+        <div className="flex items-center">Helpers</div>
       </div>
 
       <APIWizard

@@ -216,9 +216,11 @@ export default function useApi() {
   };
 
   const createProject = async (name: string) => {
+    var shouldDeployProd = false
+    if(name.includes("_prod")){ shouldDeployProd = true }
     const response = await axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
-      { name, deploy_production: true },
+      { name, deploy_production: shouldDeployProd },
       {
         headers: {
           Authorization: authHeader(),

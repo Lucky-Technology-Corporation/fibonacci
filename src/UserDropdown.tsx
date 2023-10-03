@@ -113,6 +113,8 @@ export default function UserDropdown() {
                       "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
                     )}
                     onClick={() => {
+                      toast.error("Collaboration is pre-alpha. Your account only has access to beta or higher.")
+                      return
                       setInviteVisible(true);
                     }}
                   >
