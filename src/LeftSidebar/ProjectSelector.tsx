@@ -128,8 +128,8 @@ export default function ProjectSelector() {
         regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/}
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
-          title: "🥋 New project (include the word '_prod' to deploy to prod)",
-          description: <>Enter a name for your project</>,
+          title: "🥋 New project",
+          description: <div className="flex"><img src="/scott.jpeg" className="w-8 h-8 rounded-full mr-1"/><div className="my-auto">Scott Says: "Include the word 'prod' to deploy to prod"</div></div>,
           placeholder: "My awesome project",
           confirmText: "Create",
           confirmHandler: createNewProject,
