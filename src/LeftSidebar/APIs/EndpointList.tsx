@@ -102,14 +102,6 @@ export default function EndpointList({ active }: { active: boolean }) {
     }
   }, [active, endpoints]);
 
-  const formatEndpointName = (endpoint: string) => {
-    return "/" + endpoint.split("/")[1];
-  };
-
-  const getMethodType = (endpoint: string) => {
-    return endpoint.split("/")[0].toUpperCase() as Method;
-  };
-
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>

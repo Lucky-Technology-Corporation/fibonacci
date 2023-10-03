@@ -16,6 +16,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [postMessage, setPostMessage] = useState(null);
   const [activeEndpoint, setActiveEndpoint] = useState("");
   const [activeFile, setActiveFile] = useState("");
+  const [activeHelper, setActiveHelper] = useState("");
   const [ideReady, setIdeReady] = useState(false);
   const [testDeployStatus, setTestDeployStatus] = useState("live");
   const [prodDeployStatus, setProdDeployStatus] = useState("pending");

@@ -215,6 +215,8 @@ export default function useApi() {
       var path = "table_of_contents";
       if (fileTypes.toLowerCase() == "files") {
         path = "table_of_files";
+      } else if(fileTypes.toLowerCase() == "helpers"){
+        path = "table_of_helpers"
       }
 
       const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
