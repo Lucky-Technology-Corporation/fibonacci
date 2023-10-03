@@ -10,6 +10,7 @@ import MonitoringPage from "./Logs/MonitoringPage";
 import { useContext, useState, useEffect} from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import NotificationPage from "./Notifications/NotificationPage";
+import AppCodePage from "./AppCode/AppCodePage";
 
 type CenterContentProps = {
   selectedTab: Page; 
@@ -94,6 +95,11 @@ export default function CenterContent({
           <NotificationPage />
         </div>
       </div>
+      <div style={{ display: selectedTab === Page.AppCode ? "block" : "none" }}>
+        <div className="m-2 ml-3 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+          <AppCodePage />
+        </div>
+      </div>      
     </div>
   );
 }

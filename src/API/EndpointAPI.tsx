@@ -107,7 +107,7 @@ export default function useApi() {
         body = {
           question_type: "edit",
           user_query: userQuery,
-          fermat_domain: testDomain.replace("https://", "http://"),
+          fermat_domain: testDomain.replace("https://", "https://fermat."),
           fermat_jwt: await getFermatJwt(),
           current_file: "user-dependencies/" + fileName + ".js",
         }
@@ -115,7 +115,7 @@ export default function useApi() {
         body = {
           question_type: "code",
           user_query: userQuery,
-          fermat_domain: testDomain.replace("https://", "http://"),
+          fermat_domain: testDomain.replace("https://", "https://fermat."),
           fermat_jwt: await getFermatJwt(),
           current_file: "user-dependencies/" + fileName + ".js",
         }
@@ -137,33 +137,28 @@ export default function useApi() {
     }
   };
 
+  const getCodeFromFigma = async (figmaUrl: string, language: string) => {
+    const figmaFileId = figmaUrl.split("file/")[1].split("/")[0];
+    const nodeId = figmaUrl.split("node-id=")[1].split("&")[0];
+    const response = await axios.post(
+      `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/figma?env=${environment}`,
+      {
+        figma_file_id: figmaFileId,
+        figma_node_id: nodeId,
+        language: language,
+        fermat_domain: testDomain.replace("https://", "https://fermat."),
+        fermat_jwt: await getFermatJwt(),
+      },
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
+      },
+    );
 
-  // const getAIResponseToFile = async (userQuery: string, aiAction: string) => {
-  //   //TODO: pull in code from imported files
-  //   //TODO: split files into chunks an summarize long functions
-  //   try {
-  //     const fileName = activeEndpoint.replace(/\//g, "-");
-  //     const fileContents = await getFile("user-dependencies/" + fileName + ".js");
+    return response.data;
+  }
 
-  //     const response = await axios.post(
-  //       `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
-  //       {
-  //         userQuery: userQuery,
-  //         aiAction: aiAction,
-  //         fileContents: fileContents,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: authHeader(),
-  //         },
-  //       },
-  //     );
-  //     return response.data;
-  //   } catch (e) {
-  //     console.error(e);
-  //     return "";
-  //   }
-  // };
 
   const getAutocheckResponse = async () => {
     try {
@@ -252,6 +247,7 @@ export default function useApi() {
     askQuestion,
     getAutocheckResponse,
     deploy,
-    getFermatJwt
+    getFermatJwt,
+    getCodeFromFigma
   };
 }

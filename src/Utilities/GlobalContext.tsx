@@ -20,6 +20,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [testDeployStatus, setTestDeployStatus] = useState("live");
   const [prodDeployStatus, setProdDeployStatus] = useState("pending");
   const [fermatJwt, setFermatJwt] = useState("");
+  const [figmaToken, setFigmaToken] = useState("");
 
   return (
     <SwizzleContext.Provider
@@ -58,6 +59,8 @@ export const GlobalContextProvider = ({ children }) => {
         setProdDeployStatus,
         fermatJwt,
         setFermatJwt,
+        figmaToken,
+        setFigmaToken,
       }}
     >
       {children}
