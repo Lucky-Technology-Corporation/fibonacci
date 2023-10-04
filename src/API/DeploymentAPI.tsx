@@ -16,8 +16,7 @@ export default function useApi() {
               Authorization: authHeader(),
             },
           });
-          console.log("List project builds is: " + response);
-          return response;
+          return response.data;
     };
 
   return {
