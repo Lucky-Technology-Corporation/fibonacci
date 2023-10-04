@@ -17,7 +17,6 @@ export default function useApi() {
       },
     });
 
-    console.log(response);
     return response.data;
   };
 

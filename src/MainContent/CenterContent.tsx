@@ -49,16 +49,12 @@ export default function CenterContent({
             display: !activeEndpoint && selectedTab === Page.Apis ? "block" : "none",
           }}
         >
-          <div className="flex-grow flex flex-col items-center justify-center">
+          <div className="flex-grow flex flex-col items-center justify-center mt-[-95vh]">
             <div className="text-lg mt-12 mb-4 font-bold">No endpoint selected</div>
             <div className="text-md">👈 Create or select an endpoint from the list</div>
           </div>
         </div>
-        <div
-          style={{
-            display: !activeFile && selectedTab === Page.Hosting ? "block" : "none",
-          }}
-        >
+        <div style={{display: !activeFile && selectedTab === Page.Hosting ? "block" : "none"}}>
           <div className="flex-grow flex flex-col items-center justify-center">
             <div className="text-lg mt-12 mb-4 font-bold">No file selected</div>
             <div className="text-md">👈 Create or select a file from the list</div>
@@ -67,32 +63,32 @@ export default function CenterContent({
       </div>
 
       <div style={{ display: selectedTab === Page.Auth ? "block" : "none" }}>
-        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
           <UserTableView />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Db ? "block" : "none" }}>
-        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
           <DatabaseView activeCollection={activeCollection} />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Storage ? "block" : "none" }}>
-        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
           <ObjectTableView />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
-        <div className="m-4 ml-0 text-sm whitespace-pre-line max-h-[100vh] min-h-[50vh] overflow-scroll">
+        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] min-h-[50vh] overflow-scroll">
           <MonitoringPage activeLogsPage={activeLogsPage} />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>
-        <div className="m-2 ml-3 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
           <NotificationPage />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.AppCode ? "block" : "none" }}>
-        <div className="m-2 ml-3 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
           <AppCodePage />
         </div>
       </div>      

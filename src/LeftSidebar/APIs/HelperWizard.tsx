@@ -4,78 +4,67 @@ import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import toast from "react-hot-toast";
 
-export default function APIWizard({
+export default function HelperWizard({
   isVisible,
   setIsVisible,
-  setEndpoints,
-  setFullEndpoints,
+  setHelpers,
+  setFullHelpers,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
-  setEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
-  setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
+  setHelpers: React.Dispatch<React.SetStateAction<any[]>>;
+  setFullHelpers: React.Dispatch<React.SetStateAction<any[]>>;
 }) {
   const [inputValue, setInputValue] = useState("");
-  const [selectedMethod, setSelectedMethod] = useState<string>("get");
-  const { setPostMessage, setActiveEndpoint } = useContext(SwizzleContext);
-
-  const methods: any = [
-    { id: "get", name: "GET" },
-    { id: "post", name: "POST" },
-  ]; 
-
+  const { setPostMessage, setActiveHelper } = useContext(SwizzleContext);
 
   const createHandler = () => {
-    var cleanInputValue = inputValue;
     if (inputValue == "") {
       toast.error("Please enter a value");
       return;
     }
-    if (inputValue.startsWith("/")) {
-      cleanInputValue = inputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
-    }
-    const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
+    const fileName = inputValue + ".js";
     
     const methodAndPath = fileName.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
     const [method, ...pathComponents] = methodAndPath.split('/');
     const path = pathComponents.join('/');
 
-    let newEndpointName;
+    let newHelperName;
     if (path === "") {
-      newEndpointName = `${method}/`;
+      newHelperName = `${method}/`;
     } else {
-      newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
+      newHelperName = `${method}/${path.replace(/\/+$/, "")}`;
     }
 
     let isDuplicate = false;
-    setFullEndpoints((endpoints: any[]) => {
-      if (!endpoints.includes(newEndpointName)) {
-        return [...endpoints, newEndpointName];
+    setFullHelpers((helpers: any[]) => {
+      if (!helpers.includes(newHelperName)) {
+        return [...helpers, newHelperName];
       }
       isDuplicate = true;
-      return endpoints;
+      return helpers;
     });
 
-    setEndpoints((endpoints: any[]) => {
-      if (!endpoints.includes(newEndpointName)) {
-        return [...endpoints, newEndpointName];
+    setHelpers((helpers: any[]) => {
+      if (!helpers.includes(newHelperName)) {
+        return [...helpers, newHelperName];
       }
       isDuplicate = true;
-      return endpoints;
+      return helpers;
     });
 
     if (isDuplicate) {
-      toast.error("That endpoint already exists");
+      toast.error("That helper already exists");
       return;
     }
     setPostMessage({
       type: "newFile",
       fileName: "user-dependencies/" + fileName,
-      endpointName: newEndpointName,
+      helperName: newHelperName,
     });
     setIsVisible(false);
     setTimeout(() => {
-      setActiveEndpoint(newEndpointName);
+      setActiveHelper(newHelperName);
     }, 500);
   };
 
@@ -103,30 +92,21 @@ export default function APIWizard({
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
                 <>
                   <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    New API
+                    New Helper
                   </h3>
                   <div className="mt-1">
-                    <p className="text-sm text-[#D9D9D9]">Name your endpoint</p>
+                    <p className="text-sm text-[#D9D9D9]">Name your function</p>
                   </div>
                   <div className="mt-3 mb-2 flex">
-                    <Dropdown
-                      className="mr-2"
-                      onSelect={(item: any) => {
-                        setSelectedMethod(item);
-                      }}
-                      children={methods}
-                      direction="left"
-                      title={selectedMethod.toUpperCase()}
-                    />
                     <input
                       type="text"
                       value={inputValue}
                       onChange={(e) => {
-                        const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9:/]/g, '');
+                        const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
                         setInputValue(sanitizedValue.trim());
                       }}
                       className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                      placeholder={"/path/:variable"}
+                      placeholder={"myHelperFunction"}
                       onKeyDown={(event: any) => {
                         if (event.key == "Enter") {
                           createHandler();

@@ -183,17 +183,16 @@ export default function UserTableView() {
     <div>
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
-          <div className={`font-bold text-base`}>{activeProjectName} users</div>
+          <div className={`font-bold text-base`}>Users</div>
           <div className={`text-sm mt-0.5`}>
-            Create users{" "}
             <a
               href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4"
               target="_blank"
               rel="nofollow"
               className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
             >
-              from your app.
-            </a>
+              Read more
+            </a> about creating users.
           </div>
         </div>
       </div>

@@ -10,10 +10,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import pluralize from 'pluralize';
 import HelperItem from "./HelperItem";
+import TemplateWizard from "./TemplateWizard";
+import HelperWizard from "./HelperWizard";
 // import HelperWizard from "./HelperWizard";
 
 export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isTemplateWizardVisible, setIsTemplateWizardVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
   const { getFiles } = useApi();
@@ -125,6 +128,15 @@ export default function EndpointList({ active }: { active: boolean }) {
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
+      
+      <SectionAction
+        text="+ Add Template"
+        onClick={() => {
+          setIsTemplateWizardVisible(true);
+        }}
+        className="py-1.5 px-1 !my-1.5 !mb-2 mx-1"
+      />
+
       <div className="flex ml-2 mt-2">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
@@ -189,11 +201,11 @@ export default function EndpointList({ active }: { active: boolean }) {
         <SectionAction
           text="+"
           onClick={() => {
-            setIsVisible(true);
+            setIsHelperWizardVisible(true);
           }}
           className="max-w-[21px] mr-2"
         />
-        <div className="flex items-center">Helpers</div>
+        <div className="flex items-center">Functions</div>
       </div>
       <div className="ml-1">
         {fullHelperList.map((helper, index) => {
@@ -213,12 +225,21 @@ export default function EndpointList({ active }: { active: boolean }) {
         setEndpoints={setEndpoints}
         setFullEndpoints={setFullEndpointList}
       />
-      {/* <HelperWizard
+      <HelperWizard
         isVisible={isHelperWizardVisible}
         setIsVisible={setIsHelperWizardVisible}
         setHelpers={setHelperList}
         setFullHelpers={setFullHelperList}
-      /> */}
+      />
+      <TemplateWizard
+        isVisible={isTemplateWizardVisible}
+        setIsVisible={setIsTemplateWizardVisible}
+        setEndpoints={setEndpoints}
+        setFullEndpoints={setFullEndpointList}
+        setHelpers={setHelperList}
+        setFullHelpers={setFullHelperList}
+      />
+
     </div>
   );
 }

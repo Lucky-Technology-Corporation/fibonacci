@@ -113,6 +113,11 @@ export default function NotificationPageSetUp({
       <div className="flex justify-center items-center">
         <div className="w-80 flex justify-end mt-4">
           <Button
+            text="Cancel"
+            onClick={() => setShowSetUp(false)}
+            className={`${savedBundleID && savedKeyID && savedP8Key && savedTeamID ? "" : "hidden"} mr-2 w-20 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium hover:bg-[#44464f] sm:text-sm cursor-pointer`}
+          />
+          <Button
             text="Save"
             onClick={() => save(p8Key, keyID, teamID, bundleID)}
             className="w-20 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#33333c] text-base font-medium hover:bg-[#44464f] sm:text-sm cursor-pointer"

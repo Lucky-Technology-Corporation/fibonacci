@@ -13,7 +13,7 @@ type NotificationsTableProps = {
 
 const NotificationsTable: React.FunctionComponent<NotificationsTableProps> = ({ notifications }) => {
   return (
-    <table className="w-full max-w-8xl mx-auto border-collapse">
+    <table className="w-full max-w-8xl mx-auto border-collapse mb-8">
       <thead>
         <tr>
           <th className="rounded-tl-lg border-b border-gray-600 shadow-sm px-4 py-2 text-left bg-[#33333c]">Time</th>
