@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
-import pluralize from 'pluralize';
+import pluralize from "pluralize";
 import HelperItem from "./HelperItem";
 import TemplateWizard from "./TemplateWizard";
 import HelperWizard from "./HelperWizard";
@@ -21,13 +21,13 @@ export default function EndpointList({ active }: { active: boolean }) {
 
   const { getFiles } = useApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
-  
+
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
 
-  const { activeProject, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
+  const { activeProject, activeEndpoint, setActiveEndpoint, shouldRefreshList } = useContext(SwizzleContext);
   const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
   const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
   const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
@@ -38,38 +38,38 @@ export default function EndpointList({ active }: { active: boolean }) {
       [path]: !prev[path],
     }));
   };
-  
+
   const transformToNested = (endpointList) => {
     const result = {};
     endpointList.forEach((endpoint) => {
-      const [method, ...pathComponents] = endpoint.split('/');
-      const path = pathComponents.join('/');
-  
+      const [method, ...pathComponents] = endpoint.split("/");
+      const path = pathComponents.join("/");
+
       // Special case for root and root parameter
-      if (path === '' || path.startsWith(':')) {
-        if (!result['']) {
-          result[''] = [];
+      if (path === "" || path.startsWith(":")) {
+        if (!result[""]) {
+          result[""] = [];
         }
-        result[''].push(endpoint);
+        result[""].push(endpoint);
         return;
       }
-  
+
       // For non-root endpoints
-      const rootName = path.split('/')[0];
+      const rootName = path.split("/")[0];
       const singularRoot = pluralize.singular(rootName);
-  
+
       if (!result[singularRoot]) {
         result[singularRoot] = [];
       }
-  
+
       // Push the full endpoint (e.g., "GET/message/:id") into the array
       result[singularRoot].push(endpoint);
     });
     return result;
   };
-  
-  
+
   useEffect(() => {
+    console.log("rendered endpointlist")
     getFiles("endpoints")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
@@ -93,19 +93,20 @@ export default function EndpointList({ active }: { active: boolean }) {
         toast.error("Error fetching endpoints");
         console.error(e);
       });
-      
+
     getFiles("helpers")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
           return;
         }
-        setHelperList(data.children)
-        setFullHelperList(data.children)
-      }).catch((e) => {
+        setHelperList(data.children);
+        setFullHelperList(data.children);
+      })
+      .catch((e) => {
         toast.error("Error fetching helpers");
         console.error(e);
-      })
-  }, [activeProject]);
+      });
+  }, [activeProject, shouldRefreshList]);
 
   //Used to filter the endopint list
   useEffect(() => {
@@ -128,7 +129,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-      
       <SectionAction
         text="+ Add Template"
         onClick={() => {
@@ -168,16 +168,30 @@ export default function EndpointList({ active }: { active: boolean }) {
 
       <div className="ml-1">
         {Object.keys(fullEndpointObj).map((path) => (
-          <div key={path} 
-            className={'vertical-line mt-4 ml-2 cursor-pointer'} 
-          >
-            <div onClick={() => {toggleCollapse(path); setHoveredFolder(null)}} className={`ml-2 ${hoveredFolder === path ? "text-white font-bold" : "font-base"}`}
-                onMouseEnter={() => setHoveredFolder(path)}
-                onMouseLeave={() => setHoveredFolder(null)}
+          <div key={path} className={"vertical-line mt-4 ml-2 cursor-pointer"}>
+            <div
+              onClick={() => {
+                toggleCollapse(path);
+                setHoveredFolder(null);
+              }}
+              className={`ml-2 ${hoveredFolder === path ? "text-white font-bold" : "font-base"}`}
+              onMouseEnter={() => setHoveredFolder(path)}
+              onMouseLeave={() => setHoveredFolder(null)}
             >
               <div className="font-mono text-xs flex">
-              <img src={(collapsedFolders[path] ? (hoveredFolder === path ? "/open.svg" : "/closed.svg") : (hoveredFolder === path ? "/closed.svg" : "/open.svg"))} className="w-6 h-6 mr-1 m-auto ml-0" />
-              <div className="m-auto ml-0">{path}</div>
+                <img
+                  src={
+                    collapsedFolders[path]
+                      ? hoveredFolder === path
+                        ? "/open.svg"
+                        : "/closed.svg"
+                      : hoveredFolder === path
+                      ? "/closed.svg"
+                      : "/open.svg"
+                  }
+                  className="w-6 h-6 mr-1 m-auto ml-0"
+                />
+                <div className="m-auto ml-0">{path}</div>
               </div>
             </div>
             {!collapsedFolders[path] && (
@@ -216,7 +230,7 @@ export default function EndpointList({ active }: { active: boolean }) {
               active={helper == activeEndpoint}
               onClick={() => setActiveEndpoint(helper)}
             />
-          )
+          );
         })}
       </div>
       <APIWizard
@@ -239,7 +253,6 @@ export default function EndpointList({ active }: { active: boolean }) {
         setHelpers={setHelperList}
         setFullHelpers={setFullHelperList}
       />
-
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { useContext } from "react";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function useApi() {
+export default function useTemplateApi() {
   const authHeader = useAuthHeader();
   const { activeProject } = useContext(SwizzleContext);
 
@@ -20,10 +20,28 @@ export default function useApi() {
     return response.data;
   };
 
-  const createTemplate = async () => {};
+  const createFromTemplate = async (payload) => {
+    if (activeProject == "") return;
+
+    try {
+        const response = await axios.post(
+            `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/templates`,
+            payload,
+            {
+                headers: {
+                    Authorization: authHeader(),
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error creating from template:", error);
+        throw error;
+    }
+};
 
   return {
     getTemplates,
-    createTemplate,
+    createFromTemplate,
   };
 }

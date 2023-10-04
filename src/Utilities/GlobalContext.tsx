@@ -22,6 +22,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [prodDeployStatus, setProdDeployStatus] = useState("pending");
   const [fermatJwt, setFermatJwt] = useState("");
   const [figmaToken, setFigmaToken] = useState("");
+  const [shouldRefreshList, setShouldRefreshList] = useState(false);
 
   return (
     <SwizzleContext.Provider
@@ -64,6 +65,8 @@ export const GlobalContextProvider = ({ children }) => {
         setFigmaToken,
         activeHelper,
         setActiveHelper,
+        shouldRefreshList,
+        setShouldRefreshList,
       }}
     >
       {children}

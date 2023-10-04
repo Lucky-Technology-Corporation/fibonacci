@@ -84,11 +84,14 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`, {
-        headers: {
-          Authorization: await getFermatJwt(),
+      const response = await axios.get(
+        `${testDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`,
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
         },
-    });
+      );
       return response.data;
     } catch (e) {
       console.error(e);
@@ -100,23 +103,23 @@ export default function useApi() {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
 
-      var body = {}
-      if(aiCommand == "ask"){
+      var body = {};
+      if (aiCommand == "ask") {
         body = {
           question_type: "edit",
           user_query: userQuery,
           fermat_domain: testDomain.replace("https://", "https://fermat."),
           fermat_jwt: await getFermatJwt(),
           current_file: "user-dependencies/" + fileName + ".js",
-        }
-      } else if(aiCommand == "edit"){
+        };
+      } else if (aiCommand == "edit") {
         body = {
           question_type: "code",
           user_query: userQuery,
           fermat_domain: testDomain.replace("https://", "https://fermat."),
           fermat_jwt: await getFermatJwt(),
           current_file: "user-dependencies/" + fileName + ".js",
-        }
+        };
       }
 
       const response = await axios.post(
@@ -155,8 +158,7 @@ export default function useApi() {
     );
 
     return response.data;
-  }
-
+  };
 
   const getAutocheckResponse = async () => {
     try {
@@ -213,8 +215,8 @@ export default function useApi() {
       var path = "table_of_contents";
       if (fileTypes.toLowerCase() == "files") {
         path = "table_of_files";
-      } else if(fileTypes.toLowerCase() == "helpers"){
-        path = "table_of_helpers"
+      } else if (fileTypes.toLowerCase() == "helpers") {
+        path = "table_of_helpers";
       }
 
       const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
@@ -248,6 +250,6 @@ export default function useApi() {
     getAutocheckResponse,
     deploy,
     getFermatJwt,
-    getCodeFromFigma
+    getCodeFromFigma,
   };
 }

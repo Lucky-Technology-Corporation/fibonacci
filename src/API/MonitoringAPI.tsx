@@ -21,11 +21,15 @@ export default function useApi() {
         end: endDate,
       };
 
-      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring?env=${environment}`, body, {
-        headers: {
-          Authorization: authHeader(),
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring?env=${environment}`,
+        body,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e) {
       console.error(e);
@@ -34,7 +38,7 @@ export default function useApi() {
 
   const analyzeError = async (requestDetails: any) => {
     try {
-      var currentFile = requestDetails.method.toLowerCase() + requestDetails.url.replace(/\//g, '-') + ".js"
+      var currentFile = requestDetails.method.toLowerCase() + requestDetails.url.replace(/\//g, "-") + ".js";
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
@@ -70,7 +74,7 @@ export default function useApi() {
       var url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring/logs?env=${environment}&offset=${offset}&limit=20`;
       if (filterKey && filterQuery) {
         if (filterKey == "log") {
-          unwrapResults = true
+          unwrapResults = true;
           url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring/logs/search?env=${environment}&search_string=${filterQuery}${
             pageToken ? `&page_token=${pageToken}` : ""
           }`;

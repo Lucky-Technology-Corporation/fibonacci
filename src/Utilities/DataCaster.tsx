@@ -38,13 +38,10 @@ export function castValues(input: any): any {
   return output;
 }
 
-export function replaceCodeBlocks(str: string){
+export function replaceCodeBlocks(str: string) {
   const regex = /(`{1,3})(?:[a-zA-Z]*)\n?([^`]+)\1/g;
   return str.replace(regex, (_, __, code) => {
-    const escapedCode = code
-      .replace(/ /g, '&nbsp;')
-      .replace(/\n/g, '<br>');
+    const escapedCode = code.replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
     return `<span style="font-family: monospace;">${escapedCode}</span>`;
   });
 }
-

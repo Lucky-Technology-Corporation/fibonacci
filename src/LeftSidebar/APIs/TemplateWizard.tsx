@@ -2,9 +2,11 @@ import { useContext, useEffect, useState } from "react";
 import Dropdown from "../../Utilities/Dropdown";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
-import toast from "react-hot-toast";
 import Checkbox from "../../Utilities/Checkbox";
-import useApi from "../../API/TemplatesAPI";
+import useTemplateApi from "../../API/TemplatesAPI";
+import useApi from "../../API/EndpointAPI";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import SecretInput from "../../Utilities/SecretInput";
 
 export default function TemplateWizard({
   isVisible,
@@ -43,8 +45,11 @@ export default function TemplateWizard({
   // const [templateOptions, setTemplateOptions] = useState([{ id: "1", name: "Plaid", description: "Add Plaid stuff" }, { id: "2", name: "Stripe", description: "Add Stripe stuff" }]);
   const [templateOptions, setTemplateOptions] = useState([]);
   const [inputState, setInputState] = useState({});
+  const { testDomain, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
+ 
 
-  const api = useApi();
+  const api = useTemplateApi();
+  const endpointApi = useApi();
 
   useEffect(() => {
     if (template) {
@@ -55,7 +60,7 @@ export default function TemplateWizard({
           initialState[input.name] = false; // default value for checkboxes
         } else if (input.type === "string") {
           initialState[input.name] = ""; // default value for text inputs
-        } 
+        }
         // add more conditions if there are other input types
       });
 
@@ -74,6 +79,43 @@ export default function TemplateWizard({
     }
   }, [isVisible]);
 
+  const constructPayload = async () => {
+    const inputs = [];
+    for (const key in inputState) {
+        const value = inputState[key];
+
+        let secret_type = "";
+        if (key.endsWith("_test")) {
+            secret_type = "test";
+        } else if (key.endsWith("_prod")) {
+            secret_type = "prod";
+        }
+
+        const name = secret_type ? key.split("_")[0] : key;
+
+        inputs.push({
+            name,
+            value,
+            secret_type,
+        });
+    }
+
+    return {
+        TemplateId: template ? template.id : "",
+        FermatURL: testDomain.replace("https://", "https://fermat."),
+        FermatJWT: await endpointApi.getFermatJwt(),
+        Inputs: inputs
+    };
+}
+
+  async function handleOnSecondNext() {
+    const payload = await constructPayload();
+    console.log(payload);
+    await api.createFromTemplate(payload);
+    setShouldRefreshList(!shouldRefreshList);
+    setIsVisible(false);
+  } 
+
   const handleOnSelectTemplate = (result: { id: any; name: string }) => {
     const foundTemplate = templateOptions.find((template) => template.id === result.id);
     if (foundTemplate) {
@@ -83,10 +125,8 @@ export default function TemplateWizard({
     }
   };
 
-  const createTemplateHandler = () => {
-    
-  }
-
+  const createTemplateHandler = () => {};
+  
   const createHandler = () => {
     setStep(1);
   };
@@ -100,19 +140,19 @@ export default function TemplateWizard({
   const formatResult = (item) => {
     return (
       <>
-      <div className="flex">
-        <div className="my-auto">
-          <img src={item.image || "/puzzle.svg"} className="w-6 h-6 rounded-full mr-2"/>
+        <div className="flex">
+          <div className="my-auto">
+            <img src={item.image || "/puzzle.svg"} className="w-6 h-6 rounded-full mr-2" />
+          </div>
+          <div>
+            <span className="font-bold">{item.name}</span>
+            <br />
+            <span className="">{item.description}</span>
+          </div>
         </div>
-        <div>
-          <span className="font-bold">{item.name}</span>
-          <br/>
-          <span className="">{item.description}</span>
-        </div>
-      </div>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <div
@@ -141,7 +181,12 @@ export default function TemplateWizard({
                   <div className="mt-4">
                     <div className="w-full mb-2">
                       <ReactSearchAutocomplete
-                        items={templateOptions.map((template) => ({ id: template.id, name: template.name, description: template.description }))}
+                        items={templateOptions.map((template) => ({
+                          id: template.id,
+                          name: template.name,
+                          description: template.description,
+                        }))}
+                        
                         onSelect={handleOnSelectTemplate}
                         autoFocus
                         placeholder="Blank template"
@@ -156,7 +201,7 @@ export default function TemplateWizard({
                           fontSize: "0.875rem",
                           iconColor: "#D9D9D9",
                           placeholderColor: "#74758a",
-                          height: "36px"
+                          height: "36px",
                         }}
                         formatResult={formatResult}
                         showIcon={false}
@@ -169,7 +214,6 @@ export default function TemplateWizard({
                         type="button"
                         onClick={() => {
                           createHandler();
-                          
                         }}
                         className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
                       >
@@ -199,39 +243,49 @@ export default function TemplateWizard({
                     template.inputs.map((input) => {
                       if (input.type === "boolean") {
                         return (
-                          <div className="mt-4">
-                          <div className="text-gray-300">{input.desc}</div>
-                          <Checkbox
-                            id={input.name}
-                            label={input.name}
-                            isChecked={inputState[input.name]}
-                            setIsChecked={(value) =>
-                              setInputState((prevState) => ({ ...prevState, [input.name]: value }))
-                            }
-                          />
+                          <div className="mt-4" key={input.desc}>
+                            <div className="text-gray-300">{input.desc}</div>
+                            <Checkbox
+                              id={input.name}
+                              label={input.name}
+                              isChecked={inputState[input.name]}
+                              setIsChecked={(value) =>
+                                setInputState((prevState) => ({ ...prevState, [input.name]: value }))
+                              }
+                            />
                           </div>
                         );
-                      } else if (input.type === "string") {
+                      } else if (input.type === "string" && !input.secret) {
                         return (
                           <div className="mt-4">
-                          <div className="text-gray-300">{input.desc}</div>
-                          <input
-                            className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
-                            placeholder={input.desc}
-                            value={inputState[input.name] || ""}
-                            onChange={(e) =>
-                              setInputState((prevState) => ({ ...prevState, [input.name]: e.target.value }))
-                            }
-                          />
+                            <div className="text-gray-300">{input.desc}</div>
+                            <input
+                              className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
+                              placeholder={input.desc}
+                              value={inputState[input.name] || ""}
+                              onChange={(e) =>
+                                setInputState((prevState) => ({ ...prevState, [input.name]: e.target.value }))
+                              }
+                            />
                           </div>
+                        );
+                      } else if (input.secret) {
+                        return (
+                          <SecretInput
+                            name={input.name}
+                            desc={input.desc}
+                            inputState={inputState}
+                            setInputState={setInputState}
+                          />
                         );
                       }
                     })}
+
                   <div className="bg-[#32333b] py-3 pt-0 mt-4 sm:flex sm:flex-row-reverse">
                     <button
                       type="button"
                       onClick={() => {
-                        createTemplateHandler();
+                        handleOnSecondNext();
                       }}
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
                     >

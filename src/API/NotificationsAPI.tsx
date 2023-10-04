@@ -3,7 +3,6 @@ import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useNotificationApi() {
@@ -22,12 +21,12 @@ export default function useNotificationApi() {
         users: users,
       };
 
-        const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/notification?env=${environment}`;
-        const response = await axios.post(url, payload, {
-            headers: {
-              Authorization: authHeader(),
-            },
-        });
+      const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/notification?env=${environment}`;
+      const response = await axios.post(url, payload, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -42,12 +41,12 @@ export default function useNotificationApi() {
         return null;
       }
 
-        const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/getNotificationKeys`;
-        const response = await axios.get(url, { 
-          headers: {
-            Authorization: authHeader(),
-          } 
-        });
+      const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/getNotificationKeys`;
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -69,7 +68,7 @@ export default function useNotificationApi() {
       };
 
       const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/setNotificationKeys`;
-      
+
       await axios.post(url, payload, {
         headers: {
           Authorization: authHeader(),

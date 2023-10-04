@@ -38,7 +38,16 @@ export default function UserTableView() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const ITEMS_PER_PAGE = 20;
-  const hiddenColumns = ["_deactivated", "deviceId", "created_ip", "updatedAt", "updated_ip", "isAnonymous", "_swizzle_subscription", "countryCode"]
+  const hiddenColumns = [
+    "_deactivated",
+    "deviceId",
+    "created_ip",
+    "updatedAt",
+    "updated_ip",
+    "isAnonymous",
+    "_swizzle_subscription",
+    "countryCode",
+  ];
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
@@ -59,7 +68,7 @@ export default function UserTableView() {
           setData(data.documents || []);
           setKeys(data.keys.sort() || []);
           setTotalDocs(data.pagination.total_documents);
-        })
+        });
       })
       .catch((e) => {
         console.error(e);
@@ -69,23 +78,23 @@ export default function UserTableView() {
 
   const addFlags = async (data: any) => {
     const endpoint = "http://ip-api.com/batch";
-    var requestBody = []
-    for(var i = 0; i < data.documents.length; i++) {
+    var requestBody = [];
+    for (var i = 0; i < data.documents.length; i++) {
       requestBody[i] = {
-        "query": data.documents[i].created_ip,
-        "fields": "countryCode",
-      }
+        query: data.documents[i].created_ip,
+        fields: "countryCode",
+      };
     }
     const flagResponse = await fetch(endpoint, {
       method: "POST",
-      body: JSON.stringify(requestBody)
-    })
+      body: JSON.stringify(requestBody),
+    });
     const flagData = await flagResponse.json();
-    for(var i = 0; i < data.documents.length; i++) {
+    for (var i = 0; i < data.documents.length; i++) {
       data.documents[i].countryCode = flagData[i].countryCode;
     }
     return data;
-  }
+  };
 
   useEffect(() => {
     if (searchQuery != "") {
@@ -113,7 +122,7 @@ export default function UserTableView() {
           setData(data.documents || []);
           setKeys(data.keys.sort() || []);
           setTotalDocs(data.pagination.total_documents);
-        })
+        });
       })
       .catch((e) => {
         console.error(e);
@@ -171,7 +180,6 @@ export default function UserTableView() {
     setSortedByColumn(key);
   };
 
-
   if (error) {
     return <NiceInfo title="Failed to load data" subtitle="Check your connection and try again" />;
   }
@@ -192,7 +200,8 @@ export default function UserTableView() {
               className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
             >
               Read more
-            </a> about creating users.
+            </a>{" "}
+            about creating users.
           </div>
         </div>
       </div>
@@ -212,7 +221,7 @@ export default function UserTableView() {
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"></th>
               {/* country flag */}
-              <th className="w-6"></th> 
+              <th className="w-6"></th>
               <th className="w-32"></th>
               {keys
                 .filter((k) => hiddenColumns.indexOf(k) == -1)

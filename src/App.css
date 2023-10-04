@@ -121,17 +121,16 @@ input[type="text"]::placeholder {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 body {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
-
 
 .vertical-line {
   position: relative;
 }
 
 .vertical-line::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;

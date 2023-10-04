@@ -25,7 +25,7 @@ export default function EndpointItem({
         return "text-purple-400";
     }
   };
-  
+
   return (
     <>
       <div

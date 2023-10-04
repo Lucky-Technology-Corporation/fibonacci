@@ -27,7 +27,7 @@ export default function SignIn() {
       console.log("Couldn't get ID from JWT");
       return "UNKNOWN";
     }
-  }
+  };
 
   const signInWithJWT = (jwt: string) => {
     const userName = getNameFromJWT(jwt);

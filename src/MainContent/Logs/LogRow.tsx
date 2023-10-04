@@ -23,7 +23,7 @@ export default function LogRow({
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { getLogDetails, analyzeError } = useApi();
   const { domain } = useContext(SwizzleContext);
-  
+
   useEffect(() => {
     setIsExpanded(false);
   }, [message]);
@@ -51,12 +51,12 @@ export default function LogRow({
   };
 
   const fixRequest = async () => {
-    const response = await analyzeError(message)
-    if(response == null){
-      return "Something went wrong"
+    const response = await analyzeError(message);
+    if (response == null) {
+      return "Something went wrong";
     }
-    setModalText(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(response.recommendation_text) }} />)    
-  }
+    setModalText(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(response.recommendation_text) }} />);
+  };
 
   return (
     <>
@@ -146,9 +146,7 @@ export default function LogRow({
       </tr>
       <tr className={`${isExpanded ? "" : "hidden"} border-b border-[#4C4F6B]`}>
         <td colSpan={9} className="text-left pl-20 text-xs py-3 word-wrap max-w-full font-mono">
-          <div className="font-mono">
-            {(message.logs || []).join("\n")}
-          </div>
+          <div className="font-mono">{(message.logs || []).join("\n")}</div>
         </td>
       </tr>
     </>

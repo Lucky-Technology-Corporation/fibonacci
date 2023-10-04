@@ -71,7 +71,7 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = false;
       return;
     }
-    console.log("activeEndpoint", activeEndpoint)
+    console.log("activeEndpoint", activeEndpoint);
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
     setPostMessage({
@@ -181,7 +181,6 @@ export default function LeftSidebar({
           }}
         />
 
-
         <SectionTitle
           icon="auth.svg"
           text="Users"
@@ -190,7 +189,6 @@ export default function LeftSidebar({
             setSelectedTab(Page.Auth);
           }}
         />
-
 
         <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
 
@@ -221,7 +219,6 @@ export default function LeftSidebar({
           }}
         />
         <FilesList active={selectedTab == Page.Hosting} />
-
 
         <div className="h-36 w-full flex-row">
           <div>&nbsp;</div>

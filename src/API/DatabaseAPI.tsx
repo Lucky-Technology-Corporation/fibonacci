@@ -13,11 +13,14 @@ export default function useApi() {
 
   const getCollections = async () => {
     if (activeProject == "") return;
-    const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections?env=${environment}`, {
-      headers: {
-        Authorization: authHeader(),
+    const response = await axios.get(
+      `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections?env=${environment}`,
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
       },
-    });
+    );
     return response.data;
   };
 
@@ -216,8 +219,10 @@ export default function useApi() {
   };
 
   const createProject = async (name: string) => {
-    var shouldDeployProd = false
-    if(name.includes("prod")){ shouldDeployProd = true }
+    var shouldDeployProd = false;
+    if (name.includes("prod")) {
+      shouldDeployProd = true;
+    }
     const response = await axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
       { name, deploy_production: shouldDeployProd },
@@ -233,7 +238,7 @@ export default function useApi() {
 
   const getProjects = async () => {
     try {
-      console.log(NEXT_PUBLIC_BASE_URL)
+      console.log(NEXT_PUBLIC_BASE_URL);
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects`, {
         headers: {
           Authorization: authHeader(),

@@ -115,7 +115,9 @@ export default function NotificationPageSetUp({
           <Button
             text="Cancel"
             onClick={() => setShowSetUp(false)}
-            className={`${savedBundleID && savedKeyID && savedP8Key && savedTeamID ? "" : "hidden"} mr-2 w-20 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium hover:bg-[#44464f] sm:text-sm cursor-pointer`}
+            className={`${
+              savedBundleID && savedKeyID && savedP8Key && savedTeamID ? "" : "hidden"
+            } mr-2 w-20 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium hover:bg-[#44464f] sm:text-sm cursor-pointer`}
           />
           <Button
             text="Save"
