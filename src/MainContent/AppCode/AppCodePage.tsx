@@ -57,6 +57,12 @@ export default function AppCodePage() {
             },
         });
     }
+
+    const copyPackageLink = () => {
+        navigator.clipboard.writeText("https://github.com/Lucky-Technology-Corporation/SwizzleSwift")
+        toast.success("Copied! Paste this into your Swift Package Manager dependencies")
+    }
+
     const openModelGeneratorModal = async (data: any) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
             return;
@@ -160,9 +166,16 @@ export default function AppCodePage() {
             </thead>
             <tbody className="overflow-y-scroll">
                 <tr>
+                    <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={copyPackageLink}>Swizzle Swift Package</td>
+                    <td className="py-2">Adds support for Swizzle in your Swift project</td>
+                    <td className="py-2 opacity-70 cursor-pointer hover:opacity-100"></td>
+                </tr>
+                <tr>
                     <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={openModelGenerator}>Model.swift</td>
                     <td className="py-2">Provides the functions that call your backend</td>
-                    <td className="py-2 opacity-70 cursor-pointer hover:opacity-100"><FontAwesomeIcon icon={faTrash} /></td>
+                    <td className="py-2 opacity-70 cursor-pointer hover:opacity-100">
+                        {/* <FontAwesomeIcon icon={faTrash} /> */}
+                    </td>
                 </tr>
                 <tr>
                     <td className="pt-2 pl-2 flex">
