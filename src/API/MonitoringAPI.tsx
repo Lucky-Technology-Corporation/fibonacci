@@ -4,7 +4,7 @@ import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useEndpointApi from "./EndpointAPI";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
@@ -21,7 +21,7 @@ export default function useApi() {
         end: endDate,
       };
 
-      const response = await axios.post(`${BASE_URL}/projects/${activeProject}/monitoring?env=${environment}`, body, {
+      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring?env=${environment}`, body, {
         headers: {
           Authorization: authHeader(),
         },
@@ -32,20 +32,14 @@ export default function useApi() {
     }
   };
 
-  const analyzeError = async (logs: string, requestDetails: any) => {
+  const analyzeError = async (requestDetails: any) => {
     try {
-      var query = logs;
-      if (query == undefined || query == "") {
-        query = "(no logs were printed)";
-      }
-
-      var currentFile = requestDetails.method.toLowerCase() + requestDetails.url.replace(/\//g, "-") + ".js";
+      var currentFile = requestDetails.method.toLowerCase() + requestDetails.url.replace(/\//g, '-') + ".js"
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         {
           question_type: "log",
-          user_query: logs,
           other_context: JSON.stringify(requestDetails),
           current_file: currentFile,
           fermat_domain: testDomain.replace("https://", "http://"),
@@ -73,11 +67,11 @@ export default function useApi() {
 
       var unwrapResults = false;
 
-      var url = `${BASE_URL}/projects/${activeProject}/monitoring/logs?env=${environment}&offset=${offset}&limit=20`;
+      var url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring/logs?env=${environment}&offset=${offset}&limit=20`;
       if (filterKey && filterQuery) {
         if (filterKey == "log") {
-          unwrapResults = true;
-          url = `${BASE_URL}/projects/${activeProject}/monitoring/logs/search?env=${environment}&search_string=${filterQuery}${
+          unwrapResults = true
+          url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring/logs/search?env=${environment}&search_string=${filterQuery}${
             pageToken ? `&page_token=${pageToken}` : ""
           }`;
         } else {
@@ -110,7 +104,7 @@ export default function useApi() {
         return;
       }
       const response = await axios.get(
-        `${BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}?env=${environment}`,
         {
           headers: {
             Authorization: authHeader(),

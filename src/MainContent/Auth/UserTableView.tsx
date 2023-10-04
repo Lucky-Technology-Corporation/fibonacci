@@ -11,6 +11,7 @@ import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 import SearchBar from "../Shared/SearchBar";
 import toast from "react-hot-toast";
+import UserRow from "./UserRow";
 
 export default function UserTableView() {
   const { getDocuments, runQuery } = useApi();
@@ -37,6 +38,7 @@ export default function UserTableView() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const ITEMS_PER_PAGE = 20;
+  const hiddenColumns = ["_deactivated", "deviceId", "created_ip", "updatedAt", "updated_ip", "isAnonymous", "_swizzle_subscription", "countryCode"]
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
@@ -53,9 +55,11 @@ export default function UserTableView() {
           setTotalDocs(0);
           return;
         }
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-        setTotalDocs(data.pagination.total_documents);
+        addFlags(data).then((data) => {
+          setData(data.documents || []);
+          setKeys(data.keys.sort() || []);
+          setTotalDocs(data.pagination.total_documents);
+        })
       })
       .catch((e) => {
         console.error(e);
@@ -63,7 +67,32 @@ export default function UserTableView() {
       });
   };
 
+  const addFlags = async (data: any) => {
+    const endpoint = "http://ip-api.com/batch";
+    var requestBody = []
+    for(var i = 0; i < data.documents.length; i++) {
+      requestBody[i] = {
+        "query": data.documents[i].created_ip,
+        "fields": "countryCode",
+      }
+    }
+    const flagResponse = await fetch(endpoint, {
+      method: "POST",
+      body: JSON.stringify(requestBody)
+    })
+    const flagData = await flagResponse.json();
+    for(var i = 0; i < data.documents.length; i++) {
+      data.documents[i].countryCode = flagData[i].countryCode;
+    }
+    return data;
+  }
+
   useEffect(() => {
+    if (searchQuery != "") {
+      runSearch();
+      return;
+    }
+
     fetchData(currentPage);
   }, [currentPage, sortedByColumn, sortDirection]);
 
@@ -80,9 +109,11 @@ export default function UserTableView() {
     }
     runQuery(searchQuery, filterName, "_swizzle_users", sortedByColumn, sortDirection)
       .then((data) => {
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-        setTotalDocs(data.pagination.total_documents);
+        addFlags(data).then((data) => {
+          setData(data.documents || []);
+          setKeys(data.keys.sort() || []);
+          setTotalDocs(data.pagination.total_documents);
+        })
       })
       .catch((e) => {
         console.error(e);
@@ -140,24 +171,6 @@ export default function UserTableView() {
     setSortedByColumn(key);
   };
 
-  useEffect(() => {
-    if (sortedByColumn == "") return;
-
-    if (searchQuery != "") {
-      runSearch();
-      return;
-    }
-
-    getDocuments("_swizzle_users", currentPage, 20, sortedByColumn, sortDirection)
-      .then((data) => {
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-      })
-      .catch((e) => {
-        console.error(e);
-        setError(e);
-      });
-  }, [sortedByColumn, sortDirection]);
 
   if (error) {
     return <NiceInfo title="Failed to load data" subtitle="Check your connection and try again" />;
@@ -199,8 +212,11 @@ export default function UserTableView() {
           <thead className="bg-[#85869822]">
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"></th>
+              {/* country flag */}
+              <th className="w-6"></th> 
+              <th className="w-32"></th>
               {keys
-                .filter((k) => ["_deactivated", "deviceId"].indexOf(k) == -1)
+                .filter((k) => hiddenColumns.indexOf(k) == -1)
                 .map((key, index) => (
                   <th
                     className={`text-left py-1.5 cursor-pointer ${index == keys.length - 2 ? "rounded-tr-md" : ""}`}
@@ -217,7 +233,7 @@ export default function UserTableView() {
           </thead>
           <tbody className="divide-y divide-[#85869833]">
             {data.map((row: any, _: number) => (
-              <DatabaseRow
+              <UserRow
                 collection={"_swizzle_users"}
                 key={row._id}
                 rowKey={row._id}
@@ -227,7 +243,7 @@ export default function UserTableView() {
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-                shouldHideFields={["_deactivated", "deviceId"]}
+                shouldHideFields={hiddenColumns}
                 shouldBlockEdits={["_id", "createdAt", "isAnonymous"]}
                 shouldShowStrikethrough={hiddenRows.includes(row._id) || row._deactivated == true}
               />

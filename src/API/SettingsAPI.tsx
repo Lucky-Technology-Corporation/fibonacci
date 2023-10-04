@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
@@ -12,7 +12,7 @@ export default function useApi() {
   const updateApns = async (p8Key: string, key_id: string, team_id: string) => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/setNotificationKeys?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/setNotificationKeys?env=${environment}`,
         { p8_key_base64: p8Key, key_id: key_id, developer_id: team_id },
         {
           headers: {
@@ -32,7 +32,7 @@ export default function useApi() {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {
         headers: {
           Authorization: authHeader(),
         },
@@ -51,7 +51,7 @@ export default function useApi() {
         return null;
       }
       const response = await axios.patch(
-        `${BASE_URL}/projects/${activeProject}/secrets?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`,
         newSecrets,
         {
           headers: {
@@ -72,7 +72,7 @@ export default function useApi() {
         return null;
       }
       const response = await axios.delete(
-        `${BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`,
         {
           headers: {
             Authorization: authHeader(),

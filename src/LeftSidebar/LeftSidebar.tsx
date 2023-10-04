@@ -71,8 +71,9 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = false;
       return;
     }
+    console.log("activeEndpoint", activeEndpoint)
     if (activeEndpoint == undefined || activeEndpoint == "") return;
-    const fileName = activeEndpoint.replace(/\//g, "-");
+    const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
     setPostMessage({
       type: "openFile",
       fileName: `user-dependencies/${fileName}.js`,
@@ -88,7 +89,8 @@ export default function LeftSidebar({
       const newEndpoint = currentFileProperties.fileUri
         .split("user-dependencies/")[1]
         .replace(".js", "")
-        .replace(/-/g, "/");
+        .replace(/-/g, "/")
+        .replace(/_/g, ":");
       if (newEndpoint == activeEndpoint) return;
       programmatiFileUpdateRef.current = true;
       setActiveEndpoint(newEndpoint);
@@ -144,34 +146,17 @@ export default function LeftSidebar({
         />
         <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
 
-        <SectionTitle
-          icon="auth.svg"
-          text="Auth"
-          active={selectedTab == Page.Auth}
-          onClick={() => {
-            setSelectedTab(Page.Auth);
-          }}
-        />
+        <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
 
         <SectionTitle
           icon="cloud.svg"
-          text="APIs"
+          text="Backend"
           active={selectedTab == Page.Apis}
           onClick={() => {
             setSelectedTab(Page.Apis);
           }}
         />
         <EndpointList active={selectedTab == Page.Apis} />
-
-        <SectionTitle
-          icon="world.svg"
-          text="Hosting"
-          active={selectedTab == Page.Hosting}
-          onClick={() => {
-            setSelectedTab(Page.Hosting);
-          }}
-        />
-        <FilesList active={selectedTab == Page.Hosting} />
 
         <SectionTitle
           icon="database.svg"
@@ -196,6 +181,28 @@ export default function LeftSidebar({
           }}
         />
 
+
+        <SectionTitle
+          icon="auth.svg"
+          text="Users"
+          active={selectedTab == Page.Auth}
+          onClick={() => {
+            setSelectedTab(Page.Auth);
+          }}
+        />
+
+
+        <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+
+        <SectionTitle
+          icon="paintbrush.svg"
+          text="Frontend"
+          active={selectedTab == Page.AppCode}
+          onClick={() => {
+            setSelectedTab(Page.AppCode);
+          }}
+        />
+
         <SectionTitle
           icon="bell.svg"
           text="Notifications"
@@ -204,6 +211,17 @@ export default function LeftSidebar({
             setSelectedTab(Page.Notifications);
           }}
         />
+
+        <SectionTitle
+          icon="world.svg"
+          text="Hosting"
+          active={selectedTab == Page.Hosting}
+          onClick={() => {
+            setSelectedTab(Page.Hosting);
+          }}
+        />
+        <FilesList active={selectedTab == Page.Hosting} />
+
 
         <div className="h-36 w-full flex-row">
           <div>&nbsp;</div>

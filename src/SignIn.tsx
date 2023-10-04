@@ -18,8 +18,20 @@ export default function SignIn() {
     }
   };
 
+  const getIdFromJWT = (token: string) => {
+    try {
+      let decoded = jwt_decode(token) as any;
+      return decoded.developer_id;
+    } catch (e) {
+      console.error(e);
+      console.log("Couldn't get ID from JWT");
+      return "UNKNOWN";
+    }
+  }
+
   const signInWithJWT = (jwt: string) => {
     const userName = getNameFromJWT(jwt);
+    const id = getIdFromJWT(jwt);
     if (
       signIn({
         token: jwt,
@@ -27,11 +39,15 @@ export default function SignIn() {
         authState: {
           isAuthenticated: true,
           user: userName,
+          developerId: id,
         },
         tokenType: "Bearer",
       })
     ) {
       console.log("Signed in!"); //do not remove the jwt from the url here. it causes a refresh loop
+      setTimeout(() => {
+        location.reload();
+      }, 100);
     } else {
       toast.error("Couldn't sign in");
     }
@@ -56,7 +72,8 @@ export default function SignIn() {
       <div
         className="w-64 cursor-pointer text-center bg-black border-[#525363] hover:border-[#6f7082] hover:text-white border rounded-md p-3 text-lg font-medium m-auto"
         onClick={() => {
-          location.href = "https://github.com/login/oauth/authorize?client_id=d95918858b376aa1aa40";
+          // location.href = "https://github.com/login/oauth/authorize?client_id=" + process.env.GITHUB_CLIENT_ID;
+          location.href = process.env.NEXT_PUBLIC_BASE_URL + "/login/github";
         }}
       >
         <div className="flex m-auto w-fit">

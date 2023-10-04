@@ -28,6 +28,7 @@ export default function ProjectSelector() {
     environment,
     setTestDeployStatus,
     setProdDeployStatus,
+    setFermatJwt
   } = useContext(SwizzleContext);
 
   const createNewProject = (projectName: string) => {
@@ -57,6 +58,8 @@ export default function ProjectSelector() {
     setActiveProjectName(project.name);
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
+
+    setFermatJwt("")
 
     setTestDomain(project.test_swizzle_domain);
     setProdDomain(project.prod_swizzle_domain);
@@ -126,7 +129,7 @@ export default function ProjectSelector() {
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
           title: "🥋 New project",
-          description: <>Enter a name for your project</>,
+          description: <div className="flex"><img src="/scott.jpeg" className="w-8 h-8 rounded-full mr-1"/><div className="my-auto">Scott Says: "Include the word 'prod' to deploy to prod"</div></div>,
           placeholder: "My awesome project",
           confirmText: "Create",
           confirmHandler: createNewProject,

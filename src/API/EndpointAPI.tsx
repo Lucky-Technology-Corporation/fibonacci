@@ -1,10 +1,10 @@
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import jwt_decode from "jwt-decode";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
@@ -18,7 +18,7 @@ export default function useApi() {
 
   const exchangeJwt = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/projects/${activeProject}/fermat/jwt`, {
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/fermat/jwt`, {
         headers: {
           Authorization: authHeader(),
         },
@@ -64,7 +64,7 @@ export default function useApi() {
 
   const deploy = async () => {
     try {
-      const response = await axios.post(`${testDomain.replace("https://", "http://")}:1234/push_to_production`, {
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/push_to_production`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -84,14 +84,11 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(
-        `${testDomain.replace("https://", "http://")}:1234/code/file_contents?path=code/${fileName}`,
-        {
-          headers: {
-            Authorization: await getFermatJwt(),
-          },
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`, {
+        headers: {
+          Authorization: await getFermatJwt(),
         },
-      );
+    });
       return response.data;
     } catch (e) {
       console.error(e);
@@ -99,19 +96,32 @@ export default function useApi() {
     }
   };
 
-  const askQuestion = async (userQuery: string, fileName: string) => {
+  const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, "-");
+      const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
 
-      const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
-        {
-          question_type: "code",
+      var body = {}
+      if(aiCommand == "ask"){
+        body = {
+          question_type: "edit",
           user_query: userQuery,
-          fermat_domain: testDomain.replace("https://", "http://"),
+          fermat_domain: testDomain.replace("https://", "https://fermat."),
           fermat_jwt: await getFermatJwt(),
           current_file: "user-dependencies/" + fileName + ".js",
-        },
+        }
+      } else if(aiCommand == "edit"){
+        body = {
+          question_type: "code",
+          user_query: userQuery,
+          fermat_domain: testDomain.replace("https://", "https://fermat."),
+          fermat_jwt: await getFermatJwt(),
+          current_file: "user-dependencies/" + fileName + ".js",
+        }
+      }
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
+        body,
         {
           headers: {
             Authorization: authHeader(),
@@ -125,40 +135,36 @@ export default function useApi() {
     }
   };
 
-  // const getAIResponseToFile = async (userQuery: string, aiAction: string) => {
-  //   //TODO: pull in code from imported files
-  //   //TODO: split files into chunks an summarize long functions
-  //   try {
-  //     const fileName = activeEndpoint.replace(/\//g, "-");
-  //     const fileContents = await getFile("user-dependencies/" + fileName + ".js");
+  const getCodeFromFigma = async (figmaUrl: string, language: string) => {
+    const figmaFileId = figmaUrl.split("file/")[1].split("/")[0];
+    const nodeId = figmaUrl.split("node-id=")[1].split("&")[0];
+    const response = await axios.post(
+      `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/figma?env=${environment}`,
+      {
+        figma_file_id: figmaFileId,
+        figma_node_id: nodeId,
+        language: language,
+        fermat_domain: testDomain.replace("https://", "https://fermat."),
+        fermat_jwt: await getFermatJwt(),
+      },
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
+      },
+    );
 
-  //     const response = await axios.post(
-  //       `${BASE_URL}/projects/${activeProject}/assistant/file?env=${environment}`,
-  //       {
-  //         userQuery: userQuery,
-  //         aiAction: aiAction,
-  //         fileContents: fileContents,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: authHeader(),
-  //         },
-  //       },
-  //     );
-  //     return response.data;
-  //   } catch (e) {
-  //     console.error(e);
-  //     return "";
-  //   }
-  // };
+    return response.data;
+  }
+
 
   const getAutocheckResponse = async () => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, "-");
+      const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
       const fileContents = await getFile("user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
-        `${BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
         {
           file_contents: fileContents,
         },
@@ -183,7 +189,7 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "http://")}:1234/code/package.json`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/package.json`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -207,9 +213,11 @@ export default function useApi() {
       var path = "table_of_contents";
       if (fileTypes.toLowerCase() == "files") {
         path = "table_of_files";
+      } else if(fileTypes.toLowerCase() == "helpers"){
+        path = "table_of_helpers"
       }
 
-      const response = await axios.get(`${testDomain.replace("https://", "http://")}:1234/${path}`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -240,5 +248,6 @@ export default function useApi() {
     getAutocheckResponse,
     deploy,
     getFermatJwt,
+    getCodeFromFigma
   };
 }

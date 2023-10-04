@@ -114,6 +114,33 @@ input[type="text"]::placeholder {
   }
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+.vertical-line {
+  position: relative;
+}
+
+.vertical-line::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  background-color: #d2d3e0;
+  height: 100%;
+  opacity: 0.5;
+}
+
 .wooshUp {
   animation: wooshUp 0.8s ease-in forwards;
 }

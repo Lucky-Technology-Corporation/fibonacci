@@ -5,14 +5,16 @@ import useApi from "../../API/EndpointAPI";
 export default function Editor({ setCurrentFileProperties }: { setCurrentFileProperties: (properties: any) => void }) {
   const iframeRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-
-  const { testDomain, postMessage, setIdeReady, activeProject } = useContext(SwizzleContext);
+  
+  const { testDomain, postMessage, setPostMessage, setIdeReady, activeProject } = useContext(SwizzleContext);
 
   const { getFermatJwt } = useApi();
 
   useEffect(() => {
     if (postMessage == null) return;
+    console.log("postMessage", postMessage)
     postMessageToIframe(postMessage);
+    setPostMessage(null);
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
@@ -23,11 +25,13 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
 
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
+      console.log("extensionReady")
       setIdeReady(true);
       const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
       postMessageToIframe(message);
     }
     if (event.data.type === "fileChanged") {
+      console.log("fileChanged")
       setCurrentFileProperties({
         fileUri: event.data.fileUri,
         hasPassportAuth: event.data.hasPassportAuth,
@@ -50,17 +54,17 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
   }, []);
 
   useEffect(() => {
-    if (activeProject == undefined || activeProject == "") return;
+    if(activeProject == undefined || activeProject == "") return
+    // console.log("activeProject", activeProject)
+    // setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`)
+    // return
+
+    // /#/home/swizzle_prod_user/code
     const getUrl = async () => {
-      const fermatJwt = await getFermatJwt();
-      setTheiaUrl(
-        `${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace(
-          "Bearer ",
-          "",
-        )}`,
-      );
-    };
-    getUrl();
+      const fermatJwt = await getFermatJwt()
+      setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`)
+    }
+    getUrl()
 
     //   async function getSrc() {
     //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {

@@ -97,10 +97,20 @@ export default function APIWizard({
       return;
     }
     if (inputValue.startsWith("/")) {
-      cleanInputValue = inputValue.substring(1).replace(/\//g, "-");
+      cleanInputValue = inputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
-    const newEndpointName = fileName.replace(/-/g, "/").replace(".js", "");
+    
+    const methodAndPath = fileName.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
+    const [method, ...pathComponents] = methodAndPath.split('/');
+    const path = pathComponents.join('/');
+
+    let newEndpointName;
+    if (path === "") {
+      newEndpointName = `${method}/`;
+    } else {
+      newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
+    }
 
     let isDuplicate = false;
     setFullEndpoints((endpoints: any[]) => {
@@ -126,6 +136,7 @@ export default function APIWizard({
     setPostMessage({
       type: "newFile",
       fileName: "user-dependencies/" + fileName,
+      endpointName: newEndpointName,
     });
     
     if (templateChecked) {
@@ -183,7 +194,7 @@ export default function APIWizard({
                     <input
                       type="text"
                       value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value.trim())}
+                      onChange={(e) => setInputValue(e.target.value.trim())} //TODO: disallow "-" and "_"
                       className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
                       placeholder={"/path/:variable"}
                       onKeyDown={(event: any) => {

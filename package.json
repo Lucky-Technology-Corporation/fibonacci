@@ -31,6 +31,7 @@
     "monaco-editor": "^0.38.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "npm": "^9.8.1",
+    "pluralize": "^8.0.0",
     "react": "^18.2.0",
     "react-auth-kit": "^2.12.4",
     "react-dom": "^18.2.0",

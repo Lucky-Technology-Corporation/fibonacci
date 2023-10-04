@@ -51,6 +51,10 @@ export default function UserDropdown() {
     });
   };
 
+  const openStripe = () => {
+    window.open("https://buy.stripe.com/dR617UeRDdgac3C8ww?client_reference_id=" + auth()?.developerId, "_blank");
+  }
+
   return (
     <>
       <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
@@ -91,6 +95,25 @@ export default function UserDropdown() {
                       "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
                     )}
                     onClick={() => {
+                      openStripe()
+                    }}
+                  >
+                    Billing
+                  </a>
+                )}
+              </Menu.Item>
+
+              <Menu.Item>
+                {({ active }) => (
+                  <a
+                    href="#"
+                    className={classNames(
+                      active ? "" : "text-[#D9D9D9] ",
+                      "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
+                    )}
+                    onClick={() => {
+                      toast.error("Collaboration is pre-alpha. Your account only has access to beta or higher.")
+                      return
                       setInviteVisible(true);
                     }}
                   >
