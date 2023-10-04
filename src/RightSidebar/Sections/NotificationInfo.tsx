@@ -31,8 +31,7 @@ export default function DBInfo({ show }: { show: boolean }) {
             isLarge: true,
             content: (
               <div className="text-gray-400">
-                Send push notifications automatically.{" "}
-                <div className="w-full h-2"></div>
+                Send push notifications automatically. <div className="w-full h-2"></div>
                 <span className="underline">Send a standard notification</span>
                 <br />
                 <span

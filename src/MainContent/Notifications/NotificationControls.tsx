@@ -5,7 +5,7 @@ import Button from "../../Utilities/Button";
 import Checkbox from "../../Utilities/Checkbox";
 import NotificationsTable from "./NotificationsTable";
 import SampleNotification from "./SampleNotification";
-import useApi from "../../API/DatabaseAPI"
+import useApi from "../../API/DatabaseAPI";
 import toast from "react-hot-toast";
 
 export default function NotificationControls({ setShowSetUp }) {
@@ -22,31 +22,29 @@ export default function NotificationControls({ setShowSetUp }) {
 
   const send = async () => {
     if (allUsers) {
-        const docs = dbApi.getDocuments("_swizzle_users")
-        console.log(docs)
+      const docs = dbApi.getDocuments("_swizzle_users");
+      console.log(docs);
     }
-    
-    runAnimation()
+
+    runAnimation();
 
     api.sendNotification(title, body, users); //await this later
 
     const documentToCreate = {
-        title: title,
-        time: new Date(),
-        body: body,
-        recipients: users,
-      };
+      title: title,
+      time: new Date(),
+      body: body,
+      recipients: users,
+    };
 
-    dbApi.createDocument("_swizzle_notifications", documentToCreate) 
+    dbApi.createDocument("_swizzle_notifications", documentToCreate);
     fetchNotifData();
-  }
-
+  };
 
   const handleUsers = (event) => {
-    const ids = event.target.value.split(',').map(id => id.trim());
+    const ids = event.target.value.split(",").map((id) => id.trim());
     setUsers(ids);
-};
-
+  };
 
   const fetchNotifData = async () => {
     try {
@@ -79,8 +77,8 @@ export default function NotificationControls({ setShowSetUp }) {
 
     setTimeout(() => {
       element.classList.remove("fadeIn");
-    }, 200); 
-  }
+    }, 200);
+  };
 
   return (
     <div className="h-full w-full overflow-scroll">
@@ -94,35 +92,48 @@ export default function NotificationControls({ setShowSetUp }) {
       </div>
       <div className="w-full flex justify-center">
         <div ref={notificationRef}>
-        <SampleNotification
-            setBody={setBody}
-            body={body}
-            setTitle={setTitle}
-            title={title} />
-          </div>
+          <SampleNotification setBody={setBody} body={body} setTitle={setTitle} title={title} />
+        </div>
       </div>
 
       <div className="flex justify-center space-x-4 items-center">
-        <Checkbox id="allusers" label="All users" isChecked={allUsers} setIsChecked={() => {setAllUsers(true); setSpecificUsers(false)}} />
-        <Checkbox id="specificusers" label="Specific users" isChecked={specificUsers} setIsChecked={() => {setSpecificUsers(true); setAllUsers(false);}} />
-       
+        <Checkbox
+          id="allusers"
+          label="All users"
+          isChecked={allUsers}
+          setIsChecked={() => {
+            setAllUsers(true);
+            setSpecificUsers(false);
+          }}
+        />
+        <Checkbox
+          id="specificusers"
+          label="Specific users"
+          isChecked={specificUsers}
+          setIsChecked={() => {
+            setSpecificUsers(true);
+            setAllUsers(false);
+          }}
+        />
+
         <Button
           text="Send"
           onClick={send}
           className="w-30 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#33333c] text-base font-medium hover:bg-[#44464f] sm:text-sm cursor-pointer"
         />
       </div>
-      <div className = "mt-4 flex justify-center">
-       <input
-className={`bg-transparent border-[#525363] w-80 border rounded outline-none focus:border-[#68697a] p-2 ${specificUsers ? 'show' : 'h-0 mt-0 opacity-0'}`}
-placeholder={"User IDs, seperated by commas"}
+      <div className="mt-4 flex justify-center">
+        <input
+          className={`bg-transparent border-[#525363] w-80 border rounded outline-none focus:border-[#68697a] p-2 ${
+            specificUsers ? "show" : "h-0 mt-0 opacity-0"
+          }`}
+          placeholder={"User IDs, seperated by commas"}
           onChange={handleUsers}
           style={{
             transition: "opacity 0.2s ease-in-out, height 0.2s ease-in-out",
-        }}
-        
+          }}
         />
-        </div>
+      </div>
       <div className="mt-8 flex justify-center">
         <NotificationsTable notifications={notificationData ? notificationData : []} />
       </div>

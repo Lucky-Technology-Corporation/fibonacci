@@ -7,12 +7,12 @@ import UserTableView from "./Auth/UserTableView";
 import ObjectTableView from "./Storage/ObjectTableView";
 import LogsDrawer from "./Editor/LogsDrawer";
 import MonitoringPage from "./Logs/MonitoringPage";
-import { useContext, useState, useEffect} from "react";
+import { useContext, useState, useEffect } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import NotificationPage from "./Notifications/NotificationPage";
 
 type CenterContentProps = {
-  selectedTab: Page; 
+  selectedTab: Page;
   setCurrentFileProperties: (properties: any) => void;
   didDeploy: boolean;
   setDidDeploy: (didDeploy: boolean) => void;
@@ -29,9 +29,7 @@ export default function CenterContent({
   activeLogsPage,
 }: CenterContentProps) {
   const { activeEndpoint, activeFile } = useContext(SwizzleContext);
-  
-  
-  
+
   return (
     <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
       <div
@@ -41,9 +39,7 @@ export default function CenterContent({
       >
         <div style={{ display: activeEndpoint || activeFile ? "block" : "none" }}>
           <EndpointHeader />
-          <Editor
-            setCurrentFileProperties={setCurrentFileProperties}
-          />
+          <Editor setCurrentFileProperties={setCurrentFileProperties} />
         </div>
         <div
           style={{

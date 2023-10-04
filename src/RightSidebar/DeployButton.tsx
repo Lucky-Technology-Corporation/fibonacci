@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useApi from "../API/EndpointAPI";
-import DeployInfo from "./DeployInfo.tsx"
+import DeployInfo from "./DeployInfo.tsx";
 
 export default function DeployButton({}: {}) {
   const [deployProgress, setDeployProgress] = useState(0);
@@ -55,7 +55,6 @@ export default function DeployButton({}: {}) {
       setIsDeploymentInProgress(false);
       setDeployProgress(0);
     }, 3500);
-
   };
 
   //Command-S deploy trigger
@@ -90,13 +89,9 @@ export default function DeployButton({}: {}) {
         }}
       >
         <img src="rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
-        {deployProgress > 8
-          ? deployProgress == 100
-            ? "Deployed!"
-            : "Deploying..."
-          : "Deploy"}
+        {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
       </button>
-  
+
       {showDeployInfo && (
         <div className="absolute top-full right-0 mt-2">
           <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} />
@@ -104,7 +99,4 @@ export default function DeployButton({}: {}) {
       )}
     </div>
   );
-  
-
-  
 }

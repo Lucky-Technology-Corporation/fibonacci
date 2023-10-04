@@ -17,7 +17,7 @@ export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
   const { getLogs } = useApi();
 
-  const isRefreshingFresh = useRef(false)
+  const isRefreshingFresh = useRef(false);
   const [messages, setMessages] = useState([]);
   const [wsUrl, setWsUrl] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
@@ -48,9 +48,8 @@ export default function LogsPage() {
     },
   ];
 
-
   const freshLogs = async () => {
-    isRefreshingFresh.current = true
+    isRefreshingFresh.current = true;
 
     setPage(0);
     setOffset(0);
@@ -58,22 +57,23 @@ export default function LogsPage() {
     setSearchQuery("");
     setNextPageToken(null);
 
-    getLogs(0, filterName, null).then((data) => {
-      if (data) {
-        isRefreshingFresh.current = false
-        setMessages(data);
-        return true
-      }
-    })
-    .catch((e) => {
-      isRefreshingFresh.current = false
-      console.error(e);
-      return false
-    })
+    getLogs(0, filterName, null)
+      .then((data) => {
+        if (data) {
+          isRefreshingFresh.current = false;
+          setMessages(data);
+          return true;
+        }
+      })
+      .catch((e) => {
+        isRefreshingFresh.current = false;
+        console.error(e);
+        return false;
+      });
   };
 
   useEffect(() => {
-    freshLogs()
+    freshLogs();
   }, [filterName, environment, activeProject]);
 
   useEffect(() => {
@@ -127,11 +127,11 @@ export default function LogsPage() {
     if (filterQuery == "") {
       setNextPageToken(null);
       setFilterName("log");
-      return
+      return;
     }
 
-    if(isRefreshingFresh.current){
-      return
+    if (isRefreshingFresh.current) {
+      return;
     }
 
     toast.promise(
@@ -147,11 +147,13 @@ export default function LogsPage() {
         })
         .catch((e) => {
           console.error(e);
-        }), {
-          loading: "Loading",
-          success: "Loaded",
-          error: "Failed to load logs",
-        });
+        }),
+      {
+        loading: "Loading",
+        success: "Loaded",
+        error: "Failed to load logs",
+      },
+    );
   }, [offset, filterQuery]);
 
   const runSearch = () => {
@@ -160,7 +162,6 @@ export default function LogsPage() {
 
   return (
     <div className="h-full overflow-scroll min-h-[50vh]">
-
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Logs</div>
@@ -190,17 +191,18 @@ export default function LogsPage() {
           direction="left"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
         />
-        {(filterQuery != null && filterQuery != "") && (
+        {filterQuery != null && filterQuery != "" && (
           <Button
             className="px-5 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
             text="Clear"
-            onClick={() => {toast.promise(freshLogs(), {
+            onClick={() => {
+              toast.promise(freshLogs(), {
                 loading: "Loading...",
                 success: () => {
                   return "Done";
                 },
                 error: "Failed to load. Try reloading the page",
-              })
+              });
             }}
           />
         )}

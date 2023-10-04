@@ -112,7 +112,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         [name]: prodValue,
       },
     };
-    return saveSecrets(secrets);  
+    return saveSecrets(secrets);
   };
 
   const createNewSecret = () => {

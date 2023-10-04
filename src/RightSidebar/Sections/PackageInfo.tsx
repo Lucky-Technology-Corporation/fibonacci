@@ -80,7 +80,6 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };
 
-
   const renderSearchField = () => {
     return (
       <Select
@@ -188,7 +187,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
                           className="ml-auto"
                           icon={faTrash}
                           onClick={() => {
-                            removePackageFromProject(packageName)
+                            removePackageFromProject(packageName);
                             toast.success(`Removed ${packageName} from project`);
                           }}
                         />

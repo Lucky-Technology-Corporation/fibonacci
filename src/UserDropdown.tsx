@@ -82,7 +82,7 @@ export default function UserDropdown() {
         >
           <Menu.Items className="absolute left-0 bottom-8 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
-            <Menu.Item>
+              <Menu.Item>
                 {({ active }) => (
                   <a
                     href="#"
@@ -144,18 +144,13 @@ export default function UserDropdown() {
         setIsVisible={setInviteVisible}
         modalDetails={{
           title: "Invite",
-          description: (
-            <>
-              Invite a team member to collaborate on this project.
-            </>
-          ),
+          description: <>Invite a team member to collaborate on this project.</>,
           placeholder: "Email",
           confirmText: "Invite",
           confirmHandler: didInvite,
           shouldShowInput: true,
         }}
       />
-
     </>
   );
 }

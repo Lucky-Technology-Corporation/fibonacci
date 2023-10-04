@@ -7,11 +7,17 @@ type NotificationPageSetUpProps = {
   setShowSetUp: (value: boolean) => void;
   savedP8Key?: string;
   savedKeyID?: string;
-  savedTeamID?: string; 
+  savedTeamID?: string;
   savedBundleID?: string;
-}
+};
 
-export default function NotificationPageSetUp({ setShowSetUp, savedP8Key, savedKeyID, savedTeamID, savedBundleID }: NotificationPageSetUpProps) {
+export default function NotificationPageSetUp({
+  setShowSetUp,
+  savedP8Key,
+  savedKeyID,
+  savedTeamID,
+  savedBundleID,
+}: NotificationPageSetUpProps) {
   const api = useNotificationApi();
   const fileInputRef = useRef(null);
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -46,22 +52,21 @@ export default function NotificationPageSetUp({ setShowSetUp, savedP8Key, savedK
 
   const handleBundleIDChange = (event) => {
     setBundleID(event.target.value);
-  }
+  };
 
   const triggerFileInput = () => {
     fileInputRef.current.click();
   };
 
   const save = async (p8Key, keyID, teamID, bundleID) => {
-      try {
-        await api.setNotificationKey(p8Key, keyID, teamID, bundleID);
-        setShowSetUp(false);
-      } catch (error) {
-        toast.error("Error saving settings");
-        console.error("Error in saving:", error);
-      }
+    try {
+      await api.setNotificationKey(p8Key, keyID, teamID, bundleID);
+      setShowSetUp(false);
+    } catch (error) {
+      toast.error("Error saving settings");
+      console.error("Error in saving:", error);
+    }
   };
-
 
   return (
     <div className="h-full overflow-scroll">
@@ -85,7 +90,7 @@ export default function NotificationPageSetUp({ setShowSetUp, savedP8Key, savedK
             <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
           </div>
           <div className={`w-1/2 text-center ${fileUploaded || savedP8Key ? "text-green-500" : ""}`}>
-            {(fileUploaded || savedP8Key) ? "Uploaded" : "Not uploaded yet"}
+            {fileUploaded || savedP8Key ? "Uploaded" : "Not uploaded yet"}
           </div>
         </div>
 

@@ -24,7 +24,7 @@ const withDb = `const router = express.Router();
 const { db } = require('swizzle-js');
 `;
 const justDb = `const { db } = require('swizzle-js');
-`
+`;
 
 const noNotificationImport = `const router = express.Router();
 `;
@@ -32,14 +32,14 @@ const withNotificationImport = `const router = express.Router();
 const { sendNotification } = require('swizzle-js');
 `;
 const justNotificationImport = `const { sendNotification } = require('swizzle-js');
-`
+`;
 
 const noStorageImport = `const router = express.Router();
 `;
 const withStorageImport = `const router = express.Router();
 const { saveFile, getFile, deleteFile } = require('swizzle-js');
-`
-const justStorageImport = `const { saveFile, getFile, deleteFile } = require('swizzle-js');`
+`;
+const justStorageImport = `const { saveFile, getFile, deleteFile } = require('swizzle-js');`;
 
 export default function RightSidebar({
   selectedTab,
@@ -75,16 +75,15 @@ export default function RightSidebar({
           findText: "optionalAuthentication",
           replaceText: "requiredAuthentication",
           type: "findAndReplace",
-        }
-        setPostMessage(firstMessage)
-
+        };
+        setPostMessage(firstMessage);
       } else {
         const firstMessage = {
           findText: "requiredAuthentication",
           replaceText: "optionalAuthentication",
           type: "findAndReplace",
-        }
-        setPostMessage(firstMessage)
+        };
+        setPostMessage(firstMessage);
       }
     }
   }, [isAuthChecked]);
@@ -93,24 +92,24 @@ export default function RightSidebar({
     if (programmaticDbUpdateRef.current) {
       programmaticDbUpdateRef.current = false;
     } else {
-      var message = {}
+      var message = {};
       if (isDBChecked) {
         message = {
           findText: noDb,
           replaceText: withDb,
           type: "findAndReplace",
-        }
+        };
       } else {
         message = {
           findText: justDb,
           replaceText: "",
           type: "findAndReplace",
-        }
+        };
       }
-      setPostMessage(message)
+      setPostMessage(message);
     }
   }, [isDBChecked]);
-  
+
   useEffect(() => {
     if (programmaticAuthUpdateRef.current) {
       programmaticAuthUpdateRef.current = false;
@@ -120,16 +119,15 @@ export default function RightSidebar({
           findText: noNotificationImport,
           replaceText: withNotificationImport,
           type: "findAndReplace",
-        }
-        setPostMessage(firstMessage)
-
+        };
+        setPostMessage(firstMessage);
       } else {
         const firstMessage = {
           findText: justNotificationImport,
           replaceText: "",
           type: "findAndReplace",
-        }
-        setPostMessage(firstMessage)
+        };
+        setPostMessage(firstMessage);
       }
     }
   }, [isNotificationsChecked]);
@@ -143,16 +141,15 @@ export default function RightSidebar({
           findText: noStorageImport,
           replaceText: withStorageImport,
           type: "findAndReplace",
-        }
-        setPostMessage(firstMessage)
-
+        };
+        setPostMessage(firstMessage);
       } else {
         const firstMessage = {
           findText: justStorageImport,
           replaceText: "",
           type: "findAndReplace",
-        }
-        setPostMessage(firstMessage)
+        };
+        setPostMessage(firstMessage);
       }
     }
   }, [isStorageChecked]);
@@ -274,7 +271,12 @@ export default function RightSidebar({
             </div>
             <div className="h-2" />
             <div className="text-left w-full space-y-2">
-              <Checkbox id="notifications" label="Push Notifications" isChecked={isNotificationsChecked} setIsChecked={setIsNotificationsChecked} />
+              <Checkbox
+                id="notifications"
+                label="Push Notifications"
+                isChecked={isNotificationsChecked}
+                setIsChecked={setIsNotificationsChecked}
+              />
               <NotificationInfo show={isNotificationsChecked} />
             </div>
             <div className="h-2" />

@@ -23,7 +23,7 @@ export default function useTestApi() {
     try {
       if (!activeEndpoint) {
         console.error("No active project selected");
-        return
+        return;
       }
 
       const response = await axios.get(
@@ -62,7 +62,7 @@ export default function useTestApi() {
       }
     } catch (error) {
       console.error("Error running test:", error);
-      return null
+      return null;
     }
   };
 
@@ -83,7 +83,7 @@ export default function useTestApi() {
       return responses;
     } catch (error) {
       console.error("Error running all tests:", error);
-      return null
+      return null;
     }
   };
 
@@ -98,7 +98,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running GET test:", error);
-      return null
+      return null;
     }
   };
 
@@ -113,7 +113,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running POST test:", error);
-      return null
+      return null;
     }
   };
 
@@ -128,7 +128,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running PUT test:", error);
-      return null
+      return null;
     }
   };
 
@@ -143,7 +143,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running DELETE test:", error);
-      return null
+      return null;
     }
   };
 

@@ -8,7 +8,8 @@ const BASE_URL = process.env.BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } = useContext(SwizzleContext);
+  const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } =
+    useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
@@ -22,47 +23,44 @@ export default function useApi() {
           Authorization: authHeader(),
         },
       });
-      
+
       const jwt = response.data.fermat_token;
-      if(jwt == undefined || jwt == null || jwt == ""){
+      if (jwt == undefined || jwt == null || jwt == "") {
         return "";
       }
 
       setFermatJwt(jwt);
       return jwt;
-      
     } catch (e) {
       console.error(e);
       return "";
     }
-  }
+  };
 
   const getFermatJwt = async () => {
-    if(fermatJwt == ""){
+    if (fermatJwt == "") {
       const jwt = await exchangeJwt();
-      if(jwt == ""){
+      if (jwt == "") {
         return "";
       }
-      setFermatJwt(jwt)
+      setFermatJwt(jwt);
       return "Bearer " + jwt;
-    } else{
-
+    } else {
       let decoded = jwt_decode(fermatJwt) as any;
       let exp = decoded.exp;
       let now = Date.now() / 1000;
-      if(exp < now){
+      if (exp < now) {
         const jwt = await exchangeJwt();
-        if(jwt == ""){
+        if (jwt == "") {
           return "";
         }
-        setFermatJwt(jwt)
+        setFermatJwt(jwt);
         return "Bearer " + jwt;
       }
 
       return "Bearer " + fermatJwt;
     }
-  }
-
+  };
 
   const deploy = async () => {
     try {
@@ -86,11 +84,14 @@ export default function useApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "http://")}:1234/code/file_contents?path=code/${fileName}`, {
-        headers: {
-          Authorization: await getFermatJwt(),
+      const response = await axios.get(
+        `${testDomain.replace("https://", "http://")}:1234/code/file_contents?path=code/${fileName}`,
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e) {
       console.error(e);
@@ -123,7 +124,6 @@ export default function useApi() {
       return null;
     }
   };
-
 
   // const getAIResponseToFile = async (userQuery: string, aiAction: string) => {
   //   //TODO: pull in code from imported files
@@ -239,6 +239,6 @@ export default function useApi() {
     askQuestion,
     getAutocheckResponse,
     deploy,
-    getFermatJwt
+    getFermatJwt,
   };
 }

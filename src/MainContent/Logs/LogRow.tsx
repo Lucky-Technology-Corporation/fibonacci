@@ -10,7 +10,15 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function LogRow({ message, freshLogs, setModalText }: { message: any, freshLogs: () => {}, setModalText: (text: ReactNode) => void }) {
+export default function LogRow({
+  message,
+  freshLogs,
+  setModalText,
+}: {
+  message: any;
+  freshLogs: () => {};
+  setModalText: (text: ReactNode) => void;
+}) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [logDetails, setLogDetails] = useState<[] | null>(null);
   const { getLogDetails, analyzeError } = useApi();
@@ -20,19 +28,19 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
     if (isExpanded && logDetails == null) {
       getLogText(message.traceId).then((logs) => {
         setLogDetails(logs);
-      })
+      });
     }
   }, [isExpanded]);
 
   const cache: { [traceId: string]: any[] } = {};
   const inProgress: Set<string> = new Set();
-  
+
   const getLogText = async (traceId: string) => {
     // Check if it's already in cache
     if (cache[traceId]) {
       return cache[traceId];
     }
-  
+
     // Block if it's already being fetched
     if (inProgress.has(traceId)) {
       return new Promise((resolve) => {
@@ -44,22 +52,22 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
         }, 100);
       });
     }
-  
+
     inProgress.add(traceId);
-  
+
     // Fetch data
     const data = await getLogDetails(traceId);
     inProgress.delete(traceId);
-  
+
     if (data == null || data.logs == null) {
       cache[traceId] = [];
       return [];
     }
-    
+
     cache[traceId] = data.logs;
     return data.logs;
   };
-  
+
   useEffect(() => {
     setIsExpanded(false);
     setLogDetails(null);
@@ -79,22 +87,22 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
   };
 
   const retryRequest = async () => {
-    if(message.method == "GET"){
-      await axios.get(domain + message.url, { headers: message.headers })
-    } else if(message.method == "POST"){
-      await axios.post(domain + message.url, message.request, { headers: message.headers })
+    if (message.method == "GET") {
+      await axios.get(domain + message.url, { headers: message.headers });
+    } else if (message.method == "POST") {
+      await axios.post(domain + message.url, message.request, { headers: message.headers });
     }
-    return freshLogs()
-  }
+    return freshLogs();
+  };
 
   const fixRequest = async () => {
-    const logs = await getLogDetails(message.traceId)
-    const response = await analyzeError(logs, message)
-    if(response == null){
-      return "Something went wrong"
+    const logs = await getLogDetails(message.traceId);
+    const response = await analyzeError(logs, message);
+    if (response == null) {
+      return "Something went wrong";
     }
-    setModalText(<>{response.recommendation_text}</>)    
-  }
+    setModalText(<>{response.recommendation_text}</>);
+  };
 
   return (
     <>
@@ -107,26 +115,28 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
         }}
       >
         <td className="text-left pl-4">
-          <IconButton icon={<FontAwesomeIcon icon={faRotateRight} className="py-1" />} onClick={() => {
-
-            toast.promise(retryRequest(), {
-              loading: "Retrying request...",
-              success: "Returned successfully",
-              error: "Returned with an error",
-            });
-            
-          }} />
+          <IconButton
+            icon={<FontAwesomeIcon icon={faRotateRight} className="py-1" />}
+            onClick={() => {
+              toast.promise(retryRequest(), {
+                loading: "Retrying request...",
+                success: "Returned successfully",
+                error: "Returned with an error",
+              });
+            }}
+          />
         </td>
         <td className={`text-left pl-4 ${message.responseCode < 300 ? "opacity-50 pointer-events-none" : ""}`}>
-          <IconButton icon={<FontAwesomeIcon icon={faWrench} className="py-1" />} onClick={() => {
-
-            toast.promise(fixRequest(), {
-              loading: "Looking at your code...",
-              success: "Found an answer",
-              error: "Couldn't find an answer",
-            });
-            
-          }} />
+          <IconButton
+            icon={<FontAwesomeIcon icon={faWrench} className="py-1" />}
+            onClick={() => {
+              toast.promise(fixRequest(), {
+                loading: "Looking at your code...",
+                success: "Found an answer",
+                error: "Couldn't find an answer",
+              });
+            }}
+          />
         </td>
 
         <td className="text-left pl-4">{formatDate(message.createdAt)}</td>
@@ -139,9 +149,7 @@ export default function LogRow({ message, freshLogs, setModalText }: { message: 
             <div>{message.responseCode}</div>
           </div>
         </td>
-        <td className={`text-left pl-4 ${message.userId == null ? "" : ""}`}>
-          {message.userId || "None"}
-        </td>
+        <td className={`text-left pl-4 ${message.userId == null ? "" : ""}`}>{message.userId || "None"}</td>
         <td className="text-left pl-4">
           <InfoItem
             content={<div className="text-xs font-mono underline decoration-dotted">Request</div>}

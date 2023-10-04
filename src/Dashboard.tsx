@@ -29,7 +29,6 @@ export default function Dashboard() {
   const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
   const { getProjects } = useApi();
 
-
   useEffect(() => {
     getProjects()
       .then((data) => {
@@ -55,7 +54,6 @@ export default function Dashboard() {
         console.error(e);
       });
   }, []);
-
 
   if (isAuthenticated()) {
     if (isCreatingProject) {
@@ -93,10 +91,7 @@ export default function Dashboard() {
               activeLogsPage={activeLogsPage}
             />
 
-            <RightSidebar
-              selectedTab={selectedTab}
-              currentFileProperties={currentFileProperties}
-            />
+            <RightSidebar selectedTab={selectedTab} currentFileProperties={currentFileProperties} />
           </div>
         </div>
       );

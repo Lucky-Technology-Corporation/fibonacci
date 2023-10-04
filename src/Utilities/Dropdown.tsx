@@ -58,7 +58,9 @@ export default function Dropdown({
         leaveTo="transform opacity-0 scale-95"
       >
         <Menu.Items
-          className={`absolute ${direction != "center" ? (direction+"-0") : "ml-[-39px]"} z-50 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none`}
+          className={`absolute ${
+            direction != "center" ? direction + "-0" : "ml-[-39px]"
+          } z-50 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none`}
         >
           <div className="py-1">
             {children.map((child: any) => (

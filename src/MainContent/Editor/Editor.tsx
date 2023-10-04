@@ -2,18 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import useApi from "../../API/EndpointAPI";
 
-export default function Editor({
-  setCurrentFileProperties,
-}: {
-  setCurrentFileProperties: (properties: any) => void;
-}) {
-
+export default function Editor({ setCurrentFileProperties }: { setCurrentFileProperties: (properties: any) => void }) {
   const iframeRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  
+
   const { testDomain, postMessage, setIdeReady, activeProject } = useContext(SwizzleContext);
 
-  const {getFermatJwt} = useApi()
+  const { getFermatJwt } = useApi();
 
   useEffect(() => {
     if (postMessage == null) return;
@@ -23,7 +18,7 @@ export default function Editor({
   const postMessageToIframe = (message) => {
     if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null) return;
     iframeRef.current.contentWindow.postMessage(message, "*");
-    console.log("message sent", message)
+    console.log("message sent", message);
   };
 
   const messageHandler = (event) => {
@@ -53,31 +48,35 @@ export default function Editor({
       setIdeReady(false);
     };
   }, []);
-  
+
   useEffect(() => {
-    if(activeProject == undefined || activeProject == "") return
+    if (activeProject == undefined || activeProject == "") return;
     const getUrl = async () => {
-      const fermatJwt = await getFermatJwt()
-      setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace("Bearer ", "")}`)
-    }
-    getUrl()
+      const fermatJwt = await getFermatJwt();
+      setTheiaUrl(
+        `${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code?jwt=${fermatJwt.replace(
+          "Bearer ",
+          "",
+        )}`,
+      );
+    };
+    getUrl();
 
-  //   async function getSrc() {
-  //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {
-  //       method: 'GET',
-  //       headers: {
-  //         // Here you can set any headers you want
-  //         Authorization: await getFermatJwt(),
-  //       }
-  //     });
-  //     const blob = await res.blob();
-  //     const urlObject = URL.createObjectURL(blob);
-  //     document.querySelector('iframe').setAttribute("src", urlObject)
-  //   }
+    //   async function getSrc() {
+    //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {
+    //       method: 'GET',
+    //       headers: {
+    //         // Here you can set any headers you want
+    //         Authorization: await getFermatJwt(),
+    //       }
+    //     });
+    //     const blob = await res.blob();
+    //     const urlObject = URL.createObjectURL(blob);
+    //     document.querySelector('iframe').setAttribute("src", urlObject)
+    //   }
 
-  //   getSrc();
-
-  }, [activeProject])
+    //   getSrc();
+  }, [activeProject]);
 
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>

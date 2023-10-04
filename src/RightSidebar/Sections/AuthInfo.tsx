@@ -35,7 +35,8 @@ export default function AuthInfo({ show }: { show: boolean }) {
             isLarge: true,
             content: (
               <div className="text-gray-400">
-                If the request is made from a client that has not signed in and <span className="font-bold font-mono">optionalAuthentication</span> is enabled,{" "}
+                If the request is made from a client that has not signed in and{" "}
+                <span className="font-bold font-mono">optionalAuthentication</span> is enabled,{" "}
                 <span className="font-bold font-mono">request.user</span> will be{" "}
                 <span className="font-bold font-mono">null</span>.<div className="h-4"></div>
                 If a user is signed in, you can access the following properties:

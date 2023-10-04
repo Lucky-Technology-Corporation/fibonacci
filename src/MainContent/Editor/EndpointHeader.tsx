@@ -37,10 +37,10 @@ export default function EndpointHeader() {
     return toast.promise(askQuestion(prompt, AICommand), {
       loading: "Generating code...",
       success: (data) => {
-        if(response == null){
-          return "Something went wrong"
+        if (response == null) {
+          return "Something went wrong";
         }
-        setResponse(<>{data.recommendation_text}</>)
+        setResponse(<>{data.recommendation_text}</>);
         return "Done";
       },
       error: "Error generating code",
@@ -51,51 +51,52 @@ export default function EndpointHeader() {
     <>
       {activeEndpoint && (
         <div className="flex-col">
-        <div
-          className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
-            ideReady ? "" : "opacity-50 pointer-events-none"
-          }`}
-        >
-          <Dropdown
-            className="ml-4 "
-            onSelect={setAICommand}
-            children={[
-              { id: "ask", name: "Ask" },
-              { id: "create", name: "Create" },
-              { id: "edit", name: "Edit" },
-            ]}
-            direction="right"
-            title={AICommand.charAt(0).toUpperCase() + AICommand.slice(1)}
-          />
+          <div
+            className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
+              ideReady ? "" : "opacity-50 pointer-events-none"
+            }`}
+          >
+            <Dropdown
+              className="ml-4 "
+              onSelect={setAICommand}
+              children={[
+                { id: "ask", name: "Ask" },
+                { id: "create", name: "Create" },
+                { id: "edit", name: "Edit" },
+              ]}
+              direction="right"
+              title={AICommand.charAt(0).toUpperCase() + AICommand.slice(1)}
+            />
 
-          <input
-            className="grow mx-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
-            placeholder={AICommand == "ask" ? "Ask any question..." : "Change this code to..."}
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(event) => {
-              if (event.key == "Enter") {
+            <input
+              className="grow mx-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
+              placeholder={AICommand == "ask" ? "Ask any question..." : "Change this code to..."}
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyDown={(event) => {
+                if (event.key == "Enter") {
+                  runQuery();
+                }
+              }}
+            />
+
+            <Button
+              className="px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              text="Go"
+              onClick={() => {
                 runQuery();
-              }
-            }}
-          />
-
-          <Button
-            className="px-5 py-1 font-medium rounded font-sans text-sm flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-            text="Go"
-            onClick={() => {
-              runQuery();
-            }}
-          />
+              }}
+            />
           </div>
         </div>
       )}
 
       <FloatingModal
         content={response}
-        closeModal={() => {setResponse(null)}}
+        closeModal={() => {
+          setResponse(null);
+        }}
       />
-
     </>
   );
 }
