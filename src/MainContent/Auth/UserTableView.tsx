@@ -38,16 +38,7 @@ export default function UserTableView() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const ITEMS_PER_PAGE = 20;
-  const hiddenColumns = [
-    "_deactivated",
-    "deviceId",
-    "created_ip",
-    "updatedAt",
-    "updated_ip",
-    "isAnonymous",
-    "_swizzle_subscription",
-    "countryCode",
-  ];
+  const hiddenColumns = ["_deactivated", "deviceId", "created_ip", "updatedAt", "updated_ip", "isAnonymous", "subscription", "countryCode"]
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [sortedByColumn, setSortedByColumn] = useState<string>("");
@@ -252,7 +243,7 @@ export default function UserTableView() {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
                 shouldHideFields={hiddenColumns}
-                shouldBlockEdits={["_id", "createdAt", "isAnonymous"]}
+                shouldBlockEdits={["_id", "createdAt", "isAnonymous", "subscription"]}
                 shouldShowStrikethrough={hiddenRows.includes(row._id) || row._deactivated == true}
               />
             ))}

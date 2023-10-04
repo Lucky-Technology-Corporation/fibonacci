@@ -103,14 +103,10 @@ export default function UserRow({
         <img src={`https://flagsapi.com/${rowValues["countryCode"]}/flat/48.png`} />
       </td>
       <td className="flex">
-        {rowValues["_swizzle_subscription"] == "active" ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">
-            $4.99 / mo
-          </div>
-        ) : rowValues["_swizzle_subscription"] == "churning" ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
-            Churning
-          </div>
+        {rowValues["subscription"].includes("subscribed") ? (
+          <div className="m-auto inline-flex items-center rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">Subscribed</div>
+        ) : rowValues["subscription"] == "canceled" ? (
+          <div className="m-auto inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">Canceled</div>
         ) : (
           <div className="m-auto inline-flex items-center rounded-md bg-gray-500 bg-opacity-50 px-2 mt-1 py-0.5 text-xs font-medium text-gray-300 ring-1 ring-inset ring-gray-500/10">
             Not subscribed
