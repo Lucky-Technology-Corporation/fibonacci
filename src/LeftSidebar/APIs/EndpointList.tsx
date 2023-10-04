@@ -9,13 +9,21 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import pluralize from 'pluralize';
+import HelperItem from "./HelperItem";
+// import HelperWizard from "./HelperWizard";
 
 export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
+
   const { getFiles } = useApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
+  
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
+  const [fullHelperList, setFullHelperList] = useState<any[]>([]);
+  const [helperList, setHelperList] = useState<any[]>([]);
+
   const { activeProject, activeEndpoint, setActiveEndpoint } = useContext(SwizzleContext);
   const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
   const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
@@ -82,6 +90,18 @@ export default function EndpointList({ active }: { active: boolean }) {
         toast.error("Error fetching endpoints");
         console.error(e);
       });
+      
+    getFiles("helpers")
+      .then((data) => {
+        if (data == undefined || data.children == undefined || data.children.length == 0) {
+          return;
+        }
+        setHelperList(data.children)
+        setFullHelperList(data.children)
+      }).catch((e) => {
+        toast.error("Error fetching helpers");
+        console.error(e);
+      })
   }, [activeProject]);
 
   //Used to filter the endopint list
@@ -175,13 +195,30 @@ export default function EndpointList({ active }: { active: boolean }) {
         />
         <div className="flex items-center">Helpers</div>
       </div>
-
+      <div className="ml-1">
+        {fullHelperList.map((helper, index) => {
+          return (
+            <HelperItem
+              key={index}
+              path={helper.replace("/user-helpers/", "")}
+              active={helper == activeEndpoint}
+              onClick={() => setActiveEndpoint(helper)}
+            />
+          )
+        })}
+      </div>
       <APIWizard
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         setEndpoints={setEndpoints}
         setFullEndpoints={setFullEndpointList}
       />
+      {/* <HelperWizard
+        isVisible={isHelperWizardVisible}
+        setIsVisible={setIsHelperWizardVisible}
+        setHelpers={setHelperList}
+        setFullHelpers={setFullHelperList}
+      /> */}
     </div>
   );
 }

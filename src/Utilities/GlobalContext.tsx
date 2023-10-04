@@ -62,6 +62,8 @@ export const GlobalContextProvider = ({ children }) => {
         setFermatJwt,
         figmaToken,
         setFigmaToken,
+        activeHelper,
+        setActiveHelper,
       }}
     >
       {children}

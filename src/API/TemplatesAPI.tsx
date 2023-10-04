@@ -3,7 +3,7 @@ import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { useContext } from "react";
 
-const BASE_URL = process.env.BASE_URL;
+const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
@@ -11,7 +11,7 @@ export default function useApi() {
 
   const getTemplates = async () => {
     if (activeProject == "") return;
-    const response = await axios.get(`${BASE_URL}/projects/${activeProject}/templates`, {
+    const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/templates`, {
       headers: {
         Authorization: authHeader(),
       },
