@@ -42,7 +42,7 @@ export default function useApi() {
           question_type: "log",
           other_context: JSON.stringify(requestDetails),
           current_file: currentFile,
-          fermat_domain: testDomain.replace("https://", "http://"),
+          fermat_domain: testDomain.replace("https://", "https://fermat."),
           fermat_jwt: await getFermatJwt(),
         },
         {
