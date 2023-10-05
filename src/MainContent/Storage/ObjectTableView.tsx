@@ -87,6 +87,7 @@ export default function ObjectTableView() {
 
   const [baseUrl, setBaseUrl] = useState<string>("");
   useEffect(() => {
+    if(testDomain == undefined || domain == undefined) return
     if (environment == "test") {
       setBaseUrl(testDomain.replace("https://", "https://runner."));
     } else {
