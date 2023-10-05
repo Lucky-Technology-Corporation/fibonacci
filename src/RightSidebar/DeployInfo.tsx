@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import useApi from "../API/DeploymentAPI";
+import useDeployApi from "../API/DeploymentAPI";
 
 type DeployInfoProps = {
   setShouldShowDeployInfo: (value: boolean) => void;
@@ -15,7 +15,7 @@ type DeploymentLog = {
 };
 
 export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps) {
-  const api = useApi();
+  const api = useDeployApi();
   const myRef = useRef<HTMLDivElement>(null);
   const [logs, setLogs] = useState<DeploymentLog[]>([]);
 

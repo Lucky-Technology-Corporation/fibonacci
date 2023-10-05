@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useApi from "../API/EndpointAPI";
+import useEndpointApi from "../API/EndpointAPI";
 import DeployInfo from "./DeployInfo.tsx";
 
 export default function DeployButton({}: {}) {
@@ -8,7 +8,7 @@ export default function DeployButton({}: {}) {
   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
   const [showDeployInfo, setShowDeployInfo] = useState(false);
 
-  const { deploy } = useApi();
+  const { deploy } = useEndpointApi();
 
   const teaseDeploy = () => {
     if (!isDeploymentInProgress) {

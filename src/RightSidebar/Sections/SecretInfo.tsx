@@ -5,7 +5,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
 import Button from "../../Utilities/Button";
-import useApi from "../../API/SettingsAPI";
+import useSettingsApi from "../../API/SettingsAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import toast from "react-hot-toast";
 
@@ -16,7 +16,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     productionValue: string;
   }
 
-  const { getSecrets, saveSecrets, deleteSecret } = useApi();
+  const { getSecrets, saveSecrets, deleteSecret } = useSettingsApi();
   const { activeProject } = useContext(SwizzleContext);
 
   const [newSecretVisible, setNewSecretVisible] = useState<boolean>(false);

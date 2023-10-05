@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import CollectionItem from "./CollectionItem";
-import useApi from "../../API/DatabaseAPI";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import SectionAction from "../SectionAction";
 import FullPageModal from "../../Utilities/FullPageModal";
 import toast from "react-hot-toast";
@@ -17,7 +17,7 @@ export default function CollectionList({
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const [collections, setCollections] = useState<string[]>([]);
-  const { createCollection, getCollections } = useApi();
+  const { createCollection, getCollections } = useDatabaseApi();
   const { activeProject, environment } = useContext(SwizzleContext);
 
   const refreshCollections = () => {

@@ -6,7 +6,7 @@ import Button from "../../Utilities/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import FullPageModal from "../../Utilities/FullPageModal";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import FloatingModal from "../../Utilities/FloatingModal";
 import Checkbox from "../../Utilities/Checkbox";
@@ -16,7 +16,7 @@ import { Method } from "../../Utilities/Method";
 export default function AppCodePage() {
   const { activeProject, environment, figmaToken, setFigmaToken } = useContext(SwizzleContext);
 
-  const { getCodeFromFigma, getFiles } = useApi();
+  const { getCodeFromFigma, getFiles } = useEndpointApi();
 
   const languages: any = [
     { id: "swift", name: "Swift" },
@@ -56,22 +56,22 @@ export default function AppCodePage() {
     });
   };
 
-    const copyPackageLink = () => {
-        navigator.clipboard.writeText("https://github.com/Lucky-Technology-Corporation/SwizzleSwift")
-        toast.success("Copied! Paste this into your Swift Package Manager dependencies")
-    }
+  const copyPackageLink = () => {
+    navigator.clipboard.writeText("https://github.com/Lucky-Technology-Corporation/SwizzleSwift");
+    toast.success("Copied! Paste this into your Swift Package Manager dependencies");
+  };
 
-    const openModelGeneratorModal = async (data: any) => {
-        if (data == undefined || data.children == undefined || data.children.length == 0) {
-            return;
-        }
-        const transformedEndpoints = data.children
-            .map((endpoint: any) => {
-                return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
-            })
-            .filter((endpoint: string) => {
-                return endpoint != "_swizzle_blank";
-            });
+  const openModelGeneratorModal = async (data: any) => {
+    if (data == undefined || data.children == undefined || data.children.length == 0) {
+      return;
+    }
+    const transformedEndpoints = data.children
+      .map((endpoint: any) => {
+        return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
+      })
+      .filter((endpoint: string) => {
+        return endpoint != "_swizzle_blank";
+      });
 
     const content = (
       <div className="flex flex-col space-y-2">
@@ -131,50 +131,61 @@ export default function AppCodePage() {
           <Dropdown
             className="my-auto ml-auto mr-2"
             onSelect={(item: any) => {
-                if(item != "swift"){
-                    toast.error("Multi language code generation is in alpha. Your account only has access to beta or higher.")
-                    return;
-                }
-                setSelectedMethod(item);
+              if (item != "swift") {
+                toast.error(
+                  "Multi language code generation is in alpha. Your account only has access to beta or higher.",
+                );
+                return;
+              }
+              setSelectedMethod(item);
             }}
             children={languages}
             direction="right"
             title={languages.find((language: any) => language.id == selectedMethod)?.name}
-            />
+          />
         </div>
       </div>
 
       <div className="pr-2 mr-4 pl-4 pt-1 flex flex-row space-x-2">
-          <table className="w-full">
-            <thead className="bg-[#85869822]">
-              <tr className="border-b border-[#4C4F6B]">
-                <th className="text-left pl-2 py-1 font-light rounded-tl-md">File</th>
-                <th className="text-left py-1 font-light ">Description</th>
-                <th className="w-6 rounded-tr-md"></th>
-              </tr>
-            </thead>
-            <tbody className="overflow-y-scroll">
-                <tr>
-                    <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={copyPackageLink}>Swizzle Swift Package</td>
-                    <td className="py-2">Adds support for Swizzle in your Swift project</td>
-                    <td className="py-2 opacity-70 cursor-pointer hover:opacity-100"></td>
-                </tr>
-                <tr>
-                    <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={openModelGenerator}>Model.swift</td>
-                    <td className="py-2">Provides the functions that call your backend</td>
-                    <td className="py-2 opacity-70 cursor-pointer hover:opacity-100">
-                        {/* <FontAwesomeIcon icon={faTrash} /> */}
-                    </td>
-                </tr>
-                <tr>
-                    <td className="pt-2 pl-2 flex">
-                        <div className="w-42">
-                            <Button text="Add from Figma" onClick={() => {authenticateAndOpen()}} />
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-          </table>
+        <table className="w-full">
+          <thead className="bg-[#85869822]">
+            <tr className="border-b border-[#4C4F6B]">
+              <th className="text-left pl-2 py-1 font-light rounded-tl-md">File</th>
+              <th className="text-left py-1 font-light ">Description</th>
+              <th className="w-6 rounded-tr-md"></th>
+            </tr>
+          </thead>
+          <tbody className="overflow-y-scroll">
+            <tr>
+              <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={copyPackageLink}>
+                Swizzle Swift Package
+              </td>
+              <td className="py-2">Adds support for Swizzle in your Swift project</td>
+              <td className="py-2 opacity-70 cursor-pointer hover:opacity-100"></td>
+            </tr>
+            <tr>
+              <td className="py-2 pl-2 underline decoration-dotted cursor-pointer" onClick={openModelGenerator}>
+                Model.swift
+              </td>
+              <td className="py-2">Provides the functions that call your backend</td>
+              <td className="py-2 opacity-70 cursor-pointer hover:opacity-100">
+                {/* <FontAwesomeIcon icon={faTrash} /> */}
+              </td>
+            </tr>
+            <tr>
+              <td className="pt-2 pl-2 flex">
+                <div className="w-42">
+                  <Button
+                    text="Add from Figma"
+                    onClick={() => {
+                      authenticateAndOpen();
+                    }}
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <FloatingModal

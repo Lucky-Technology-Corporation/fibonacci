@@ -5,7 +5,7 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function useApi() {
+export default function useSettingsApi() {
   const authHeader = useAuthHeader();
   const { environment, activeProject } = useContext(SwizzleContext);
 

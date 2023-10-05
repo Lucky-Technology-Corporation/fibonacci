@@ -9,7 +9,7 @@ import CenterContent from "./MainContent/CenterContent";
 import { SwizzleContext } from "./Utilities/GlobalContext";
 import Lottie from "lottie-react";
 import dog from "../public/dog.json";
-import useApi from "./API/DatabaseAPI";
+import useDatabaseApi from "./API/DatabaseAPI";
 import Lobby from "./Blockrain/Lobby";
 
 export default function Dashboard() {
@@ -27,7 +27,7 @@ export default function Dashboard() {
 
   //Initialization code...
   const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
-  const { getProjects } = useApi();
+  const { getProjects } = useDatabaseApi();
 
   useEffect(() => {
     getProjects()

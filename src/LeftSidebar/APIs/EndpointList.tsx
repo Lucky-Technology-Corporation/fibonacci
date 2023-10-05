@@ -3,7 +3,7 @@ import EndpointItem from "./EndpointItem";
 import { Method } from "../../Utilities/Method";
 import SectionAction from "../SectionAction";
 import APIWizard from "./APIWizard";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +19,7 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [isTemplateWizardVisible, setIsTemplateWizardVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
-  const { getFiles } = useApi();
+  const { getFiles } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
 
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
@@ -69,7 +69,7 @@ export default function EndpointList({ active }: { active: boolean }) {
   };
 
   useEffect(() => {
-    console.log("rendered endpointlist")
+    console.log("rendered endpointlist");
     getFiles("endpoints")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {

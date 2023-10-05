@@ -6,7 +6,7 @@ import jwt_decode from "jwt-decode";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function useApi() {
+export default function useEndpointApi() {
   const authHeader = useAuthHeader();
   const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } =
     useContext(SwizzleContext);

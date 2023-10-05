@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import useApi from "../API/DatabaseAPI";
+import useDatabaseApi from "../API/DatabaseAPI";
 import Dropdown from "../Utilities/Dropdown";
 import toast from "react-hot-toast";
 import FullPageModal from "../Utilities/FullPageModal";
@@ -11,7 +11,7 @@ import Switch from "react-switch";
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
 
-  const { createProject } = useApi();
+  const { createProject } = useDatabaseApi();
   const {
     projects,
     activeProject,

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useApi from "../API/EndpointAPI";
+import useEndpointApi from "../API/EndpointAPI";
 
 export default function CodeCheckButton({}: {}) {
   const [deployProgress, setDeployProgress] = useState(0);
   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
-  const { deploy } = useApi();
+  const { deploy } = useEndpointApi();
 
   const teaseDeploy = () => {
     if (!isDeploymentInProgress) {

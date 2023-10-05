@@ -1,21 +1,20 @@
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
-import Button from "../../Utilities/Button";
-import DatabaseRow from "../Database/DatabaseRow";
-import useApi from "../../API/DatabaseAPI";
+import toast from "react-hot-toast";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import useStorageApi from "../../API/StorageAPI";
-import RowDetail from "../Database/RowDetail";
-import Dropdown from "../../Utilities/Dropdown";
+import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../../Utilities/Pagination";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+import DatabaseRow from "../Database/DatabaseRow";
+import RowDetail from "../Database/RowDetail";
 import SearchBar from "../Shared/SearchBar";
-import toast from "react-hot-toast";
 
 export default function ObjectTableView() {
-  const { getDocuments, runQuery } = useApi();
+  const { getDocuments, runQuery } = useDatabaseApi();
   const { uploadFile, deleteFile } = useStorageApi();
 
   const { activeProject, domain, testDomain, environment } = useContext(SwizzleContext);

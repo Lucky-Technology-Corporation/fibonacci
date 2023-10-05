@@ -6,7 +6,7 @@ import useEndpointApi from "./EndpointAPI";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function useApi() {
+export default function useMonitoringApi() {
   const authHeader = useAuthHeader();
   const { activeProject, environment, testDomain } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();

@@ -1,20 +1,17 @@
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
-import Button from "../../Utilities/Button";
-import DatabaseRow from "../Database/DatabaseRow";
-import useApi from "../../API/DatabaseAPI";
-import RowDetail from "../Database/RowDetail";
+import toast from "react-hot-toast";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+import RowDetail from "../Database/RowDetail";
 import SearchBar from "../Shared/SearchBar";
-import toast from "react-hot-toast";
 import UserRow from "./UserRow";
 
 export default function UserTableView() {
-  const { getDocuments, runQuery } = useApi();
+  const { getDocuments, runQuery } = useDatabaseApi();
 
   const { activeProject, activeProjectName, environment } = useContext(SwizzleContext);
 
@@ -38,7 +35,16 @@ export default function UserTableView() {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalDocs, setTotalDocs] = useState<number>(0);
   const ITEMS_PER_PAGE = 20;
-  const hiddenColumns = ["_deactivated", "deviceId", "created_ip", "updatedAt", "updated_ip", "isAnonymous", "subscription", "countryCode"]
+  const hiddenColumns = [
+    "_deactivated",
+    "deviceId",
+    "created_ip",
+    "updatedAt",
+    "updated_ip",
+    "isAnonymous",
+    "subscription",
+    "countryCode",
+  ];
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const [sortedByColumn, setSortedByColumn] = useState<string>("");

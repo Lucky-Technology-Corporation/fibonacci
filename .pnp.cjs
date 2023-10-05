@@ -13412,7 +13412,9 @@ function makeApi(runtimeState, opts) {
       npath.fromPortablePath(request),
       makeFakeModule(npath.fromPortablePath(issuer)),
       false,
-      { plugnplay: false },
+      {
+        plugnplay: false,
+      },
     );
   }
   function isPathIgnored(path) {
