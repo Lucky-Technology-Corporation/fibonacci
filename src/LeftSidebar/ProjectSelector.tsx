@@ -1,12 +1,9 @@
 import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
 import Dropdown from "../Utilities/Dropdown";
-import toast from "react-hot-toast";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Switch from "react-switch";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
@@ -90,7 +87,7 @@ export default function ProjectSelector() {
       }
     } else {
       if (projects.length == 0) {
-        setIsVisible(true);
+        // setIsVisible(true);
       }
     }
   }, [projects]);
