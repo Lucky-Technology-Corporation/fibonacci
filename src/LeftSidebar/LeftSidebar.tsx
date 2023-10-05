@@ -1,17 +1,16 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
-import { Page } from "../Utilities/Page";
-import SectionTitle from "./SectionTitle";
-import CollectionList from "./Database/CollectionList";
-import ProjectSelector from "./ProjectSelector";
-import UserDropdown from "../UserDropdown";
-import EndpointList from "./APIs/EndpointList";
-import AuthSettings from "./Auth/AuthSettings";
-import LogsList from "./Monitoring/LogsList";
-import Switch from "react-switch";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
+import Switch from "react-switch";
+import UserDropdown from "../UserDropdown";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { Page } from "../Utilities/Page";
+import EndpointList from "./APIs/EndpointList";
 import FilesList from "./APIs/FilesList";
+import CollectionList from "./Database/CollectionList";
+import LogsList from "./Monitoring/LogsList";
+import ProjectSelector from "./ProjectSelector";
+import SectionTitle from "./SectionTitle";
 
 type LeftSidebarProps = {
   selectedTab: Page;
@@ -137,7 +136,7 @@ export default function LeftSidebar({
         </div>
 
         <SectionTitle
-          icon="monitor.svg"
+          icon="/monitor.svg"
           text="Monitoring"
           active={selectedTab == Page.Logs}
           onClick={() => {
@@ -149,7 +148,7 @@ export default function LeftSidebar({
         <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
 
         <SectionTitle
-          icon="cloud.svg"
+          icon="/cloud.svg"
           text="Backend"
           active={selectedTab == Page.Apis}
           onClick={() => {
@@ -159,7 +158,7 @@ export default function LeftSidebar({
         <EndpointList active={selectedTab == Page.Apis} />
 
         <SectionTitle
-          icon="database.svg"
+          icon="/database.svg"
           text="Database"
           active={selectedTab == Page.Db}
           onClick={() => {
@@ -173,7 +172,7 @@ export default function LeftSidebar({
         />
 
         <SectionTitle
-          icon="files.svg"
+          icon="/files.svg"
           text="Storage"
           active={selectedTab == Page.Storage}
           onClick={() => {
@@ -182,7 +181,7 @@ export default function LeftSidebar({
         />
 
         <SectionTitle
-          icon="auth.svg"
+          icon="/auth.svg"
           text="Users"
           active={selectedTab == Page.Auth}
           onClick={() => {
@@ -193,7 +192,7 @@ export default function LeftSidebar({
         <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
 
         <SectionTitle
-          icon="paintbrush.svg"
+          icon="/paintbrush.svg"
           text="Frontend"
           active={selectedTab == Page.AppCode}
           onClick={() => {
@@ -202,7 +201,7 @@ export default function LeftSidebar({
         />
 
         <SectionTitle
-          icon="bell.svg"
+          icon="/bell.svg"
           text="Notifications"
           active={selectedTab == Page.Notifications}
           onClick={() => {
@@ -211,7 +210,7 @@ export default function LeftSidebar({
         />
 
         <SectionTitle
-          icon="world.svg"
+          icon="/world.svg"
           text="Hosting"
           active={selectedTab == Page.Hosting}
           onClick={() => {
