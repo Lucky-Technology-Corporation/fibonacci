@@ -3,12 +3,90 @@ import { toast } from "react-hot-toast";
 import { castValues } from "../../Utilities/DataCaster";
 import useApi from "../../API/DatabaseAPI";
 
+const DELETE_ACTION = "delete";
+const DEACTIVATE_ACTION = "deactivate";
+const INITIAL_CLICK_POSITION = { x: 0, y: 0 };
+
+const CopyJSONButton = ({ data, setIsHintWindowVisible }) => {
+  const copyJSON = () => {
+    setIsHintWindowVisible(false);
+    const dataCopy = { ...data };
+    delete dataCopy._id;
+    const castedData = castValues(dataCopy);
+    navigator.clipboard.writeText(JSON.stringify(castedData, null, 2));
+    toast.success("Copied JSON to clipboard!");
+  };
+
+  return <button onClick={copyJSON}>Copy JSON</button>;
+};
+
+const DuplicateButton = ({ data, setIsHintWindowVisible, openNewDocumentWithData }) => {
+  const duplicateData = () => {
+    setIsHintWindowVisible(false);
+    const dataCopy = { ...data };
+    delete dataCopy._id;
+    const castedData = castValues(dataCopy);
+    openNewDocumentWithData(castedData);
+  };
+
+  return <button onClick={duplicateData}>Duplicate</button>;
+};
+
+const DeleteDocumentButton = ({ data, setIsHintWindowVisible, deleteAction, deleteFunction, addHiddenRow, setTotalDocs, deleteDocument, updateDocument }) => {
+  const deleteDocument = () => {
+    setIsHintWindowVisible(false);
+    if (deleteAction === DELETE_ACTION) {
+      const confirmDelete = confirm("Are you sure you want to delete this document? This cannot be undone.");
+      if (confirmDelete) {
+        const deletePromise = deleteFunction ? deleteFunction(data) : deleteDocument(collection, data._id);
+        toast.promise(deletePromise, {
+          loading: "Deleting...",
+          success: () => {
+            addHiddenRow(data._id);
+            setTotalDocs((totalDocs) => totalDocs - 1);
+            return "Deleted";
+          },
+          error: "Failed to delete",
+        });
+      }
+    } else if (deleteAction === DEACTIVATE_ACTION) {
+      const newData = { ...data };
+      if (data._deactivated) {
+        newData._deactivated = false;
+      } else {
+        const confirmDeactivate = confirm("Are you sure you want to deactivate this user? They will not be able to sign in anymore.");
+        if (confirmDeactivate) {
+          newData._deactivated = true;
+        }
+      }
+      toast.promise(updateDocument(collection, data._id, newData), {
+        loading: data._deactivated ? "Reactivating user..." : "Deactivating user...",
+        success: () => {
+          addHiddenRow(data._id);
+          return data._deactivated ? "User reactivated" : "User deactivated";
+        },
+        error: "Failed to update user status",
+      });
+    }
+  };
+
+  return <button onClick={deleteDocument}>{getDeleteActionText(deleteAction, data._deactivated)}</button>;
+};
+
+const getDeleteActionText = (deleteAction, isDeactivated) => {
+  if (deleteAction === DELETE_ACTION) {
+    return "Delete";
+  } else if (deleteAction === DEACTIVATE_ACTION) {
+    return isDeactivated ? "Activate" : "Deactivate";
+  }
+};
+
 export default function RowDetail({
   collection,
   data,
-  clickPosition,
+  clickPosition = INITIAL_CLICK_POSITION,
   addHiddenRow,
-  deleteAction = "delete",
+  deleteAction = DELETE_ACTION,
   shouldHideCopy = false,
   setTotalDocs,
   openNewDocumentWithData = () => {},
@@ -25,100 +103,20 @@ export default function RowDetail({
   deleteFunction?: (data: any) => Promise<any>;
 }) {
   const { deleteDocument, updateDocument } = useApi();
-
-  const copyJSON = () => {
-    clickPosition = { x: 0, y: 0 };
-    setIsHintWindowVisible(false);
-    var niceData = { ...data };
-    delete niceData._id;
-    niceData = castValues(niceData);
-    navigator.clipboard.writeText(JSON.stringify(niceData, null, 2));
-    toast.success("Copied JSON to clipboard!");
-  };
-
-  const runDuplicate = () => {
-    clickPosition = { x: 0, y: 0 };
-    setIsHintWindowVisible(false);
-    var niceData = { ...data };
-    delete niceData._id;
-    niceData = castValues(niceData);
-    openNewDocumentWithData(niceData);
-  };
-
-  const runDeleteDocument = () => {
-    clickPosition = { x: 0, y: 0 };
-    setIsHintWindowVisible(false);
-    if (deleteAction == "delete") {
-      const c = confirm("Are you sure you want to delete this document? This cannot be undone.");
-      if (c) {
-        if (deleteFunction != null) {
-          toast.promise(deleteFunction(data), {
-            loading: "Deleting...",
-            success: () => {
-              addHiddenRow(data._id);
-              setTotalDocs((totalDocs) => totalDocs - 1);
-              return "Deleted";
-            },
-            error: "Failed to delete",
-          });
-        } else {
-          toast.promise(deleteDocument(collection, data._id), {
-            loading: "Deleting...",
-            success: () => {
-              addHiddenRow(data._id);
-              setTotalDocs((totalDocs) => totalDocs - 1);
-              return "Deleted";
-            },
-            error: "Failed to delete",
-          });
-        }
-      }
-    } else if (deleteAction == "deactivate") {
-      if (data._deactivated) {
-        var newData = { ...data };
-        newData._deactivated = false;
-        toast.promise(updateDocument(collection, data._id, newData), {
-          loading: "Reactivating user...",
-          success: () => {
-            addHiddenRow(data._id);
-            return "User reactivated";
-          },
-          error: (e: any) => {
-            console.error(e);
-            return "Failed to reactivate this user";
-          },
-        });
-      } else {
-        const c = confirm("Are you sure you want to deactivate this user? They will not be able to sign in anymore.");
-        if (c) {
-          var newData = { ...data };
-          newData._deactivated = true;
-          toast.promise(updateDocument(collection, data._id, newData), {
-            loading: "Deactivating user...",
-            success: () => {
-              addHiddenRow(data._id);
-              return "User deactivated";
-            },
-            error: "Failed to deactivate this user",
-          });
-        }
-      }
-    }
-  };
-
   const [isHintWindowVisible, setIsHintWindowVisible] = useState(clickPosition.x > 0 && clickPosition.y > 0);
   const modalRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        clickPosition = { x: 0, y: 0 };
+        clickPosition = INITIAL_CLICK_POSITION;
         setIsHintWindowVisible(false);
       }
-    }
+    };
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside); // Unbind the event listener on clean up
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -127,18 +125,6 @@ export default function RowDetail({
       setIsHintWindowVisible(true);
     }
   }, [clickPosition]);
-
-  const getAction = () => {
-    if (deleteAction == "delete") {
-      return "Delete";
-    } else if (deleteAction == "deactivate") {
-      if (data._deactivated) {
-        return "Activate";
-      } else {
-        return "Deactivate";
-      }
-    }
-  };
 
   return (
     <div
@@ -156,21 +142,21 @@ export default function RowDetail({
         <tbody className="divide-y divide-[#85869833]">
           {!shouldHideCopy && (
             <>
-              <tr onClick={runDuplicate}>
+              <tr>
                 <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
-                  <div className="">Duplicate</div>
+                  <DuplicateButton data={data} setIsHintWindowVisible={setIsHintWindowVisible} openNewDocumentWithData={openNewDocumentWithData} />
                 </td>
               </tr>
-              <tr onClick={copyJSON}>
+              <tr>
                 <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
-                  <div className="">Copy JSON</div>
+                  <CopyJSONButton data={data} setIsHintWindowVisible={setIsHintWindowVisible} />
                 </td>
               </tr>
             </>
           )}
-          <tr onClick={runDeleteDocument}>
+          <tr>
             <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
-              <div className="">{getAction()}</div>
+              <DeleteDocumentButton data={data} setIsHintWindowVisible={setIsHintWindowVisible} deleteAction={deleteAction} deleteFunction={deleteFunction} addHiddenRow={addHiddenRow} setTotalDocs={setTotalDocs} deleteDocument={deleteDocument} updateDocument={updateDocument} />
             </td>
           </tr>
         </tbody>
