@@ -2,7 +2,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import useApi from "./DatabaseAPI";
+import useDatabaseApi from "./DatabaseAPI";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -13,7 +13,7 @@ export default function useTestApi() {
     createDocument: createTest,
     updateDocument: updateTest,
     deleteDocument: deleteTest,
-  } = useApi();
+  } = useDatabaseApi();
 
   const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
   const NEXT_PUBLIC_BASE_URL_USER = testDomain.replace("https://", "https://runner.");
@@ -72,7 +72,7 @@ export default function useTestApi() {
         throw new Error("No active endpoint selected");
       }
 
-      const allTests = await useApi().getDocuments(activeCollection, -1, 20, "", "asc", activeEndpoint);
+      const allTests = await getTests(activeCollection, -1, 20, "", "asc", activeEndpoint);
 
       const responses = [];
       for (const testDoc of allTests) {

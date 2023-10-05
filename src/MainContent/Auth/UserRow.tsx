@@ -1,11 +1,9 @@
+import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import useApi from "../../API/DatabaseAPI";
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import moment from "moment";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import { copyText } from "../../Utilities/Copyable";
-import e from "express";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
@@ -49,7 +47,7 @@ export default function UserRow({
   const [editing, setEditing] = useState("");
   const [rowValues, setRowValues] = useState(data);
   const [pendingInputValue, setPendingInputValue] = useState("");
-  const { updateDocument } = useApi();
+  const { updateDocument } = useDatabaseApi();
 
   useEffect(() => {
     setRowValues(data);
@@ -104,9 +102,13 @@ export default function UserRow({
       </td>
       <td className="flex">
         {rowValues["subscription"].includes("subscribed") ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">Subscribed</div>
+          <div className="m-auto inline-flex items-center rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">
+            Subscribed
+          </div>
         ) : rowValues["subscription"] == "canceled" ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">Canceled</div>
+          <div className="m-auto inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
+            Canceled
+          </div>
         ) : (
           <div className="m-auto inline-flex items-center rounded-md bg-gray-500 bg-opacity-50 px-2 mt-1 py-0.5 text-xs font-medium text-gray-300 ring-1 ring-inset ring-gray-500/10">
             Not subscribed

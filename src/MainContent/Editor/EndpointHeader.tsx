@@ -4,7 +4,7 @@ import { Method } from "../../Utilities/Method";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 import { copyText } from "../../Utilities/Copyable";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { replaceCodeBlocks } from "../../Utilities/DataCaster";
@@ -17,7 +17,7 @@ export default function EndpointHeader() {
   const [AICommand, setAICommand] = useState<string>("edit");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
 
-  const { askQuestion } = useApi();
+  const { askQuestion } = useEndpointApi();
 
   useEffect(() => {
     if (activeEndpoint == undefined) return;

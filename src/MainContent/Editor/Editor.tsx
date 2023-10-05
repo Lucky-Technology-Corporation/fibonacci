@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
 
 export default function Editor({ setCurrentFileProperties }: { setCurrentFileProperties: (properties: any) => void }) {
   const iframeRef = useRef(null);
@@ -8,7 +8,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
 
   const { testDomain, postMessage, setPostMessage, setIdeReady, activeProject } = useContext(SwizzleContext);
 
-  const { getFermatJwt } = useApi();
+  const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
     if (postMessage == null) return;

@@ -6,7 +6,7 @@ import useWebSocket from "react-use-websocket";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { useAuthHeader } from "react-auth-kit";
-import useApi from "../../API/MonitoringAPI";
+import useMonitoringApi from "../../API/MonitoringAPI";
 import Pagination from "../../Utilities/Pagination";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
@@ -15,7 +15,7 @@ import FloatingModal from "../../Utilities/FloatingModal";
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
-  const { getLogs } = useApi();
+  const { getLogs } = useMonitoringApi();
 
   const isRefreshingFresh = useRef(false);
   const [messages, setMessages] = useState([]);

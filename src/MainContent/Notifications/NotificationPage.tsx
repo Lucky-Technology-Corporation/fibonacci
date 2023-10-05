@@ -1,8 +1,8 @@
-import NotificationPageSetUp from "./NotificationPageSetUp";
-import NotificationControls from "./NotificationControls";
-import { useState, useEffect, useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import useNotificationApi from "../../API/NotificationsAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import NotificationControls from "./NotificationControls";
+import NotificationPageSetUp from "./NotificationPageSetUp";
 
 export default function NotificationPage() {
   const api = useNotificationApi();

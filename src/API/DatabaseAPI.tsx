@@ -6,7 +6,7 @@ import { useSignOut } from "react-auth-kit";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function useApi() {
+export default function useDatabaseApi() {
   const authHeader = useAuthHeader();
   const { activeProject, environment } = useContext(SwizzleContext);
   const signOut = useSignOut();

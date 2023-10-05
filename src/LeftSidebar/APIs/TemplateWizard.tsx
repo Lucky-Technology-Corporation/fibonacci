@@ -4,7 +4,7 @@ import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import Checkbox from "../../Utilities/Checkbox";
 import useTemplateApi from "../../API/TemplatesAPI";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import SecretInput from "../../Utilities/SecretInput";
 
@@ -47,10 +47,9 @@ export default function TemplateWizard({
   const [templateOptions, setTemplateOptions] = useState([]);
   const [inputState, setInputState] = useState({});
   const { testDomain, setShouldRefreshList, shouldRefreshList, setPackageToInstall } = useContext(SwizzleContext);
- 
 
   const api = useTemplateApi();
-  const endpointApi = useApi();
+  const endpointApi = useEndpointApi();
 
   useEffect(() => {
     if (template) {
@@ -83,34 +82,34 @@ export default function TemplateWizard({
   const constructPayload = async () => {
     const inputs = [];
     for (const key in inputState) {
-        const value = inputState[key];
+      const value = inputState[key];
 
-        let secret_type = "";
-        if (key.endsWith("_test")) {
-            secret_type = "test";
-        } else if (key.endsWith("_prod")) {
-            secret_type = "prod";
-        }
+      let secret_type = "";
+      if (key.endsWith("_test")) {
+        secret_type = "test";
+      } else if (key.endsWith("_prod")) {
+        secret_type = "prod";
+      }
 
-        const name = secret_type ? key.split("_")[0] : key;
+      const name = secret_type ? key.split("_")[0] : key;
 
-        inputs.push({
-            name,
-            value,
-            secret_type,
-        });
+      inputs.push({
+        name,
+        value,
+        secret_type,
+      });
     }
 
     return {
-        TemplateId: template ? template.id : "",
-        FermatURL: testDomain.replace("https://", "https://fermat."),
-        FermatJWT: await endpointApi.getFermatJwt(),
-        Inputs: inputs
+      TemplateId: template ? template.id : "",
+      FermatURL: testDomain.replace("https://", "https://fermat."),
+      FermatJWT: await endpointApi.getFermatJwt(),
+      Inputs: inputs,
     };
-}
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+  };
+  function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   async function handleOnSecondNext() {
     const payload = await constructPayload();
@@ -118,14 +117,14 @@ function delay(ms) {
     //Add necessary npm packages
     template.packages.split(",").forEach(async (package_name) => {
       setPackageToInstall(package_name.trim());
-      await delay(250)
-    })
+      await delay(250);
+    });
 
     //Create files
     await api.createFromTemplate(payload);
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
-  } 
+  }
 
   const handleOnSelectTemplate = (result: { id: any; name: string }) => {
     const foundTemplate = templateOptions.find((template) => template.id === result.id);
@@ -137,7 +136,7 @@ function delay(ms) {
   };
 
   const createTemplateHandler = () => {};
-  
+
   const createHandler = () => {
     setStep(1);
   };
@@ -197,7 +196,6 @@ function delay(ms) {
                           name: template.name,
                           description: template.description,
                         }))}
-                        
                         onSelect={handleOnSelectTemplate}
                         autoFocus
                         placeholder="Blank template"

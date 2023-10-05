@@ -3,7 +3,7 @@ import EndpointItem from "./EndpointItem";
 import { Method } from "../../Utilities/Method";
 import SectionAction from "../SectionAction";
 import APIWizard from "./APIWizard";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -13,7 +13,7 @@ import FileWizard from "./FileWizard";
 
 export default function FilesList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const { getFiles } = useApi();
+  const { getFiles } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullFileList, setFullFileList] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);

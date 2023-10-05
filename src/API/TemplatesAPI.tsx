@@ -24,21 +24,17 @@ export default function useTemplateApi() {
     if (activeProject == "") return;
 
     try {
-        const response = await axios.post(
-            `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/templates`,
-            payload,
-            {
-                headers: {
-                    Authorization: authHeader(),
-                },
-            }
-        );
-        return response.data;
+      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/templates`, payload, {
+        headers: {
+          Authorization: authHeader(),
+        },
+      });
+      return response.data;
     } catch (error) {
-        console.error("Error creating from template:", error);
-        throw error;
+      console.error("Error creating from template:", error);
+      throw error;
     }
-};
+  };
 
   return {
     getTemplates,

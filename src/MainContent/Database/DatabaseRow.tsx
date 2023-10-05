@@ -1,7 +1,7 @@
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import useApi from "../../API/DatabaseAPI";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 import moment from "moment";
 import { copyText } from "../../Utilities/Copyable";
@@ -49,7 +49,7 @@ export default function DatabaseRow({
   const [editing, setEditing] = useState("");
   const [rowValues, setRowValues] = useState(data);
   const [pendingInputValue, setPendingInputValue] = useState("");
-  const { updateDocument } = useApi();
+  const { updateDocument } = useDatabaseApi();
 
   useEffect(() => {
     setRowValues(data);

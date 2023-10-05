@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { castValues } from "../../Utilities/DataCaster";
-import useApi from "../../API/DatabaseAPI";
+import useDatabaseApi from "../../API/DatabaseAPI";
 
 export default function RowDetail({
   collection,
@@ -24,7 +24,7 @@ export default function RowDetail({
   openNewDocumentWithData?: (data: any) => void;
   deleteFunction?: (data: any) => Promise<any>;
 }) {
-  const { deleteDocument, updateDocument } = useApi();
+  const { deleteDocument, updateDocument } = useDatabaseApi();
 
   const copyJSON = () => {
     clickPosition = { x: 0, y: 0 };

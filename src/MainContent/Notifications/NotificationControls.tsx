@@ -5,12 +5,12 @@ import Button from "../../Utilities/Button";
 import Checkbox from "../../Utilities/Checkbox";
 import NotificationsTable from "./NotificationsTable";
 import SampleNotification from "./SampleNotification";
-import useApi from "../../API/DatabaseAPI";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import toast from "react-hot-toast";
 
 export default function NotificationControls({ setShowSetUp }) {
   const api = useNotificationApi();
-  const dbApi = useApi();
+  const dbApi = useDatabaseApi();
   const [allUsers, setAllUsers] = useState(false);
   const [specificUsers, setSpecificUsers] = useState(false);
   const [notificationData, setNotificationData] = useState([]);

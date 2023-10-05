@@ -1,14 +1,12 @@
-import { useContext, useEffect, useState, useRef } from "react";
-import SectionAction from "../../LeftSidebar/SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useContext, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import Select from "react-select";
-import useApi from "../../API/EndpointAPI";
+import useEndpointApi from "../../API/EndpointAPI";
+import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import toast from "react-hot-toast";
-import Button from "../../Utilities/Button";
 
 export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: boolean; setIsVisible: any }) {
   const [query, setQuery] = useState("");
@@ -16,7 +14,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   const [installedPackages, setInstalledPackages] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const { npmSearch, getPackageJson } = useApi();
+  const { npmSearch, getPackageJson } = useEndpointApi();
 
   const { setPostMessage, domain, packageToInstall } = useContext(SwizzleContext);
 
@@ -75,10 +73,10 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   };
 
   useEffect(() => {
-    if(packageToInstall != ""){
-      addPackageToProject(packageToInstall)
+    if (packageToInstall != "") {
+      addPackageToProject(packageToInstall);
     }
-  }, [packageToInstall])
+  }, [packageToInstall]);
 
   const removePackageFromProject = (message) => {
     const messageBody = { type: "removePackage", packageName: message };

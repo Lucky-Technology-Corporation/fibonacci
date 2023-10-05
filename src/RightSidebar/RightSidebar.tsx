@@ -10,7 +10,7 @@ import PackageInfo from "./Sections/PackageInfo";
 import NewTestWindow from "./NewTestWindow";
 import IconTextButton from "../Utilities/IconTextButton";
 import TestWindow from "./TestWindow";
-import useApi from "../API/EndpointAPI";
+import useEndpointApi from "../API/EndpointAPI";
 import toast from "react-hot-toast";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import ToastWindow from "../Utilities/Toast/ToastWindow";
@@ -64,7 +64,7 @@ export default function RightSidebar({
   const [autocheckResponse, setAutocheckResponse] = useState("");
 
   const { ideReady, setPostMessage } = useContext(SwizzleContext);
-  const { getAutocheckResponse } = useApi();
+  const { getAutocheckResponse } = useEndpointApi();
 
   useEffect(() => {
     if (programmaticAuthUpdateRef.current) {

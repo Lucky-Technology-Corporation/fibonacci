@@ -5,7 +5,7 @@ import Dot from "../../Utilities/Dot";
 import IconButton from "../../Utilities/IconButton";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import InfoItem from "../../Utilities/Toast/InfoItem";
-import useApi from "../../API/MonitoringAPI";
+import useMonitoringApi from "../../API/MonitoringAPI";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -21,7 +21,7 @@ export default function LogRow({
   setModalText: (text: ReactNode) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const { getLogDetails, analyzeError } = useApi();
+  const { getLogDetails, analyzeError } = useMonitoringApi();
   const { domain } = useContext(SwizzleContext);
 
   useEffect(() => {

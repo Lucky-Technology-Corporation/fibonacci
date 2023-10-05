@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
-import useApi from "../../API/DatabaseAPI";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import { toast } from "react-hot-toast";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 
@@ -20,7 +20,7 @@ export default function DocumentJSON({
   onChange: (data: any | any[]) => void;
 }) {
   const [data, setData] = useState<string>("");
-  const { updateDocument, createDocument } = useApi();
+  const { updateDocument, createDocument } = useDatabaseApi();
   const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import Button from "../../Utilities/Button";
 import DatabaseEditorHint from "./DatabaseEditorHint";
 import DatabaseRow from "./DatabaseRow";
-import useApi from "../../API/DatabaseAPI";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import RowDetail from "./RowDetail";
 import Dropdown from "../../Utilities/Dropdown";
 import DocumentJSON from "./DocumentJSON";
@@ -17,7 +17,7 @@ import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 import SearchBar from "../Shared/SearchBar";
 
 export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
-  const { getDocuments, deleteCollection, runQuery } = useApi();
+  const { getDocuments, deleteCollection, runQuery } = useDatabaseApi();
 
   const { activeProject, environment } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
