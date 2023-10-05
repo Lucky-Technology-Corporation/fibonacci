@@ -18,7 +18,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
 
   const { npmSearch, getPackageJson } = useApi();
 
-  const { setPostMessage, domain } = useContext(SwizzleContext);
+  const { setPostMessage, domain, packageToInstall } = useContext(SwizzleContext);
 
   useEffect(() => {
     if (domain == null || domain == undefined || domain == "") {
@@ -73,6 +73,12 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
   };
+
+  useEffect(() => {
+    if(packageToInstall != ""){
+      addPackageToProject(packageToInstall)
+    }
+  }, [packageToInstall])
 
   const removePackageFromProject = (message) => {
     const messageBody = { type: "removePackage", packageName: message };

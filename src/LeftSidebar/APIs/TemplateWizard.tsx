@@ -37,6 +37,7 @@ export default function TemplateWizard({
     desc: string;
     inputs: Input[];
     github_url: string | null;
+    packages: string;
   };
 
   const [template, setTemplate] = useState<TemplateType | null>(null);
@@ -45,7 +46,7 @@ export default function TemplateWizard({
   // const [templateOptions, setTemplateOptions] = useState([{ id: "1", name: "Plaid", description: "Add Plaid stuff" }, { id: "2", name: "Stripe", description: "Add Stripe stuff" }]);
   const [templateOptions, setTemplateOptions] = useState([]);
   const [inputState, setInputState] = useState({});
-  const { testDomain, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
+  const { testDomain, setShouldRefreshList, shouldRefreshList, setPackageToInstall } = useContext(SwizzleContext);
  
 
   const api = useTemplateApi();
@@ -107,10 +108,20 @@ export default function TemplateWizard({
         Inputs: inputs
     };
 }
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
   async function handleOnSecondNext() {
     const payload = await constructPayload();
-    console.log(payload);
+
+    //Add necessary npm packages
+    template.packages.split(",").forEach(async (package_name) => {
+      setPackageToInstall(package_name.trim());
+      await delay(250)
+    })
+
+    //Create files
     await api.createFromTemplate(payload);
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
@@ -142,7 +153,7 @@ export default function TemplateWizard({
       <>
         <div className="flex">
           <div className="my-auto">
-            <img src={item.image || "/puzzle.svg"} className="w-6 h-6 rounded-full mr-2" />
+            <img src={item.icon_url || "/puzzle.svg"} className="w-6 h-6 rounded-full mr-2" />
           </div>
           <div>
             <span className="font-bold">{item.name}</span>
