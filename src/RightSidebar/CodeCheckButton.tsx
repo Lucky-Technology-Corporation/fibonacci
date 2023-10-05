@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
 
@@ -67,7 +67,7 @@ export default function CodeCheckButton({}: {}) {
         onMouseLeave={resetDeploy}
         onClick={runDeploy}
       >
-        <img src="rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
+        <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
         {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Code Check"}
       </button>
     </div>
