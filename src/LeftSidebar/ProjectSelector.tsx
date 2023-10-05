@@ -87,7 +87,7 @@ export default function ProjectSelector() {
       }
     } else {
       if (projects.length == 0) {
-        // setIsVisible(true);
+        setIsVisible(true);
       }
     }
   }, [projects]);

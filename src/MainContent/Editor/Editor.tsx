@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function Editor({ setCurrentFileProperties }: { setCurrentFileProperties: (properties: any) => void }) {
   const iframeRef = useRef(null);
@@ -54,10 +54,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
   }, []);
 
   useEffect(() => {
-    if (activeProject == undefined || activeProject == "") return;
-    // console.log("activeProject", activeProject)
-    // setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`)
-    // return
+    if (testDomain == undefined) return;
 
     // /#/home/swizzle_prod_user/code
     const getUrl = async () => {
@@ -66,20 +63,6 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     };
     getUrl();
 
-    //   async function getSrc() {
-    //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {
-    //       method: 'GET',
-    //       headers: {
-    //         // Here you can set any headers you want
-    //         Authorization: await getFermatJwt(),
-    //       }
-    //     });
-    //     const blob = await res.blob();
-    //     const urlObject = URL.createObjectURL(blob);
-    //     document.querySelector('iframe').setAttribute("src", urlObject)
-    //   }
-
-    //   getSrc();
   }, [activeProject]);
 
   return testDomain == undefined ? (
