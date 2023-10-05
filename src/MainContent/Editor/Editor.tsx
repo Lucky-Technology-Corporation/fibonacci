@@ -23,63 +23,69 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     console.log("message sent", message);
   };
 
-  const messageHandler = (event) => {
-    if (event.data.type === "extensionReady") {
-      console.log("extensionReady");
-      setIdeReady(true);
-      const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
-      postMessageToIframe(message);
-    }
-    if (event.data.type === "fileChanged") {
-      console.log("fileChanged");
-      setCurrentFileProperties({
-        fileUri: event.data.fileUri,
-        hasPassportAuth: event.data.hasPassportAuth,
-        hasGetDb: event.data.hasGetDb,
-      });
+  const EXTENSION_READY = "extensionReady";
+  const FILE_CHANGED = "fileChanged";
+  const OPEN_FILE_MESSAGE = { fileName: "user-dependencies/get-.js", type: "openFile" };
+  
+  const handleExtensionReady = () => {
+    console.log(EXTENSION_READY);
+    setIdeReady(true);
+    postMessageToIframe(OPEN_FILE_MESSAGE);
+  };
+  
+  const handleFileChanged = (event) => {
+    console.log(FILE_CHANGED);
+    setCurrentFileProperties({
+      fileUri: event.data.fileUri,
+      hasPassportAuth: event.data.hasPassportAuth,
+      hasGetDb: event.data.hasGetDb,
+    });
+  };
+  
+  const handleIframeMessage = (event) => {
+    switch (event.data.type) {
+      case EXTENSION_READY:
+        handleExtensionReady();
+        break;
+      case FILE_CHANGED:
+        handleFileChanged(event);
+        break;
+      default:
+        break;
     }
   };
 
   //Resend the file name when ready
+  const SAVE_FILE_MESSAGE = { type: "saveFile" };
+  
   useEffect(() => {
-    window.addEventListener("message", messageHandler);
-
-    //On unmount, save the file and remove the event listener
+    window.addEventListener("message", handleIframeMessage);
+  
+    // On unmount, save the file and remove the event listener
+    // This is to ensure that any changes made in the editor are saved before the component is unmounted
     return () => {
-      window.removeEventListener("message", messageHandler);
-      const message = { type: "saveFile" };
-      postMessageToIframe(message);
+      window.removeEventListener("message", handleIframeMessage);
+      postMessageToIframe(SAVE_FILE_MESSAGE);
       setIdeReady(false);
     };
   }, []);
 
+  const HTTPS = "https://";
+  const PASCAL = "https://pascal.";
+  const BEARER = "Bearer ";
+  
   useEffect(() => {
     if (activeProject == undefined || activeProject == "") return;
-    // console.log("activeProject", activeProject)
-    // setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`)
-    // return
-
-    // /#/home/swizzle_prod_user/code
-    const getUrl = async () => {
-      const fermatJwt = await getFermatJwt();
-      setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
+  
+    const setTheiaUrlWithJwt = async () => {
+      try {
+        const fermatJwt = await getFermatJwt();
+        setTheiaUrl(`${testDomain.replace(HTTPS, PASCAL)}?jwt=${fermatJwt.replace(BEARER, "")}`);
+      } catch (error) {
+        console.error("Failed to fetch JWT or set Theia URL:", error);
+      }
     };
-    getUrl();
-
-    //   async function getSrc() {
-    //     const res = await fetch(`${testDomain.replace("https://", "http://")}:3000/#/home/swizzle_prod_user/code`, {
-    //       method: 'GET',
-    //       headers: {
-    //         // Here you can set any headers you want
-    //         Authorization: await getFermatJwt(),
-    //       }
-    //     });
-    //     const blob = await res.blob();
-    //     const urlObject = URL.createObjectURL(blob);
-    //     document.querySelector('iframe').setAttribute("src", urlObject)
-    //   }
-
-    //   getSrc();
+    setTheiaUrlWithJwt();
   }, [activeProject]);
 
   return testDomain == undefined ? (
