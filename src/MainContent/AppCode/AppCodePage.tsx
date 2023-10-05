@@ -6,7 +6,6 @@ import Button from "../../Utilities/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import FullPageModal from "../../Utilities/FullPageModal";
-import axios from "axios";
 import useApi from "../../API/EndpointAPI";
 import toast from "react-hot-toast";
 import FloatingModal from "../../Utilities/FloatingModal";
@@ -56,30 +55,6 @@ export default function AppCodePage() {
       },
     });
   };
-  const openModelGeneratorModal = async (data: any) => {
-    if (data == undefined || data.children == undefined || data.children.length == 0) {
-      return;
-    }
-    const transformedEndpoints = data.children
-      .map((endpoint: any) => {
-        return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
-      })
-      .filter((endpoint: string) => {
-        return endpoint != "_swizzle_blank";
-      });
-
-    const openModelGenerator = async () => {
-        toast.promise(getFiles("endpoints"), {
-            loading: "Looking thorugh your project",
-            success: (data: any) => {
-                openModelGeneratorModal(data);
-                return "Created project map";
-            },
-            error: () => {
-                return "Failed to understand your project";
-            },
-        });
-    }
 
     const copyPackageLink = () => {
         navigator.clipboard.writeText("https://github.com/Lucky-Technology-Corporation/SwizzleSwift")
@@ -276,6 +251,5 @@ export default function AppCodePage() {
         }}
       />
     </div>
-    //https://www.figma.com/file/fkfjxzRHqwqXjHhSqTSLGK/Backend?type=design&node-id=7-841&mode=design&t=XYI7W6LwbhBzyY3l-0
   );
 }
