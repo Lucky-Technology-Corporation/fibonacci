@@ -16,10 +16,9 @@ export default function useEndpointApi() {
     return response.data.objects;
   };
 
-  const exchangeJwt = async () => {
-    if(activeProject == null || activeProject == undefined || activeProject == "") return "";
+  const exchangeJwt = async (projectId: string) => {
     try {
-      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/fermat/jwt`, {
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/fermat/jwt`, {
         headers: {
           Authorization: authHeader(),
         },
@@ -38,31 +37,34 @@ export default function useEndpointApi() {
     }
   };
 
-  const getFermatJwt = async (override: boolean = false) => {
-    if (fermatJwt == "" || override) {
-      const jwt = await exchangeJwt();
+  const refreshFermatJwt = async (projectId: string) => {
+    const jwt = await exchangeJwt(projectId);
+    if (jwt == "") {
+      return "";
+    }
+    setFermatJwt(jwt);
+    return "Bearer " + jwt;
+  }
+
+  const getFermatJwt = async () => {
+    if(fermatJwt == ""){
+      return refreshFermatJwt(activeProject);
+    }
+    let decoded = jwt_decode(fermatJwt) as any;
+    let exp = decoded.exp;
+    let now = Date.now() / 1000;
+    if (exp < now) {
+      const jwt = await exchangeJwt(activeProject);
       if (jwt == "") {
         return "";
       }
       setFermatJwt(jwt);
       return "Bearer " + jwt;
-    } else {
-      let decoded = jwt_decode(fermatJwt) as any;
-      let exp = decoded.exp;
-      let now = Date.now() / 1000;
-      if (exp < now) {
-        const jwt = await exchangeJwt();
-        if (jwt == "") {
-          return "";
-        }
-        setFermatJwt(jwt);
-        return "Bearer " + jwt;
-      }
-
-      return "Bearer " + fermatJwt;
     }
-  };
 
+    return "Bearer " + fermatJwt;
+  };
+  
   const deploy = async () => {
     try {
       const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/push_to_production`, {
@@ -253,5 +255,6 @@ export default function useEndpointApi() {
     deploy,
     getFermatJwt,
     getCodeFromFigma,
+    refreshFermatJwt
   };
 }

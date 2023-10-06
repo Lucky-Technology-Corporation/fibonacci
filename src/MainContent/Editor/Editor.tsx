@@ -12,12 +12,13 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
 
   useEffect(() => {
     if (postMessage == null) return;
+    if(!ideReady) return;
     postMessageToIframe(postMessage);
     setPostMessage(null);
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
-    if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null || !ideReady) return;
+    if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null) return;
     iframeRef.current.contentWindow.postMessage(message, "*");
     console.log("Sent message:", message);
   };
@@ -58,7 +59,6 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     const getUrl = async () => {
       const fermatJwt = await getFermatJwt();
       if(fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
-      console.log("setting theia url")
       setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
     };
     getUrl();
