@@ -1,16 +1,15 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
+import Button from "../../Utilities/Button";
+import { replaceCodeBlocks } from "../../Utilities/DataCaster";
+import Dropdown from "../../Utilities/Dropdown";
+import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
-import Button from "../../Utilities/Button";
-import Dropdown from "../../Utilities/Dropdown";
-import { copyText } from "../../Utilities/Copyable";
-import useEndpointApi from "../../API/EndpointAPI";
-import toast from "react-hot-toast";
-import FloatingModal from "../../Utilities/FloatingModal";
-import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 
 export default function EndpointHeader() {
-  const { activeEndpoint, ideReady } = useContext(SwizzleContext);
+  const { activeEndpoint, ideReady, setPostMessage } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -90,6 +89,15 @@ export default function EndpointHeader() {
                 if (event.key == "Enter") {
                   runQuery();
                 }
+              }}
+            />
+            <Button
+              text="Save"
+              className="text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              onClick={() => {
+                const message = { type: "saveFile" };
+                setPostMessage(message)
+                toast.success("Saved");
               }}
             />
           </div>

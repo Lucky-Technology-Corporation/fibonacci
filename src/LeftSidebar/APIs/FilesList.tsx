@@ -1,13 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import EndpointItem from "./EndpointItem";
-import { Method } from "../../Utilities/Method";
-import SectionAction from "../SectionAction";
-import APIWizard from "./APIWizard";
-import useEndpointApi from "../../API/EndpointAPI";
-import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
+import SectionAction from "../SectionAction";
 import FileItem from "./FileItem";
 import FileWizard from "./FileWizard";
 
@@ -17,7 +14,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullFileList, setFullFileList] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
-  const { activeProject, setPostMessage, activeFile, setActiveFile } = useContext(SwizzleContext);
+  const { testDomain, activeFile, setActiveFile } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles("files")
@@ -36,7 +33,7 @@ export default function FilesList({ active }: { active: boolean }) {
         toast.error("Error fetching endpoints");
         console.error(e);
       });
-  }, [activeProject]);
+  }, [testDomain]);
 
   useEffect(() => {
     if (active && files && files.length > 0 && activeFile == undefined) {
