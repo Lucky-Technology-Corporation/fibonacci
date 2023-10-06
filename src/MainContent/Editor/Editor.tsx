@@ -59,7 +59,6 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     const getUrl = async () => {
       const fermatJwt = await getFermatJwt();
       if(fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
-      console.log("setting theia url")
       setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
     };
     getUrl();
