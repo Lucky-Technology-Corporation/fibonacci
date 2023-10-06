@@ -6,21 +6,20 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
   const iframeRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
 
-  const { testDomain, postMessage, setPostMessage, setIdeReady, activeProject } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject } = useContext(SwizzleContext);
 
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
     if (postMessage == null) return;
-    console.log("postMessage", postMessage);
     postMessageToIframe(postMessage);
     setPostMessage(null);
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
-    if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null) return;
+    if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null || !ideReady) return;
     iframeRef.current.contentWindow.postMessage(message, "*");
-    console.log("message sent", message);
+    console.log("Sent message:", message);
   };
 
   const messageHandler = (event) => {
@@ -56,14 +55,15 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
   useEffect(() => {
     if (testDomain == undefined) return;
 
-    // /#/home/swizzle_prod_user/code
     const getUrl = async () => {
       const fermatJwt = await getFermatJwt();
+      if(fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
+      console.log("setting theia url")
       setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
     };
     getUrl();
 
-  }, [activeProject]);
+  }, [testDomain]);
 
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>

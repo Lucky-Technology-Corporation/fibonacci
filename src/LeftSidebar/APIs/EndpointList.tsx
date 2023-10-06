@@ -1,17 +1,17 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import EndpointItem from "./EndpointItem";
+import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import pluralize from "pluralize";
+import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
 import SectionAction from "../SectionAction";
 import APIWizard from "./APIWizard";
-import useEndpointApi from "../../API/EndpointAPI";
-import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder, faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
-import pluralize from "pluralize";
+import EndpointItem from "./EndpointItem";
 import HelperItem from "./HelperItem";
-import TemplateWizard from "./TemplateWizard";
 import HelperWizard from "./HelperWizard";
+import TemplateWizard from "./TemplateWizard";
 // import HelperWizard from "./HelperWizard";
 
 export default function EndpointList({ active }: { active: boolean }) {
@@ -27,7 +27,7 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
 
-  const { activeProject, activeEndpoint, setActiveEndpoint, shouldRefreshList } = useContext(SwizzleContext);
+  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, shouldRefreshList } = useContext(SwizzleContext);
   const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
   const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
   const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
@@ -69,7 +69,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   };
 
   useEffect(() => {
-    console.log("rendered endpointlist");
     getFiles("endpoints")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
@@ -99,14 +98,20 @@ export default function EndpointList({ active }: { active: boolean }) {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
           return;
         }
-        setHelperList(data.children);
-        setFullHelperList(data.children);
+        
+        const transformedHelpers = data.children
+          .map((endpoint: any) => {
+            return endpoint.name.replace(".js", "");
+          })
+
+        setHelperList(transformedHelpers);
+        setFullHelperList(transformedHelpers);
       })
       .catch((e) => {
         toast.error("Error fetching helpers");
         console.error(e);
       });
-  }, [activeProject, shouldRefreshList]);
+  }, [testDomain, shouldRefreshList]);
 
   //Used to filter the endopint list
   useEffect(() => {

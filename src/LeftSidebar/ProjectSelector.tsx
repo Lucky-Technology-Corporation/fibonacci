@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
+import useEndpointApi from "../API/EndpointAPI";
 import Dropdown from "../Utilities/Dropdown";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
+  const { getFermatJwt } = useEndpointApi()
 
   const { createProject } = useDatabaseApi();
   const {
@@ -44,7 +46,7 @@ export default function ProjectSelector() {
   };
 
   //Set the current project in the context and save it in session storage
-  const setCurrentProject = (id: string) => {
+  const setCurrentProject = async (id: string) => {
     const project = projects.filter((p) => p.id == id)[0];
     if (project == null) return;
 
@@ -56,8 +58,8 @@ export default function ProjectSelector() {
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
 
-    setFermatJwt("");
-
+    await getFermatJwt(true)
+    
     setTestDomain(project.test_swizzle_domain);
     setProdDomain(project.prod_swizzle_domain);
 
