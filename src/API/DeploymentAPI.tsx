@@ -22,7 +22,21 @@ export default function useApi() {
     return response.data;
   };
 
+  const getProjectDeploymentStatus = async (projectId) => {
+    if (activeProject == "") return;
+    const response = await axios.get(
+      `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/deploymentStatus?env=${environment}`,
+      {
+        headers: {
+          Authorization: authHeader(),
+        },
+      },
+    );
+    return response.data;
+  }
+
   return {
     listProjectBuilds,
+    getProjectDeploymentStatus,
   };
 }

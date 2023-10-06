@@ -11,6 +11,7 @@ import Lottie from "lottie-react";
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
 import Lobby from "./Blockrain/Lobby";
+import useApi from "./API/DeploymentAPI";
 
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
@@ -25,35 +26,60 @@ export default function Dashboard() {
   //Active logs page handler
   const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
 
+  const deploymentApi = useApi();
+
   //Initialization code...
   const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
 
-  useEffect(() => {
-    getProjects()
-      .then((data) => {
-        if (data && data.length == 0) {
-          setProjects([]);
-          return;
-        }
-        var flexibleData = data;
 
-        // Move active project to the top, if it exists
-        if (activeProject != null && activeProject != "") {
-          const projectIndex = flexibleData.findIndex((project: any) => project.id == activeProject);
-          if (projectIndex != -1) {
-            const project = flexibleData[projectIndex];
-            flexibleData.splice(projectIndex, 1);
-            flexibleData.unshift(project);
-          }
+useEffect(() => {
+  const fetchProjects = async () => {
+    try {
+      const data = await getProjects();
+      
+      if (!data || data.length === 0) {
+        setProjects([]);
+        return;
+      }
+      
+      // Initialize the project list to an empty array.
+      setProjects([]);
+
+      // Check deployment status for each project
+      data.forEach(async project => {
+        if (await waitForSuccessfulDeployment(project.ProjectId)) {
+          setProjects(prevProjects => [...prevProjects, project]);
         }
-        setProjects(flexibleData);
-      })
-      .catch((e) => {
-        toast.error("Error fetching projects");
-        console.error(e);
       });
-  }, []);
+
+    } catch (e) {
+      toast.error("Error fetching projects");
+      console.error(e);
+    }
+  };
+
+  fetchProjects();
+}, []);
+
+const waitForSuccessfulDeployment = async (projectId, delay = 5000) => {
+  try {
+    const response = await deploymentApi.getProjectDeploymentStatus(projectId);
+
+    if (response.Status === "DEPLOYMENT_SUCCESS") {
+      return true;
+    } else {
+      // Wait for a while and try again
+      await new Promise(res => setTimeout(res, delay));
+      return await waitForSuccessfulDeployment(projectId);
+    }
+  } catch (error) {
+    console.error(`Failed to get deployment status for project ${projectId}`, error);
+    return false;
+  }
+};
+
+
 
   if (isAuthenticated()) {
     if (isCreatingProject) {
