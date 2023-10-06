@@ -60,6 +60,11 @@ export default function LeftSidebar({
     }
     if (activeFile == undefined || activeFile == "") return;
     console.log("open activeFile", activeFile);
+    if(currentFileProperties && currentFileProperties.fileUri){
+      const currenfFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+      if (currenfFile == activeFile) return;
+    }
+
     setPostMessage({
       type: "openFile",
       fileName: `user-hosting/${activeFile}`,
@@ -74,6 +79,11 @@ export default function LeftSidebar({
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     console.log("open activeEndpoint", activeEndpoint);
     const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
+    if(currentFileProperties && currentFileProperties.fileUri){
+      const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+      if (currentFile == `user-dependencies/${fileName}.js`) return;
+    }
+
     setPostMessage({
       type: "openFile",
       fileName: `user-dependencies/${fileName}.js`,

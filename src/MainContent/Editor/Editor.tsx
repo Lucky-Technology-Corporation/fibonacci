@@ -4,10 +4,9 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function Editor({ setCurrentFileProperties }: { setCurrentFileProperties: (properties: any) => void }) {
   const iframeRef = useRef(null);
+  const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-
   const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject } = useContext(SwizzleContext);
-
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -15,6 +14,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     if(!ideReady) return;
     postMessageToIframe(postMessage);
     setPostMessage(null);
+    console.log("Posted")
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
@@ -27,11 +27,16 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     if (event.data.type === "extensionReady") {
       console.log("extensionReady");
       setIdeReady(true);
-      const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
-      postMessageToIframe(message);
+      setTimeout(() => {
+        if(currentFileRef.current != null){ return } //dont open the default file if we already have a file open
+        const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
+        postMessageToIframe(message);
+      }, 100);
     }
     if (event.data.type === "fileChanged") {
       console.log("fileChanged");
+      console.log(event.data);
+      currentFileRef.current = event.data.fileName;
       setCurrentFileProperties({
         fileUri: event.data.fileUri,
         hasPassportAuth: event.data.hasPassportAuth,
