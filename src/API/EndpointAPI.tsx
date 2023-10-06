@@ -38,31 +38,30 @@ export default function useEndpointApi() {
     }
   };
 
-  const getFermatJwt = async (override: boolean = false) => {
-    if (fermatJwt == "" || override) {
+  const refreshFermatJwt = async (projectId: string) => {
+    const jwt = await exchangeJwt();
+    if (jwt == "") {
+      return "";
+    }
+    setFermatJwt(jwt);
+  }
+
+  const getFermatJwt = async () => {
+    let decoded = jwt_decode(fermatJwt) as any;
+    let exp = decoded.exp;
+    let now = Date.now() / 1000;
+    if (exp < now) {
       const jwt = await exchangeJwt();
       if (jwt == "") {
         return "";
       }
       setFermatJwt(jwt);
       return "Bearer " + jwt;
-    } else {
-      let decoded = jwt_decode(fermatJwt) as any;
-      let exp = decoded.exp;
-      let now = Date.now() / 1000;
-      if (exp < now) {
-        const jwt = await exchangeJwt();
-        if (jwt == "") {
-          return "";
-        }
-        setFermatJwt(jwt);
-        return "Bearer " + jwt;
-      }
-
-      return "Bearer " + fermatJwt;
     }
-  };
 
+    return "Bearer " + fermatJwt;
+  };
+  
   const deploy = async () => {
     try {
       const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/push_to_production`, {
@@ -253,5 +252,6 @@ export default function useEndpointApi() {
     deploy,
     getFermatJwt,
     getCodeFromFigma,
+    refreshFermatJwt
   };
 }
