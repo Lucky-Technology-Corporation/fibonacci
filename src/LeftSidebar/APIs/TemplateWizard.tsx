@@ -1,11 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import Dropdown from "../../Utilities/Dropdown";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import Checkbox from "../../Utilities/Checkbox";
-import useTemplateApi from "../../API/TemplatesAPI";
 import useEndpointApi from "../../API/EndpointAPI";
-import { FiEye, FiEyeOff } from "react-icons/fi";
+import useTemplateApi from "../../API/TemplatesAPI";
+import Checkbox from "../../Utilities/Checkbox";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import SecretInput from "../../Utilities/SecretInput";
 
 export default function TemplateWizard({

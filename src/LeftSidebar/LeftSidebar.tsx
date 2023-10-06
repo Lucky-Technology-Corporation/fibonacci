@@ -31,7 +31,7 @@ export default function LeftSidebar({
   setActiveLogsPage,
   currentFileProperties,
 }: LeftSidebarProps) {
-  const { setEnvironment, environment, setActiveEndpoint, activeEndpoint, activeFile, setPostMessage } =
+  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage } =
     useContext(SwizzleContext);
 
   //File management + sidebar management code
@@ -59,6 +59,7 @@ export default function LeftSidebar({
       return;
     }
     if (activeFile == undefined || activeFile == "") return;
+    console.log("open activeFile", activeFile);
     setPostMessage({
       type: "openFile",
       fileName: `user-hosting/${activeFile}`,
@@ -70,8 +71,8 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = false;
       return;
     }
-    console.log("activeEndpoint", activeEndpoint);
     if (activeEndpoint == undefined || activeEndpoint == "") return;
+    console.log("open activeEndpoint", activeEndpoint);
     const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
     setPostMessage({
       type: "openFile",
@@ -99,7 +100,7 @@ export default function LeftSidebar({
       const newFile = currentFileProperties.fileUri.split("user-hosting/")[1];
       if (newFile == activeFile) return;
       programmatiFileUpdateRef.current = true;
-      setActiveEndpoint(newFile);
+      setActiveFile(newFile);
     }
   }, [currentFileProperties]);
 

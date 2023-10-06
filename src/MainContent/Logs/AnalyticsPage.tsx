@@ -1,11 +1,10 @@
-import { useState, useEffect, useContext } from "react";
-import { Card, Title, LineChart } from "@tremor/react";
+import { Card, DateRangePicker, DateRangePickerValue, LineChart } from "@tremor/react";
+import { useContext, useEffect, useState } from "react";
 import useMonitoringApi from "../../API/MonitoringAPI";
-import { DateRangePicker, DateRangePickerValue } from "@tremor/react";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import Dot from "../../Utilities/Dot";
-import { copyText } from "../../Utilities/Copyable";
 import Button from "../../Utilities/Button";
+import { copyText } from "../../Utilities/Copyable";
+import Dot from "../../Utilities/Dot";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function AnalyticsPage() {
   const api = useMonitoringApi();
@@ -68,10 +67,10 @@ export default function AnalyticsPage() {
             <div
               className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
               onClick={() => {
-                copyText(testDomain);
+                copyText(testDomain.replace("https://", "https://api."));
               }}
             >
-              {testDomain}
+              {testDomain.replace("https://", "https://api.")}
             </div>
           </div>
           <div className="flex-col">

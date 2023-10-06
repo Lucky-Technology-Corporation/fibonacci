@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useContext, useEffect } from "react";
+import jwt_decode from "jwt-decode";
+import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import jwt_decode from "jwt-decode";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -10,13 +10,14 @@ export default function useEndpointApi() {
   const authHeader = useAuthHeader();
   const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } =
     useContext(SwizzleContext);
-
+    
   const npmSearch = async (query: string) => {
     const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
     return response.data.objects;
   };
 
   const exchangeJwt = async () => {
+    if(activeProject == null || activeProject == undefined || activeProject == "") return "";
     try {
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/fermat/jwt`, {
         headers: {
@@ -37,8 +38,8 @@ export default function useEndpointApi() {
     }
   };
 
-  const getFermatJwt = async () => {
-    if (fermatJwt == "") {
+  const getFermatJwt = async (override: boolean = false) => {
+    if (fermatJwt == "" || override) {
       const jwt = await exchangeJwt();
       if (jwt == "") {
         return "";
@@ -218,12 +219,13 @@ export default function useEndpointApi() {
       } else if (fileTypes.toLowerCase() == "helpers") {
         path = "table_of_helpers";
       }
-
+      
       const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
       });
+
       return response.data;
     } catch (e) {
       console.error(e);

@@ -1,16 +1,14 @@
+import { useContext } from "react";
+import { SwizzleContext } from "../Utilities/GlobalContext";
+import { Page } from "../Utilities/Page";
+import AppCodePage from "./AppCode/AppCodePage";
+import UserTableView from "./Auth/UserTableView";
+import DatabaseView from "./Database/DatabaseView";
 import Editor from "./Editor/Editor";
 import EndpointHeader from "./Editor/EndpointHeader";
-import { Method } from "../Utilities/Method";
-import { Page } from "../Utilities/Page";
-import DatabaseView from "./Database/DatabaseView";
-import UserTableView from "./Auth/UserTableView";
-import ObjectTableView from "./Storage/ObjectTableView";
-import LogsDrawer from "./Editor/LogsDrawer";
 import MonitoringPage from "./Logs/MonitoringPage";
-import { useContext, useState, useEffect } from "react";
-import { SwizzleContext } from "../Utilities/GlobalContext";
 import NotificationPage from "./Notifications/NotificationPage";
-import AppCodePage from "./AppCode/AppCodePage";
+import ObjectTableView from "./Storage/ObjectTableView";
 
 type CenterContentProps = {
   selectedTab: Page;
@@ -29,7 +27,7 @@ export default function CenterContent({
   activeCollection,
   activeLogsPage,
 }: CenterContentProps) {
-  const { activeEndpoint, activeFile } = useContext(SwizzleContext);
+  const { activeEndpoint, activeFile, activeHelper } = useContext(SwizzleContext);
 
   return (
     <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
@@ -40,13 +38,13 @@ export default function CenterContent({
           height: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "" : "1px",
         }}
       >
-        <div style={{ opacity: activeEndpoint || activeFile ? "1" : "0" }}>
+        <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
           <EndpointHeader />
           <Editor setCurrentFileProperties={setCurrentFileProperties} />
         </div>
         <div
           style={{
-            display: !activeEndpoint && selectedTab === Page.Apis ? "block" : "none",
+            display: (!activeEndpoint && !activeFile && !activeHelper) && selectedTab === Page.Apis ? "block" : "none",
           }}
         >
           <div className="flex-grow flex flex-col items-center justify-center mt-[-95vh]">

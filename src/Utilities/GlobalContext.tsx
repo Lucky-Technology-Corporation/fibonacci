@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 
 export const SwizzleContext = createContext(undefined);
 
@@ -14,9 +14,9 @@ export const GlobalContextProvider = ({ children }) => {
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
-  const [activeEndpoint, setActiveEndpoint] = useState("");
-  const [activeFile, setActiveFile] = useState("");
-  const [activeHelper, setActiveHelper] = useState("");
+  const [activeEndpoint, setActiveEndpoint] = useState(null);
+  const [activeFile, setActiveFile] = useState(null);
+  const [activeHelper, setActiveHelper] = useState(null);
   const [ideReady, setIdeReady] = useState(false);
   const [testDeployStatus, setTestDeployStatus] = useState("live");
   const [prodDeployStatus, setProdDeployStatus] = useState("pending");

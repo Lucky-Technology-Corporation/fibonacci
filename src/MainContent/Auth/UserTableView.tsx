@@ -55,7 +55,7 @@ export default function UserTableView() {
   const fetchData = (page: number) => {
     getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
-        if (data == null) {
+        if (data == null || data.documents == null) {
           setData([]);
           setKeys([]);
           setTotalDocs(0);
@@ -74,6 +74,7 @@ export default function UserTableView() {
   };
 
   const addFlags = async (data: any) => {
+    if(!data || !data.documents){ return }
     const endpoint = "http://ip-api.com/batch";
     var requestBody = [];
     for (var i = 0; i < data.documents.length; i++) {
