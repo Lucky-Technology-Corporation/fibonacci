@@ -18,6 +18,12 @@ export default function useEndpointApi() {
 
   const exchangeJwt = async (projectId: string) => {
     try {
+      if(projectId == undefined || projectId == null || projectId == ""){
+        projectId = activeProject;
+      }
+      if(projectId == undefined || projectId == null || projectId == ""){
+        throw "No project id"
+      }
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/fermat/jwt`, {
         headers: {
           Authorization: authHeader(),
