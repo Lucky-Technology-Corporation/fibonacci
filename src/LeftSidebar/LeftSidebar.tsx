@@ -80,6 +80,7 @@ export default function LeftSidebar({
     console.log("open activeEndpoint", activeEndpoint);
     const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
     if(currentFileProperties && currentFileProperties.fileUri){
+      console.log("currentFileProperties", currentFileProperties)
       const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
       if (currentFile == `user-dependencies/${fileName}.js`) return;
     }

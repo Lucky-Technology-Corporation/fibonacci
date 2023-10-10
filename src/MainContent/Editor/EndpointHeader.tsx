@@ -50,6 +50,8 @@ export default function EndpointHeader() {
           setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
         }
         if (data.recommendation_code != undefined && data.recommendation_code != "") {
+          console.log(data.recommendation_code)
+          setPostMessage({ type: "replaceText", code: data.recommendation_code })
         }
         return "Done";
       },
@@ -92,12 +94,10 @@ export default function EndpointHeader() {
               }}
             />
             <Button
-              text="Save"
+              text="Go"
               className="text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
               onClick={() => {
-                const message = { type: "saveFile" };
-                setPostMessage(message)
-                toast.success("Saved");
+                runQuery();
               }}
             />
           </div>
