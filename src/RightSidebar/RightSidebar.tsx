@@ -1,22 +1,21 @@
 import { useContext, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import useEndpointApi from "../API/EndpointAPI";
 import Checkbox from "../Utilities/Checkbox";
-import AuthInfo from "./Sections/AuthInfo";
-import DBInfo from "./Sections/DBInfo";
+import { SwizzleContext } from "../Utilities/GlobalContext";
+import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
+import DeployButton from "./DeployButton";
+import NewTestWindow from "./NewTestWindow";
+import AuthInfo from "./Sections/AuthInfo";
+import AutocheckInfo from "./Sections/AutocheckInfo";
+import DBInfo from "./Sections/DBInfo";
+import NotificationInfo from "./Sections/NotificationInfo";
+import PackageInfo from "./Sections/PackageInfo";
 import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
-import DeployButton from "./DeployButton";
-import PackageInfo from "./Sections/PackageInfo";
-import NewTestWindow from "./NewTestWindow";
-import IconTextButton from "../Utilities/IconTextButton";
-import TestWindow from "./TestWindow";
-import useEndpointApi from "../API/EndpointAPI";
-import toast from "react-hot-toast";
-import { SwizzleContext } from "../Utilities/GlobalContext";
-import ToastWindow from "../Utilities/Toast/ToastWindow";
-import AutocheckInfo from "./Sections/AutocheckInfo";
-import NotificationInfo from "./Sections/NotificationInfo";
 import StorageInfo from "./Sections/StorageInfo";
+import TestWindow from "./TestWindow";
 
 const noDb = `const router = express.Router();
 `;
@@ -72,15 +71,15 @@ export default function RightSidebar({
     } else {
       if (isAuthChecked) {
         const firstMessage = {
-          findText: "optionalAuthentication",
-          replaceText: "requiredAuthentication",
+          findText: ", optionalAuthentication,",
+          replaceText: ", requiredAuthentication,",
           type: "findAndReplace",
         };
         setPostMessage(firstMessage);
       } else {
         const firstMessage = {
-          findText: "requiredAuthentication",
-          replaceText: "optionalAuthentication",
+          findText: ", requiredAuthentication,",
+          replaceText: ", optionalAuthentication,",
           type: "findAndReplace",
         };
         setPostMessage(firstMessage);

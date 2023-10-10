@@ -84,7 +84,6 @@ export default function EndpointList({ active }: { active: boolean }) {
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
         setActiveEndpoint(transformedEndpoints[0]);
-
         const nestedEndpoints = transformToNested(transformedEndpoints);
         setFullEndpointObj(nestedEndpoints);
       })
@@ -204,7 +203,7 @@ export default function EndpointList({ active }: { active: boolean }) {
                 {fullEndpointObj[path].map((endpoint, index) => (
                   <EndpointItem
                     key={index}
-                    path={"/" + endpoint.split("/")[1]}
+                    path={endpoint.substring(endpoint.indexOf("/"))}
                     method={endpoint.split("/")[0].toUpperCase() as Method}
                     active={endpoint == activeEndpoint}
                     onClick={() => setActiveEndpoint(endpoint)}
@@ -233,7 +232,7 @@ export default function EndpointList({ active }: { active: boolean }) {
               key={index}
               path={helper.replace("/user-helpers/", "")}
               active={helper == activeEndpoint}
-              onClick={() => setActiveEndpoint(helper)}
+              onClick={() => setActiveEndpoint("!helper!"+helper)}
             />
           );
         })}

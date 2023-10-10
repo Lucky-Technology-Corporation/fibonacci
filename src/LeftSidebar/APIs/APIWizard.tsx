@@ -1,8 +1,7 @@
-import { ReactNode, useContext, useEffect, useState } from "react";
-import Dropdown from "../../Utilities/Dropdown";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Dropdown from "../../Utilities/Dropdown";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function APIWizard({
   isVisible,
@@ -32,6 +31,8 @@ export default function APIWizard({
     }
     if (inputValue.startsWith("/")) {
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
+    } else{
+      cleanInputValue = inputValue.replace(/\//g, "-").replace(/:/g, "_");
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
 
@@ -45,6 +46,10 @@ export default function APIWizard({
     } else {
       newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
     }
+
+    console.log(newEndpointName)
+    console.log(fileName)
+    // return
 
     let isDuplicate = false;
     setFullEndpoints((endpoints: any[]) => {

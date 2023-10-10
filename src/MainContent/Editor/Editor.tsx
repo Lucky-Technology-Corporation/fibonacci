@@ -83,7 +83,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
         style={{
           width: "calc(100% + 96px)",
           height: "calc(100% + 100px)",
-          // marginLeft: "-48px",
+          marginLeft: "-48px",
           marginRight: "-48px",
           // marginTop: "-68px",
           display: "block", // This ensures the iframe takes up the full width
