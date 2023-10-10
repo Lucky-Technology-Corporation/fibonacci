@@ -82,7 +82,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
         frameBorder="0"
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% + 100px)",
+          height: "calc(100% + 30px)",
           marginLeft: "-48px",
           marginRight: "-48px",
           // marginTop: "-68px",
