@@ -78,7 +78,7 @@ export default function DeployButton({}: {}) {
     };
   }, []);
   return (
-    <div className="relative w-full mb-1">
+    <div className="relative w-full mb-1 no-ring">
       <button
         className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
         onMouseEnter={teaseDeploy}

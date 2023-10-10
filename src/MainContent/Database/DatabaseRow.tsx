@@ -1,11 +1,9 @@
+import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useDatabaseApi from "../../API/DatabaseAPI";
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import moment from "moment";
 import { copyText } from "../../Utilities/Copyable";
-import e from "express";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
@@ -158,7 +156,7 @@ export default function DatabaseRow({
                       setupEditing(key);
                     }
                   }}
-                  value={editing === key ? pendingInputValue : value || ""}
+                  value={editing === key ? pendingInputValue : value === false ? "false" : value || ""}
                   onClick={() => {
                     if (!shouldBlockEdits.includes(key)) {
                       setupEditing(key);

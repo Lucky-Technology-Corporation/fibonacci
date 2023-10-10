@@ -101,12 +101,16 @@ export default function UserRow({
         <img src={`https://flagsapi.com/${rowValues["countryCode"]}/flat/48.png`} />
       </td>
       <td className="flex">
-        {rowValues["subscription"].includes("subscribed") ? (
+        {(rowValues["subscription"] ?? "").includes("subscribed") ? (
           <div className="m-auto inline-flex items-center rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">
             Subscribed
           </div>
-        ) : rowValues["subscription"] == "canceled" ? (
+        ) : (rowValues["subscription"] ?? "").includes("churned") ? (
           <div className="m-auto inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
+            Expiring
+          </div>
+        ) : rowValues["subscription"] == "canceled" ? (
+          <div className="m-auto inline-flex items-center rounded-md bg-red-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-red-300 ring-1 ring-inset ring-red-300/20">
             Canceled
           </div>
         ) : (
