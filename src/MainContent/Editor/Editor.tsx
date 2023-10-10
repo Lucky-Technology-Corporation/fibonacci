@@ -59,16 +59,18 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
   }, []);
 
   useEffect(() => {
-    if (testDomain == undefined) return;
+    if (testDomain == undefined || activeProject == undefined || testDomain == "" || activeProject == "") return;
 
     const getUrl = async () => {
+      console.log("Getting url")
+      console.log("testDomain", testDomain, "activeProject", activeProject)
       const fermatJwt = await getFermatJwt();
       if(fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
-      setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
+      setTheiaUrl(`${testDomain.replace("https://", "http://")}:3000?jwt=${fermatJwt.replace("Bearer ", "")}`);
     };
     getUrl();
 
-  }, [testDomain]);
+  }, [activeProject, testDomain]);
 
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
@@ -81,9 +83,9 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
         style={{
           width: "calc(100% + 96px)",
           height: "calc(100% + 100px)",
-          marginLeft: "-48px",
+          // marginLeft: "-48px",
           marginRight: "-48px",
-          marginTop: "-68px",
+          // marginTop: "-68px",
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>
