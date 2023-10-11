@@ -1,16 +1,12 @@
-import { ReactNode, useContext, useEffect } from "react";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import Dropdown from "../../Utilities/Dropdown";
-import { useState } from "react";
-import Button from "../../Utilities/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import FullPageModal from "../../Utilities/FullPageModal";
-import useEndpointApi from "../../API/EndpointAPI";
+import { ReactNode, useContext, useState } from "react";
 import toast from "react-hot-toast";
-import FloatingModal from "../../Utilities/FloatingModal";
-import Checkbox from "../../Utilities/Checkbox";
+import useEndpointApi from "../../API/EndpointAPI";
 import EndpointItem from "../../LeftSidebar/APIs/EndpointItem";
+import Button from "../../Utilities/Button";
+import Dropdown from "../../Utilities/Dropdown";
+import FloatingModal from "../../Utilities/FloatingModal";
+import FullPageModal from "../../Utilities/FullPageModal";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
 
 export default function AppCodePage() {
@@ -75,6 +71,14 @@ export default function AppCodePage() {
 
     const content = (
       <div className="flex flex-col space-y-2">
+        <div className="flex">
+          <div>
+            Model.swift (0 functions)
+          </div>
+          <div className="w-24 ml-auto">
+            <Button text="Download" onClick={() => {}} />
+          </div>
+        </div>
         <table>
           <tr>
             <th className="">Endpoint</th>
@@ -90,25 +94,16 @@ export default function AppCodePage() {
                 />
               </td>
               <td className="py-1 text-center">
-                <Checkbox
-                  id={endpoint}
-                  label={includedEndpoints.includes(endpoint) ? "Included" : "Not included"}
-                  isChecked={includedEndpoints.includes(endpoint)}
-                  setIsChecked={(checked: boolean) => {
-                    if (checked) {
-                      setIncludedEndpoints([...includedEndpoints, endpoint]);
-                    } else {
-                      setIncludedEndpoints(includedEndpoints.filter((e) => e != endpoint));
-                    }
+                <Button
+                  text={includedEndpoints.includes(endpoint) ? "Remove" : "Add"}
+                  onClick={() => {
+                    //make the request
                   }}
                 />
               </td>
             </tr>;
           })}
         </table>
-        <div className="w-24 ml-auto">
-          <Button text="Next" onClick={() => {}} />
-        </div>
       </div>
     );
     setModalInputContent(content);

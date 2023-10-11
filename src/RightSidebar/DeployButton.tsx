@@ -79,6 +79,14 @@ export default function DeployButton({}: {}) {
   }, []);
   return (
     <div className="relative w-full mb-1">
+       <div
+        id="deploy-progress-bar"
+        className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
+        style={{
+          width: `${deployProgress}%`,
+          transition: "width 0.2s ease-out",
+        }}
+      />
       <button
         className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
         onMouseEnter={teaseDeploy}

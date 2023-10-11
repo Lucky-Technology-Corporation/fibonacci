@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const SwizzleContext = createContext(undefined);
 
@@ -24,6 +24,20 @@ export const GlobalContextProvider = ({ children }) => {
   const [figmaToken, setFigmaToken] = useState("");
   const [shouldRefreshList, setShouldRefreshList] = useState(false);
   const [packageToInstall, setPackageToInstall] = useState("");
+  
+  const [mousePosition, setPosition] = useState({ x: 0, y: 0 });
+  const handleMouseMove = (event) => {
+      setPosition({
+          x: event.clientX,
+          y: event.clientY
+      });
+  };
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   return (
     <SwizzleContext.Provider
@@ -70,6 +84,7 @@ export const GlobalContextProvider = ({ children }) => {
         setShouldRefreshList,
         packageToInstall,
         setPackageToInstall,
+        mousePosition
       }}
     >
       {children}

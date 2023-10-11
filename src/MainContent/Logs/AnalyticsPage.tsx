@@ -70,7 +70,7 @@ export default function AnalyticsPage() {
                 copyText(testDomain.replace("https://", "https://api."));
               }}
             >
-              {testDomain.replace("https://", "https://api.")}
+              {testDomain ? testDomain.replace("https://", "https://api.") : "Provisioning..."}
             </div>
           </div>
           <div className="flex-col">

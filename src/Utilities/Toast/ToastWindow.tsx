@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { SwizzleContext } from "../GlobalContext";
+
 export default function ToastWindow({
   isHintWindowVisible,
   showHintWindowIfOpen,
@@ -6,6 +9,7 @@ export default function ToastWindow({
   titleClass,
   content,
   isLarge = false,
+  isExpandable = false,
   position,
   overrideLeftMargin,
   overrideTopMargin,
@@ -17,10 +21,13 @@ export default function ToastWindow({
   titleClass?: string;
   content: React.ReactNode;
   isLarge?: boolean;
+  isExpandable?: boolean;
   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
   overrideLeftMargin?: number;
   overrideTopMargin?: number;
 }) {
+  const {mousePosition} = useContext(SwizzleContext);
+
   const getMargin = () => {
     if (overrideLeftMargin) {
       return overrideLeftMargin;
@@ -67,12 +74,14 @@ export default function ToastWindow({
   return (
     <div
       className={`z-50 absolute ${
-        isLarge ? "w-[600px]" : "w-[350px]"
-      } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg ${
+        isExpandable ? "w-fit max-w-[600px]" : isLarge ? "w-[600px]" : "w-[350px]"
+      } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg fixed ${
         isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
         transition: "opacity 0.1s",
+        top: isExpandable && mousePosition.y + "px",
+        left: isExpandable && mousePosition.x + "px",
         marginLeft: getMargin(),
         marginTop: getTopMargin(),
       }}

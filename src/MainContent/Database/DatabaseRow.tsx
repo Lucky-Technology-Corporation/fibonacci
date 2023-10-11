@@ -1,11 +1,10 @@
+import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import useDatabaseApi from "../../API/DatabaseAPI";
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import moment from "moment";
 import { copyText } from "../../Utilities/Copyable";
-import e from "express";
+import InfoItem from "../../Utilities/Toast/InfoItem";
+import DocumentJSON from "./DocumentJSON";
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
@@ -46,6 +45,8 @@ export default function DatabaseRow({
   shouldBlockEdits?: string[];
   shouldShowStrikethrough?: boolean;
 }) {
+  const [editingJSON, setEditingJSON] = useState(false);
+  const [jsonToEdit, setJsonToEdit] = useState({});
   const [editing, setEditing] = useState("");
   const [rowValues, setRowValues] = useState(data);
   const [pendingInputValue, setPendingInputValue] = useState("");
@@ -118,15 +119,19 @@ export default function DatabaseRow({
                 <InfoItem
                   content={<div className="text-xs font-mono underline decoration-dotted">Object</div>}
                   toast={{
-                    title: "",
+                    title: "Click to copy",
                     content: (
                       <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break">
                         {JSON.stringify(value, null, 2)}
                       </div>
                     ),
-                    isLarge: true,
+                    isExpandable: true,
                   }}
                   position="bottom-right"
+                  onClick={() => {
+                    setEditingJSON(true)
+                    setJsonToEdit(value)
+                  }}
                 />
               ) : (value || "").toString().startsWith("http") &&
                 editing !== key &&
@@ -158,7 +163,7 @@ export default function DatabaseRow({
                       setupEditing(key);
                     }
                   }}
-                  value={editing === key ? pendingInputValue : value || ""}
+                  value={editing === key ? pendingInputValue : value === false ? "false" : value || ""}
                   onClick={() => {
                     if (!shouldBlockEdits.includes(key)) {
                       setupEditing(key);
@@ -180,6 +185,13 @@ export default function DatabaseRow({
             </td>
           );
         })}
+
+        <DocumentJSON
+          document={jsonToEdit}
+          isVisible={editingJSON}
+          setIsVisible={setEditingJSON}
+          onChange={(data: any) => console.log(data)} // Pass the data to the parent's handler
+        />
     </tr>
   );
 }

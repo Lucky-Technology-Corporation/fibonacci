@@ -78,16 +78,33 @@ export default function LeftSidebar({
     }
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     console.log("open activeEndpoint", activeEndpoint);
-    const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
-    if(currentFileProperties && currentFileProperties.fileUri){
-      const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
-      if (currentFile == `user-dependencies/${fileName}.js`) return;
-    }
+    var fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
+    
+    if(fileName.startsWith("!helper!")){
+      fileName = fileName.replace("!helper!", "")
+      if(currentFileProperties && currentFileProperties.fileUri){
+        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+        if (currentFile == `user-helpers/${fileName}.js`) return;
+      }
+  
+      setPostMessage({
+        type: "openFile",
+        fileName: `user-helpers/${fileName}.js`,
+      });
 
-    setPostMessage({
-      type: "openFile",
-      fileName: `user-dependencies/${fileName}.js`,
-    });
+      programmatiFileUpdateRef.current = true;
+      setActiveEndpoint(activeEndpoint.replace("!helper!", ""))
+    } else{
+      if(currentFileProperties && currentFileProperties.fileUri){
+        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+        if (currentFile == `user-dependencies/${fileName}.js`) return;
+      }
+
+      setPostMessage({
+        type: "openFile",
+        fileName: `user-dependencies/${fileName}.js`,
+      });
+    }
   };
 
   useEffect(() => {

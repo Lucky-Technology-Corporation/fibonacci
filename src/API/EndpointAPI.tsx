@@ -112,24 +112,13 @@ export default function useEndpointApi() {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
 
-      var body = {};
-      if (aiCommand == "ask") {
-        body = {
-          question_type: "edit",
-          user_query: userQuery,
-          fermat_domain: testDomain.replace("https://", "https://fermat."),
-          fermat_jwt: await getFermatJwt(),
-          current_file: "user-dependencies/" + fileName + ".js",
-        };
-      } else if (aiCommand == "edit") {
-        body = {
-          question_type: "code",
-          user_query: userQuery,
-          fermat_domain: testDomain.replace("https://", "https://fermat."),
-          fermat_jwt: await getFermatJwt(),
-          current_file: "user-dependencies/" + fileName + ".js",
-        };
-      }
+      var body = body = {
+        question_type: aiCommand,
+        user_query: userQuery,
+        fermat_domain: testDomain.replace("https://", "https://fermat."),
+        fermat_jwt: await getFermatJwt(),
+        current_file: "user-dependencies/" + fileName + ".js",
+      };
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
@@ -193,6 +182,7 @@ export default function useEndpointApi() {
   };
 
   const getPackageJson = async () => {
+    console.log("Getting package.json")
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
         return [];
