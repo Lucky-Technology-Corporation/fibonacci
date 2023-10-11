@@ -4,7 +4,6 @@ import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import { copyText } from "../../Utilities/Copyable";
 import InfoItem from "../../Utilities/Toast/InfoItem";
-import DocumentJSON from "./DocumentJSON";
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;
@@ -33,6 +32,8 @@ export default function DatabaseRow({
   shouldHideFields = ["_id"],
   shouldBlockEdits = [],
   shouldShowStrikethrough = false,
+  setJsonToEdit,
+  setKeyForRowBeingEdited
 }: {
   collection: string;
   keys: string[];
@@ -44,9 +45,9 @@ export default function DatabaseRow({
   shouldHideFields?: string[];
   shouldBlockEdits?: string[];
   shouldShowStrikethrough?: boolean;
+  setJsonToEdit: (data: any) => void;
+  setKeyForRowBeingEdited: (key: string[]) => void;
 }) {
-  const [editingJSON, setEditingJSON] = useState(false);
-  const [jsonToEdit, setJsonToEdit] = useState({});
   const [editing, setEditing] = useState("");
   const [rowValues, setRowValues] = useState(data);
   const [pendingInputValue, setPendingInputValue] = useState("");
@@ -83,10 +84,12 @@ export default function DatabaseRow({
     };
   }, []);
 
-  const saveNewValues = (key: string, value: string) => {
+  const saveNewValues = (key: string, value: string, skipLocalSet: boolean = false) => {
     var document = { ...rowValues };
     document[key] = value;
-    setRowValues({ ...rowValues, [key]: pendingInputValue });
+    if(!skipLocalSet){
+      setRowValues({ ...rowValues, [key]: pendingInputValue });
+    }
     toast.promise(updateDocument(collection, document._id, document), {
       loading: "Updating document...",
       success: "Updated document!",
@@ -129,7 +132,8 @@ export default function DatabaseRow({
                   }}
                   position="bottom-right"
                   onClick={() => {
-                    setEditingJSON(true)
+                    setKeyForRowBeingEdited([rowKey, key])
+                    setEditing(key)
                     setJsonToEdit(value)
                   }}
                 />
@@ -185,13 +189,6 @@ export default function DatabaseRow({
             </td>
           );
         })}
-
-        <DocumentJSON
-          document={jsonToEdit}
-          isVisible={editingJSON}
-          setIsVisible={setEditingJSON}
-          onChange={(data: any) => console.log(data)} // Pass the data to the parent's handler
-        />
     </tr>
   );
 }

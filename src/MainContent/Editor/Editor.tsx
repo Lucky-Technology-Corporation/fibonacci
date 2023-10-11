@@ -80,6 +80,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
         ref={iframeRef}
         src={theiaUrl}
         frameBorder="0"
+        tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
           height: "calc(100% + 30px)",

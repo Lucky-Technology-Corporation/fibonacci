@@ -38,6 +38,7 @@ export default function CenterContent({
           height: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "" : "1px",
         }}
       >
+        {selectedTab !== Page.Apis && selectedTab !== Page.Hosting && <div className="absolute top-0 left-0 w-full h-full z-10"></div> }
         <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
           <EndpointHeader />
           <Editor setCurrentFileProperties={setCurrentFileProperties} />
