@@ -78,6 +78,24 @@ export default function FilesList({ active }: { active: boolean }) {
         />
       </div>
 
+      <div className="ml-1 mt-1">
+      <FileItem
+        key={"App.js"}
+        path={formatFileName("App.js")}
+        active={"App.js" == activeFile}
+        onClick={() => {
+          setActiveFile("App.js");
+        }}
+      />
+        <FileItem
+        key={"App.css"}
+        path={formatFileName("App.css")}
+        active={"App.css" == activeFile}
+        onClick={() => {
+          setActiveFile("App.css");
+        }}
+      />
+      </div>
       <div className="font-semibold ml-2 mt-2 flex">
         <SectionAction
           text="+"
@@ -86,11 +104,10 @@ export default function FilesList({ active }: { active: boolean }) {
           }}
           className="max-w-[21px] mr-2"
         />
-        <div className="flex items-center">HTML</div>
+        <div className="flex items-center">Components</div>
       </div>
       <div className="ml-1">
         {files
-          .filter((f) => f.includes(".html"))
           .map((endpoint) => {
             return (
               <FileItem
@@ -99,60 +116,6 @@ export default function FilesList({ active }: { active: boolean }) {
                 active={endpoint == activeFile}
                 onClick={() => {
                   setActiveFile(endpoint);
-                }}
-              />
-            );
-          })}
-      </div>
-
-      <div className="font-semibold ml-2 mt-2 flex">
-        <SectionAction
-          text="+"
-          onClick={() => {
-            setIsVisible(true);
-          }}
-          className="max-w-[21px] mr-2"
-        />
-        <div className="flex items-center">CSS</div>
-      </div>
-      <div className="ml-1">
-        {files
-          .filter((e) => e.includes(".css"))
-          .map((file) => {
-            return (
-              <FileItem
-                key={file}
-                path={formatFileName(file)}
-                active={file == activeFile}
-                onClick={() => {
-                  setActiveFile(file);
-                }}
-              />
-            );
-          })}
-      </div>
-
-      <div className="font-semibold ml-2 mt-2 flex">
-        <SectionAction
-          text="+"
-          onClick={() => {
-            setIsVisible(true);
-          }}
-          className="max-w-[21px] mr-2"
-        />
-        <div className="flex items-center">JS</div>
-      </div>
-      <div className="ml-1">
-        {files
-          .filter((e) => e.includes(".js"))
-          .map((file) => {
-            return (
-              <FileItem
-                key={file}
-                path={formatFileName(file)}
-                active={file == activeFile}
-                onClick={() => {
-                  setActiveFile(file);
                 }}
               />
             );

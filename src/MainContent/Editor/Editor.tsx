@@ -29,7 +29,7 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
       setIdeReady(true);
       setTimeout(() => {
         if(currentFileRef.current != null){ return } //dont open the default file if we already have a file open
-        const message = { fileName: "user-dependencies/get-.js", type: "openFile" };
+        const message = { fileName: "backend/user-dependencies/get-.js", type: "openFile" };
         postMessageToIframe(message);
       }, 100);
     }

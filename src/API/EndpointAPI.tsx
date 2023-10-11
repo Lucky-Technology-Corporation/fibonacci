@@ -73,7 +73,9 @@ export default function useEndpointApi() {
   
   const deploy = async () => {
     try {
-      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/push_to_production`, {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`,
+      {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -117,7 +119,7 @@ export default function useEndpointApi() {
         user_query: userQuery,
         fermat_domain: testDomain.replace("https://", "https://fermat."),
         fermat_jwt: await getFermatJwt(),
-        current_file: "user-dependencies/" + fileName + ".js",
+        current_file: "backend/user-dependencies/" + fileName + ".js",
       };
 
       const response = await axios.post(
@@ -161,7 +163,7 @@ export default function useEndpointApi() {
   const getAutocheckResponse = async () => {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
-      const fileContents = await getFile("user-dependencies/" + fileName + ".js");
+      const fileContents = await getFile("backend/user-dependencies/" + fileName + ".js");
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
@@ -211,14 +213,14 @@ export default function useEndpointApi() {
         return [];
       }
 
-      var path = "table_of_contents";
+      var path = "/backend/user-dependencies";
       if (fileTypes.toLowerCase() == "files") {
-        path = "table_of_files";
+        path = "/frontend/src";
       } else if (fileTypes.toLowerCase() == "helpers") {
-        path = "table_of_helpers";
+        path = "/backend/user-helpers";
       }
       
-      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/${path}`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code?path=${path}`, {
         headers: {
           Authorization: await getFermatJwt(),
         },

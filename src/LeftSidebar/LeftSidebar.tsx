@@ -89,7 +89,7 @@ export default function LeftSidebar({
   
       setPostMessage({
         type: "openFile",
-        fileName: `user-helpers/${fileName}.js`,
+        fileName: `backend/user-helpers/${fileName}.js`,
       });
 
       programmatiFileUpdateRef.current = true;
@@ -97,12 +97,12 @@ export default function LeftSidebar({
     } else{
       if(currentFileProperties && currentFileProperties.fileUri){
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
-        if (currentFile == `user-dependencies/${fileName}.js`) return;
+        if (currentFile == `backend/user-dependencies/${fileName}.js`) return;
       }
 
       setPostMessage({
         type: "openFile",
-        fileName: `user-dependencies/${fileName}.js`,
+        fileName: `backend/user-dependencies/${fileName}.js`,
       });
     }
   };

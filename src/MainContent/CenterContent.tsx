@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { Page } from "../Utilities/Page";
-import AppCodePage from "./AppCode/AppCodePage";
 import UserTableView from "./Auth/UserTableView";
 import DatabaseView from "./Database/DatabaseView";
 import Editor from "./Editor/Editor";
@@ -86,11 +85,11 @@ export default function CenterContent({
           <NotificationPage />
         </div>
       </div>
-      <div style={{ display: selectedTab === Page.AppCode ? "block" : "none" }}>
+      {/* <div style={{ display: selectedTab === Page.AppCode ? "block" : "none" }}>
         <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
           <AppCodePage />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
