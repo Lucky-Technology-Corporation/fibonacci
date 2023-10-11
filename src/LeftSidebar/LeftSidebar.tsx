@@ -173,8 +173,9 @@ export default function LeftSidebar({
         />
         <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
 
-        <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
-
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
         <SectionTitle
           icon="/cloud.svg"
           text="Backend"
@@ -217,16 +218,28 @@ export default function LeftSidebar({
           }}
         />
 
-        <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
 
-        <SectionTitle
+        {/* <SectionTitle
           icon="/paintbrush.svg"
           text="Frontend"
           active={selectedTab == Page.AppCode}
           onClick={() => {
             setSelectedTab(Page.AppCode);
           }}
+        /> */}
+        
+        <SectionTitle
+          icon="/world.svg"
+          text="Frontend"
+          active={selectedTab == Page.Hosting}
+          onClick={() => {
+            setSelectedTab(Page.Hosting);
+          }}
         />
+        <FilesList active={selectedTab == Page.Hosting} />
 
         <SectionTitle
           icon="/bell.svg"
@@ -237,15 +250,6 @@ export default function LeftSidebar({
           }}
         />
 
-        <SectionTitle
-          icon="/world.svg"
-          text="Hosting"
-          active={selectedTab == Page.Hosting}
-          onClick={() => {
-            setSelectedTab(Page.Hosting);
-          }}
-        />
-        <FilesList active={selectedTab == Page.Hosting} />
 
         <div className="h-36 w-full flex-row">
           <div>&nbsp;</div>

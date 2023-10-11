@@ -1,8 +1,6 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
-import Dropdown from "../../Utilities/Dropdown";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
 import toast from "react-hot-toast";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import PrivacyPolicy from "../../Utilities/PrivacyPolicy";
 import TermsOfService from "../../Utilities/TermsOfService";
 
@@ -58,18 +56,23 @@ export default function APIWizard({
       return;
     }
 
+    var newFileName = inputValue;
+    if (!newFileName.endsWith(".js") || !newFileName.endsWith(".jsx")) {
+      newFileName = newFileName + ".js";
+    }
+
     let isDuplicate = false;
     setFullFiles((files: any[]) => {
-      if (!files.includes(inputValue)) {
-        return [...files, inputValue];
+      if (!files.includes(newFileName)) {
+        return [...files, newFileName];
       }
       isDuplicate = true;
       return files;
     });
 
     setFiles((files: any[]) => {
-      if (!files.includes(inputValue)) {
-        return [...files, inputValue];
+      if (!files.includes(newFileName)) {
+        return [...files, newFileName];
       }
       isDuplicate = true;
       return files;
@@ -79,7 +82,7 @@ export default function APIWizard({
       toast.error("That file already exists");
       return;
     }
-    setPostMessage({ type: "newFile", fileName: "user-hosting/" + inputValue });
+    setPostMessage({ type: "newFile", fileName: "frontend/src/" + newFileName });
 
     if (template == "privacy") {
       setOverrideRender(getPrivacyInputs());
@@ -269,7 +272,7 @@ export default function APIWizard({
                 ) : (
                   <>
                     <div className="mt-3 mb-2 flex">
-                      <Dropdown
+                      {/* <Dropdown
                         className="mr-2 whitespace-nowrap"
                         onSelect={(item: any) => {
                           setTemplate(item);
@@ -278,13 +281,13 @@ export default function APIWizard({
                         children={templateOptions}
                         direction="left"
                         title={templateOptions.filter((item) => item.id == template)[0].name}
-                      />
+                      /> */}
                       <input
                         type="text"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value.trim())}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={`${template}.html`}
+                        placeholder={`MyNewComponent.js`}
                         onKeyDown={(event: any) => {
                           if (event.key == "Enter") {
                             createHandler();

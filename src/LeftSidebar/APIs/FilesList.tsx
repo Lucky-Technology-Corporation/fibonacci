@@ -57,6 +57,8 @@ export default function FilesList({ active }: { active: boolean }) {
     return file;
   };
 
+  const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"]
+
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
@@ -108,6 +110,7 @@ export default function FilesList({ active }: { active: boolean }) {
       </div>
       <div className="ml-1">
         {files
+          .filter((file) => !restrictedFiles.includes(file) && (file.includes(".js") || file.includes(".jsx")))
           .map((endpoint) => {
             return (
               <FileItem

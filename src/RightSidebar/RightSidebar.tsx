@@ -181,7 +181,61 @@ export default function RightSidebar({
     >
       <div className="flex flex-col items-center pt-4 h-full px-4">
         <DeployButton />
+        {selectedTab == Page.Hosting && (
+          <>
+            <div className="h-4" />
+            <div className="font-bold">Testing</div>
+            <div className="h-2" />
+                      <IconTextButton
+                      onClick={() => {
+                        toast.promise(getAutocheckResponse(), {
+                          loading: "Running autocheck...",
+                          success: (data) => {
+                            if (data == "") {
+                              toast.error("Error running autocheck");
+                              return;
+                            }
+                            setAutocheckResponse(data.recommendation_text);
+                            return "Done";
+                          },
+                          error: "Error running autocheck",
+                        });
+                      }}
+                      icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
+                      text="Autocheck"
+                    />
+                    <AutocheckInfo
+                      isVisible={autocheckResponse != ""}
+                      setIsVisible={(show: boolean) => {
+                        if (!show) {
+                          setAutocheckResponse("");
+                        }
+                      }}
+                      autocheckResponse={autocheckResponse}
+                    />
+                    <div className="h-2" />
+            <IconTextButton
+              onClick={() => {
+                setShouldShowPackagesWindow(true);
+              }}
+              icon={<img src="/preview.svg" className="w-4 h-4 m-auto" />}
+              text="Preview"
+            />
+            {/* <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} /> */}
 
+                    <div className="h-4" />
+                    <div className="font-bold">Configuration</div>
+                    <div className="h-2" />
+                    <IconTextButton
+                      onClick={() => {
+                        setShouldShowPackagesWindow(true);
+                      }}
+                      icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
+                      text="Packages"
+                    />
+                    <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
+                    </>
+        )}
         {selectedTab == Page.Apis && (
           <>
             <div className="h-4" />
