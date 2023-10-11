@@ -61,54 +61,57 @@ export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps)
       style={{ transition: "opacity 0.1s", marginTop: "0px" }}
       ref={myRef}
     >
-      {logs.map((log, index) => {
-        let statusText;
-        let color;
-
-        switch (log.buildStatus) {
-          case "BUILD_SUCCESS":
-            statusText = "Success";
-            color = "#00df17";
-            break;
-          case "BUILD_FAILURE":
-            statusText = "Failed";
-            color = "#e50201";
-            break;
-          default:
-            statusText = "In Progress";
-            color = "yellow";
-        }
-
-        return (
-          <div
-            key={index}
-            className="flex justify-between items-center"
-            style={{
-              padding: "10px 0",
-              marginLeft: "12px",
-            }}
-          >
-            <div className="flex flex-col">
-              <div className="font-bold">Deployment {log.buildNumber}</div>
-              <div style={{ color: color }}>
-                {statusText}
-                <div className="text-[#a4acbc] inline-block ml-2">
-                  {log.startedAtDate} at {log.startedAtTime}
+      {logs.length === 0 ? (
+        <div className="text-center p-4">No deployments!</div>
+      ) : (
+        logs.map((log, index) => {
+          let statusText;
+          let color;
+  
+          switch (log.buildStatus) {
+            case "BUILD_SUCCESS":
+              statusText = "Success";
+              color = "#00df17";
+              break;
+            case "BUILD_FAILURE":
+              statusText = "Failed";
+              color = "#e50201";
+              break;
+            default:
+              statusText = "In Progress";
+              color = "yellow";
+          }
+  
+          return (
+            <div
+              key={index}
+              className="flex justify-between items-center"
+              style={{
+                padding: "10px 0",
+                marginLeft: "12px",
+              }}
+            >
+              <div className="flex flex-col">
+                <div className="font-bold">Deployment {log.buildNumber}</div>
+                <div style={{ color: color }}>
+                  {statusText}
+                  <div className="text-[#a4acbc] inline-block ml-2">
+                    {log.startedAtDate} at {log.startedAtTime}
+                  </div>
                 </div>
               </div>
+  
+              <div className="flex">
+                <button className="border border-[#a4acbc] hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
+                  <img src="eye.png" alt="eye" className="w-4 h-4 flex-center  inline-block" />
+                </button>
+                <button className="border border-orange-400 hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
+                  <img src="turnback.png" alt="turnback" className="w-4 h-4 flex-center inline-block" />
+                </button>
+              </div>
             </div>
-
-            <div className="flex">
-              <button className="border border-[#a4acbc] hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
-                <img src="eye.png" alt="eye" className="w-4 h-4 flex-center  inline-block" />
-              </button>
-              <button className="border border-orange-400 hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
-                <img src="turnback.png" alt="turnback" className="w-4 h-4 flex-center inline-block" />
-              </button>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })
+      )}
     </div>
-  );
-}
+  )}

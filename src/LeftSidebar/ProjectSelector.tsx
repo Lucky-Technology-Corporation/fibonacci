@@ -70,6 +70,8 @@ export default function ProjectSelector() {
     }
   };
 
+  
+
   useEffect(() => {
     if (environment == "test") {
       setDomain(testDomain);
