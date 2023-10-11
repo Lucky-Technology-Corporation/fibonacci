@@ -67,7 +67,7 @@ export default function LeftSidebar({
 
     setPostMessage({
       type: "openFile",
-      fileName: `user-hosting/${activeFile}`,
+      fileName: `frontend/src/${activeFile}`,
     });
   };
 
