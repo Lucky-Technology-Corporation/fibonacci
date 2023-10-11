@@ -50,6 +50,7 @@ export default function RightSidebar({
   const programmaticDbUpdateRef = useRef(false);
   const programmaticAuthUpdateRef = useRef(false);
 
+  const [isHelper, setIsHelper] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [isDBChecked, setIsDBChecked] = useState(false);
   const [isNotificationsChecked, setIsNotificationsChecked] = useState(false);
@@ -154,7 +155,13 @@ export default function RightSidebar({
   }, [isStorageChecked]);
 
   useEffect(() => {
-    if (currentFileProperties == undefined) return;
+    if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
+
+    if(currentFileProperties.fileUri.includes("user-helpers")){
+      setIsHelper(true)
+    } else{
+      setIsHelper(false)
+    }
 
     if (currentFileProperties.hasGetDb !== isDBChecked) {
       programmaticDbUpdateRef.current = true;
@@ -252,37 +259,41 @@ export default function RightSidebar({
               text="Packages"
             />
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
-            <div className="h-6" />
-            <div className="font-bold">Available Variables</div>
-            <div className="h-1" />
-            <div className="text-left w-full">
-              <RequestInfo show={true} />
-            </div>
-            <div className="h-3" />
-            <div className="text-left w-full space-y-2">
-              <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
-              <AuthInfo show={true} />
-            </div>
-            <div className="h-2" />
-            <div className="text-left w-full space-y-2">
-              <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
-              <DBInfo show={isDBChecked} />
-            </div>
-            <div className="h-2" />
-            <div className="text-left w-full space-y-2">
-              <Checkbox
-                id="notifications"
-                label="Push Notifications"
-                isChecked={isNotificationsChecked}
-                setIsChecked={setIsNotificationsChecked}
-              />
-              <NotificationInfo show={isNotificationsChecked} />
-            </div>
-            <div className="h-2" />
-            <div className="text-left w-full space-y-2">
-              <Checkbox id="storage" label="Storage" isChecked={isStorageChecked} setIsChecked={setIsStorageChecked} />
-              <StorageInfo show={isStorageChecked} />
-            </div>
+            {!isHelper && (
+              <>
+                <div className="h-6" />
+                <div className="font-bold">Available Variables</div>
+                <div className="h-1" />
+                <div className="text-left w-full">
+                  <RequestInfo show={true} />
+                </div>
+                <div className="h-3" />
+                <div className="text-left w-full space-y-2">
+                  <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
+                  <AuthInfo show={true} />
+                </div>
+                <div className="h-2" />
+                <div className="text-left w-full space-y-2">
+                  <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
+                  <DBInfo show={isDBChecked} />
+                </div>
+                <div className="h-2" />
+                <div className="text-left w-full space-y-2">
+                  <Checkbox
+                    id="notifications"
+                    label="Push Notifications"
+                    isChecked={isNotificationsChecked}
+                    setIsChecked={setIsNotificationsChecked}
+                  />
+                  <NotificationInfo show={isNotificationsChecked} />
+                </div>
+                <div className="h-2" />
+                <div className="text-left w-full space-y-2">
+                  <Checkbox id="storage" label="Storage" isChecked={isStorageChecked} setIsChecked={setIsStorageChecked} />
+                  <StorageInfo show={isStorageChecked} />
+                </div>
+                </>
+            )}
           </>
         )}
       </div>

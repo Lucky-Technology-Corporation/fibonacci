@@ -84,8 +84,8 @@ export default function EndpointList({ active }: { active: boolean }) {
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
         setActiveEndpoint(transformedEndpoints[0]);
-        const nestedEndpoints = transformToNested(transformedEndpoints);
-        setFullEndpointObj(nestedEndpoints);
+        // const nestedEndpoints = transformToNested(transformedEndpoints);
+        // setFullEndpointObj(nestedEndpoints);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -171,7 +171,16 @@ export default function EndpointList({ active }: { active: boolean }) {
       </div>
 
       <div className="ml-1">
-        {Object.keys(fullEndpointObj).map((path) => (
+      {fullEndpointList.map((endpoint, index) => (
+        <EndpointItem
+          key={index}
+          path={endpoint.substring(endpoint.indexOf("/"))}
+          method={endpoint.split("/")[0].toUpperCase() as Method}
+          active={endpoint == activeEndpoint}
+          onClick={() => setActiveEndpoint(endpoint)}
+        />
+      ))}
+        {/* {Object.keys(fullEndpointObj).map((path) => (
           <div key={path} className={"vertical-line mt-4 ml-2 cursor-pointer"}>
             <div
               onClick={() => {
@@ -212,7 +221,7 @@ export default function EndpointList({ active }: { active: boolean }) {
               </div>
             )}
           </div>
-        ))}
+        ))} */}
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex">
