@@ -17,7 +17,7 @@ export default function DocumentJSON({
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   id?: string;
-  onChange: (data: any | any[]) => void;
+  onChange: (data: any) => void;
 }) {
   const [data, setData] = useState<string>("");
   const { updateDocument, createDocument } = useDatabaseApi();
@@ -50,6 +50,10 @@ export default function DocumentJSON({
   }, []);
 
   const submitData = () => {
+    if(!id){
+      onChange(data)
+      return
+    }
     // Validate the entire JSON array
     try {
       const dataArray = JSON.parse(data);

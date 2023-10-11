@@ -1,23 +1,22 @@
-import { useContext, useEffect, useState } from "react";
-import Button from "../../Utilities/Button";
-import DatabaseEditorHint from "./DatabaseEditorHint";
-import DatabaseRow from "./DatabaseRow";
-import useDatabaseApi from "../../API/DatabaseAPI";
-import RowDetail from "./RowDetail";
-import Dropdown from "../../Utilities/Dropdown";
-import DocumentJSON from "./DocumentJSON";
-import { toast } from "react-hot-toast";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { useContext, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
+import useDatabaseApi from "../../API/DatabaseAPI";
+import Button from "../../Utilities/Button";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 import SearchBar from "../Shared/SearchBar";
+import DatabaseEditorHint from "./DatabaseEditorHint";
+import DatabaseRow from "./DatabaseRow";
+import DocumentJSON from "./DocumentJSON";
+import RowDetail from "./RowDetail";
 
 export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
-  const { getDocuments, deleteCollection, runQuery } = useDatabaseApi();
+  const { getDocuments, deleteCollection, runQuery, updateDocument } = useDatabaseApi();
 
   const { activeProject, environment } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -25,6 +24,9 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   const [isJSONEditorVisible, setIsJSONEditorVisible] = useState(false);
   const [jsonEditorData, setJSONEditorData] = useState<any>();
   const [editingDocumentId, setEditingDocumentId] = useState<string>("");
+
+  const [jsonToEdit, setJsonToEdit] = useState(null);
+  const [keyForRowBeingEdited, setKeyForRowBeingEdited] = useState<string[]>([]);
 
   const [rowDetailData, setRowDetailData] = useState<any>({});
   const [clickPosition, setClickPosition] = useState<{
@@ -204,6 +206,32 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     setSortedByColumn(key);
   };
 
+  const saveNewDocumentValue = (newData: any, documentId: string) => {
+    toast.promise(updateDocument(activeCollection, documentId, newData), {
+      loading: "Updating document...",
+      success: "Updated document!",
+      error: "Failed to update document",
+    });
+  }
+
+  const updateRowBeingEdited = (data: any) => {
+    if(data == undefined) return
+    console.log("updateRowBeingEdited", data)
+    setData((prevData) => {
+      return prevData.map((row) => {
+        if (row._id == keyForRowBeingEdited[0]) {
+          const newData = { ...row, [keyForRowBeingEdited[1]]: JSON.parse(data) };
+          saveNewDocumentValue(newData, keyForRowBeingEdited[0])
+          return newData;
+        } else {
+          return row;
+        }
+      });
+    })
+
+    setJsonToEdit(null)
+  }
+
   if (!activeCollection)
     return (
       <NiceInfo title="Select a collection" subtitle="Select (or create) a collection on the left to get started" />
@@ -294,7 +322,9 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-              />
+                setJsonToEdit={setJsonToEdit}
+                setKeyForRowBeingEdited={setKeyForRowBeingEdited}
+                />
             ))}
           </tbody>
         </table>
@@ -306,6 +336,8 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           setTotalDocs={setTotalDocs}
           openNewDocumentWithData={openNewDocumentWithData}
         />
+
+        {/* New Document View */}
         <DocumentJSON
           document={jsonEditorData}
           collection={activeCollection}
@@ -313,6 +345,14 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           setIsVisible={setIsJSONEditorVisible}
           id={editingDocumentId}
           onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
+        />
+
+        {/* Edit object within document view */}
+        <DocumentJSON
+          document={jsonToEdit}
+          isVisible={jsonToEdit != undefined}
+          setIsVisible={() => setJsonToEdit(null)}
+          onChange={(data: any) => { updateRowBeingEdited(data)}} // Pass the data to the parent's handler
         />
       </div>
       {data.length == 0 && currentPage == 0 ? (
