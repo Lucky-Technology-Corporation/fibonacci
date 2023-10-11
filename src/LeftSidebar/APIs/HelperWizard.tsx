@@ -1,8 +1,6 @@
-import { ReactNode, useContext, useEffect, useState } from "react";
-import Dropdown from "../../Utilities/Dropdown";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function HelperWizard({
   isVisible,
@@ -23,18 +21,13 @@ export default function HelperWizard({
       toast.error("Please enter a value");
       return;
     }
-    const fileName = inputValue + ".js";
-
-    const methodAndPath = fileName.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
-    const [method, ...pathComponents] = methodAndPath.split("/");
-    const path = pathComponents.join("/");
-
-    let newHelperName;
-    if (path === "") {
-      newHelperName = `${method}/`;
-    } else {
-      newHelperName = `${method}/${path.replace(/\/+$/, "")}`;
-    }
+    
+    var cleanInputValue = inputValue;
+    if (inputValue.endsWith('.js')) {
+      cleanInputValue = inputValue.slice(0, -3);
+    }  
+    const fileName = cleanInputValue + ".js";
+    const newHelperName = cleanInputValue
 
     let isDuplicate = false;
     setFullHelpers((helpers: any[]) => {
@@ -59,7 +52,7 @@ export default function HelperWizard({
     }
     setPostMessage({
       type: "newFile",
-      fileName: "user-dependencies/" + fileName,
+      fileName: "user-helpers/" + fileName,
       helperName: newHelperName,
     });
     setIsVisible(false);

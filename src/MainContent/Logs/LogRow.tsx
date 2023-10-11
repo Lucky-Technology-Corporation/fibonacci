@@ -1,15 +1,16 @@
 import { faRotateRight, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import Dot from "../../Utilities/Dot";
-import IconButton from "../../Utilities/IconButton";
-import { ReactNode, useContext, useEffect, useState } from "react";
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import useMonitoringApi from "../../API/MonitoringAPI";
-import toast from "react-hot-toast";
 import axios from "axios";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { ReactNode, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import useMonitoringApi from "../../API/MonitoringAPI";
+import { copyText } from "../../Utilities/Copyable";
 import { replaceCodeBlocks } from "../../Utilities/DataCaster";
+import Dot from "../../Utilities/Dot";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
+import IconButton from "../../Utilities/IconButton";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 
 export default function LogRow({
   message,
@@ -108,13 +109,16 @@ export default function LogRow({
           <InfoItem
             content={<div className="text-xs font-mono underline decoration-dotted">Request</div>}
             toast={{
-              title: "",
+              title: "Click to copy",
               content: (
                 <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                   {JSON.stringify(message.request, null, 2)}
                 </div>
               ),
-              isLarge: false,
+              isExpandable: true,
+            }}
+            onClick={() => {
+              copyText(message.response)
             }}
             position="bottom-center"
           />
@@ -123,13 +127,16 @@ export default function LogRow({
           <InfoItem
             content={<div className="text-xs font-mono underline decoration-dotted">Response</div>}
             toast={{
-              title: "",
+              title: "Click to copy",
               content: (
                 <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                   {JSON.stringify(message.response, null, 2)}
                 </div>
               ),
-              isLarge: false,
+              isExpandable: true,
+            }}
+            onClick={() => {
+              copyText(message.response)
             }}
             position="bottom-center"
           />

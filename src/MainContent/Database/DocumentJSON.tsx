@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import CodeEditor from "@uiw/react-textarea-code-editor";
-import useDatabaseApi from "../../API/DatabaseAPI";
-import { toast } from "react-hot-toast";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import CodeEditor from "@uiw/react-textarea-code-editor";
+import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import useDatabaseApi from "../../API/DatabaseAPI";
 
 export default function DocumentJSON({
   document,
@@ -13,7 +13,7 @@ export default function DocumentJSON({
   onChange,
 }: {
   document: any | any[];
-  collection: string;
+  collection?: string;
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   id?: string;
