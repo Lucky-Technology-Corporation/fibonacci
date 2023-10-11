@@ -23,7 +23,6 @@ export default function useApi() {
   };
 
   const getProjectDeploymentStatus = async (projectId) => {
-    if (activeProject == "") return;
     const response = await axios.get(
       `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/deploymentStatus?env=${environment}`,
       {
@@ -32,7 +31,8 @@ export default function useApi() {
         },
       },
     );
-    return response.data;
+    console.log("Get Project Deployment Status" + response.data.deployment_status)
+    return response.data.deployment_status;
   }
 
   return {

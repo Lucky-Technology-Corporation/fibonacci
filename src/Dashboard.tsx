@@ -35,20 +35,22 @@ export default function Dashboard() {
 
 useEffect(() => {
   const fetchProjects = async () => {
+    console.log("hi");
     try {
       const data = await getProjects();
-      
+      console.log("Fetched projects: ", data);
+
       if (!data || data.length === 0) {
         setProjects([]);
         return;
       }
-      
+
       // Initialize the project list to an empty array.
       setProjects([]);
 
       // Check deployment status for each project
       data.forEach(async project => {
-        if (await waitForSuccessfulDeployment(project.ProjectId)) {
+        if (await waitForSuccessfulDeployment(project.id)) {
           setProjects(prevProjects => [...prevProjects, project]);
         }
       });
@@ -63,10 +65,13 @@ useEffect(() => {
 }, []);
 
 const waitForSuccessfulDeployment = async (projectId, delay = 5000) => {
+  console.log("Checking deployment for project: ", projectId);
+
   try {
     const response = await deploymentApi.getProjectDeploymentStatus(projectId);
+    console.log("deployment status: " + response)
 
-    if (response.Status === "DEPLOYMENT_SUCCESS") {
+    if (response === "DEPLOYMENT_SUCCESS") {
       return true;
     } else {
       // Wait for a while and try again

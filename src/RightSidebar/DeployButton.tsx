@@ -88,23 +88,21 @@ export default function DeployButton({}: {}) {
         }}
       />
       <button
-        className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
-        onMouseEnter={teaseDeploy}
-        onMouseLeave={resetDeploy}
-        onClick={() => {
-          runDeploy();
-          setShowDeployInfo(true);
-        }}
-      >
-        <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
-        {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
-      </button>
+  className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
+  onMouseEnter={() => setShowDeployInfo(true)}
+  onMouseLeave={() => setShowDeployInfo(false)}
+  onClick={runDeploy}
+>
+  <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
+  {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
+</button>
 
-      {showDeployInfo && (
-        <div className="absolute top-full right-0 mt-2">
-          <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} />
-        </div>
-      )}
+{showDeployInfo && (
+  <div className="absolute top-full right-0 mt-2">
+    <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} />
+  </div>
+)}
+
     </div>
   );
 }
