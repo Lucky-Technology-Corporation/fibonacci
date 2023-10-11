@@ -171,7 +171,7 @@ export default function EndpointList({ active }: { active: boolean }) {
       </div>
 
       <div className="ml-1">
-      {fullEndpointList.map((endpoint, index) => (
+      {endpoints.map((endpoint, index) => (
         <EndpointItem
           key={index}
           path={endpoint.substring(endpoint.indexOf("/"))}
