@@ -20,6 +20,8 @@ type LeftSidebarProps = {
   activeLogsPage: string;
   setActiveLogsPage: Dispatch<SetStateAction<string>>;
   currentFileProperties: any;
+  isModalOpen: any;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function LeftSidebar({
@@ -30,6 +32,8 @@ export default function LeftSidebar({
   activeLogsPage,
   setActiveLogsPage,
   currentFileProperties,
+  isModalOpen, 
+  setIsModalOpen,
 }: LeftSidebarProps) {
   const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage } =
     useContext(SwizzleContext);
@@ -52,6 +56,7 @@ export default function LeftSidebar({
       openActiveEndpoint();
     }
   }, [selectedTab]);
+
 
   const openActiveFile = () => {
     if (programmatiFileUpdateRef.current) {
@@ -166,7 +171,9 @@ export default function LeftSidebar({
         </div>
 
         <div className="flex">
-          <ProjectSelector />
+          <ProjectSelector
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen} />
         </div>
 
         <SectionTitle

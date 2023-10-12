@@ -25,6 +25,8 @@ export default function Dashboard() {
   const [activeCollection, setActiveCollection] = useState<string>("");
   //Active logs page handler
   const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
+  //Loading Modal handler
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const deploymentApi = useApi();
 
@@ -48,12 +50,7 @@ export default function Dashboard() {
         setProjects(data);
         return;
 
-        // Check deployment status for each project
-        data.forEach(async (project) => {
-          if (await waitForSuccessfulDeployment(project.id)) {
-            setProjects((prevProjects) => [...prevProjects, project]);
-          }
-        });
+       
       } catch (e) {
         toast.error("Error fetching projects");
         console.error(e);
@@ -109,6 +106,8 @@ export default function Dashboard() {
               activeLogsPage={activeLogsPage}
               setActiveLogsPage={setActiveLogsPage}
               currentFileProperties={currentFileProperties}
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
             />
 
             <CenterContent
@@ -118,6 +117,8 @@ export default function Dashboard() {
               setDidDeploy={setDidDeploy}
               activeCollection={activeCollection}
               activeLogsPage={activeLogsPage}
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
             />
 
             <RightSidebar selectedTab={selectedTab} currentFileProperties={currentFileProperties} />

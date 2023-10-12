@@ -40,7 +40,7 @@ export default function useTestApi() {
       const method = activeEndpoint.split("/")[0].toUpperCase();
       const header = `Bearer ${jwtToken}`;
       const endpointPath = "/" + activeEndpoint.split("/")[1];
-      const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}?${testDoc.queryParametersString}`;
+      const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}${testDoc.queryParametersString}`;
       const body = testDoc.body;
 
       switch (method) {
