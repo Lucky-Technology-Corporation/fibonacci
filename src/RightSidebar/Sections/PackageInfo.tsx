@@ -14,6 +14,25 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   const [installedPackages, setInstalledPackages] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState(null);
 
+  const requiredNodePackages = [
+    "@google-cloud/storage",
+    "apn",
+    "async_hooks",
+    "concurrently",
+    "cors",
+    "dotenv",
+    "express",
+    "express-session",
+    "jsonwebtoken",
+    "mongodb",
+    "passport",
+    "passport-anonymous",
+    "passport-jwt",
+    "swizzle-js",
+    "uuid"
+  ]
+  const requiredReactPackages = ["react", "react-dom", "react-scripts"]
+
   const { npmSearch, getPackageJson } = useEndpointApi();
 
   const { setPostMessage, domain, packageToInstall } = useContext(SwizzleContext);
@@ -83,6 +102,14 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     setPostMessage(messageBody);
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };
+
+  const checkIfRequired = (packageName) => {
+    if(location =="backend"){
+      return requiredNodePackages.includes(packageName);
+    } else {
+      return requiredReactPackages.includes(packageName);
+    }
+  }
 
   const renderSearchField = () => {
     return (
@@ -186,7 +213,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
                   return (
                     <tr key={packageName}>
                       <td>{packageName}</td>
-                      <td className="opacity-70 hover:opacity-100 cursor-pointer">
+                      <td className={`opacity-70 hover:opacity-100 cursor-pointer ${checkIfRequired(packageName) ? "hidden" : ""}`}>
                         <FontAwesomeIcon
                           className="ml-auto"
                           icon={faTrash}

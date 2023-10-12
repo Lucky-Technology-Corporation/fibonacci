@@ -3,6 +3,7 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
+import '/json-styles.css';
 
 export default function DocumentJSON({
   document,
@@ -11,6 +12,7 @@ export default function DocumentJSON({
   setIsVisible,
   id,
   onChange,
+  justEditingJson = false,
 }: {
   document: any | any[];
   collection?: string;
@@ -18,6 +20,7 @@ export default function DocumentJSON({
   setIsVisible: (isVisible: boolean) => void;
   id?: string;
   onChange: (data: any) => void;
+  justEditingJson: boolean;
 }) {
   const [data, setData] = useState<string>("");
   const { updateDocument, createDocument } = useDatabaseApi();
@@ -29,8 +32,18 @@ export default function DocumentJSON({
 
   useEffect(() => {
     try {
-      JSON.parse(data);
-      setIsValid(true);
+      const parsedData = JSON.parse(data);
+      if(!justEditingJson){
+        if (typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+          setIsValid(true);
+        } else if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'object')) {
+          setIsValid(true);
+        } else {
+          setIsValid(false);
+        }
+      } else{
+        setIsValid(true);
+      }
     } catch (e) {
       setIsValid(false);
     }
@@ -50,13 +63,14 @@ export default function DocumentJSON({
   }, []);
 
   const submitData = () => {
-    if (!id) {
+    if (justEditingJson) {
       onChange(data);
       return;
     }
     // Validate the entire JSON array
     try {
       const dataArray = JSON.parse(data);
+      console.log(dataArray)
       if (Array.isArray(dataArray)) {
         // If 'data' is a JSON array
         // Validate each JSON object in the array
@@ -188,10 +202,13 @@ export default function DocumentJSON({
                   <div className="text-base text-green-400">Valid JSON</div>
                 </div>
               ) : (
+                <>
                 <div className="flex">
                   <XMarkIcon className="w-6 h-6 mr-1 text-red-400" />
                   <div className="text-base text-red-400">Invalid JSON</div>
                 </div>
+                <div className="text-sm opacity-70">Your input must be an object with keys and values, or an array of objects with keys and values</div>
+                </>
               )}
             </div>
             <div>
