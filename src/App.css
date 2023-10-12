@@ -113,6 +113,9 @@ input[type="text"]::placeholder {
     opacity: 1;
   }
 }
+.w-tc-editor {
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #c9d1d9 !important;
+}
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 ::-webkit-scrollbar {
