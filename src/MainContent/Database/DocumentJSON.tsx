@@ -29,8 +29,14 @@ export default function DocumentJSON({
 
   useEffect(() => {
     try {
-      JSON.parse(data);
-      setIsValid(true);
+      const parsedData = JSON.parse(data);
+      if (typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+        setIsValid(true);
+      } else if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'object')) {
+        setIsValid(true);
+      } else {
+        setIsValid(false);
+      }
     } catch (e) {
       setIsValid(false);
     }
@@ -188,10 +194,13 @@ export default function DocumentJSON({
                   <div className="text-base text-green-400">Valid JSON</div>
                 </div>
               ) : (
+                <>
                 <div className="flex">
                   <XMarkIcon className="w-6 h-6 mr-1 text-red-400" />
                   <div className="text-base text-red-400">Invalid JSON</div>
                 </div>
+                <div className="text-sm opacity-70">Your input must be an object with keys and values, or an array of objects with keys and values</div>
+                </>
               )}
             </div>
             <div>
