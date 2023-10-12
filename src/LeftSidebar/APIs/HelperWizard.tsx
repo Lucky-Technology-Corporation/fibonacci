@@ -52,7 +52,7 @@ export default function HelperWizard({
     }
     setPostMessage({
       type: "newFile",
-      fileName: "user-helpers/" + fileName,
+      fileName: "backend/user-helpers/" + fileName,
       helperName: newHelperName,
     });
     setIsVisible(false);

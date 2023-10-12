@@ -75,7 +75,7 @@ export default function useEndpointApi() {
     try {
       const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {
         headers: {
-          Authorization: await getFermatJwt(),
+          Authorization: authHeader(),
         },
       });
       return response.data;
@@ -181,7 +181,7 @@ export default function useEndpointApi() {
     }
   };
 
-  const getPackageJson = async () => {
+  const getPackageJson = async (location: string) => {
     console.log("Getting package.json");
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
@@ -190,7 +190,7 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/package.json`, {
+      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/${location}/package.json`, {
         headers: {
           Authorization: await getFermatJwt(),
         },

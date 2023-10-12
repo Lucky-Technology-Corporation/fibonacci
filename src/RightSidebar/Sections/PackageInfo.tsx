@@ -8,7 +8,7 @@ import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
 
-export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: boolean; setIsVisible: any }) {
+export default function PackageInfo({ isVisible, setIsVisible, location }: { isVisible: boolean; setIsVisible: any, location: string }) {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
   const [installedPackages, setInstalledPackages] = useState<string[]>([]);
@@ -22,7 +22,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
     if (domain == null || domain == undefined || domain == "") {
       return;
     }
-    getPackageJson().then((data) => {
+    getPackageJson(location).then((data) => {
       if (data == undefined || data.dependencies == undefined) {
         return;
       }
@@ -67,7 +67,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   }, [selectedOption]);
 
   const addPackageToProject = (message) => {
-    const messageBody = { type: "addPackage", packageName: message, directory: "backend" };
+    const messageBody = { type: "addPackage", packageName: message, directory: location };
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
   };
@@ -79,7 +79,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   }, [packageToInstall]);
 
   const removePackageFromProject = (message) => {
-    const messageBody = { type: "removePackage", packageName: message };
+    const messageBody = { type: "removePackage", packageName: message, directory: location };
     setPostMessage(messageBody);
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };

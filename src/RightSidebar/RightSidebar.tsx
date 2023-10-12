@@ -236,7 +236,7 @@ export default function RightSidebar({
               icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
               text="Packages"
             />
-            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
+            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
           </>
         )}
         {selectedTab == Page.Apis && (
@@ -315,7 +315,7 @@ export default function RightSidebar({
               icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
               text="Packages"
             />
-            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
+            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
             {!isHelper && (
               <>
                 <div className="h-6" />
