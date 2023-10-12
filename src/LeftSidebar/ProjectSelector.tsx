@@ -1,15 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
 import useEndpointApi from "../API/EndpointAPI";
 import Dropdown from "../Utilities/Dropdown";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import useApi from "../API/DeploymentAPI";
 
-export default function ProjectSelector() {
+export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isModalOpen: any, setIsModalOpen: Dispatch<SetStateAction<boolean>> }){
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
-
+  const deploymentApi = useApi();
+  const POLLING_INTERVAL = 5000;
+  const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();
   const {
     projects,
@@ -30,6 +33,18 @@ export default function ProjectSelector() {
     setFermatJwt,
   } = useContext(SwizzleContext);
 
+  const startPolling = async (projectId) => {
+    if (pollingRef.current) return; 
+    pollingRef.current = setInterval(async () => {
+      const deploymentStatus = await checkDeploymentStatus(projectId);
+      if (deploymentStatus === "DEPLOYMENT_SUCCESS") {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+        setIsModalOpen(false);
+      }
+    }, POLLING_INTERVAL);
+  };
+
   const createNewProject = (projectName: string) => {
     setIsCreatingProject(true);
     toast.promise(createProject(projectName), {
@@ -45,7 +60,6 @@ export default function ProjectSelector() {
     });
   };
 
-  //Set the current project in the context and save it in session storage
   const setCurrentProject = async (id: string) => {
     const project = projects.filter((p) => p.id == id)[0];
     if (project == null) return;
@@ -68,6 +82,18 @@ export default function ProjectSelector() {
     } else {
       setDomain(project.prod_swizzle_domain);
     }
+
+    const deploymentStatus = await checkDeploymentStatus(project.id);
+  if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
+    setIsModalOpen(true);
+    startPolling(project.id);
+  } else {
+    setIsModalOpen(false);
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current); 
+      pollingRef.current = null;
+    }
+  }
   };
 
   useEffect(() => {
@@ -78,7 +104,25 @@ export default function ProjectSelector() {
     }
   }, [environment]);
 
-  //When projects is set, set the active project to the first project in the list or the one stored in session storage
+  useEffect(() => { 
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
+
+  const checkDeploymentStatus = async (projectId) => {
+    try {
+      const response = await deploymentApi.getProjectDeploymentStatus(projectId);
+      return response;
+    } catch (error) {
+      console.error(`Failed to get deployment status for project ${projectId}`, error);
+      return null;
+    }
+  };
+  
+
   useEffect(() => {
     if (projects && activeProject == "" && projects.length > 0) {
       var storedActiveProject = sessionStorage.getItem("activeProject");
@@ -120,6 +164,7 @@ export default function ProjectSelector() {
           direction="center"
         />
       </div>
+      
 
       <FullPageModal
         isVisible={isVisible}

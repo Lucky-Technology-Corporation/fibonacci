@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { Page } from "../Utilities/Page";
 import UserTableView from "./Auth/UserTableView";
@@ -8,6 +8,7 @@ import EndpointHeader from "./Editor/EndpointHeader";
 import MonitoringPage from "./Logs/MonitoringPage";
 import NotificationPage from "./Notifications/NotificationPage";
 import ObjectTableView from "./Storage/ObjectTableView";
+import Modal from "../Utilities/Modal";
 
 type CenterContentProps = {
   selectedTab: Page;
@@ -16,6 +17,8 @@ type CenterContentProps = {
   setDidDeploy: (didDeploy: boolean) => void;
   activeCollection: string;
   activeLogsPage: string;
+  isModalOpen: any;
+  setIsModalOpen: any;
 };
 
 export default function CenterContent({
@@ -25,11 +28,17 @@ export default function CenterContent({
   setDidDeploy,
   activeCollection,
   activeLogsPage,
+  isModalOpen,
+  setIsModalOpen,
 }: CenterContentProps) {
   const { activeEndpoint, activeFile, activeHelper, shouldOverlay } = useContext(SwizzleContext);
 
   return (
-    <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
+    <div className="relative m-0 text-sm whitespace-pre-line max-h-[100vh]">
+      {isModalOpen && 
+      <Modal 
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)} />}
       <div
         style={{
           opacity: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "1" : "0",
