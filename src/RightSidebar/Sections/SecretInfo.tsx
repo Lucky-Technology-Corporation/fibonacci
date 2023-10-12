@@ -1,13 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import SectionAction from "../../LeftSidebar/SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ToastWindow from "../../Utilities/Toast/ToastWindow";
-import Button from "../../Utilities/Button";
-import useSettingsApi from "../../API/SettingsAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useSettingsApi from "../../API/SettingsAPI";
+import Button from "../../Utilities/Button";
+import FullPageModal from "../../Utilities/FullPageModal";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
+import ToastWindow from "../../Utilities/Toast/ToastWindow";
 
 export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boolean; setIsVisible: any }) {
   interface Secret {
@@ -218,6 +217,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                         placeholder="Production value"
                         value={secret.productionValue}
                         onChange={(e) => updateSecret(secret.name, "productionValue", e.target.value)}
+                        disabled={true}
                       />
                     </div>
                   </div>
@@ -253,7 +253,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                   className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                   placeholder=""
                   value={newSecretName}
-                  onChange={(e) => setNewSecretName(e.target.value)}
+                  onChange={(e) => setNewSecretName(e.target.value.trim())}
                 />
               </div>
               <div className="w-full">
