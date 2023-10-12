@@ -63,38 +63,39 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   const setCurrentProject = async (id: string) => {
     const project = projects.filter((p) => p.id == id)[0];
     if (project == null) return;
-
-    setTestDeployStatus(project.test_deployment_status);
-    setProdDeployStatus(project.prod_deployment_status);
-
-    await refreshFermatJwt(project.id);
-
-    setActiveProject(project.id);
     setActiveProjectName(project.name);
-    sessionStorage.setItem("activeProject", project.id);
-    sessionStorage.setItem("activeProjectName", project.name);
-
-    setTestDomain(project.test_swizzle_domain);
-    setProdDomain(project.prod_swizzle_domain);
-
-    if (environment == "test") {
-      setDomain(project.test_swizzle_domain);
-    } else {
-      setDomain(project.prod_swizzle_domain);
-    }
+    setActiveProject(project.id);
 
     const deploymentStatus = await checkDeploymentStatus(project.id);
-  if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
-    setIsModalOpen(true);
-    startPolling(project.id);
-  } else {
-    setIsModalOpen(false);
-    if (pollingRef.current) {
-      clearInterval(pollingRef.current); 
-      pollingRef.current = null;
+    if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
+      setIsModalOpen(true);
+      startPolling(project.id);
+    } else {
+      // Update the context values only if the deployment was successful
+      setTestDeployStatus(project.test_deployment_status);
+      setProdDeployStatus(project.prod_deployment_status);
+  
+      await refreshFermatJwt(project.id);
+  
+      sessionStorage.setItem("activeProject", project.id);
+      sessionStorage.setItem("activeProjectName", project.name);
+  
+      setTestDomain(project.test_swizzle_domain);
+      setProdDomain(project.prod_swizzle_domain);
+  
+      if (environment == "test") {
+        setDomain(project.test_swizzle_domain);
+      } else {
+        setDomain(project.prod_swizzle_domain);
+      }
+  
+      setIsModalOpen(false);
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current); 
+        pollingRef.current = null;
+      }
     }
-  }
-  };
+  };  
 
   useEffect(() => {
     if (environment == "test") {
