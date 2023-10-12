@@ -26,7 +26,7 @@ export default function ToastWindow({
   overrideLeftMargin?: number;
   overrideTopMargin?: number;
 }) {
-  const {mousePosition} = useContext(SwizzleContext);
+  const { mousePosition } = useContext(SwizzleContext);
 
   const getMargin = () => {
     if (overrideLeftMargin) {

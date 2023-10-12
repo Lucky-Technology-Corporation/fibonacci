@@ -33,7 +33,7 @@ export default function DatabaseRow({
   shouldBlockEdits = [],
   shouldShowStrikethrough = false,
   setJsonToEdit,
-  setKeyForRowBeingEdited
+  setKeyForRowBeingEdited,
 }: {
   collection: string;
   keys: string[];
@@ -87,7 +87,7 @@ export default function DatabaseRow({
   const saveNewValues = (key: string, value: string, skipLocalSet: boolean = false) => {
     var document = { ...rowValues };
     document[key] = value;
-    if(!skipLocalSet){
+    if (!skipLocalSet) {
       setRowValues({ ...rowValues, [key]: pendingInputValue });
     }
     toast.promise(updateDocument(collection, document._id, document), {
@@ -132,9 +132,9 @@ export default function DatabaseRow({
                   }}
                   position="bottom-right"
                   onClick={() => {
-                    setKeyForRowBeingEdited([rowKey, key])
-                    setEditing(key)
-                    setJsonToEdit(value)
+                    setKeyForRowBeingEdited([rowKey, key]);
+                    setEditing(key);
+                    setJsonToEdit(value);
                   }}
                 />
               ) : (value || "").toString().startsWith("http") &&

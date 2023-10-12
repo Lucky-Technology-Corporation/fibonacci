@@ -26,7 +26,7 @@ export default function CenterContent({
   activeCollection,
   activeLogsPage,
 }: CenterContentProps) {
-  const { activeEndpoint, activeFile, activeHelper } = useContext(SwizzleContext);
+  const { activeEndpoint, activeFile, activeHelper, shouldOverlay } = useContext(SwizzleContext);
 
   return (
     <div className="m-0 text-sm whitespace-pre-line max-h-[100vh]">
@@ -37,14 +37,16 @@ export default function CenterContent({
           height: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "" : "1px",
         }}
       >
-        {selectedTab !== Page.Apis && selectedTab !== Page.Hosting && <div className="absolute top-0 left-0 w-full h-full z-10"></div> }
+        {(shouldOverlay || (selectedTab !== Page.Apis && selectedTab !== Page.Hosting)) && (
+          <div className="absolute top-0 left-0 w-full h-full z-10"></div>
+        )}
         <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
           <EndpointHeader />
           <Editor setCurrentFileProperties={setCurrentFileProperties} />
         </div>
         <div
           style={{
-            display: (!activeEndpoint && !activeFile && !activeHelper) && selectedTab === Page.Apis ? "block" : "none",
+            display: !activeEndpoint && !activeFile && !activeHelper && selectedTab === Page.Apis ? "block" : "none",
           }}
         >
           <div className="flex-grow flex flex-col items-center justify-center mt-[-95vh]">

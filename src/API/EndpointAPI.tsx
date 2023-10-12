@@ -10,7 +10,7 @@ export default function useEndpointApi() {
   const authHeader = useAuthHeader();
   const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } =
     useContext(SwizzleContext);
-    
+
   const npmSearch = async (query: string) => {
     const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
     return response.data.objects;
@@ -18,11 +18,11 @@ export default function useEndpointApi() {
 
   const exchangeJwt = async (projectId: string) => {
     try {
-      if(projectId == undefined || projectId == null || projectId == ""){
+      if (projectId == undefined || projectId == null || projectId == "") {
         projectId = activeProject;
       }
-      if(projectId == undefined || projectId == null || projectId == ""){
-        throw "No project id"
+      if (projectId == undefined || projectId == null || projectId == "") {
+        throw "No project id";
       }
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/fermat/jwt`, {
         headers: {
@@ -50,10 +50,10 @@ export default function useEndpointApi() {
     }
     setFermatJwt(jwt);
     return "Bearer " + jwt;
-  }
+  };
 
   const getFermatJwt = async () => {
-    if(fermatJwt == ""){
+    if (fermatJwt == "") {
       return refreshFermatJwt(activeProject);
     }
     let decoded = jwt_decode(fermatJwt) as any;
@@ -70,12 +70,10 @@ export default function useEndpointApi() {
 
     return "Bearer " + fermatJwt;
   };
-  
+
   const deploy = async () => {
     try {
-      const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`,
-      {
+      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {
         headers: {
           Authorization: await getFermatJwt(),
         },
@@ -114,13 +112,13 @@ export default function useEndpointApi() {
     try {
       const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
 
-      var body = body = {
+      var body = (body = {
         question_type: aiCommand,
         user_query: userQuery,
         fermat_domain: testDomain.replace("https://", "https://fermat."),
         fermat_jwt: await getFermatJwt(),
         current_file: "backend/user-dependencies/" + fileName + ".js",
-      };
+      });
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
@@ -184,7 +182,7 @@ export default function useEndpointApi() {
   };
 
   const getPackageJson = async () => {
-    console.log("Getting package.json")
+    console.log("Getting package.json");
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
         return [];
@@ -219,7 +217,7 @@ export default function useEndpointApi() {
       } else if (fileTypes.toLowerCase() == "helpers") {
         path = "/backend/user-helpers";
       }
-      
+
       const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code?path=${path}`, {
         headers: {
           Authorization: await getFermatJwt(),
@@ -253,6 +251,6 @@ export default function useEndpointApi() {
     deploy,
     getFermatJwt,
     getCodeFromFigma,
-    refreshFermatJwt
+    refreshFermatJwt,
   };
 }

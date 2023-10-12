@@ -118,7 +118,7 @@ export default function LogRow({
               isExpandable: true,
             }}
             onClick={() => {
-              copyText(message.response)
+              copyText(message.response);
             }}
             position="bottom-center"
           />
@@ -136,7 +136,7 @@ export default function LogRow({
               isExpandable: true,
             }}
             onClick={() => {
-              copyText(message.response)
+              copyText(message.response);
             }}
             position="bottom-center"
           />

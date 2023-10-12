@@ -57,7 +57,7 @@ export default function FilesList({ active }: { active: boolean }) {
     return file;
   };
 
-  const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"]
+  const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"];
 
   //Fetch from backend and populate it here.
   return (
@@ -81,22 +81,22 @@ export default function FilesList({ active }: { active: boolean }) {
       </div>
 
       <div className="ml-1 mt-1">
-      <FileItem
-        key={"App.js"}
-        path={formatFileName("App.js")}
-        active={"App.js" == activeFile}
-        onClick={() => {
-          setActiveFile("App.js");
-        }}
-      />
         <FileItem
-        key={"App.css"}
-        path={formatFileName("App.css")}
-        active={"App.css" == activeFile}
-        onClick={() => {
-          setActiveFile("App.css");
-        }}
-      />
+          key={"App.js"}
+          path={formatFileName("App.js")}
+          active={"App.js" == activeFile}
+          onClick={() => {
+            setActiveFile("App.js");
+          }}
+        />
+        <FileItem
+          key={"App.css"}
+          path={formatFileName("App.css")}
+          active={"App.css" == activeFile}
+          onClick={() => {
+            setActiveFile("App.css");
+          }}
+        />
       </div>
       <div className="font-semibold ml-2 mt-2 flex">
         <SectionAction

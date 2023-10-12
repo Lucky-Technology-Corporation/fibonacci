@@ -24,18 +24,19 @@ export const GlobalContextProvider = ({ children }) => {
   const [figmaToken, setFigmaToken] = useState("");
   const [shouldRefreshList, setShouldRefreshList] = useState(false);
   const [packageToInstall, setPackageToInstall] = useState("");
-  
+  const [shouldOverlay, setShouldOverlay] = useState(false);
+
   const [mousePosition, setPosition] = useState({ x: 0, y: 0 });
   const handleMouseMove = (event) => {
-      setPosition({
-          x: event.clientX,
-          y: event.clientY
-      });
+    setPosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
   };
   useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener("mousemove", handleMouseMove);
     return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
@@ -84,7 +85,9 @@ export const GlobalContextProvider = ({ children }) => {
         setShouldRefreshList,
         packageToInstall,
         setPackageToInstall,
-        mousePosition
+        mousePosition,
+        shouldOverlay,
+        setShouldOverlay,
       }}
     >
       {children}

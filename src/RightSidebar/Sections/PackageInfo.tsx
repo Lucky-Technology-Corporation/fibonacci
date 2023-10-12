@@ -67,7 +67,7 @@ export default function PackageInfo({ isVisible, setIsVisible }: { isVisible: bo
   }, [selectedOption]);
 
   const addPackageToProject = (message) => {
-    const messageBody = { type: "addPackage", packageName: message };
+    const messageBody = { type: "addPackage", packageName: message, directory: "backend" };
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
   };

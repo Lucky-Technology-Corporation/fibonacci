@@ -50,9 +50,9 @@ export default function DocumentJSON({
   }, []);
 
   const submitData = () => {
-    if(!id){
-      onChange(data)
-      return
+    if (!id) {
+      onChange(data);
+      return;
     }
     // Validate the entire JSON array
     try {

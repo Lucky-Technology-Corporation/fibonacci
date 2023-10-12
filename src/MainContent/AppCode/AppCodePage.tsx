@@ -72,9 +72,7 @@ export default function AppCodePage() {
     const content = (
       <div className="flex flex-col space-y-2">
         <div className="flex">
-          <div>
-            Model.swift (0 functions)
-          </div>
+          <div>Model.swift (0 functions)</div>
           <div className="w-24 ml-auto">
             <Button text="Download" onClick={() => {}} />
           </div>

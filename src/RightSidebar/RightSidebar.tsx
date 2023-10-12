@@ -16,6 +16,7 @@ import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import StorageInfo from "./Sections/StorageInfo";
 import TestWindow from "./TestWindow";
+import WebPreview from "./WebPreview";
 
 const noDb = `const router = express.Router();
 `;
@@ -62,6 +63,7 @@ export default function RightSidebar({
   const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
   const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
   const [autocheckResponse, setAutocheckResponse] = useState("");
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
   const { ideReady, setPostMessage } = useContext(SwizzleContext);
   const { getAutocheckResponse } = useEndpointApi();
@@ -157,10 +159,10 @@ export default function RightSidebar({
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
 
-    if(currentFileProperties.fileUri.includes("user-helpers")){
-      setIsHelper(true)
-    } else{
-      setIsHelper(false)
+    if (currentFileProperties.fileUri.includes("user-helpers")) {
+      setIsHelper(true);
+    } else {
+      setIsHelper(false);
     }
 
     if (currentFileProperties.hasGetDb !== isDBChecked) {
@@ -186,55 +188,56 @@ export default function RightSidebar({
             <div className="h-4" />
             <div className="font-bold">Testing</div>
             <div className="h-2" />
-                      <IconTextButton
-                      onClick={() => {
-                        toast.promise(getAutocheckResponse(), {
-                          loading: "Running autocheck...",
-                          success: (data) => {
-                            if (data == "") {
-                              toast.error("Error running autocheck");
-                              return;
-                            }
-                            setAutocheckResponse(data.recommendation_text);
-                            return "Done";
-                          },
-                          error: "Error running autocheck",
-                        });
-                      }}
-                      icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
-                      text="Autocheck"
-                    />
-                    <AutocheckInfo
-                      isVisible={autocheckResponse != ""}
-                      setIsVisible={(show: boolean) => {
-                        if (!show) {
-                          setAutocheckResponse("");
-                        }
-                      }}
-                      autocheckResponse={autocheckResponse}
-                    />
-                    <div className="h-2" />
             <IconTextButton
               onClick={() => {
-                setShouldShowPackagesWindow(true);
+                toast.promise(getAutocheckResponse(), {
+                  loading: "Running autocheck...",
+                  success: (data) => {
+                    if (data == "") {
+                      toast.error("Error running autocheck");
+                      return;
+                    }
+                    setAutocheckResponse(data.recommendation_text);
+                    return "Done";
+                  },
+                  error: "Error running autocheck",
+                });
+              }}
+              icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
+              text="Autocheck"
+            />
+            <AutocheckInfo
+              isVisible={autocheckResponse != ""}
+              setIsVisible={(show: boolean) => {
+                if (!show) {
+                  setAutocheckResponse("");
+                }
+              }}
+              autocheckResponse={autocheckResponse}
+            />
+            <div className="h-2" />
+            <IconTextButton
+              onClick={() => {
+                setIsPreviewVisible(true);
               }}
               icon={<img src="/preview.svg" className="w-4 h-4 m-auto" />}
               text="Preview"
             />
+            <WebPreview isVisible={isPreviewVisible} setIsVisible={setIsPreviewVisible} />
             {/* <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} /> */}
 
-                    <div className="h-4" />
-                    <div className="font-bold">Configuration</div>
-                    <div className="h-2" />
-                    <IconTextButton
-                      onClick={() => {
-                        setShouldShowPackagesWindow(true);
-                      }}
-                      icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
-                      text="Packages"
-                    />
-                    <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
-                    </>
+            <div className="h-4" />
+            <div className="font-bold">Configuration</div>
+            <div className="h-2" />
+            <IconTextButton
+              onClick={() => {
+                setShouldShowPackagesWindow(true);
+              }}
+              icon={<img src="/box.svg" className="w-3 h-3 m-auto" />}
+              text="Packages"
+            />
+            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} />
+          </>
         )}
         {selectedTab == Page.Apis && (
           <>
@@ -323,7 +326,12 @@ export default function RightSidebar({
                 </div>
                 <div className="h-3" />
                 <div className="text-left w-full space-y-2">
-                  <Checkbox id="auth" label="Authentication" isChecked={isAuthChecked} setIsChecked={setIsAuthChecked} />
+                  <Checkbox
+                    id="auth"
+                    label="Authentication"
+                    isChecked={isAuthChecked}
+                    setIsChecked={setIsAuthChecked}
+                  />
                   <AuthInfo show={true} />
                 </div>
                 <div className="h-2" />
@@ -343,10 +351,15 @@ export default function RightSidebar({
                 </div>
                 <div className="h-2" />
                 <div className="text-left w-full space-y-2">
-                  <Checkbox id="storage" label="Storage" isChecked={isStorageChecked} setIsChecked={setIsStorageChecked} />
+                  <Checkbox
+                    id="storage"
+                    label="Storage"
+                    isChecked={isStorageChecked}
+                    setIsChecked={setIsStorageChecked}
+                  />
                   <StorageInfo show={isStorageChecked} />
                 </div>
-                </>
+              </>
             )}
           </>
         )}

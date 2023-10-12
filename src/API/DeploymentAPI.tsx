@@ -31,9 +31,9 @@ export default function useApi() {
         },
       },
     );
-    console.log("Get Project Deployment Status" + response.data.deployment_status)
+    console.log("Get Project Deployment Status" + response.data.deployment_status);
     return response.data.deployment_status;
-  }
+  };
 
   return {
     listProjectBuilds,

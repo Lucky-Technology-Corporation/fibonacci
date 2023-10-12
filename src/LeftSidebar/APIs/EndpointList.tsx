@@ -27,7 +27,8 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
 
-  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, shouldRefreshList } = useContext(SwizzleContext);
+  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, shouldRefreshList } =
+    useContext(SwizzleContext);
   const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
   const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
   const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
@@ -97,11 +98,10 @@ export default function EndpointList({ active }: { active: boolean }) {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
           return;
         }
-        
-        const transformedHelpers = data.children
-          .map((endpoint: any) => {
-            return endpoint.name.replace(".js", "");
-          })
+
+        const transformedHelpers = data.children.map((endpoint: any) => {
+          return endpoint.name.replace(".js", "");
+        });
 
         setHelperList(transformedHelpers);
         setFullHelperList(transformedHelpers);
@@ -171,15 +171,15 @@ export default function EndpointList({ active }: { active: boolean }) {
       </div>
 
       <div className="ml-1">
-      {endpoints.map((endpoint, index) => (
-        <EndpointItem
-          key={index}
-          path={endpoint.substring(endpoint.indexOf("/"))}
-          method={endpoint.split("/")[0].toUpperCase() as Method}
-          active={endpoint == activeEndpoint}
-          onClick={() => setActiveEndpoint(endpoint)}
-        />
-      ))}
+        {endpoints.map((endpoint, index) => (
+          <EndpointItem
+            key={index}
+            path={endpoint.substring(endpoint.indexOf("/"))}
+            method={endpoint.split("/")[0].toUpperCase() as Method}
+            active={endpoint == activeEndpoint}
+            onClick={() => setActiveEndpoint(endpoint)}
+          />
+        ))}
         {/* {Object.keys(fullEndpointObj).map((path) => (
           <div key={path} className={"vertical-line mt-4 ml-2 cursor-pointer"}>
             <div
@@ -241,7 +241,7 @@ export default function EndpointList({ active }: { active: boolean }) {
               key={index}
               path={helper.replace("/user-helpers/", "")}
               active={helper == activeEndpoint}
-              onClick={() => setActiveEndpoint("!helper!"+helper)}
+              onClick={() => setActiveEndpoint("!helper!" + helper)}
             />
           );
         })}

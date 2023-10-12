@@ -14,7 +14,7 @@ export default function InfoItem({
   content,
   toast,
   position,
-  onClick
+  onClick,
 }: {
   content: React.ReactNode;
   toast: ToastProps;
@@ -56,21 +56,21 @@ export default function InfoItem({
       setIsHintWindowVisible(false);
     }
   }, [activeToast]);
-  
+
   function extractTextFromHTML(node) {
     if (!node) return "";
     if (typeof node === "string" || typeof node === "number") {
-        return node.toString();
+      return node.toString();
     }
     if (Array.isArray(node)) {
-        return node.map(extractTextFromHTML).join("");
+      return node.map(extractTextFromHTML).join("");
     }
     if (React.isValidElement(node) && (node.props as any).children) {
-        return extractTextFromHTML((node.props as any).children);
+      return extractTextFromHTML((node.props as any).children);
     }
     return "";
   }
-  
+
   return (
     <>
       <div

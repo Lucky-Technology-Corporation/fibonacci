@@ -11,10 +11,10 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
 
   useEffect(() => {
     if (postMessage == null) return;
-    if(!ideReady) return;
+    if (!ideReady) return;
     postMessageToIframe(postMessage);
     setPostMessage(null);
-    console.log("Posted")
+    console.log("Posted");
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
@@ -28,7 +28,9 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
       console.log("extensionReady");
       setIdeReady(true);
       setTimeout(() => {
-        if(currentFileRef.current != null){ return } //dont open the default file if we already have a file open
+        if (currentFileRef.current != null) {
+          return;
+        } //dont open the default file if we already have a file open
         const message = { fileName: "backend/user-dependencies/get-.js", type: "openFile" };
         postMessageToIframe(message);
       }, 100);
@@ -62,14 +64,13 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
     if (testDomain == undefined || activeProject == undefined || testDomain == "" || activeProject == "") return;
 
     const getUrl = async () => {
-      console.log("Getting url")
-      console.log("testDomain", testDomain, "activeProject", activeProject)
+      console.log("Getting url");
+      console.log("testDomain", testDomain, "activeProject", activeProject);
       const fermatJwt = await getFermatJwt();
-      if(fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
+      if (fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
       setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
     };
     getUrl();
-
   }, [activeProject, testDomain]);
 
   return testDomain == undefined ? (

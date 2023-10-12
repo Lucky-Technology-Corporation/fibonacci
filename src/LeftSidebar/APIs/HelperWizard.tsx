@@ -21,13 +21,13 @@ export default function HelperWizard({
       toast.error("Please enter a value");
       return;
     }
-    
+
     var cleanInputValue = inputValue;
-    if (inputValue.endsWith('.js')) {
+    if (inputValue.endsWith(".js")) {
       cleanInputValue = inputValue.slice(0, -3);
-    }  
+    }
     const fileName = cleanInputValue + ".js";
-    const newHelperName = cleanInputValue
+    const newHelperName = cleanInputValue;
 
     let isDuplicate = false;
     setFullHelpers((helpers: any[]) => {

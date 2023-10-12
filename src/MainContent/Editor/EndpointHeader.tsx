@@ -50,8 +50,8 @@ export default function EndpointHeader() {
           setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
         }
         if (data.recommendation_code != undefined && data.recommendation_code != "") {
-          console.log(data.recommendation_code)
-          setPostMessage({ type: "replaceText", code: data.recommendation_code })
+          console.log(data.recommendation_code);
+          setPostMessage({ type: "replaceText", code: data.recommendation_code });
         }
         return "Done";
       },

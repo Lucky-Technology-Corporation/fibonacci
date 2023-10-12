@@ -212,25 +212,25 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       success: "Updated document!",
       error: "Failed to update document",
     });
-  }
+  };
 
   const updateRowBeingEdited = (data: any) => {
-    if(data == undefined) return
-    console.log("updateRowBeingEdited", data)
+    if (data == undefined) return;
+    console.log("updateRowBeingEdited", data);
     setData((prevData) => {
       return prevData.map((row) => {
         if (row._id == keyForRowBeingEdited[0]) {
           const newData = { ...row, [keyForRowBeingEdited[1]]: JSON.parse(data) };
-          saveNewDocumentValue(newData, keyForRowBeingEdited[0])
+          saveNewDocumentValue(newData, keyForRowBeingEdited[0]);
           return newData;
         } else {
           return row;
         }
       });
-    })
+    });
 
-    setJsonToEdit(null)
-  }
+    setJsonToEdit(null);
+  };
 
   if (!activeCollection)
     return (
@@ -324,7 +324,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
                 }}
                 setJsonToEdit={setJsonToEdit}
                 setKeyForRowBeingEdited={setKeyForRowBeingEdited}
-                />
+              />
             ))}
           </tbody>
         </table>
@@ -352,7 +352,9 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           document={jsonToEdit}
           isVisible={jsonToEdit != undefined}
           setIsVisible={() => setJsonToEdit(null)}
-          onChange={(data: any) => { updateRowBeingEdited(data)}} // Pass the data to the parent's handler
+          onChange={(data: any) => {
+            updateRowBeingEdited(data);
+          }} // Pass the data to the parent's handler
         />
       </div>
       {data.length == 0 && currentPage == 0 ? (

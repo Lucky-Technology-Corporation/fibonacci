@@ -31,7 +31,7 @@ export default function APIWizard({
     }
     if (inputValue.startsWith("/")) {
       cleanInputValue = inputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
-    } else{
+    } else {
       cleanInputValue = inputValue.replace(/\//g, "-").replace(/:/g, "_");
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
@@ -47,8 +47,8 @@ export default function APIWizard({
       newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
     }
 
-    console.log(newEndpointName)
-    console.log(fileName)
+    console.log(newEndpointName);
+    console.log(fileName);
     // return
 
     let isDuplicate = false;

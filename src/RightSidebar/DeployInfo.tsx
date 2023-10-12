@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import useDeployApi from "../API/DeploymentAPI";
 
 type DeployInfoProps = {
+  shouldShowDeployInfo: boolean;
   setShouldShowDeployInfo: (value: boolean) => void;
+  setShouldCancelHide: (value: boolean) => void;
 };
 
 type DeploymentLog = {
@@ -14,7 +16,7 @@ type DeploymentLog = {
   endedAtTime: string;
 };
 
-export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps) {
+export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployInfo, setShouldCancelHide }: DeployInfoProps) {
   const api = useDeployApi();
   const myRef = useRef<HTMLDivElement>(null);
   const [logs, setLogs] = useState<DeploymentLog[]>([]);
@@ -57,17 +59,19 @@ export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps)
 
   return (
     <div
-      className={`w-[370px] bg-[#191A23] border border-[#f07434] rounded-lg shadow-lg pt-2 pb-2`}
-      style={{ transition: "opacity 0.1s", marginTop: "0px" }}
+      className={`w-[370px] bg-[#191A23] border border-[#f07434] rounded-lg shadow-lg pt-2 pb-2 ${shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      style={{ transition: "opacity 0.2s", marginTop: "0px" }}
       ref={myRef}
+      onMouseEnter={() => setShouldCancelHide(true)}
+      onMouseLeave={() => setShouldCancelHide(false)}
     >
       {logs.length === 0 ? (
-        <div className="text-center p-4">No deployments!</div>
+        <div className="text-center p-4">No deployments yet</div>
       ) : (
         logs.map((log, index) => {
           let statusText;
           let color;
-  
+
           switch (log.buildStatus) {
             case "BUILD_SUCCESS":
               statusText = "Success";
@@ -81,7 +85,7 @@ export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps)
               statusText = "In Progress";
               color = "yellow";
           }
-  
+
           return (
             <div
               key={index}
@@ -100,7 +104,7 @@ export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps)
                   </div>
                 </div>
               </div>
-  
+
               <div className="flex">
                 <button className="border border-[#a4acbc] hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
                   <img src="eye.png" alt="eye" className="w-4 h-4 flex-center  inline-block" />
@@ -114,4 +118,5 @@ export default function DeployInfo({ setShouldShowDeployInfo }: DeployInfoProps)
         })
       )}
     </div>
-  )}
+  );
+}

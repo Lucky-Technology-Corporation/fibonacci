@@ -74,7 +74,9 @@ export default function UserTableView() {
   };
 
   const addFlags = async (data: any) => {
-    if(!data || !data.documents){ return }
+    if (!data || !data.documents) {
+      return;
+    }
     const endpoint = "http://ip-api.com/batch";
     var requestBody = [];
     for (var i = 0; i < data.documents.length; i++) {

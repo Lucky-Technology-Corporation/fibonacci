@@ -58,17 +58,23 @@ export default function LeftSidebar({
       programmatiFileUpdateRef.current = false;
       return;
     }
-    if (activeFile == undefined || activeFile == "") return;
     console.log("open activeFile", activeFile);
-    if(currentFileProperties && currentFileProperties.fileUri){
-      const currenfFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+    if (currentFileProperties && currentFileProperties.fileUri) {
+      const currenfFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       if (currenfFile == activeFile) return;
     }
-
-    setPostMessage({
-      type: "openFile",
-      fileName: `frontend/src/${activeFile}`,
-    });
+    if (activeFile == undefined || activeFile == ""){
+      setPostMessage({
+        type: "openFile",
+        fileName: `frontend/src/App.js`,
+      });
+      return
+    } else{
+      setPostMessage({
+        type: "openFile",
+        fileName: `frontend/src/${activeFile}`,
+      });
+    }
   };
 
   const openActiveEndpoint = () => {
@@ -79,24 +85,24 @@ export default function LeftSidebar({
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     console.log("open activeEndpoint", activeEndpoint);
     var fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
-    
-    if(fileName.startsWith("!helper!")){
-      fileName = fileName.replace("!helper!", "")
-      if(currentFileProperties && currentFileProperties.fileUri){
-        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+
+    if (fileName.startsWith("!helper!")) {
+      fileName = fileName.replace("!helper!", "");
+      if (currentFileProperties && currentFileProperties.fileUri) {
+        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         if (currentFile == `user-helpers/${fileName}.js`) return;
       }
-  
+
       setPostMessage({
         type: "openFile",
         fileName: `backend/user-helpers/${fileName}.js`,
       });
 
       programmatiFileUpdateRef.current = true;
-      setActiveEndpoint(activeEndpoint.replace("!helper!", ""))
-    } else{
-      if(currentFileProperties && currentFileProperties.fileUri){
-        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+      setActiveEndpoint(activeEndpoint.replace("!helper!", ""));
+    } else {
+      if (currentFileProperties && currentFileProperties.fileUri) {
+        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         if (currentFile == `backend/user-dependencies/${fileName}.js`) return;
       }
 
@@ -230,7 +236,7 @@ export default function LeftSidebar({
             setSelectedTab(Page.AppCode);
           }}
         /> */}
-        
+
         <SectionTitle
           icon="/world.svg"
           text="Frontend"
@@ -249,7 +255,6 @@ export default function LeftSidebar({
             setSelectedTab(Page.Notifications);
           }}
         />
-
 
         <div className="h-36 w-full flex-row">
           <div>&nbsp;</div>

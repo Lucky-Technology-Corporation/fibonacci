@@ -8,7 +8,7 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 
 export default function ProjectSelector() {
   const [isVisible, setIsVisible] = useState(false);
-  const { refreshFermatJwt } = useEndpointApi()
+  const { refreshFermatJwt } = useEndpointApi();
 
   const { createProject } = useDatabaseApi();
   const {
@@ -59,7 +59,7 @@ export default function ProjectSelector() {
     setActiveProjectName(project.name);
     sessionStorage.setItem("activeProject", project.id);
     sessionStorage.setItem("activeProjectName", project.name);
-    
+
     setTestDomain(project.test_swizzle_domain);
     setProdDomain(project.prod_swizzle_domain);
 
@@ -69,8 +69,6 @@ export default function ProjectSelector() {
       setDomain(project.prod_swizzle_domain);
     }
   };
-
-  
 
   useEffect(() => {
     if (environment == "test") {
