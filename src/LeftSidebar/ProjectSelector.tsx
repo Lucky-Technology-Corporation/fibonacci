@@ -128,12 +128,7 @@ export default function ProjectSelector() {
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
           title: "🥋 New project",
-          description: (
-            <div className="flex">
-              <img src="/scott.jpeg" className="w-8 h-8 rounded-full mr-1" />
-              <div className="my-auto">Scott Says: "Include the word 'prod' to deploy to prod"</div>
-            </div>
-          ),
+          description: (<></>),
           placeholder: "My awesome project",
           confirmText: "Create",
           confirmHandler: createNewProject,

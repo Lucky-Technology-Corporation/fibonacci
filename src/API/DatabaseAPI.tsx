@@ -1,8 +1,7 @@
 import axios from "axios";
-import { useAuthHeader } from "react-auth-kit";
-import { SwizzleContext } from "../Utilities/GlobalContext";
 import { useContext } from "react";
-import { useSignOut } from "react-auth-kit";
+import { useAuthHeader, useSignOut } from "react-auth-kit";
+import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -220,7 +219,7 @@ export default function useDatabaseApi() {
 
   const createProject = async (name: string) => {
     var shouldDeployProd = false;
-    if (name.includes("prod")) {
+    if (NEXT_PUBLIC_BASE_URL == "https://euler-i733tg4iuq-uc.a.run.app/api/v1" || name.includes("prod")) {
       shouldDeployProd = true;
     }
     const response = await axios.post(
