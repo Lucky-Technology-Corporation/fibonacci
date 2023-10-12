@@ -345,6 +345,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           setIsVisible={setIsJSONEditorVisible}
           id={editingDocumentId}
           onChange={(data: any) => onJSONChangeHandler(data)} // Pass the data to the parent's handler
+          justEditingJson={false}
         />
 
         {/* Edit object within document view */}
@@ -355,6 +356,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           onChange={(data: any) => {
             updateRowBeingEdited(data);
           }} // Pass the data to the parent's handler
+          justEditingJson={true}
         />
       </div>
       {data.length == 0 && currentPage == 0 ? (

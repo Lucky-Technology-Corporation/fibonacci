@@ -3,6 +3,7 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
+import '/json-styles.css';
 
 export default function DocumentJSON({
   document,
@@ -11,6 +12,7 @@ export default function DocumentJSON({
   setIsVisible,
   id,
   onChange,
+  justEditingJson = false,
 }: {
   document: any | any[];
   collection?: string;
@@ -18,6 +20,7 @@ export default function DocumentJSON({
   setIsVisible: (isVisible: boolean) => void;
   id?: string;
   onChange: (data: any) => void;
+  justEditingJson: boolean;
 }) {
   const [data, setData] = useState<string>("");
   const { updateDocument, createDocument } = useDatabaseApi();
@@ -30,12 +33,16 @@ export default function DocumentJSON({
   useEffect(() => {
     try {
       const parsedData = JSON.parse(data);
-      if (typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+      if(!justEditingJson){
+        if (typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+          setIsValid(true);
+        } else if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'object')) {
+          setIsValid(true);
+        } else {
+          setIsValid(false);
+        }
+      } else{
         setIsValid(true);
-      } else if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'object')) {
-        setIsValid(true);
-      } else {
-        setIsValid(false);
       }
     } catch (e) {
       setIsValid(false);
@@ -56,13 +63,14 @@ export default function DocumentJSON({
   }, []);
 
   const submitData = () => {
-    if (!id) {
+    if (justEditingJson) {
       onChange(data);
       return;
     }
     // Validate the entire JSON array
     try {
       const dataArray = JSON.parse(data);
+      console.log(dataArray)
       if (Array.isArray(dataArray)) {
         // If 'data' is a JSON array
         // Validate each JSON object in the array
