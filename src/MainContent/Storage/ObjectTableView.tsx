@@ -259,6 +259,8 @@ export default function ObjectTableView() {
                 }}
                 shouldBlockEdits={["_swizzle_uid"]}
                 shouldHideFields={["data"]}
+                setJsonToEdit={() => {}}
+                setKeyForRowBeingEdited={() => {}}
               />
             ))}
           </tbody>
