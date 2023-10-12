@@ -75,7 +75,7 @@ export default function useEndpointApi() {
     try {
       const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {
         headers: {
-          Authorization: await getFermatJwt(),
+          Authorization: authHeader(),
         },
       });
       return response.data;

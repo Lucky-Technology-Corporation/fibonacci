@@ -67,7 +67,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   }, [selectedOption]);
 
   const addPackageToProject = (message) => {
-    const messageBody = { type: "addPackage", packageName: message, directory: "backend" };
+    const messageBody = { type: "addPackage", packageName: message, directory: location };
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
   };
@@ -79,7 +79,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   }, [packageToInstall]);
 
   const removePackageFromProject = (message) => {
-    const messageBody = { type: "removePackage", packageName: message };
+    const messageBody = { type: "removePackage", packageName: message, directory: location };
     setPostMessage(messageBody);
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };
