@@ -14,8 +14,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
-  const [activeEndpoint, setActiveEndpoint] = useState(null);
-  const [activeFile, setActiveFile] = useState(null);
+  const [activeEndpoint, setActiveEndpoint] = useState("backend/user-dependencies/get-.js");
+  const [activeFile, setActiveFile] = useState("frontend/src/App.js");
   const [activeHelper, setActiveHelper] = useState(null);
   const [ideReady, setIdeReady] = useState(false);
   const [testDeployStatus, setTestDeployStatus] = useState("live");

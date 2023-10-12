@@ -1,6 +1,6 @@
 import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import Switch from "react-switch";
 import UserDropdown from "../UserDropdown";
 import { SwizzleContext } from "../Utilities/GlobalContext";
@@ -34,8 +34,6 @@ export default function LeftSidebar({
   const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage } =
     useContext(SwizzleContext);
 
-  //File management + sidebar management code
-  const programmatiFileUpdateRef = useRef(false);
 
   useEffect(() => {
     openActiveEndpoint();
@@ -54,34 +52,30 @@ export default function LeftSidebar({
   }, [selectedTab]);
 
   const openActiveFile = () => {
-    if (programmatiFileUpdateRef.current) {
-      programmatiFileUpdateRef.current = false;
-      return;
-    }
     console.log("open activeFile", activeFile);
+    
     if (currentFileProperties && currentFileProperties.fileUri) {
-      const currenfFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-      if (currenfFile == activeFile) return;
+      const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
+      if (currentFile == activeFile) {
+        console.log("already open")
+        return
+      };
     }
-    if (activeFile == undefined || activeFile == ""){
-      setPostMessage({
-        type: "openFile",
-        fileName: `frontend/src/App.js`,
-      });
-      return
-    } else{
-      setPostMessage({
-        type: "openFile",
-        fileName: `frontend/src/${activeFile}`,
-      });
-    }
+
+    // if (activeFile == undefined || activeFile == ""){
+    //   programmatiFileUpdateRef.current = true;
+    //   setActiveFile("frontend/src/App.js");
+    //   return
+    // } 
+
+    setPostMessage({
+      type: "openFile",
+      fileName: `${activeFile}`,
+    });
+
   };
 
   const openActiveEndpoint = () => {
-    if (programmatiFileUpdateRef.current) {
-      programmatiFileUpdateRef.current = false;
-      return;
-    }
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     console.log("open activeEndpoint", activeEndpoint);
     var fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
@@ -98,12 +92,15 @@ export default function LeftSidebar({
         fileName: `backend/user-helpers/${fileName}.js`,
       });
 
-      programmatiFileUpdateRef.current = true;
+      // programmatiFileUpdateRef.current = true;
       setActiveEndpoint(activeEndpoint.replace("!helper!", ""));
     } else {
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-        if (currentFile == `backend/user-dependencies/${fileName}.js`) return;
+        if (currentFile == activeEndpoint) {
+          console.log("already open")
+          return
+        };
       }
 
       setPostMessage({
@@ -118,21 +115,27 @@ export default function LeftSidebar({
       return;
     }
 
-    if (currentFileProperties.fileUri.includes("user-dependencies")) {
-      const newEndpoint = currentFileProperties.fileUri
-        .split("user-dependencies/")[1]
-        .replace(".js", "")
-        .replace(/-/g, "/")
-        .replace(/_/g, ":");
-      if (newEndpoint == activeEndpoint) return;
-      programmatiFileUpdateRef.current = true;
-      setActiveEndpoint(newEndpoint);
+    if (currentFileProperties.fileUri.includes("backend")) {
+      console.log("backend file", currentFileProperties.fileUri);
+
+      if (currentFileProperties.fileUri.includes("user-helpers")) {
+        const newEndpoint = currentFileProperties.fileUri
+          .split("user-helpers/")[1]
+          .replace(".js", "")
+        setActiveEndpoint(newEndpoint);
+      } else{
+        const newEndpoint = currentFileProperties.fileUri
+          .split("user-dependencies/")[1]
+          .replace(".js", "")
+          .replace(/-/g, "/")
+          .replace(/_/g, ":");
+        setActiveEndpoint(newEndpoint);
+      }
     }
 
-    if (currentFileProperties.fileUri.includes("user-hosting")) {
-      const newFile = currentFileProperties.fileUri.split("user-hosting/")[1];
-      if (newFile == activeFile) return;
-      programmatiFileUpdateRef.current = true;
+    if (currentFileProperties.fileUri.includes("frontend")) {
+      console.log("frontend file", currentFileProperties.fileUri);
+      const newFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       setActiveFile(newFile);
     }
   }, [currentFileProperties]);

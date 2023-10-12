@@ -42,7 +42,7 @@ export default function CenterContent({
         )}
         <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
           <EndpointHeader />
-          <Editor setCurrentFileProperties={setCurrentFileProperties} />
+          <Editor setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} />
         </div>
         <div
           style={{

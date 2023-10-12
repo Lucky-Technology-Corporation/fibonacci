@@ -27,19 +27,12 @@ export default function FilesList({ active }: { active: boolean }) {
         });
         setFullFileList(transformedEndpoints);
         setFiles(transformedEndpoints);
-        setActiveFile(transformedEndpoints[0]);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
         console.error(e);
       });
   }, [testDomain]);
-
-  useEffect(() => {
-    if (active && files && files.length > 0 && activeFile == undefined) {
-      setActiveFile(files[0]);
-    }
-  }, [active, files]);
 
   //Used to filter the endopint list
   useEffect(() => {
@@ -84,17 +77,17 @@ export default function FilesList({ active }: { active: boolean }) {
         <FileItem
           key={"App.js"}
           path={formatFileName("App.js")}
-          active={"App.js" == activeFile}
+          active={"frontend/src/App.js" == activeFile}
           onClick={() => {
-            setActiveFile("App.js");
+            setActiveFile("frontend/src/App.js");
           }}
         />
         <FileItem
           key={"App.css"}
           path={formatFileName("App.css")}
-          active={"App.css" == activeFile}
+          active={"frontend/src/App.css" == activeFile}
           onClick={() => {
-            setActiveFile("App.css");
+            setActiveFile("frontend/src/App.css");
           }}
         />
       </div>
@@ -111,14 +104,14 @@ export default function FilesList({ active }: { active: boolean }) {
       <div className="ml-1">
         {files
           .filter((file) => !restrictedFiles.includes(file) && (file.includes(".js") || file.includes(".jsx")))
-          .map((endpoint) => {
+          .map((component) => {
             return (
               <FileItem
-                key={endpoint}
-                path={formatFileName(endpoint)}
-                active={endpoint == activeFile}
+                key={component}
+                path={formatFileName(component)}
+                active={component == activeFile}
                 onClick={() => {
-                  setActiveFile(endpoint);
+                  setActiveFile("frontend/src/" + component);
                 }}
               />
             );

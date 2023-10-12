@@ -1,12 +1,13 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Page } from "../../Utilities/Page";
 
-export default function Editor({ setCurrentFileProperties }: { setCurrentFileProperties: (properties: any) => void }) {
+export default function Editor({ setCurrentFileProperties, selectedTab }: { setCurrentFileProperties: (properties: any) => void, selectedTab: Page }) {
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -30,14 +31,21 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
       setTimeout(() => {
         if (currentFileRef.current != null) {
           return;
-        } //dont open the default file if we already have a file open
-        const message = { fileName: "backend/user-dependencies/get-.js", type: "openFile" };
-        postMessageToIframe(message);
+        } 
+        if(selectedTab == Page.Hosting){
+          const message = { fileName: "frontend/src/App.js", type: "openFile" };
+          postMessageToIframe(message);
+        } else{
+          const message = { fileName: "backend/user-dependencies/get-.js", type: "openFile" };
+          postMessageToIframe(message);
+        }
       }, 100);
     }
+    
     if (event.data.type === "fileChanged") {
       console.log("fileChanged");
       console.log(event.data);
+
       currentFileRef.current = event.data.fileName;
       setCurrentFileProperties({
         fileUri: event.data.fileUri,
@@ -46,6 +54,24 @@ export default function Editor({ setCurrentFileProperties }: { setCurrentFilePro
       });
     }
   };
+
+  useEffect(() => {
+    if (currentFileRef.current != null) {
+      if(selectedTab == Page.Hosting && currentFileRef.current.includes("backend")){ 
+        setActiveFile("frontend/src/App.js");
+      }
+      else if(selectedTab == Page.Apis && currentFileRef.current.includes("frontend")){
+        setActiveEndpoint("backend/user-dependencies/get-.js");
+      }
+      return;
+    }
+    if(selectedTab == Page.Hosting){ 
+      setActiveFile("frontend/src/App.js");
+    }
+    else if(selectedTab == Page.Apis){
+      setActiveEndpoint("backend/user-dependencies/get-.js");
+    }
+  }, [selectedTab])
 
   //Resend the file name when ready
   useEffect(() => {
