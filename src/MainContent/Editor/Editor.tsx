@@ -111,6 +111,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>
+      
     </div>
   );
 }
