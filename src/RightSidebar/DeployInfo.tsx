@@ -9,7 +9,7 @@ type DeployInfoProps = {
 
 type DeploymentLog = {
   buildNumber: number;
-  buildStatus: string;
+  status: string;
   startedAtDate: string;
   startedAtTime: string;
   endedAtDate: string;
@@ -37,6 +37,7 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
           };
         });
         setLogs(deploymentLogs);
+        console.log(logs)
     } else {
         console.error("Unexpected response format:", response);
     }
@@ -76,7 +77,7 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
           let statusText;
           let color;
 
-          switch (log.buildStatus) {
+          switch (log.status) {
             case "BUILD_SUCCESS":
               statusText = "Success";
               color = "#00df17";
