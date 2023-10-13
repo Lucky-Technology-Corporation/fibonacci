@@ -1,5 +1,6 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import Modal from "../Utilities/Modal";
 import { Page } from "../Utilities/Page";
 import UserTableView from "./Auth/UserTableView";
 import DatabaseView from "./Database/DatabaseView";
@@ -8,7 +9,6 @@ import EndpointHeader from "./Editor/EndpointHeader";
 import MonitoringPage from "./Logs/MonitoringPage";
 import NotificationPage from "./Notifications/NotificationPage";
 import ObjectTableView from "./Storage/ObjectTableView";
-import Modal from "../Utilities/Modal";
 
 type CenterContentProps = {
   selectedTab: Page;
@@ -88,7 +88,7 @@ export default function CenterContent({
       </div>
       <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
         <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] min-h-[50vh] overflow-scroll">
-          <MonitoringPage activeLogsPage={activeLogsPage} />
+          <MonitoringPage activeLogsPage={activeLogsPage} shouldShow={selectedTab === Page.Logs} />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>
