@@ -21,11 +21,9 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
   const myRef = useRef<HTMLDivElement>(null);
   const [logs, setLogs] = useState<DeploymentLog[]>([]);
 
-  useEffect(() => {
-    const fetchBuildData = async () => {
-      const response = await api.listProjectBuilds(0, 20);
-      if (response && response.builds) {
-        console.log(response.builds);
+  const fetchBuildData = async () => {
+    const response = await api.listProjectBuilds(0, 20);
+    if (response && Array.isArray(response.builds)) {
         const deploymentLogs: DeploymentLog[] = response.builds.map((build) => {
           const startDateObj = new Date(build.started_at);
           const endDateObj = new Date(build.ended_at);
@@ -38,12 +36,18 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
             endedAtTime: `${endDateObj.getHours()}:${String(endDateObj.getMinutes()).padStart(2, "0")}`,
           };
         });
-        console.log(deploymentLogs);
         setLogs(deploymentLogs);
-      }
-    };
-    fetchBuildData();
-  }, []);
+    } else {
+        console.error("Unexpected response format:", response);
+    }
+};
+
+
+  useEffect(() => {
+    if (shouldShowDeployInfo) {
+      fetchBuildData();
+    }
+  }, [shouldShowDeployInfo]);
 
   useEffect(() => {
     function handleClickOutside(event) {
