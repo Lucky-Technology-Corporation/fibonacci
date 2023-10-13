@@ -22,7 +22,6 @@ export default function DeployButton({}: {}) {
     }
   };
 
-  //fake, for demo purposes
   const runDeploy = () => {
     toast.promise(deploy(), {
       loading: "Deploying...",

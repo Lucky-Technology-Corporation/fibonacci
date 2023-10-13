@@ -98,7 +98,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running GET test:", error);
-      return null;
+      return error.response;
     }
   };
 
@@ -113,7 +113,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running POST test:", error);
-      return null;
+      return error.response;
     }
   };
 
@@ -128,7 +128,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running PUT test:", error);
-      return null;
+      return error.response;
     }
   };
 
@@ -143,7 +143,7 @@ export default function useTestApi() {
       return response;
     } catch (error) {
       console.error("Error running DELETE test:", error);
-      return null;
+      return error.response;
     }
   };
 

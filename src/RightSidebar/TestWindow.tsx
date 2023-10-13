@@ -1,13 +1,13 @@
-import Button from "../Utilities/Button";
+import { faFlask, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFlask, faTrash, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { getReasonPhrase } from "http-status-codes";
+import { useContext, useEffect, useState } from "react";
+import LoadingIcons from "react-loading-icons";
 import useTestApi from "../API/TestingAPI";
-import { useEffect, useState, useContext } from "react";
-import NewTestWindow from "./NewTestWindow";
+import Button from "../Utilities/Button";
 import Dot from "../Utilities/Dot";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import { getReasonPhrase } from "http-status-codes";
-import LoadingIcons from "react-loading-icons";
+import NewTestWindow from "./NewTestWindow";
 
 export default function TestWindow({
   shouldShowTestWindow,
@@ -208,7 +208,7 @@ export default function TestWindow({
                   {testResults[testDoc._id] !== undefined && (
                     <>
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
-                      <span>{testResults[testDoc._id]}</span>
+                      <span>{testResponses[testDoc._id]}</span>
                       <span className="ml-2">{statusText[testDoc._id]}</span>
                     </>
                   )}

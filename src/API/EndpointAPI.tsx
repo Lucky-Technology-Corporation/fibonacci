@@ -73,7 +73,7 @@ export default function useEndpointApi() {
 
   const deploy = async () => {
     try {
-      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {
+      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {}, {
         headers: {
           Authorization: authHeader(),
         },
