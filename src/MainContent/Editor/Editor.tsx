@@ -104,7 +104,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
         tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% + 30px)",
+          height: "calc(100% + 8px)",
           marginLeft: "-48px",
           marginRight: "-48px",
           // marginTop: "-68px",
