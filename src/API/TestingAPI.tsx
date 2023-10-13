@@ -26,40 +26,26 @@ export default function useTestApi() {
         return;
       }
 
-      const response = await axios.get(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
-        {
-          headers: {
-            Authorization: authHeader(),
-          },
-        },
-      );
-
-      const jwtToken = response.data.jwt;
+      let jwtToken = "";
+      if (testDoc.userId !== "") {
+        const response = await axios.get(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
+          {
+            headers: {
+              Authorization: authHeader(),
+            },
+          }
+        );
+        jwtToken = `Bearer ${response.data.jwt}`;
+      }
 
       const method = activeEndpoint.split("/")[0].toUpperCase();
-      const header = `Bearer ${jwtToken}`;
       const endpointPath = "/" + activeEndpoint.split("/")[1];
       const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}${testDoc.queryParametersString}`;
       const body = testDoc.body;
 
-      switch (method) {
-        case "GET":
-          return await getFunctionTest(url, header, body);
+      return await execTest(url, method, body, jwtToken);
 
-        case "POST":
-          return await postFunctionTest(url, header, body);
-
-        case "PUT":
-          return await putFunctionTest(url, header, body);
-
-        case "DELETE":
-          return await deleteFunctionTest(url, header, body);
-
-        default:
-          console.error("Unsupported method:", method);
-          throw new Error("Unsupported method: " + method);
-      }
     } catch (error) {
       console.error("Error running test:", error);
       return null;
@@ -87,63 +73,19 @@ export default function useTestApi() {
     }
   };
 
-  const getFunctionTest = async (url, header, body) => {
+  const execTest = async (url, method, body, token) => {
     try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: header,
-        },
-        data: body,
+      const headers = token ? { Authorization: token } : undefined;
+      const response = await axios.request({
+        url, 
+        method: method.toLowerCase(), 
+        headers, 
+        data: body
       });
       return response;
     } catch (error) {
-      console.error("Error running GET test:", error);
-      return error.response;
-    }
-  };
-
-  const postFunctionTest = async (url, header, body) => {
-    try {
-      const response = await axios.post(url, {
-        headers: {
-          Authorization: header,
-        },
-        data: body,
-      });
-      return response;
-    } catch (error) {
-      console.error("Error running POST test:", error);
-      return error.response;
-    }
-  };
-
-  const putFunctionTest = async (url, header, body) => {
-    try {
-      const response = await axios.put(url, {
-        headers: {
-          Authorization: header,
-        },
-        data: body,
-      });
-      return response;
-    } catch (error) {
-      console.error("Error running PUT test:", error);
-      return error.response;
-    }
-  };
-
-  const deleteFunctionTest = async (url, header, body) => {
-    try {
-      const response = await axios.delete(url, {
-        headers: {
-          Authorization: header,
-        },
-        data: body,
-      });
-      return response;
-    } catch (error) {
-      console.error("Error running DELETE test:", error);
-      return error.response;
+      console.error(`Error running ${method} test:`, error);
+      return null;
     }
   };
 
