@@ -54,7 +54,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="">
-      <div className="flex flex-row items-center ml-10 mb-8 pt-2">
+      <div className="flex flex-row items-center ml-10 mb-2 pt-2">
         <div className="flex-col mr-4">
           <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
         </div>
@@ -65,31 +65,53 @@ export default function AnalyticsPage() {
           text="Project Settings"
         />
       </div>
-        <div className="flex-col items-start ml-10 space-y-2">
-
-        <div className="flex">
-          
-          <div>
-            <div className="flex">
-              <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
-              Test API
-            </div>
-            <div
-              className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
-              onClick={() => {
-                copyText(testDomain.replace("https://", "https://api."));
-              }}
-            >
-              {testDomain ? testDomain.replace("https://", "https://api.") : "Provisioning..."}
-            </div>
+      <div className="flex space-between mb-6">
+        <div className="ml-10 space-y-1">
+          <div className="flex">
+            <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+            Test API
           </div>
-
-        </div>
-          
-          
+          <div
+            className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
+            onClick={() => {
+              copyText(testDomain.replace("https://", "https://api."));
+            }}
+          >
+            {testDomain ? testDomain.replace("https://", "https://api.") : "Provisioning..."}
+          </div>
+          <div className="h-1"></div>
           <div className="flex">
             <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+            Test App
+          </div>
+          <div
+            className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
+            onClick={() => {
+              copyText(testDomain);
+            }}
+          >
+            {testDomain}
+          </div>          
+        </div>
+
+
+        <div className="mr-10 ml-auto space-y-1">
+          <div className="flex">
+            <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
             Production API
+          </div>
+          <div
+            className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
+            onClick={() => {
+              copyText(prodDomain.replace("https://", "https://api."));
+            }}
+          >
+            {prodDomain ? prodDomain.replace("https://", "https://api.") : "Provisioning..."}
+          </div>
+          <div className="h-1"></div>
+          <div className="flex">
+            <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+            Production App
           </div>
           <div
             className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
@@ -98,9 +120,9 @@ export default function AnalyticsPage() {
             }}
           >
             {prodDomain}
-          </div>
-
+          </div>          
         </div>
+      </div>
 
       <div className="no-focus-ring pt-2">
         {data.length > 0 ? (
