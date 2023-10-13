@@ -65,12 +65,6 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
       }
       return;
     }
-    if(selectedTab == Page.Hosting){ 
-      setActiveFile("frontend/src/App.js");
-    }
-    else if(selectedTab == Page.Apis){
-      setActiveEndpoint("backend/user-dependencies/get-.js");
-    }
   }, [selectedTab])
 
   //Resend the file name when ready

@@ -110,7 +110,7 @@ export default function EndpointList({ active }: { active: boolean }) {
         toast.error("Error fetching helpers");
         console.error(e);
       });
-  }, [activeProject, shouldRefreshList]);
+  }, [testDomain, shouldRefreshList]);
 
   //Used to filter the endopint list
   useEffect(() => {
