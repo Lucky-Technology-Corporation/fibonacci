@@ -39,6 +39,20 @@ export default function TestWindow({
     _id: string;
   };
 
+
+  function getParsedError(htmlString: string): string {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+
+    // Find the <pre> tag containing the error message
+    const pre = tempDiv.querySelector('pre');
+    if (pre) {
+        return pre.innerText.replace(/<br\s*\/?>/mg, "\n").trim();
+    }
+
+    return 'Unknown error';  // Default message if we can't find the <pre> tag
+}
+
   const { domain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
   const [tests, setTests] = useState<TestType[]>([]);
@@ -63,12 +77,13 @@ export default function TestWindow({
       }));
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: result.data,
+        [testDoc._id]: getParsedError(result.data),
       }));
       setStatusText((prevResponses) => ({
         ...prevResponses,
         [testDoc._id]: getReasonPhrase(result.status),
       }));
+      console.log("resp" + testResponses[1])
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     } catch (error) {
       const errorStatus = error.response ? error.response.status : "Network Error";
@@ -78,9 +93,10 @@ export default function TestWindow({
       }));
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: error.response.data,
-      }));
-
+        [testDoc._id]: getParsedError(error.response.data),
+    }));
+   
+      console.log("resp" + testResponses)
       setStatusText((prevResponses) => ({
         ...prevResponses,
         [testDoc._id]: error.response ? (error.response.status +": " + getReasonPhrase(error.response.status)) : error.message
@@ -215,9 +231,17 @@ export default function TestWindow({
                 </div>
               </div>
             </div>
-            {testResponses[testDoc._id] !== undefined && (
-              <pre className="font-mono text-xs ml-4 mb-2">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>
-            )}
+            {testResponses[testDoc._id] ? (
+    typeof testResponses[testDoc._id] === 'string' ? (
+<pre className="font-mono text-xs ml-4 mb-2 whitespace-normal break-words">{testResponses[testDoc._id]}</pre>
+    ) : (
+<pre className="font-mono text-xs ml-4 mb-2 whitespace-normal break-words">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>
+    )
+) : (
+    <div></div>
+)}
+
+
           </div>
         ))}
       </div>
