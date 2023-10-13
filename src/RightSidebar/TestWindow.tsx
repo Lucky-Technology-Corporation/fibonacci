@@ -55,6 +55,7 @@ export default function TestWindow({
 
     try {
       const result = await api.runTest(testDoc);
+      console.log("RESULT: " + result)
       const status = result.status;
       setTestResults((prevResults) => ({
         ...prevResults,
@@ -70,7 +71,6 @@ export default function TestWindow({
       }));
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     } catch (error) {
-      console.error("Error running test:", error);
       const errorStatus = error.response ? error.response.status : "Network Error";
       setTestResults((prevResults) => ({
         ...prevResults,
@@ -78,12 +78,12 @@ export default function TestWindow({
       }));
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: error.data,
+        [testDoc._id]: error.response.data,
       }));
 
       setStatusText((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: error.response ? getReasonPhrase(error.response.status) : "Network or other error",
+        [testDoc._id]: error.response ? (error.response.status +": " + getReasonPhrase(error.response.status)) : error.message
       }));
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     }
@@ -208,7 +208,7 @@ export default function TestWindow({
                   {testResults[testDoc._id] !== undefined && (
                     <>
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
-                      <span>{testResponses[testDoc._id]}</span>
+                      <span>{statusText[testDoc._id]}</span>
                       <span className="ml-2">{statusText[testDoc._id]}</span>
                     </>
                   )}
