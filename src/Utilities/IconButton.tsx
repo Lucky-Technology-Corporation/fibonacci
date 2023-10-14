@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export default function IconButton({ icon, onClick }: { icon: ReactNode; onClick: () => void }) {
+export default function IconButton({ icon, onClick }: { icon: ReactNode; onClick: (e) => void }) {
   return (
     <div
       onClick={onClick}

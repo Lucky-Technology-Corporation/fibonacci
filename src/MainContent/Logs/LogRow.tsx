@@ -42,13 +42,35 @@ export default function LogRow({
     return formattedDate;
   };
 
-  const retryRequest = async () => {
-    if (message.method == "GET") {
-      await axios.get(domain + message.url, { headers: message.headers });
-    } else if (message.method == "POST") {
-      await axios.post(domain + message.url, message.request, { headers: message.headers });
+  const forbiddenHeaders = [
+    "Accept-Charset", "Accept-Encoding", "Access-Control-Request-Headers",
+    "Access-Control-Request-Method", "Connection", "Content-Length",
+    "Cookie", "Cookie2", "Date", "DNT", "Expect", "Host",
+    "Keep-Alive", "Origin", "Proxy-", "Sec-", "Referer",
+    "TE", "Trailer", "Transfer-Encoding", "Upgrade", "Via", "User-Agent"
+  ].map(h => h.toLowerCase());
+
+  function filterHeaders(headers) {
+    const filteredHeaders = {};
+    for (const [key, value] of Object.entries(headers)) {
+      const keyLower = key.toLowerCase();
+      if (!forbiddenHeaders.some(forbidden => forbidden.toLowerCase() === keyLower) && !keyLower.startsWith('proxy-') && !keyLower.startsWith('sec-')) {
+        filteredHeaders[key] = value;
+      }
     }
-    return freshLogs();
+    return filteredHeaders;
+  }
+  const retryRequest = async () => {
+    try{
+      if (message.method == "GET") {
+        await axios.get(domain.replace("https://", "https://api.") + message.url, { headers: filterHeaders(message.headers) });
+      } else if (message.method == "POST") {
+        await axios.post(domain.replace("https://", "https://api.") + message.url, message.request, { headers: filterHeaders(message.headers) });
+      }
+      return freshLogs();
+    } catch(e){
+      return freshLogs();
+    }
   };
 
   const fixRequest = async () => {
@@ -58,6 +80,18 @@ export default function LogRow({
     }
     setModalText(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(response.recommendation_text) }} />);
   };
+
+  const getIconForLevel = (level: string) => {
+    if(level == "error"){
+      return <img src="/error.svg" className="w-4 h-4" />
+    }
+    else if(level == "warn"){
+      return <img src="/warn.svg" className="w-4 h-4" />
+    }
+    else{
+      return <img src="/log.svg" className="w-4 h-4" />
+    }
+  }
 
   return (
     <>
@@ -72,11 +106,16 @@ export default function LogRow({
         <td className="text-left pl-4">
           <IconButton
             icon={<FontAwesomeIcon icon={faRotateRight} className="py-1" />}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
               toast.promise(retryRequest(), {
                 loading: "Retrying request...",
-                success: "Returned successfully",
-                error: "Returned with an error",
+                success: () => {
+                  return "Retried successfully";
+                },
+                error: () => {
+                  return "Retried and got an error"
+                }
               });
             }}
           />
@@ -84,12 +123,19 @@ export default function LogRow({
         <td className={`text-left pl-4 ${message.responseCode < 300 ? "opacity-50 pointer-events-none" : ""}`}>
           <IconButton
             icon={<FontAwesomeIcon icon={faWrench} className="py-1" />}
-            onClick={() => {
-              toast.promise(fixRequest(), {
-                loading: "Looking at your code...",
-                success: "Found an answer",
-                error: "Couldn't find an answer",
-              });
+            onClick={(e) => {
+              e.stopPropagation()
+              if(message.responseCode < 400){
+                toast("This request didn't return an error.")
+              } else if(message.responseCode < 500 && message.responseCode >= 400){
+                //get an INFO response
+              } else{
+                toast.promise(fixRequest(), {
+                  loading: "Looking at your code...",
+                  success: "Found an answer",
+                  error: "Couldn't find an answer",
+                });
+              }
             }}
           />
         </td>
@@ -100,7 +146,7 @@ export default function LogRow({
         </td>
         <td className="text-left pl-4 font-bold">
           <div className="flex">
-            <Dot color={message.responseCode > 202 ? "yellow" : "green"} className="ml-0 mr-2" />
+            <Dot color={message.responseCode >= 500 ? "red" : (message.responseCode >= 400 ? "yellow" : "green")} className="ml-0 mr-2" />
             <div>{message.responseCode}</div>
           </div>
         </td>
@@ -152,8 +198,17 @@ export default function LogRow({
         </td>
       </tr>
       <tr className={`${isExpanded ? "" : "hidden"} border-b border-[#4C4F6B]`}>
-        <td colSpan={9} className="text-left pl-20 text-xs py-3 word-wrap max-w-full font-mono">
-          <div className="font-mono">{(message.logs || []).join("\n")}</div>
+        <td colSpan={9} className="text-left pl-6 text-xs py-3 word-wrap max-w-full font-mono">
+          <div className="font-mono">{(message.logs || []).map(logString => {
+            var log = JSON.parse(logString);
+            return (
+              <div className={`mb-1 flex`}>
+                <div className="mr-2">{new Date(log.timestamp).toLocaleTimeString()}</div>
+                <div className="mr-2">{getIconForLevel(log.level)}</div>
+                <div className={log.level == "error" ? "text-red-400" : log.level == "warn" ? "text-yellow-400" : "text-[#d2d3e0]"}>{log.text}</div>
+              </div>
+            )
+          })}</div>
         </td>
       </tr>
     </>

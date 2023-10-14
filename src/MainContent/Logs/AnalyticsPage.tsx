@@ -1,7 +1,6 @@
 import { Card, DateRangePicker, DateRangePickerValue, LineChart } from "@tremor/react";
 import { useContext, useEffect, useState } from "react";
 import useMonitoringApi from "../../API/MonitoringAPI";
-import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
 import Dot from "../../Utilities/Dot";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -60,11 +59,11 @@ export default function AnalyticsPage() {
           <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
         </div>
        
-        <Button
+        {/* <Button
           className="ml-auto mr-10 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
           onClick={() => {}}
           text="Project Settings"
-        />
+        /> */}
       </div>
       <div className="flex space-between mb-6">
         <div className="ml-10 space-y-1">
@@ -82,7 +81,7 @@ export default function AnalyticsPage() {
           </div>
           <div className="h-1"></div>
           <div className="flex">
-            <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+            <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
             Test App
           </div>
           <div
@@ -91,14 +90,14 @@ export default function AnalyticsPage() {
               copyText(testDomain);
             }}
           >
-            {testDomain}
+            {testDomain ? testDomain : "Provisioning..."}
           </div>          
         </div>
 
 
-        <div className="mr-10 ml-auto space-y-1">
+        <div className="ml-10 space-y-1">
           <div className="flex">
-            <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+            <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
             Production API
           </div>
           <div
@@ -120,7 +119,7 @@ export default function AnalyticsPage() {
               copyText(prodDomain);
             }}
           >
-            {prodDomain}
+            {prodDomain ? prodDomain : "Provisioning..."}
           </div>          
         </div>
       </div>

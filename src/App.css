@@ -165,6 +165,14 @@ body {
     0 0 20px #ffe692dd;
 }
 
+.glow-red{
+  box-shadow:
+    0 0 10px #f87171,
+    0 0 20px #f87171,
+    0 0 30px #f87171e1,
+    0 0 40px #f87171e5;
+}
+
 /* Editor */
 .monaco-editor .aiDecoration {
   background-color: rgba(95, 0, 196, 0.164);
