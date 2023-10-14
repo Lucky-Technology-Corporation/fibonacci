@@ -1,3 +1,9 @@
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useContext } from "react";
+import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
 
 export default function EndpointItem({
@@ -11,6 +17,9 @@ export default function EndpointItem({
   method: Method;
   onClick?: () => void;
 }) {
+  const { deleteFile } = useEndpointApi()
+  const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
+
   const methodToColor = (method: Method) => {
     switch (method) {
       case Method.GET:
@@ -34,7 +43,46 @@ export default function EndpointItem({
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
       >
-        <span className={methodToColor(method)}>{method}</span> {path}
+        <div className="flex">
+        <div><span className={methodToColor(method)}>{method}</span> {path}</div>
+        <FontAwesomeIcon
+          className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
+          icon={faTrash}
+          onClick={() => {
+            console.log(path)
+            const c = confirm("Are you sure you want to delete this endpoint?");
+            if(c){
+              console.log("CLICK DELETE")
+              try{
+                const fileName = method.toLowerCase() + path.replace(/\//g, "-").replace(/:/g, "_");
+                
+                let newEndpointName;
+                if (path === "") {
+                  newEndpointName = `${method}/`;
+                } else {
+                  newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
+                }
+                
+                console.log("will send", {
+                  type: "removeFile",
+                  fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
+                  endpointName: newEndpointName,
+                })
+                
+                setPostMessage({
+                  type: "removeFile",
+                  fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
+                  endpointName: newEndpointName,
+                });
+                deleteFile(fileName, "backend")
+                setShouldRefreshList(!shouldRefreshList)
+              } catch(e){
+                toast.error("Error deleting endpoint")
+              }
+            }
+          }}
+        />
+      </div>
       </div>
     </>
   );

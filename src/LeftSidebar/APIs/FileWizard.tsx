@@ -82,7 +82,7 @@ export default function APIWizard({
       toast.error("That file already exists");
       return;
     }
-    setPostMessage({ type: "newFile", fileName: "frontend/src/" + newFileName });
+    setPostMessage({ type: "newFile", fileName: "/frontend/src/" + newFileName });
 
     if (template == "privacy") {
       setOverrideRender(getPrivacyInputs());

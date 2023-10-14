@@ -75,7 +75,7 @@ export default function LeftSidebar({
 
     setPostMessage({
       type: "openFile",
-      fileName: `${activeFile}`,
+      fileName: `/${activeFile}`,
     });
 
   };
@@ -94,7 +94,7 @@ export default function LeftSidebar({
 
       setPostMessage({
         type: "openFile",
-        fileName: `backend/user-helpers/${fileName}.js`,
+        fileName: `/backend/user-helpers/${fileName}.js`,
       });
 
       // programmatiFileUpdateRef.current = true;
@@ -110,7 +110,7 @@ export default function LeftSidebar({
 
       setPostMessage({
         type: "openFile",
-        fileName: `backend/user-dependencies/${fileName}.js`,
+        fileName: `/backend/user-dependencies/${fileName}.js`,
       });
     }
   };

@@ -101,12 +101,46 @@ export default function useEndpointApi() {
           },
         },
       );
+      console.log(response.data)
       return response.data;
     } catch (e) {
       console.error(e);
       return "";
     }
   };
+
+  const deleteFile = async (fileName: string, location: string) => {
+    try {
+      console.log("DELETE " + fileName)
+
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return false;
+      }
+
+      var filePath = ""
+      if(location == "backend"){
+        filePath = "/backend/user-dependencies/" + fileName.replace("/", "") + ".js"
+      } else if(location == "frontend"){
+        filePath = "/frontend/src/" + fileName.replace("/", "") + ".js"
+      } else if(location == "helpers"){
+        filePath = "/backend/user-helpers/" + fileName.replace("/", "") + ".js"
+      }
+
+
+      const response = await axios.delete(
+        `${testDomain.replace("https://", "https://fermat.")}/code/delete?path=code${filePath}`,
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
+        },
+      );
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 
   const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
@@ -252,5 +286,6 @@ export default function useEndpointApi() {
     getFermatJwt,
     getCodeFromFigma,
     refreshFermatJwt,
+    deleteFile,
   };
 }

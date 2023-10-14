@@ -33,10 +33,10 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
           return;
         } 
         if(selectedTab == Page.Hosting){
-          const message = { fileName: "frontend/src/App.js", type: "openFile" };
+          const message = { fileName: "/frontend/src/App.js", type: "openFile" };
           postMessageToIframe(message);
         } else{
-          const message = { fileName: "backend/user-dependencies/get-.js", type: "openFile" };
+          const message = { fileName: "/backend/user-dependencies/get-.js", type: "openFile" };
           postMessageToIframe(message);
         }
       }, 100);

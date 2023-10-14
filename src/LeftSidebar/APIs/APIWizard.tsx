@@ -74,7 +74,7 @@ export default function APIWizard({
     }
     setPostMessage({
       type: "newFile",
-      fileName: "backend/user-dependencies/" + fileName,
+      fileName: "/backend/user-dependencies/" + fileName,
       endpointName: newEndpointName,
     });
     setIsVisible(false);
