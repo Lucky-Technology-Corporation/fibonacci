@@ -1,16 +1,14 @@
-import Button from "../Utilities/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
-import InputWithPrefix from "../Utilities/InputWithPrefix";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import toast from "react-hot-toast";
 import useTestApi from "../API/TestingAPI";
-import e from "express";
-import CodeEditor from "@uiw/react-textarea-code-editor";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import Button from "../Utilities/Button";
 import Checkbox from "../Utilities/Checkbox";
-import UserIdInfo from "./Sections/UserIdInfo";
+import { SwizzleContext } from "../Utilities/GlobalContext";
+import InputWithPrefix from "../Utilities/InputWithPrefix";
 import BodyInfo from "./Sections/BodyInfo";
+import UserIdInfo from "./Sections/UserIdInfo";
 
 export default function NewTestWindow({
   id,
@@ -59,6 +57,11 @@ export default function NewTestWindow({
   }, []);
 
   const saveTest = async () => {
+    if(testName == ""){
+      toast.error("Please enter a test name")
+      return 
+    }
+    
     let queryParamsObject = {};
     if (queryParameters) {
       const pairs = queryParameters.split("&");
@@ -163,9 +166,9 @@ export default function NewTestWindow({
           />
           <InputWithPrefix
             show={isQueryParamsChecked}
-            prefix={"/" + (activeEndpoint.split("/")[1] || "")}
+            prefix={"/?" + (activeEndpoint.split("/")[1] || "")}
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
-            placeholder={"?key=value&key2=value2"}
+            placeholder={"key=value&key2=value2"}
             value={queryParameters}
             onChange={(e) => {
               setQueryParameters(e.target.value);
@@ -195,7 +198,7 @@ export default function NewTestWindow({
           />
         </div>
 
-        <div className="mb-2">
+        <div className={`mb-2 ${activeEndpoint.split("/")[0].toUpperCase() != "GET" ? "" : "hidden"}`}>
           <Checkbox id="body" label="Body" isChecked={isBodyChecked} setIsChecked={setIsBodyChecked} />
           <BodyInfo
             className="text-s flex-grow bg-transparent"

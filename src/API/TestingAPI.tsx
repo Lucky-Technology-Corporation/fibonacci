@@ -25,8 +25,8 @@ export default function useTestApi() {
         return;
       }
 
-      let jwtToken = "";
-      if (testDoc.userId !== "") {
+      let jwtToken;
+      if (testDoc.userId !== undefined && testDoc.userId !== "") {
         const response = await axios.get(
           `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
           {
@@ -39,10 +39,8 @@ export default function useTestApi() {
       }
 
       const method = activeEndpoint.split("/")[0].toUpperCase();
-      console.log(activeEndpoint)
       const endpointPath = "/" + activeEndpoint.split("/")[1]
-      const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}${testDoc.queryParametersString}`;
-      console.log(url)
+      const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}?${testDoc.queryParametersString}`;
       const body = testDoc.body;
 
       return await execTest(url, method, body, jwtToken);

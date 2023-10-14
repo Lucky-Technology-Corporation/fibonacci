@@ -35,6 +35,29 @@ export default function EndpointItem({
     }
   };
 
+  const runDeleteProcess = async (method: string, path: string) => {
+    try{
+      const fileName = method.toLowerCase() + path.replace(/\//g, "-").replace(/:/g, "_");
+      
+      let newEndpointName;
+      if (path === "") {
+        newEndpointName = `${method}/`;
+      } else {
+        newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
+      }
+      
+      setPostMessage({
+        type: "removeFile",
+        fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
+        endpointName: newEndpointName,
+      });
+      await deleteFile(fileName, "backend")
+      setShouldRefreshList(!shouldRefreshList)
+    } catch(e){
+      throw "Error deleting endpoint"
+    }
+  }
+
   return (
     <>
       <div
@@ -52,33 +75,11 @@ export default function EndpointItem({
             console.log(path)
             const c = confirm("Are you sure you want to delete this endpoint?");
             if(c){
-              console.log("CLICK DELETE")
-              try{
-                const fileName = method.toLowerCase() + path.replace(/\//g, "-").replace(/:/g, "_");
-                
-                let newEndpointName;
-                if (path === "") {
-                  newEndpointName = `${method}/`;
-                } else {
-                  newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
-                }
-                
-                console.log("will send", {
-                  type: "removeFile",
-                  fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
-                  endpointName: newEndpointName,
-                })
-                
-                setPostMessage({
-                  type: "removeFile",
-                  fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
-                  endpointName: newEndpointName,
-                });
-                deleteFile(fileName, "backend")
-                setShouldRefreshList(!shouldRefreshList)
-              } catch(e){
-                toast.error("Error deleting endpoint")
-              }
+              toast.promise(runDeleteProcess(method, path), {
+                loading: "Deleting endpoint",
+                success: "Endpoint deleted",
+                error: "Error deleting endpoint"
+              })
             }
           }}
         />

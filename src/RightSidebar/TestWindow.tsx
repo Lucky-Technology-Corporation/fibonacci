@@ -1,4 +1,4 @@
-import { faFlask, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faFlask, faPencil, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
@@ -69,38 +69,42 @@ export default function TestWindow({
 
     try {
       const result = await api.runTest(testDoc);
-      console.log("RESULT: " + result)
-      const status = result.status;
+      console.log(result)
       setTestResults((prevResults) => ({
         ...prevResults,
-        [testDoc._id]: status,
+        [testDoc._id]: result.status,
       }));
+
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: getParsedError(result.data),
+        [testDoc._id]: JSON.stringify(result.data, null, 2),
       }));
+      
       setStatusText((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: getReasonPhrase(result.status),
+        [testDoc._id]: result.status + ": " + getReasonPhrase(result.status),
       }));
-      console.log("resp" + testResponses[1])
+
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     } catch (error) {
-      const errorStatus = error.response ? error.response.status : "Network Error";
+
+      console.log(error)
+            
       setTestResults((prevResults) => ({
         ...prevResults,
-        [testDoc._id]: errorStatus,
+        [testDoc._id]: error.response.status,
       }));
+      
       setTestResponses((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: getParsedError(error.response.data),
-    }));
+        [testDoc._id]: error.response ? JSON.stringify(error.response.data, null, 2) : "Error",
+      }));
    
-      console.log("resp" + testResponses)
       setStatusText((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: error.response ? (error.response.status +": " + getReasonPhrase(error.response.status)) : error.message
+        [testDoc._id]: error.response ? (error.response.status +": " + getReasonPhrase(error.response.status)) : "Unknown error"
       }));
+
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
     }
   };
@@ -170,7 +174,7 @@ export default function TestWindow({
               Test
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">Send requests in test mode</div>
+          <div className="text-sm text-gray-400 mt-1">Send mock requests to test</div>
         </div>
         <Button
           text="+ New Request"
@@ -183,65 +187,72 @@ export default function TestWindow({
         {tests?.map((testDoc, index) => (
           <div className="flex flex-col" key={index}>
             <div className="flex items-center justify-between mt-4 pb-2">
-              <div className="flex items justify-left mx-2 ">
-                <button onClick={() => runSingleTest(testDoc)}>
-                  {loadingTests.includes(testDoc._id) ? (
-                    <div>
-                      <LoadingIcons.Circles style={{ width: "13px", height: "15px" }} />
-                    </div>
-                  ) : (
-                    <FontAwesomeIcon icon={faPlay} size="lg" style={{ color: "#41d373" }} />
-                  )}
-                </button>
-
+              <div className="flex items justify-left">
+                <Button onClick={() => {if(!loadingTests.includes(testDoc._id)) { runSingleTest(testDoc)} }} 
+                  className="py-2 px-3 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  children={
+                    loadingTests.includes(testDoc._id) ? (
+                      <div>
+                        <LoadingIcons.Circles style={{ width: "10px", height: "12px" }} />
+                      </div>
+                      ) : (
+                        <FontAwesomeIcon icon={faPlay} style={{ color: "#41d373" }} />
+                    )}
+                text=""
+                />
+                <div className="font-medium m-auto ml-2">{testDoc.test_name}</div>
+              </div>
+              <div className="flex space-x-2">
                 <Button
-                  text={testDoc.test_name}
+                    text=""
+                    className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                    children={
+                      <FontAwesomeIcon icon={faPencil} style={{ color: "#D9D9D9" }} />
+                    }
+                    onClick={() => {
+                      setShowNewTestWindow(true);
+                      setTestDoc(testDoc);
+                    }}
+                />
+                <Button
+                  text=""
+                  className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  children={
+                    <FontAwesomeIcon
+                      style={{ color: "#D9D9D9" }}
+                      icon={faTrash}
+                    />  
+                  }
                   onClick={() => {
-                    setShowNewTestWindow(true);
-                    setTestDoc(testDoc);
+                    api
+                      .deleteTest(activeCollection, testDoc._id)
+                      .then(() => {
+                        setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
+                      })
+                      .catch((error) => {
+                        console.error("Error deleting test:", error);
+                      });
                   }}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
                 />
               </div>
-              <FontAwesomeIcon
-                className="mr-2 p-3 hover:p-3 hover:bg-[#525363] rounded transition-all cursor-pointer"
-                icon={faTrash}
-                onClick={() => {
-                  api
-                    .deleteTest(activeCollection, testDoc._id)
-                    .then(() => {
-                      setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
-                    })
-                    .catch((error) => {
-                      console.error("Error deleting test:", error);
-                    });
-                }}
-              />
             </div>
             <div className="px-2 text-sm font-bold">
-              <div className="ml-2 mt-2 mb-2">
+              <div className="mb-2">
                 <div className="flex items-center">
                   {testResults[testDoc._id] !== undefined && (
                     <>
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
                       <span>{statusText[testDoc._id]}</span>
-                      <span className="ml-2">{statusText[testDoc._id]}</span>
                     </>
                   )}
                 </div>
               </div>
             </div>
-            {testResponses[testDoc._id] ? (
-    typeof testResponses[testDoc._id] === 'string' ? (
-<pre className="font-mono text-xs ml-4 mb-2 whitespace-normal break-words">{testResponses[testDoc._id]}</pre>
-    ) : (
-<pre className="font-mono text-xs ml-4 mb-2 whitespace-normal break-words">{JSON.stringify(testResponses[testDoc._id], null, 2)}</pre>
-    )
-) : (
-    <div></div>
-)}
-
-
+            {testResponses[testDoc._id] ? (        
+              <pre className="font-mono text-xs ml-4 mb-2 whitespace-normal break-words">{testResponses[testDoc._id]}</pre>
+            ) : (
+                <div></div>
+            )}
           </div>
         ))}
       </div>
