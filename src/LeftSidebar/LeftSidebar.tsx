@@ -89,12 +89,12 @@ export default function LeftSidebar({
       fileName = fileName.replace("!helper!", "");
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-        if (currentFile == `user-helpers/${fileName}.js`) return;
+        if (currentFile == `helpers/${fileName}.js`) return;
       }
 
       setPostMessage({
         type: "openFile",
-        fileName: `/backend/user-helpers/${fileName}.js`,
+        fileName: `/backend/helpers/${fileName}.js`,
       });
 
       // programmatiFileUpdateRef.current = true;
@@ -123,9 +123,9 @@ export default function LeftSidebar({
     if (currentFileProperties.fileUri.includes("backend")) {
       console.log("backend file", currentFileProperties.fileUri);
 
-      if (currentFileProperties.fileUri.includes("user-helpers")) {
+      if (currentFileProperties.fileUri.includes("backend/helpers/")) {
         const newEndpoint = currentFileProperties.fileUri
-          .split("user-helpers/")[1]
+          .split("helpers/")[1]
           .replace(".js", "")
         setActiveEndpoint(newEndpoint);
       } else{

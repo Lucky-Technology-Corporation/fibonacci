@@ -159,7 +159,7 @@ export default function RightSidebar({
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
 
-    if (currentFileProperties.fileUri.includes("user-helpers")) {
+    if (currentFileProperties.fileUri.includes("backend/helpers/")) {
       setIsHelper(true);
     } else {
       setIsHelper(false);

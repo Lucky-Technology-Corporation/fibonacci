@@ -123,7 +123,7 @@ export default function useEndpointApi() {
       } else if(location == "frontend"){
         filePath = "/frontend/src/" + fileName.replace("/", "") + ".js"
       } else if(location == "helpers"){
-        filePath = "/backend/user-helpers/" + fileName.replace("/", "") + ".js"
+        filePath = "/backend/helpers/" + fileName.replace("/", "") + ".js"
       }
 
 
@@ -249,7 +249,7 @@ export default function useEndpointApi() {
       if (fileTypes.toLowerCase() == "files") {
         path = "/frontend/src";
       } else if (fileTypes.toLowerCase() == "helpers") {
-        path = "/backend/user-helpers";
+        path = "/backend/helpers";
       }
 
       const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code?path=${path}`, {
