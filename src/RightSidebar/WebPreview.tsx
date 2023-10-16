@@ -54,7 +54,7 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
               <img src="/close.svg" className='absolute top-1 right-1 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={(e) =>{ console.log("click"); setIsVisible(false)}} />
               <div style={{ width: "100%", height: "calc(100% - 19px)" }}>
                 <iframe 
-                  src={testDomain.replace("https://", "http://").replace(".com", ".com:4545")} 
+                  src={testDomain} 
                   title="Preview" 
                   width="100%" 
                   height="100%" 
