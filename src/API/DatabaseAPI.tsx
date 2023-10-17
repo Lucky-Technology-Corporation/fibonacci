@@ -229,9 +229,15 @@ export default function useDatabaseApi() {
         headers: {
           Authorization: authHeader(),
         },
-        timeout: 180000,
+        timeout: 5000,
       },
     );
+    
+    //Reload after 5 seconds to start the polling flow
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+
     return response.data;
   };
 

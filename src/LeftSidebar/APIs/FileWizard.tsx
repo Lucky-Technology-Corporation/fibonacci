@@ -285,9 +285,12 @@ export default function APIWizard({
                       <input
                         type="text"
                         value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value.trim())}
+                        onChange={(e) => {
+                          const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+                          setInputValue(sanitizedValue.trim());
+                        }}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={`MyNewComponent.js`}
+                        placeholder={`MyNewComponent`}
                         onKeyDown={(event: any) => {
                           if (event.key == "Enter") {
                             createHandler();

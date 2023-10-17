@@ -9,12 +9,14 @@ export default function FileItem({
   active = false,
   path,
   onClick,
-  disableDelete = false
+  disableDelete = false,
+  removeFromList
 }: {
   active?: boolean;
   path: string;
   onClick?: () => void;
   disableDelete?: boolean
+  removeFromList?: () => void
 }) {
 
   const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
@@ -27,7 +29,7 @@ export default function FileItem({
         fileName: "/frontend/src/" + fileName,
       });
       await deleteFile(fileName, "frontend")
-      setShouldRefreshList(!shouldRefreshList)
+      removeFromList()
     } catch(e){
       throw "Error deleting endpoint"
     }

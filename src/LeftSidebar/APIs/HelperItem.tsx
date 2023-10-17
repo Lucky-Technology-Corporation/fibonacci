@@ -9,10 +9,12 @@ export default function HelperItem({
   active = false,
   path,
   onClick,
+  removeFromList,
 }: {
   active?: boolean;
   path: string;
   onClick?: () => void;
+  removeFromList?: () => void
 }) {
 
   const {setPostMessage, setShouldRefreshList, shouldRefreshList} = useContext(SwizzleContext)
@@ -25,7 +27,7 @@ export default function HelperItem({
         fileName: "/backend/helpers/" + fileName + ".js",
       });
       await deleteFile(fileName + ".js", "helpers")
-      setShouldRefreshList(!shouldRefreshList)
+      removeFromList()
     } catch(e){
       throw "Error deleting endpoint"
     }

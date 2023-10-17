@@ -70,6 +70,7 @@ export default function EndpointList({ active }: { active: boolean }) {
   // };
 
   useEffect(() => {
+    console.log("Getting list again...")
     getFiles("endpoints")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
@@ -178,6 +179,14 @@ export default function EndpointList({ active }: { active: boolean }) {
             method={endpoint.split("/")[0].toUpperCase() as Method}
             active={endpoint == activeEndpoint}
             onClick={() => setActiveEndpoint(endpoint)}
+            removeFromList={() => {
+              setEndpoints((prev) => {
+                return prev.filter((e) => e != endpoint);
+              });
+              setFullEndpointList((prev) => {
+                return prev.filter((e) => e != endpoint);
+              })
+            }}
           />
         ))}
         {/* {Object.keys(fullEndpointObj).map((path) => (
@@ -242,6 +251,14 @@ export default function EndpointList({ active }: { active: boolean }) {
               path={helper.replace("/helpers/", "")}
               active={helper == activeEndpoint}
               onClick={() => setActiveEndpoint("!helper!" + helper)}
+              removeFromList={() => {
+                setHelperList((prev) => {
+                  return prev.filter((e) => e != helper);
+                });
+                setFullHelperList((prev) => {
+                  return prev.filter((e) => e != helper);
+                });
+              }}
             />
           );
         })}

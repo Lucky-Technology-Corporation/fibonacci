@@ -41,6 +41,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
+        await setCurrentProject(projectId)
         location.reload()
       }
     }, POLLING_INTERVAL);
@@ -72,6 +73,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
       sessionStorage.setItem("activeProject", project.id);
       sessionStorage.setItem("activeProjectName", project.name);
       setActiveProjectName(project.name);
+      return false
     } else {
       setActiveProjectName(project.name);
       setActiveProject(project.id);
@@ -99,6 +101,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         clearInterval(pollingRef.current); 
         pollingRef.current = null;
       }
+      return true
     }
   };  
 
@@ -165,7 +168,6 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
             }
             setIsVisible(true);
           }}
-          className={`${isCreatingProject ? "opacity-70" : ""}`}
           title={activeProjectName}
           direction="center"
         />

@@ -178,7 +178,7 @@ export default function LeftSidebar({
               toast.promise(changeEnvironment(environment == "test" ? "prod" : "test"), {
                 loading: "Switching environment...",
                 success: () => {
-                  return "Switched to " + (environment == 'test' ? "test" : "production");
+                  return "Switched to " + (environment == 'test' ? "production" : "test");
                 },
                 error: (e) => {
                   return e

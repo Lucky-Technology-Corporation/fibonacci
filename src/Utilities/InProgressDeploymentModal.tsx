@@ -66,6 +66,7 @@ export default function InProgressDeploymentModal({
                         {currentStep >= 4 && <li className="mt-2 ml-8">Creating production resources...</li>}
                         {currentStep >= 5 && <li className="mt-2 ml-8">Setting up IDE...</li>}
                         {currentStep >= 6 && <li className="mt-2 ml-8">Finishing up...</li>}
+                        {currentStep >= 7 && <li className="mt-2 ml-8">This can take up to 5 minutes. Please be patient.</li>}
                     </ul>
                 </div>
 

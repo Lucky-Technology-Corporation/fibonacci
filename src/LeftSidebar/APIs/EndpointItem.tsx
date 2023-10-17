@@ -11,11 +11,13 @@ export default function EndpointItem({
   path,
   method,
   onClick,
+  removeFromList
 }: {
   active?: boolean;
   path: string;
   method: Method;
   onClick?: () => void;
+  removeFromList?: () => void
 }) {
   const { deleteFile } = useEndpointApi()
   const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
@@ -45,14 +47,18 @@ export default function EndpointItem({
       } else {
         newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
       }
+      if(newEndpointName === ""){
+        newEndpointName = "get_"
+      }
       
       setPostMessage({
         type: "removeFile",
         fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
         endpointName: newEndpointName,
       });
+      console.log("post post message")
       await deleteFile(fileName, "backend")
-      setShouldRefreshList(!shouldRefreshList)
+      removeFromList()
     } catch(e){
       throw "Error deleting endpoint"
     }

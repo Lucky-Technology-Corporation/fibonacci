@@ -121,7 +121,7 @@ export default function useEndpointApi() {
       } else if(location == "frontend"){
         filePath = "/frontend/src/" + fileName.replace("/", "")
       } else if(location == "helpers"){
-        filePath = "/backend/helpers/" + fileName.replace("/", "") + ".js"
+        filePath = "/backend/helpers/" + fileName.replace("/", "")
       }
 
       const response = await axios.delete(
