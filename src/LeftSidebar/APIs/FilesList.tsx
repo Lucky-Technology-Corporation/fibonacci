@@ -14,7 +14,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullFileList, setFullFileList] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
-  const { testDomain, activeFile, setActiveFile } = useContext(SwizzleContext);
+  const { testDomain, activeFile, setActiveFile, shouldRefreshList } = useContext(SwizzleContext);
 
   useEffect(() => {
     getFiles("files")
@@ -32,7 +32,7 @@ export default function FilesList({ active }: { active: boolean }) {
         toast.error("Error fetching endpoints");
         console.error(e);
       });
-  }, [testDomain]);
+  }, [testDomain, shouldRefreshList]);
 
   //Used to filter the endopint list
   useEffect(() => {

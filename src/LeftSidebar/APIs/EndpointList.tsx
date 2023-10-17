@@ -1,6 +1,5 @@
 import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import pluralize from "pluralize";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
@@ -29,45 +28,46 @@ export default function EndpointList({ active }: { active: boolean }) {
 
   const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, shouldRefreshList } =
     useContext(SwizzleContext);
-  const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
-  const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
-  const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
 
-  const toggleCollapse = (path: string) => {
-    setCollapsedFolders((prev) => ({
-      ...prev,
-      [path]: !prev[path],
-    }));
-  };
+    // const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
+  // const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
+  // const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
 
-  const transformToNested = (endpointList) => {
-    const result = {};
-    endpointList.forEach((endpoint) => {
-      const [method, ...pathComponents] = endpoint.split("/");
-      const path = pathComponents.join("/");
+  // const toggleCollapse = (path: string) => {
+  //   setCollapsedFolders((prev) => ({
+  //     ...prev,
+  //     [path]: !prev[path],
+  //   }));
+  // };
 
-      // Special case for root and root parameter
-      if (path === "" || path.startsWith(":")) {
-        if (!result[""]) {
-          result[""] = [];
-        }
-        result[""].push(endpoint);
-        return;
-      }
+  // const transformToNested = (endpointList) => {
+  //   const result = {};
+  //   endpointList.forEach((endpoint) => {
+  //     const [method, ...pathComponents] = endpoint.split("/");
+  //     const path = pathComponents.join("/");
 
-      // For non-root endpoints
-      const rootName = path.split("/")[0];
-      const singularRoot = pluralize.singular(rootName);
+  //     // Special case for root and root parameter
+  //     if (path === "" || path.startsWith(":")) {
+  //       if (!result[""]) {
+  //         result[""] = [];
+  //       }
+  //       result[""].push(endpoint);
+  //       return;
+  //     }
 
-      if (!result[singularRoot]) {
-        result[singularRoot] = [];
-      }
+  //     // For non-root endpoints
+  //     const rootName = path.split("/")[0];
+  //     const singularRoot = pluralize.singular(rootName);
 
-      // Push the full endpoint (e.g., "GET/message/:id") into the array
-      result[singularRoot].push(endpoint);
-    });
-    return result;
-  };
+  //     if (!result[singularRoot]) {
+  //       result[singularRoot] = [];
+  //     }
+
+  //     // Push the full endpoint (e.g., "GET/message/:id") into the array
+  //     result[singularRoot].push(endpoint);
+  //   });
+  //   return result;
+  // };
 
   useEffect(() => {
     getFiles("endpoints")

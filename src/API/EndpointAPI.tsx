@@ -119,7 +119,7 @@ export default function useEndpointApi() {
       if(location == "backend"){
         filePath = "/backend/user-dependencies/" + fileName.replace("/", "") + ".js"
       } else if(location == "frontend"){
-        filePath = "/frontend/src/" + fileName.replace("/", "") + ".js"
+        filePath = "/frontend/src/" + fileName.replace("/", "")
       } else if(location == "helpers"){
         filePath = "/backend/helpers/" + fileName.replace("/", "") + ".js"
       }

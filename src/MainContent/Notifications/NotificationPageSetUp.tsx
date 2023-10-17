@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
+import toast from "react-hot-toast";
 import useNotificationApi from "../../API/NotificationsAPI";
 import Button from "../../Utilities/Button";
-import toast from "react-hot-toast";
 
 type NotificationPageSetUpProps = {
   setShowSetUp: (value: boolean) => void;
@@ -73,7 +73,7 @@ export default function NotificationPageSetUp({
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Push Notifications</div>
-          <div className={`text-sm mt-0.5`}>Finish setting up</div>
+          <div className={`text-sm mt-0.5`}>Set up iOS push notifications</div>
         </div>
       </div>
 
