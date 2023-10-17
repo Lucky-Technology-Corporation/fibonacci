@@ -72,10 +72,11 @@ export default function TestWindow({
     } catch (error) {
 
       console.log(error)
+
             
       setTestResults((prevResults) => ({
         ...prevResults,
-        [testDoc._id]: error.response.status,
+        [testDoc._id]: error.response ? error.response.status : 500,
       }));
       
       setTestResponses((prevResponses) => ({

@@ -222,23 +222,24 @@ export default function useDatabaseApi() {
     if (NEXT_PUBLIC_BASE_URL == "https://euler-i733tg4iuq-uc.a.run.app/api/v1" || name.includes("prod")) {
       shouldDeployProd = true;
     }
-    const response = await axios.post(
+    axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
       { name, deploy_production: shouldDeployProd },
       {
         headers: {
           Authorization: authHeader(),
         },
-        timeout: 5000,
+        timeout: 180000,
       },
     );
     
     //Reload after 5 seconds to start the polling flow
-    setTimeout(() => {
-      window.location.reload();
-    }, 5000);
-
-    return response.data;
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        window.location.reload();
+        resolve(true);
+      }, 8000);
+    });  
   };
 
   const getProjects = async () => {

@@ -121,6 +121,14 @@ export default function FilesList({ active }: { active: boolean }) {
                 onClick={() => {
                   setActiveFile("frontend/src/" + component);
                 }}
+                removeFromList={() => {
+                  setFiles((prev) => {
+                    return prev.filter((e) => e != component);
+                  });
+                  setFullFileList((prev) => {
+                    return prev.filter((e) => e != component);
+                  });
+                }}
               />
             );
           })}

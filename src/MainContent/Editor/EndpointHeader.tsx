@@ -1,4 +1,4 @@
-import { faSearch, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBug, faSearch, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -18,6 +18,7 @@ export default function EndpointHeader() {
   const [AICommand, setAICommand] = useState<string>("edit");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
   const { askQuestion } = useEndpointApi();
 
@@ -68,6 +69,12 @@ export default function EndpointHeader() {
     setIsSearching(!isSearching);
   }
 
+  const toggleDebug = () => {
+    const command = isDebugging ? "closeDebugger" : "openDebugger";
+    setPostMessage({ type: command });
+    setIsDebugging(!isDebugging);
+  }
+
   return (
     <>
       {activeEndpoint && (
@@ -83,6 +90,13 @@ export default function EndpointHeader() {
               children={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
               onClick={() => {
                 toggleSearch()
+              }}
+            />
+            <Button
+              className={`text-sm ml-2 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+              children={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
+              onClick={() => {
+                toggleDebug()
               }}
             />
             <div className="w-[1px] h-[36px] bg-[#525363] mx-4"></div>
