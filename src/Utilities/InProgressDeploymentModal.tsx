@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface ModalProps {
   confirmText?: string;
 }
 
-export default function Modal({
+export default function InProgressDeploymentModal({
     isOpen,
     onClose,
     title = "Setting up your project",
@@ -37,12 +37,12 @@ export default function Modal({
 
     return (
         <div
-        className={`absolute top-0 left-0 w-full h-full z-50 overflow-y-auto ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-        aria-labelledby="modal-title"
-    role="dialog"
-    aria-modal="true"
-    style={{ transition: "opacity 0.2s" }}
->
+            className={`absolute top-0 left-0 w-full h-full z-50 overflow-y-auto ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            aria-labelledby="modal-title"
+            role="dialog"
+            aria-modal="true"
+            style={{ transition: "opacity 0.2s" }}
+        >
         <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
@@ -65,6 +65,7 @@ export default function Modal({
                         {currentStep >= 3 && <li className="mt-2 ml-8">Cloning server code...</li>}
                         {currentStep >= 4 && <li className="mt-2 ml-8">Creating production resources...</li>}
                         {currentStep >= 5 && <li className="mt-2 ml-8">Setting up IDE...</li>}
+                        {currentStep >= 6 && <li className="mt-2 ml-8">Finishing up...</li>}
                     </ul>
                 </div>
 

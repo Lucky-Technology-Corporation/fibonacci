@@ -4,8 +4,6 @@ import { useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
-import useApi from "./API/DeploymentAPI";
-import Lobby from "./Blockrain/Lobby";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
 import CenterContent from "./MainContent/CenterContent";
 import RightSidebar from "./RightSidebar/RightSidebar";
@@ -28,18 +26,14 @@ export default function Dashboard() {
   //Loading Modal handler
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const deploymentApi = useApi();
-
   //Initialization code...
   const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
 
   useEffect(() => {
     const fetchProjects = async () => {
-      console.log("hi");
       try {
         const data = await getProjects();
-        console.log("Fetched projects: ", data);
 
         if (!data || data.length === 0) {
           setProjects([]);
@@ -49,8 +43,6 @@ export default function Dashboard() {
         // Initialize the project list to an empty array.
         setProjects(data);
         return;
-
-       
       } catch (e) {
         toast.error("Error fetching projects");
         console.error(e);
@@ -60,31 +52,7 @@ export default function Dashboard() {
     fetchProjects();
   }, []);
 
-  const waitForSuccessfulDeployment = async (projectId, delay = 5000) => {
-    return;
-    console.log("Checking deployment for project: ", projectId);
-
-    try {
-      const response = await deploymentApi.getProjectDeploymentStatus(projectId);
-      console.log("deployment status: " + response);
-
-      if (response === "DEPLOYMENT_SUCCESS") {
-        return true;
-      } else {
-        // Wait for a while and try again
-        await new Promise((res) => setTimeout(res, delay));
-        return await waitForSuccessfulDeployment(projectId);
-      }
-    } catch (error) {
-      console.error(`Failed to get deployment status for project ${projectId}`, error);
-      return false;
-    }
-  };
-
   if (isAuthenticated()) {
-    if (isCreatingProject) {
-      return <Lobby />;
-    }
     if (projects) {
       return (
         <div

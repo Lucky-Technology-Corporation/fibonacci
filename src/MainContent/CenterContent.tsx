@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import Modal from "../Utilities/Modal";
+import InProgressDeploymentModal from "../Utilities/InProgressDeploymentModal";
 import { Page } from "../Utilities/Page";
 import UserTableView from "./Auth/UserTableView";
 import DatabaseView from "./Database/DatabaseView";
@@ -35,10 +35,14 @@ export default function CenterContent({
 
   return (
     <div className="relative m-0 text-sm whitespace-pre-line max-h-[100vh]">
-      {isModalOpen && 
-      <Modal 
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)} />}
+      
+      {/* In progress deployments */}
+      <InProgressDeploymentModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)} />
+
+      {/* <PaymentRequestModal /> */}
+
       <div
         style={{
           opacity: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "1" : "0",

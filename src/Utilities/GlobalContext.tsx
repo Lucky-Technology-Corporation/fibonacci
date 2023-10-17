@@ -18,8 +18,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [activeFile, setActiveFile] = useState("frontend/src/App.js");
   const [activeHelper, setActiveHelper] = useState(null);
   const [ideReady, setIdeReady] = useState(false);
-  const [testDeployStatus, setTestDeployStatus] = useState("live");
-  const [prodDeployStatus, setProdDeployStatus] = useState("pending");
+  const [testDeployStatus, setTestDeployStatus] = useState("DEPLOYMENT_IN_PROGRESS");
+  const [prodDeployStatus, setProdDeployStatus] = useState("DEPLOYMENT_IN_PROGRESS");
   const [fermatJwt, setFermatJwt] = useState("");
   const [figmaToken, setFigmaToken] = useState("");
   const [shouldRefreshList, setShouldRefreshList] = useState(false);

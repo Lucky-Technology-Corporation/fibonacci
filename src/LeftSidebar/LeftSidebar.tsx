@@ -1,7 +1,9 @@
 import { faBox, faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dispatch, SetStateAction, useContext, useEffect } from "react";
+import toast from "react-hot-toast";
 import Switch from "react-switch";
+import useApi from "../API/DeploymentAPI";
 import UserDropdown from "../UserDropdown";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { Page } from "../Utilities/Page";
@@ -35,10 +37,12 @@ export default function LeftSidebar({
   isModalOpen, 
   setIsModalOpen,
 }: LeftSidebarProps) {
-  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage } =
+  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject } =
     useContext(SwizzleContext);
 
 
+  const { getProjectDeploymentStatus } = useApi()
+  
   useEffect(() => {
     openActiveEndpoint();
   }, [activeEndpoint]);
@@ -145,6 +149,16 @@ export default function LeftSidebar({
     }
   }, [currentFileProperties]);
 
+  const changeEnvironment = async (env) => {
+    const status = await getProjectDeploymentStatus(activeProject, env)
+    if (status == "DEPLOYMENT_SUCCESS") {
+      setEnvironment(env);
+      return Promise.resolve()
+    } else {
+      return Promise.reject("Still deploying to " + (env == 'test' ? "test" : "production"));
+    }
+  }
+
   return (
     <div className="min-w-[240px] border-r border-[#4C4F6B] bg-[#191A23] overflow-scroll">
       <div className="flex flex-col items-center pt-4 h-screen">
@@ -161,7 +175,15 @@ export default function LeftSidebar({
           <Switch
             className="ml-1 scale-75"
             onChange={() => {
-              setEnvironment(environment == "test" ? "prod" : "test");
+              toast.promise(changeEnvironment(environment == "test" ? "prod" : "test"), {
+                loading: "Switching environment...",
+                success: () => {
+                  return "Switched to " + (environment == 'test' ? "test" : "production");
+                },
+                error: (e) => {
+                  return e
+                }
+              })
             }}
             checked={environment == "test"}
             uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
@@ -175,8 +197,8 @@ export default function LeftSidebar({
 
         <div className="flex">
           <ProjectSelector
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen} />
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen} />
         </div>
 
         <SectionTitle

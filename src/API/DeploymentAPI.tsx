@@ -1,13 +1,13 @@
 import axios from "axios";
+import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import { useContext } from "react";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useApi() {
   const authHeader = useAuthHeader();
-  const { activeProject, environment } = useContext(SwizzleContext);
+  const { activeProject, environment, setTestDeployStatus, setProdDeployStatus } = useContext(SwizzleContext);
 
   const listProjectBuilds = async (page, pageSize) => {
     if (activeProject == "") return;
@@ -22,16 +22,21 @@ export default function useApi() {
     return response.data;
   };
 
-  const getProjectDeploymentStatus = async (projectId) => {
+  const getProjectDeploymentStatus = async (projectId, env = environment) => {
+    var enviro = env ? env : environment;
     const response = await axios.get(
-      `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/deploymentStatus?env=${environment}`,
+      `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/deploymentStatus?env=${enviro}`,
       {
         headers: {
           Authorization: authHeader(),
         },
       },
     );
-    console.log("Get Project Deployment Status" + response.data.deployment_status);
+    if(env == 'test'){
+      setTestDeployStatus(response.data.deployment_status);
+    } else if(env == 'prod'){
+      setProdDeployStatus(response.data.deployment_status);
+    }
     return response.data.deployment_status;
   };
 

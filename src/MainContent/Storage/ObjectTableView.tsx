@@ -17,7 +17,7 @@ export default function ObjectTableView() {
   const { getDocuments, runQuery } = useDatabaseApi();
   const { uploadFile, deleteFile } = useStorageApi();
 
-  const { activeProject, domain, testDomain, environment } = useContext(SwizzleContext);
+  const { activeProject, domain, testDomain, environment, prodDeployStatus } = useContext(SwizzleContext);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [rowDetailData, setRowDetailData] = useState<any>({});
@@ -190,6 +190,15 @@ export default function ObjectTableView() {
 
   if (dragging) {
     return <NiceInfo title="Drop to upload" subtitle="Your file will be uploaded to the public storage bucket" />;
+  }
+
+  if(prodDeployStatus != "DEPLOYMENT_SUCCESS") {
+    return (
+      <NiceInfo
+        title="Production deployment in progress..."
+        subtitle="Storage requires certain production resources. The deployment will be completed shortly."
+      />
+    )
   }
 
   return (

@@ -1,12 +1,13 @@
-import { Fragment, useContext, useState } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { useSignOut, useAuthUser } from "react-auth-kit";
-import { SwizzleContext } from "./Utilities/GlobalContext";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import FullPageModal from "./Utilities/FullPageModal";
+import { Menu, Transition } from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { Fragment, useContext, useState } from "react";
+import { useAuthUser, useSignOut } from "react-auth-kit";
 import toast from "react-hot-toast";
+import useSettingsApi from "./API/SettingsAPI";
+import FullPageModal from "./Utilities/FullPageModal";
+import { SwizzleContext } from "./Utilities/GlobalContext";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -15,6 +16,8 @@ function classNames(...classes: string[]) {
 export default function UserDropdown() {
   const signOut = useSignOut();
   const auth = useAuthUser();
+  const {updateBilling} = useSettingsApi()
+
   const { setActiveProject, setActiveProjectName, isFree, setIsFree } = useContext(SwizzleContext);
 
   const [inviteVisible, setInviteVisible] = useState(false);
@@ -51,8 +54,9 @@ export default function UserDropdown() {
     });
   };
 
-  const openStripe = () => {
-    window.open("https://buy.stripe.com/dR617UeRDdgac3C8ww?client_reference_id=" + auth()?.developerId, "_blank");
+  const openStripe = async () => {
+    const url = await updateBilling(false);
+    window.open(url.url, "_blank");
   };
 
   return (

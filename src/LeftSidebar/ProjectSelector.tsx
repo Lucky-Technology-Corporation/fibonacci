@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useState, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
+import useApi from "../API/DeploymentAPI";
 import useEndpointApi from "../API/EndpointAPI";
 import Dropdown from "../Utilities/Dropdown";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import useApi from "../API/DeploymentAPI";
 
 export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isModalOpen: any, setIsModalOpen: Dispatch<SetStateAction<boolean>> }){
   const [isVisible, setIsVisible] = useState(false);
@@ -41,6 +41,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
+        location.reload()
       }
     }, POLLING_INTERVAL);
   };
@@ -63,14 +64,18 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   const setCurrentProject = async (id: string) => {
     const project = projects.filter((p) => p.id == id)[0];
     if (project == null) return;
-    setActiveProjectName(project.name);
-    setActiveProject(project.id);
 
     const deploymentStatus = await checkDeploymentStatus(project.id);
     if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
       setIsModalOpen(true);
       startPolling(project.id);
+      sessionStorage.setItem("activeProject", project.id);
+      sessionStorage.setItem("activeProjectName", project.name);
+      setActiveProjectName(project.name);
     } else {
+      setActiveProjectName(project.name);
+      setActiveProject(project.id);
+  
       // Update the context values only if the deployment was successful
       setTestDeployStatus(project.test_deployment_status);
       setProdDeployStatus(project.prod_deployment_status);

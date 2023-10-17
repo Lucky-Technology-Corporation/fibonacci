@@ -9,6 +9,24 @@ export default function useSettingsApi() {
   const authHeader = useAuthHeader();
   const { environment, activeProject } = useContext(SwizzleContext);
 
+  const updateBilling = async (should_override: boolean = false) => {
+    var override_to_payment_method_update = should_override ? "true" : "false";
+    try {
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/billing?override_to_payment_method_update=${override_to_payment_method_update}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
+
   const updateApns = async (p8Key: string, key_id: string, team_id: string) => {
     try {
       const response = await axios.post(
@@ -91,5 +109,6 @@ export default function useSettingsApi() {
     getSecrets,
     saveSecrets,
     deleteSecret,
+    updateBilling
   };
 }
