@@ -37,7 +37,7 @@ export default function LeftSidebar({
   isModalOpen, 
   setIsModalOpen,
 }: LeftSidebarProps) {
-  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject } =
+  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject, ideReady } =
     useContext(SwizzleContext);
 
 
@@ -214,14 +214,16 @@ export default function LeftSidebar({
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
-        <SectionTitle
-          icon="/cloud.svg"
-          text="Backend"
-          active={selectedTab == Page.Apis}
-          onClick={() => {
-            setSelectedTab(Page.Apis);
-          }}
-        />
+        <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
+          <SectionTitle
+            icon="/cloud.svg"
+            text="Backend"
+            active={selectedTab == Page.Apis}
+            onClick={() => {
+              setSelectedTab(Page.Apis);
+            }}
+          />
+        </div>
         <EndpointList active={selectedTab == Page.Apis} />
 
         <SectionTitle
@@ -269,14 +271,16 @@ export default function LeftSidebar({
           }}
         /> */}
 
-        <SectionTitle
-          icon="/world.svg"
-          text="Frontend"
-          active={selectedTab == Page.Hosting}
-          onClick={() => {
-            setSelectedTab(Page.Hosting);
-          }}
+        <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
+          <SectionTitle
+            icon="/world.svg"
+            text="Frontend"
+            active={selectedTab == Page.Hosting}
+            onClick={() => {
+              setSelectedTab(Page.Hosting);
+            }}
         />
+        </div>
         <FilesList active={selectedTab == Page.Hosting} />
 
         <SectionTitle

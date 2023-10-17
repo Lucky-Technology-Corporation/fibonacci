@@ -28,18 +28,18 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
     if (event.data.type === "extensionReady") {
       console.log("extensionReady");
       setIdeReady(true);
-      setTimeout(() => {
-        if (currentFileRef.current != null) {
-          return;
-        } 
-        if(selectedTab == Page.Hosting){
-          const message = { fileName: "/frontend/src/App.js", type: "openFile" };
-          postMessageToIframe(message);
-        } else{
-          const message = { fileName: "/backend/user-dependencies/get-.js", type: "openFile" };
-          postMessageToIframe(message);
-        }
-      }, 100);
+      // setTimeout(() => {
+      //   if (currentFileRef.current != null) {
+      //     return;
+      //   } 
+      //   if(selectedTab == Page.Hosting){
+      //     const message = { fileName: "/frontend/src/App.js", type: "openFile" };
+      //     postMessageToIframe(message);
+      //   } else{
+      //     const message = { fileName: "/backend/user-dependencies/get-.js", type: "openFile" };
+      //     postMessageToIframe(message);
+      //   }
+      // }, 100);
     }
     
     if (event.data.type === "fileChanged") {
