@@ -23,7 +23,7 @@ export default function LogRow({
 }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const { getLogDetails, analyzeError } = useMonitoringApi();
-  const { domain } = useContext(SwizzleContext);
+  const { domain, environment } = useContext(SwizzleContext);
 
   useEffect(() => {
     setIsExpanded(false);
@@ -73,6 +73,12 @@ export default function LogRow({
     }
   };
 
+  const explainError = async (text) => {
+    setModalText(<div>
+     {text}
+    </div>);
+  };
+
   const fixRequest = async () => {
     const response = await analyzeError(message);
     if (response == null) {
@@ -120,15 +126,18 @@ export default function LogRow({
             }}
           />
         </td>
-        <td className={`text-left pl-4 ${message.responseCode < 300 ? "opacity-50 pointer-events-none" : ""}`}>
+        <td className={`text-left pl-4 ${message.responseCode < 400 ? "opacity-50 pointer-events-none" : ""}`}>
           <IconButton
             icon={<FontAwesomeIcon icon={faWrench} className="py-1" />}
             onClick={(e) => {
               e.stopPropagation()
               if(message.responseCode < 400){
                 toast("This request didn't return an error.")
-              } else if(message.responseCode < 500 && message.responseCode >= 400){
-                //get an INFO response
+              } else if(message.responseCode == 404){
+                  explainError(`A 404 error means that the resource you're trying to access doesn't exist. Double check that you have ${message.url.includes("/swizzle/storage") ? "a file publicly accessible with that name" : "an endpoint at " + message.url.split("?")[0]}.
+                  \nIt looks like you're looking at ${environment == "test" ? "test logs. If this is working in production, you may have removed something since your last deploy." : "production logs. Double check that you've deployed all of your changes."} 
+                  \n${message.url.includes(".") ? "If you're trying to access a static file, make sure it's uploaded and publicly accessible." : "If you're trying to access a static file, make sure you're including the extension."} Files are located by default under the ${domain}/swizzle/storage path, unless you've written a custom endpoint.
+                  `)
               } else{
                 toast.promise(fixRequest(), {
                   loading: "Looking at your code...",

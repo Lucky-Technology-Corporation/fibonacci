@@ -111,8 +111,6 @@ export default function useEndpointApi() {
 
   const deleteFile = async (fileName: string, location: string) => {
     try {
-      console.log("DELETE " + fileName)
-
       if (testDomain == null || testDomain == undefined || testDomain == "") {
         return false;
       }
@@ -125,7 +123,6 @@ export default function useEndpointApi() {
       } else if(location == "helpers"){
         filePath = "/backend/helpers/" + fileName.replace("/", "") + ".js"
       }
-
 
       const response = await axios.delete(
         `${testDomain.replace("https://", "https://fermat.")}/code/delete?path=code${filePath}`,

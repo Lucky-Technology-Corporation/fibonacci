@@ -1,3 +1,5 @@
+import { faSearch, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
@@ -15,6 +17,7 @@ export default function EndpointHeader() {
   const [prompt, setPrompt] = useState<string>("");
   const [AICommand, setAICommand] = useState<string>("edit");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const { askQuestion } = useEndpointApi();
 
@@ -59,6 +62,12 @@ export default function EndpointHeader() {
     });
   };
 
+  const toggleSearch = () => {
+    const command = isSearching ? "closeSearchView" : "openSearchView";
+    setPostMessage({ type: command });
+    setIsSearching(!isSearching);
+  }
+
   return (
     <>
       {activeEndpoint && (
@@ -68,8 +77,17 @@ export default function EndpointHeader() {
               ideReady ? "" : "opacity-50 pointer-events-none"
             }`}
           >
+            <div className="ml-4"></div>
+            <Button
+              className={`text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+              children={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
+              onClick={() => {
+                toggleSearch()
+              }}
+            />
+            <div className="w-[1px] h-[36px] bg-[#525363] mx-4"></div>
             <Dropdown
-              className="ml-4 "
+              className=""
               onSelect={setAICommand}
               children={aiOptions}
               direction="left"
@@ -77,7 +95,7 @@ export default function EndpointHeader() {
             />
 
             <input
-              className="grow mx-4 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
+              className="grow mx-2 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
               placeholder={
                 AICommand == "ask"
                   ? "Ask any question..."
@@ -95,7 +113,7 @@ export default function EndpointHeader() {
             />
             <Button
               text="Go"
-              className="text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              className="text-sm px-5 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
               onClick={() => {
                 runQuery();
               }}

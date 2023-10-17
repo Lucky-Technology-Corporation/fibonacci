@@ -75,6 +75,14 @@ export default function FilesList({ active }: { active: boolean }) {
 
       <div className="ml-1 mt-1">
         <FileItem
+          key={"index.html"}
+          path={formatFileName("index.html")}
+          active={"frontend/public/index.html" == activeFile}
+          onClick={() => {
+            setActiveFile("frontend/public/index.html");
+          }}
+        />
+        <FileItem
           key={"App.js"}
           path={formatFileName("App.js")}
           active={"frontend/src/App.js" == activeFile}

@@ -2,11 +2,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
 import Checkbox from "../Utilities/Checkbox";
+import { copyText } from "../Utilities/Copyable";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
 import DeployButton from "./DeployButton";
-import NewTestWindow from "./NewTestWindow";
 import AuthInfo from "./Sections/AuthInfo";
 import AutocheckInfo from "./Sections/AutocheckInfo";
 import DBInfo from "./Sections/DBInfo";
@@ -60,8 +60,6 @@ export default function RightSidebar({
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
-  const [shouldShowNewTestWindow, setShouldShowNewTestWindow] = useState(false);
-  const [currentWindow, setCurrentWindow] = useState<"test" | "newTest" | null>(null);
   const [autocheckResponse, setAutocheckResponse] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
@@ -241,33 +239,40 @@ export default function RightSidebar({
         )}
         {selectedTab == Page.Apis && (
           <>
+            {(currentFileProperties.fileUri && currentFileProperties.fileUri.includes("/backend/helpers/")) && (
+              <>
+                <div className="h-4" />
+                <div className="font-bold">Use</div>
+                <div className="h-2" />
+                <IconTextButton
+                  onClick={() => {
+                    copyText(`const ${currentFileProperties.fileUri.split("/backend/helpers/")[1].replace(".js", "")} = require("../helpers/${currentFileProperties.fileUri.split("/backend/helpers/")[1]}")`)
+                    setTimeout(() => {toast("Paste at the very top of any API file to use this helper")}, 250)
+                  }}
+                  icon={<img src="/copy.svg" className="w-3 h-3 m-auto" />}
+                  text="Copy Import"
+                />
+              </>
+            )}
+
             <div className="h-4" />
             <div className="font-bold">Testing</div>
             <div className="h-2" />
 
-            <IconTextButton
-              onClick={() => {
-                setCurrentWindow("test");
-                setShouldShowTestWindow(true);
-              }}
-              icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
-              text="Test"
-            />
-            {currentWindow === "test" && (
+            {currentFileProperties.fileUri && currentFileProperties.fileUri.includes("/backend/user-dependencies/") && (<>
+              <IconTextButton
+                onClick={() => {
+                  setShouldShowTestWindow(true);
+                }}
+                icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
+                text="Test Request"
+              />
               <TestWindow
-                shouldShowTestWindow={() => setShouldShowTestWindow(false)}
-                setShouldShowNewTestWindow={() => setShouldShowNewTestWindow(true)}
-                setCurrentWindow={setCurrentWindow}
+                shouldShowTestWindow={shouldShowTestWindow}
+                setShouldShowTestWindow={setShouldShowTestWindow}
               />
-            )}
-            {currentWindow === "newTest" && (
-              <NewTestWindow
-                shouldShowNewTestWindow={shouldShowNewTestWindow}
-                hideNewTestWindow={() => setShouldShowNewTestWindow(false)}
-                savedTests={["Test Name 1", "Test Name 2", "Test Name 3"]}
-              />
-            )}
-            <div className="h-2" />
+              <div className="h-2" />
+            </>)}
             <IconTextButton
               onClick={() => {
                 toast.promise(getAutocheckResponse(), {

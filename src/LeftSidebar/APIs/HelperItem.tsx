@@ -1,4 +1,9 @@
-import { Method } from "../../Utilities/Method";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useContext } from "react";
+import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function HelperItem({
   active = false,
@@ -9,6 +14,23 @@ export default function HelperItem({
   path: string;
   onClick?: () => void;
 }) {
+
+  const {setPostMessage, setShouldRefreshList, shouldRefreshList} = useContext(SwizzleContext)
+  const { deleteFile } = useEndpointApi()
+
+  const runDeleteProcess = async (fileName: string) => {
+    try{
+      setPostMessage({
+        type: "removeFile",
+        fileName: "/backend/helpers/" + fileName + ".js",
+      });
+      await deleteFile(fileName + ".js", "helpers")
+      setShouldRefreshList(!shouldRefreshList)
+    } catch(e){
+      throw "Error deleting endpoint"
+    }
+  }
+  
   return (
     <>
       <div
@@ -17,7 +39,24 @@ export default function HelperItem({
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
       >
-        {path}
+        <div className="flex">
+          <div>{path}</div>
+          <FontAwesomeIcon
+            className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
+            icon={faTrash}
+            onClick={() => {
+              console.log(path)
+              const c = confirm("Are you sure you want to delete this endpoint?");
+              if(c){
+                toast.promise(runDeleteProcess(path), {
+                  loading: "Deleting helper",
+                  success: "Helper deleted",
+                  error: "Error deleting helper"
+                })
+              }
+            }}
+          />
+        </div>
       </div>
     </>
   );

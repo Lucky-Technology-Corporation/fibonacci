@@ -11,23 +11,20 @@ import NewTestWindow from "./NewTestWindow";
 
 export default function TestWindow({
   shouldShowTestWindow,
-  setShouldShowNewTestWindow,
-  setCurrentWindow,
+  setShouldShowTestWindow,
 }: {
   shouldShowTestWindow: any;
-  setShouldShowNewTestWindow: any;
-  setCurrentWindow: any;
+  setShouldShowTestWindow: any;
 }) {
   const handleNewRequestClick = () => {
-    setShouldShowNewTestWindow(true);
-    shouldShowTestWindow();
-    setCurrentWindow("newTest");
+    setTestDoc({})
+    setShowNewTestWindow(true);
   };
 
   const handleCancelClick = () => {
-    setCurrentWindow(null);
-    shouldShowTestWindow();
+    setShouldShowTestWindow(false);
   };
+
   type TestType = {
     test_name: string;
     query_parameters: object;
@@ -38,20 +35,6 @@ export default function TestWindow({
     endpoint: string;
     _id: string;
   };
-
-
-  function getParsedError(htmlString: string): string {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlString;
-
-    // Find the <pre> tag containing the error message
-    const pre = tempDiv.querySelector('pre');
-    if (pre) {
-        return pre.innerText.replace(/<br\s*\/?>/mg, "\n").trim();
-    }
-
-    return 'Unknown error';  // Default message if we can't find the <pre> tag
-}
 
   const { domain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
@@ -176,10 +159,26 @@ export default function TestWindow({
           </div>
           <div className="text-sm text-gray-400 mt-1">Send mock requests to test</div>
         </div>
+        <div className="flex ml-auto mr-0">
+          <Button
+            text="Close"
+            onClick={handleCancelClick}
+            className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
+          />
+        </div>
+      </div>
+      <div className="flex space-between mt-2">
         <Button
           text="+ New Request"
           onClick={handleNewRequestClick}
-          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+        />
+        <Button
+          text="Run All"
+          onClick={runAllTests}
+          className={`${
+            tests == null || tests.length == 0 ? "hidden" : "block"
+          } ml-auto mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-auto sm:mr-4 sm:w-auto sm:text-sm cursor-pointer`}
         />
       </div>
 
@@ -189,7 +188,7 @@ export default function TestWindow({
             <div className="flex items-center justify-between mt-4 pb-2">
               <div className="flex items justify-left">
                 <Button onClick={() => {if(!loadingTests.includes(testDoc._id)) { runSingleTest(testDoc)} }} 
-                  className="py-2 px-3 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  className="py-1 px-1 font-medium rounded flex justify-center items-center cursor-pointer"
                   children={
                     loadingTests.includes(testDoc._id) ? (
                       <div>
@@ -210,8 +209,8 @@ export default function TestWindow({
                       <FontAwesomeIcon icon={faPencil} style={{ color: "#D9D9D9" }} />
                     }
                     onClick={() => {
-                      setShowNewTestWindow(true);
                       setTestDoc(testDoc);
+                      setShowNewTestWindow(true);
                     }}
                 />
                 <Button
@@ -236,39 +235,21 @@ export default function TestWindow({
                 />
               </div>
             </div>
-            <div className="px-2 text-sm font-bold">
-              <div className="mb-2">
-                <div className="flex items-center">
-                  {testResults[testDoc._id] !== undefined && (
-                    <>
+            {testResponses[testDoc._id] &&
+              <div className="bg-[#272727] p-1 rounded">
+                <div className="px-1 text-sm font-semibold">
+                  <div className="mb-1">
+                    <div className="flex items-center">
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
                       <span>{statusText[testDoc._id]}</span>
-                    </>
-                  )}
-                </div>
+                    </div>
+                  </div>
+                </div>    
+                <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">{testResponses[testDoc._id]}</pre>
               </div>
-            </div>
-            {testResponses[testDoc._id] ? (        
-              <pre className="font-mono text-xs ml-4 mb-2 whitespace-normal break-words">{testResponses[testDoc._id]}</pre>
-            ) : (
-                <div></div>
-            )}
+            }
           </div>
         ))}
-      </div>
-      <div className="flex justify-end items-center pb-4 mr-4 space-x-4">
-        <Button
-          text="Cancel"
-          onClick={handleCancelClick}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
-        />
-        <Button
-          text="Run All"
-          onClick={runAllTests}
-          className={`${
-            tests == null || tests.length == 0 ? "hidden" : "block"
-          } mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
-        />
       </div>
     </div>
   );
