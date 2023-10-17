@@ -52,7 +52,6 @@ export default function TestWindow({
 
     try {
       const result = await api.runTest(testDoc);
-      console.log(result)
       setTestResults((prevResults) => ({
         ...prevResults,
         [testDoc._id]: result.status,
@@ -69,11 +68,7 @@ export default function TestWindow({
       }));
 
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
-    } catch (error) {
-
-      console.log(error)
-
-            
+    } catch (error) {            
       setTestResults((prevResults) => ({
         ...prevResults,
         [testDoc._id]: error.response ? error.response.status : 500,
@@ -105,7 +100,6 @@ export default function TestWindow({
     if (statusCode >= 200 && statusCode < 300) return "green";
     if (statusCode >= 400 && statusCode < 500) return "yellow";
     if (statusCode >= 500) return "red";
-    console.log(statusCode);
     return "gray";
   }
 

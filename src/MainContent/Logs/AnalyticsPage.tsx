@@ -29,7 +29,6 @@ export default function AnalyticsPage() {
         uniqueUsers: entry.uniqueUsers,
         totalRequests: entry.totalRequests,
       }));
-      console.log(processedData)
       setData(processedData);
     } catch (error) {
       console.error("Error fetching monitoring data:", error);

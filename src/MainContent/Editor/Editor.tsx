@@ -15,37 +15,19 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
     if (!ideReady) return;
     postMessageToIframe(postMessage);
     setPostMessage(null);
-    console.log("Posted");
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
     if (iframeRef == null || iframeRef.current == null || iframeRef.current.contentWindow == null) return;
     iframeRef.current.contentWindow.postMessage(message, "*");
-    console.log("Sent message:", message);
   };
 
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
-      console.log("extensionReady");
       setIdeReady(true);
-      // setTimeout(() => {
-      //   if (currentFileRef.current != null) {
-      //     return;
-      //   } 
-      //   if(selectedTab == Page.Hosting){
-      //     const message = { fileName: "/frontend/src/App.js", type: "openFile" };
-      //     postMessageToIframe(message);
-      //   } else{
-      //     const message = { fileName: "/backend/user-dependencies/get-.js", type: "openFile" };
-      //     postMessageToIframe(message);
-      //   }
-      // }, 100);
     }
     
     if (event.data.type === "fileChanged") {
-      console.log("fileChanged");
-      console.log(event.data);
-
       currentFileRef.current = event.data.fileName;
       setCurrentFileProperties({
         fileUri: event.data.fileUri,
@@ -84,8 +66,6 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
     if (testDomain == undefined || activeProject == undefined || testDomain == "" || activeProject == "") return;
 
     const getUrl = async () => {
-      console.log("Getting url");
-      console.log("testDomain", testDomain, "activeProject", activeProject);
       const fermatJwt = await getFermatJwt();
       if (fermatJwt == null || fermatJwt == "" || testDomain == "" || testDomain == undefined) return;
       setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);

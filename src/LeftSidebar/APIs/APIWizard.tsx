@@ -47,10 +47,6 @@ export default function APIWizard({
       newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
     }
 
-    console.log(newEndpointName);
-    console.log(fileName);
-    // return
-
     let isDuplicate = false;
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {

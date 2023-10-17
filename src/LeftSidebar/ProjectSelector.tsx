@@ -16,6 +16,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   const { createProject } = useDatabaseApi();
   const {
     projects,
+    setProjects,
     activeProject,
     setActiveProject,
     activeProjectName,
@@ -63,8 +64,10 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   };
 
   const setCurrentProject = async (id: string) => {
-    const project = projects.filter((p) => p.id == id)[0];
-    if (project == null) return;
+    var project = projects.filter((p) => p.id == id)[0];
+    if (project == null) {
+      project = projects[0]
+    };
 
     const deploymentStatus = await checkDeploymentStatus(project.id);
     if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {

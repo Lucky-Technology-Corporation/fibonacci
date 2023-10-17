@@ -37,7 +37,6 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
           };
         });
         setLogs(deploymentLogs);
-        console.log(logs)
     } else {
         console.error("Unexpected response format:", response);
     }

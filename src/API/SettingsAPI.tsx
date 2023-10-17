@@ -55,7 +55,6 @@ export default function useSettingsApi() {
           Authorization: authHeader(),
         },
       });
-      console.log(response.data);
       return response.data;
     } catch (e: any) {
       console.error(e);

@@ -216,7 +216,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
   const updateRowBeingEdited = (data: any) => {
     if (data == undefined) return;
-    console.log("updateRowBeingEdited", data);
     setData((prevData) => {
       return prevData.map((row) => {
         if (row._id == keyForRowBeingEdited[0]) {

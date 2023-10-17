@@ -61,12 +61,9 @@ export default function LeftSidebar({
 
 
   const openActiveFile = () => {
-    console.log("open activeFile", activeFile);
-    
     if (currentFileProperties && currentFileProperties.fileUri) {
       const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       if (currentFile == activeFile) {
-        console.log("already open")
         return
       };
     }
@@ -86,7 +83,6 @@ export default function LeftSidebar({
 
   const openActiveEndpoint = () => {
     if (activeEndpoint == undefined || activeEndpoint == "") return;
-    console.log("open activeEndpoint", activeEndpoint);
     var fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
 
     if (fileName.startsWith("!helper!")) {
@@ -107,7 +103,6 @@ export default function LeftSidebar({
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         if (currentFile == activeEndpoint) {
-          console.log("already open")
           return
         };
       }
@@ -125,7 +120,6 @@ export default function LeftSidebar({
     }
 
     if (currentFileProperties.fileUri.includes("backend")) {
-      console.log("backend file", currentFileProperties.fileUri);
 
       if (currentFileProperties.fileUri.includes("backend/helpers/")) {
         const newEndpoint = currentFileProperties.fileUri
@@ -143,7 +137,6 @@ export default function LeftSidebar({
     }
 
     if (currentFileProperties.fileUri.includes("frontend")) {
-      console.log("frontend file", currentFileProperties.fileUri);
       const newFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       setActiveFile(newFile);
     }

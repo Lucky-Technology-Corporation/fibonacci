@@ -1,12 +1,11 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import useDatabaseApi from "../../API/DatabaseAPI";
 import useNotificationApi from "../../API/NotificationsAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
 import Button from "../../Utilities/Button";
 import Checkbox from "../../Utilities/Checkbox";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NotificationsTable from "./NotificationsTable";
 import SampleNotification from "./SampleNotification";
-import useDatabaseApi from "../../API/DatabaseAPI";
-import toast from "react-hot-toast";
 
 export default function NotificationControls({ setShowSetUp }) {
   const api = useNotificationApi();
@@ -23,7 +22,6 @@ export default function NotificationControls({ setShowSetUp }) {
   const send = async () => {
     if (allUsers) {
       const docs = dbApi.getDocuments("_swizzle_users");
-      console.log(docs);
     }
 
     runAnimation();
@@ -62,7 +60,6 @@ export default function NotificationControls({ setShowSetUp }) {
     if (activeProject == null) {
       return;
     }
-    console.log("fetching...");
     fetchNotifData();
   }, [activeProject, environment]);
 

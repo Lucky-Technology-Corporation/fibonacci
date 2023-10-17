@@ -70,7 +70,6 @@ export default function TemplateWizard({
     async function fetchTemplates() {
       const response = await api.getTemplates();
       setTemplateOptions(response);
-      console.log("fetched templates", response);
     }
     if (isVisible) {
       fetchTemplates();

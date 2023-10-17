@@ -101,7 +101,6 @@ export default function useEndpointApi() {
           },
         },
       );
-      console.log(response.data)
       return response.data;
     } catch (e) {
       console.error(e);
@@ -213,7 +212,6 @@ export default function useEndpointApi() {
   };
 
   const getPackageJson = async (location: string) => {
-    console.log("Getting package.json");
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
         return [];

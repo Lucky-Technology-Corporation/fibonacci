@@ -29,7 +29,6 @@ export default function NotificationPageSetUp({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      console.log("File chosen:", file.name);
       const reader = new FileReader();
 
       reader.onload = function (event) {

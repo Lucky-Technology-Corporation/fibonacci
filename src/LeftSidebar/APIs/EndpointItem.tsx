@@ -56,7 +56,6 @@ export default function EndpointItem({
         fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
         endpointName: newEndpointName,
       });
-      console.log("post post message")
       await deleteFile(fileName, "backend")
       removeFromList()
     } catch(e){
@@ -78,7 +77,6 @@ export default function EndpointItem({
           className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
           icon={faTrash}
           onClick={() => {
-            console.log(path)
             const c = confirm("Are you sure you want to delete this endpoint?");
             if(c){
               toast.promise(runDeleteProcess(method, path), {

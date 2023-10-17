@@ -55,10 +55,9 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
                 </div>
               </div>
               <img src="/popout.svg" className='absolute top-1 left-5 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={()=> {
-                  console.log("!")
                   window.open(testDomain, '_blank')
               }} />
-              <img src="/close.svg" className='absolute top-1 right-1 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={(e) =>{ console.log("click"); setIsVisible(false)}} />
+              <img src="/close.svg" className='absolute top-1 right-1 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={(e) =>{ setIsVisible(false)}} />
               <div style={{ width: "100%", height: "calc(100% - 19px)" }}>
                 <iframe 
                   src={testDomain} 

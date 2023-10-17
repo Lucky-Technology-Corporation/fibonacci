@@ -70,7 +70,6 @@ export default function DocumentJSON({
     // Validate the entire JSON array
     try {
       const dataArray = JSON.parse(data);
-      console.log(dataArray)
       if (Array.isArray(dataArray)) {
         // If 'data' is a JSON array
         // Validate each JSON object in the array
