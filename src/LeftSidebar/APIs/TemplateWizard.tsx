@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
+import SelectSearch from 'react-select-search';
 import useEndpointApi from "../../API/EndpointAPI";
 import useTemplateApi from "../../API/TemplatesAPI";
 import Checkbox from "../../Utilities/Checkbox";
@@ -32,13 +32,20 @@ export default function TemplateWizard({
   type TemplateType = {
     id: string;
     name: string;
-    desc: string;
+    description: string;
     inputs: Input[];
     github_url: string | null;
-    packages: string;
+    npm_packages: string;
   };
 
-  const [template, setTemplate] = useState<TemplateType | null>(null);
+  const [template, setTemplate] = useState<TemplateType>({
+    id: "blank",
+    name: "Blank",
+    description: "Start from scratch",
+    inputs: [],
+    github_url: null,
+    npm_packages: "",
+  });
   const [step, setStep] = useState(0);
 
   // const [templateOptions, setTemplateOptions] = useState([{ id: "1", name: "Plaid", description: "Add Plaid stuff" }, { id: "2", name: "Stripe", description: "Add Stripe stuff" }]);
@@ -53,7 +60,7 @@ export default function TemplateWizard({
     if (template) {
       const initialState = {};
 
-      template.inputs.forEach((input) => {
+      (template.inputs || []).forEach((input) => {
         if (input.type === "boolean") {
           initialState[input.name] = false; // default value for checkboxes
         } else if (input.type === "string") {
@@ -68,7 +75,10 @@ export default function TemplateWizard({
 
   useEffect(() => {
     async function fetchTemplates() {
-      const response = await api.getTemplates();
+      var response = await api.getTemplates();
+      response = response.map((template, index) => {
+        return {...template, id: (""+index)}
+      })
       setTemplateOptions(response);
     }
     if (isVisible) {
@@ -112,7 +122,7 @@ export default function TemplateWizard({
     const payload = await constructPayload();
 
     //Add necessary npm packages
-    template.packages.split(",").forEach(async (package_name) => {
+    (template.npm_packages || "").split(",").forEach(async (package_name) => {
       setPackageToInstall(package_name.trim());
       await delay(250);
     });
@@ -123,8 +133,8 @@ export default function TemplateWizard({
     setIsVisible(false);
   }
 
-  const handleOnSelectTemplate = (result: { id: any; name: string }) => {
-    const foundTemplate = templateOptions.find((template) => template.id === result.id);
+  const handleOnSelectTemplate = (id: string) => {
+    const foundTemplate = templateOptions.find((template) => template.id === id);
     if (foundTemplate) {
       setTemplate(foundTemplate);
     } else {
@@ -161,6 +171,7 @@ export default function TemplateWizard({
     );
   };
 
+
   return (
     <div
       className={`fixed z-50 inset-0 overflow-y-auto ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
@@ -187,14 +198,31 @@ export default function TemplateWizard({
                   </div>
                   <div className="mt-4">
                     <div className="w-full mb-2">
-                      <ReactSearchAutocomplete
+                      <SelectSearch options={templateOptions.map((template) => ({
+                          value: template.id,
+                          name: template.name,
+                          description: template.description,
+                        }))} 
+                        value={template.id} 
+                        placeholder="Blank template" 
+                        search
+                        className={{
+                          container: "overflow-scroll max-h-[200px] rounded bg-[#32333b] border border-[#525363]",
+                          input: "w-full h-[36px] focus:border-[#68697a] outline-none bg-[#32333b] px-2",
+                          options: "z-50",
+                          option: "p-2 w-full text-left border-t border-[#525363] hover:text-white",
+                        }}
+                        onChange={handleOnSelectTemplate}
+                      />
+
+                      {/* <ReactSearchAutocomplete
                         items={templateOptions.map((template) => ({
                           id: template.id,
                           name: template.name,
                           description: template.description,
                         }))}
+                        showItemsOnFocus={true}
                         onSelect={handleOnSelectTemplate}
-                        autoFocus
                         placeholder="Blank template"
                         styling={{
                           border: "1px solid #525363",
@@ -211,10 +239,10 @@ export default function TemplateWizard({
                         }}
                         formatResult={formatResult}
                         showIcon={false}
-                      />
+                      /> */}
                     </div>
                   </div>
-                  <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
+                  <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse z-10">
                     <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
                       <button
                         type="button"
@@ -246,7 +274,7 @@ export default function TemplateWizard({
                     Setup Template
                   </h3>
                   {template &&
-                    template.inputs.map((input) => {
+                    (template.inputs || []).map((input) => {
                       if (input.type === "boolean") {
                         return (
                           <div className="mt-4" key={input.desc}>
