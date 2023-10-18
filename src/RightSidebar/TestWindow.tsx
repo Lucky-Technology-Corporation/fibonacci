@@ -36,7 +36,7 @@ export default function TestWindow({
     _id: string;
   };
 
-  const { domain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
+  const { domain, activeProject, activeEndpoint, activeHelper, environment } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
   const [tests, setTests] = useState<TestType[]>([]);
   const [testResults, setTestResults] = useState({});
@@ -104,17 +104,22 @@ export default function TestWindow({
   }
 
   useEffect(() => {
-    api
-      .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
-      .then((response) => {
-        if (response && response.documents) {
-          setTests(response.documents);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching tests:", error);
-      });
-  }, [activeEndpoint]);
+    if(shouldShowTestWindow){
+      api
+        .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
+        .then((response) => {
+          console.log(response)
+          if (response && response.documents) {
+            setTests(response.documents);
+          } else{
+            setTests([])
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching tests:", error);
+        });
+    }
+  }, [activeEndpoint, shouldShowTestWindow]);
 
   const [showNewTestWindow, setShowNewTestWindow] = useState(false);
   const [testDoc, setTestDoc] = useState(null);
