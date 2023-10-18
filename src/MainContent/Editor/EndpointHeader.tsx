@@ -76,7 +76,7 @@ export default function EndpointHeader() {
 
   return (
     <>
-      {activeEndpoint && (
+
         <div className="flex-col">
           <div
             className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
@@ -133,7 +133,7 @@ export default function EndpointHeader() {
             />
           </div>
         </div>
-      )}
+
 
       <FloatingModal
         content={response}

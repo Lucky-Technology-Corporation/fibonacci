@@ -16,7 +16,7 @@ import DocumentJSON from "./DocumentJSON";
 import RowDetail from "./RowDetail";
 
 export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
-  const { getDocuments, deleteCollection, runQuery, updateDocument } = useDatabaseApi();
+  const { getDocuments, deleteCollection, runQuery, updateDocument, runMongoQuery } = useDatabaseApi();
 
   const { activeProject, environment } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -51,7 +51,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [didSearch, setDidSearch] = useState<boolean>(false);
 
-  const [filterName, setFilterName] = useState<string>("");
+  const [filterName, setFilterName] = useState<string>("_exec_mongo_query");
 
   useEffect(() => {
     if (searchQuery == "") {
@@ -75,6 +75,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       })
       .catch((e) => {
         console.error(e);
+        toast.error("Something went wrong")
         setError(e);
       });
   };
@@ -174,17 +175,31 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       toast.error("Please select a filter");
       return;
     }
-    runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
-      .then((data) => {
-        setDidSearch(true);
-        setData(data.documents || []);
-        setKeys(data.keys.sort() || []);
-        setTotalDocs(data.pagination.total_documents);
-      })
-      .catch((e) => {
-        console.error(e);
-        setError(e);
+    if(filterName == "_exec_mongo_query"){
+      runMongoQuery(searchQuery, activeCollection)
+        .then((data) => {
+          setDidSearch(true);
+          setData(data.documents || []);
+          setKeys(data.keys.sort() || []);
+          setTotalDocs(data.pagination.total_documents);
+        })
+        .catch((e) => {
+          console.error(e);
+          toast.error("Failed - double check your query and try again")
       });
+    } else{
+      runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
+        .then((data) => {
+          setDidSearch(true);
+          setData(data.documents || []);
+          setKeys(data.keys.sort() || []);
+          setTotalDocs(data.pagination.total_documents);
+        })
+        .catch((e) => {
+          console.error(e);
+          toast.error("Failed to filter")
+        });
+    }
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
@@ -244,16 +259,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         <div>
           <div className={`font-bold text-base`}>{activeCollection}</div>
           <div className={`text-sm mt-0.5`}>
-            Connect{" "}
-            <a
-              href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4"
-              target="_blank"
-              rel="nofollow"
-              className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
-            >
-              directly from your app
-            </a>{" "}
-            or via APIs
+            Explore your MongoDB instance
           </div>
         </div>
         <div className="text-sm w-20">

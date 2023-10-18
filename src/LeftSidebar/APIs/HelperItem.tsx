@@ -47,7 +47,7 @@ export default function HelperItem({
             className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
             icon={faTrash}
             onClick={() => {
-              const c = confirm("Are you sure you want to delete this endpoint?");
+              const c = confirm("Are you sure you want to delete this helper?");
               if(c){
                 toast.promise(runDeleteProcess(path), {
                   loading: "Deleting helper",

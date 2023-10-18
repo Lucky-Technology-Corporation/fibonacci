@@ -181,6 +181,28 @@ export default function useDatabaseApi() {
   //   }
   // };
 
+  const runMongoQuery = async (query: string, collectionName: string) => {
+    if (activeProject == "") return;
+    var url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${collectionName}/mongo?env=${environment}`;
+    try {
+      const response = await axios.post(
+        url,
+        {
+          query: query,
+        },
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return e.response.data;
+    }
+  }
+
   const runQuery = async (
     query: string,
     search_filter: string,
@@ -270,5 +292,6 @@ export default function useDatabaseApi() {
     createDocument,
     deleteCollection,
     runQuery,
+    runMongoQuery
   };
 }
