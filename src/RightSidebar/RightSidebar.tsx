@@ -10,7 +10,6 @@ import DeployButton from "./DeployButton";
 import AuthInfo from "./Sections/AuthInfo";
 import AutocheckInfo from "./Sections/AutocheckInfo";
 import DBInfo from "./Sections/DBInfo";
-import NotificationInfo from "./Sections/NotificationInfo";
 import PackageInfo from "./Sections/PackageInfo";
 import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
@@ -344,7 +343,7 @@ export default function RightSidebar({
                   <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
                   <DBInfo show={isDBChecked} />
                 </div>
-                <div className="h-2" />
+                {/* <div className="h-2" />
                 <div className="text-left w-full space-y-2">
                   <Checkbox
                     id="notifications"
@@ -353,7 +352,7 @@ export default function RightSidebar({
                     setIsChecked={setIsNotificationsChecked}
                   />
                   <NotificationInfo show={isNotificationsChecked} />
-                </div>
+                </div> */}
                 <div className="h-2" />
                 <div className="text-left w-full space-y-2">
                   <Checkbox

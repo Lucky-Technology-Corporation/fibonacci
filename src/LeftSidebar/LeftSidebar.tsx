@@ -278,14 +278,15 @@ export default function LeftSidebar({
         </div>
         <FilesList active={selectedTab == Page.Hosting} />
 
-        <SectionTitle
+        {/* Working, but temporarily hidden */}
+        {/* <SectionTitle
           icon="/bell.svg"
           text="Notifications"
           active={selectedTab == Page.Notifications}
           onClick={() => {
             setSelectedTab(Page.Notifications);
           }}
-        />
+        /> */}
 
         <div className="h-36 w-full flex-row">
           <div>&nbsp;</div>

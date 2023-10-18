@@ -13,6 +13,15 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
   useEffect(() => {
     if (postMessage == null) return;
     if (!ideReady) return;
+    
+    if(postMessage.type == "newFile"){
+      setCurrentFileProperties({
+        fileUri: postMessage.fileName,
+        hasPassportAuth: false,
+        hasGetDb: false,
+      });  
+    }
+
     postMessageToIframe(postMessage);
     setPostMessage(null);
   }, [postMessage]);
