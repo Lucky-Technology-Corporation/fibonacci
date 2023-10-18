@@ -31,10 +31,21 @@ export default function APIWizard({
       toast.error("Please enter a value");
       return;
     }
+    //check if valid url
+    const regex = /^\/(?!\/|::)([a-zA-Z0-9:]+\/)*(?!\/|::)[a-zA-Z0-9:]*$/;
+    if(!regex.test(inputValue)){
+      toast.error("Invalid path")
+      return
+    }
+
+    if(inputValue.endsWith("/")){
+      cleanInputValue = cleanInputValue.slice(0, -1)
+    }
+
     if (inputValue.startsWith("/")) {
-      cleanInputValue = inputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
+      cleanInputValue = cleanInputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
     } else {
-      cleanInputValue = inputValue.replace(/\//g, "-").replace(/:/g, "_");
+      cleanInputValue = cleanInputValue.replace(/\//g, "-").replace(/:/g, "_");
     }
     const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
 
