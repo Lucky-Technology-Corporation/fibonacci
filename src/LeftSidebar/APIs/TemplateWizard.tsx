@@ -99,10 +99,10 @@ export default function TemplateWizard({
     }
 
     return {
-      TemplateId: template ? template.id : "",
-      FermatURL: testDomain.replace("https://", "https://fermat."),
-      FermatJWT: await endpointApi.getFermatJwt(),
-      Inputs: inputs,
+      template_id: template ? template.id : "",
+      fermat_url: testDomain.replace("https://", "https://fermat."),
+      fermat_jwt: await endpointApi.getFermatJwt(),
+      inputs: inputs,
     };
   };
   function delay(ms) {
