@@ -43,7 +43,7 @@ export default function ToastWindow({
       case "bottom-right":
         return `${0}px`;
       case "bottom-center":
-        return `-${pixels / 2}px`;
+        return `-${pixels}px`;
       default:
         return `-${pixels}px`;
     }

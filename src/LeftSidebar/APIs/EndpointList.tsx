@@ -70,7 +70,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   // };
 
   useEffect(() => {
-    console.log("Getting list again...")
     getFiles("endpoints")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
