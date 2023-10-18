@@ -105,18 +105,13 @@ export default function TemplateWizard({
       inputs: inputs,
     };
   };
-  function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 
   async function handleOnSecondNext() {
     const payload = await constructPayload();
 
     //Add necessary npm packages
-    (template.packages || "").split(",").forEach(async (package_name) => {
-      setPackageToInstall(package_name.trim());
-      await delay(250);
-    });
+    const packageList = (template.packages || "").trim().replace(",", " ")
+    setPackageToInstall(packageList)
 
     //Create files
     await api.createFromTemplate(payload);
