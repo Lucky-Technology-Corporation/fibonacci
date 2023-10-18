@@ -267,12 +267,14 @@ export default function EndpointList({ active }: { active: boolean }) {
         setIsVisible={setIsVisible}
         setEndpoints={setEndpoints}
         setFullEndpoints={setFullEndpointList}
+        endpoints={fullEndpointList}
       />
       <HelperWizard
         isVisible={isHelperWizardVisible}
         setIsVisible={setIsHelperWizardVisible}
         setHelpers={setHelperList}
         setFullHelpers={setFullHelperList}
+        helpers={fullHelperList}
       />
       <TemplateWizard
         isVisible={isTemplateWizardVisible}

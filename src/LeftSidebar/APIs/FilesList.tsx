@@ -142,6 +142,7 @@ export default function FilesList({ active }: { active: boolean }) {
         setIsVisible={setIsVisible}
         setFiles={setFiles}
         setFullFiles={setFullFileList}
+        files={fullFileList}
       />
     </div>
   );

@@ -8,11 +8,13 @@ export default function APIWizard({
   setIsVisible,
   setEndpoints,
   setFullEndpoints,
+  endpoints
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   setEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
   setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
+  endpoints: any[];
 }) {
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
@@ -45,6 +47,11 @@ export default function APIWizard({
       newEndpointName = `${method}/`;
     } else {
       newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
+    }
+
+    if(endpoints.includes(newEndpointName)){
+      toast.error("That endpoint already exists")
+      return
     }
 
     let isDuplicate = false;

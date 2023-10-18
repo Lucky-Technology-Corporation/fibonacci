@@ -178,10 +178,17 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     if(filterName == "_exec_mongo_query"){
       runMongoQuery(searchQuery, activeCollection)
         .then((data) => {
-          setDidSearch(true);
-          setData(data.documents || []);
-          setKeys(data.keys.sort() || []);
-          setTotalDocs(data.pagination.total_documents);
+          if(data.search_results){
+            setDidSearch(true);
+            setData(data.search_results || []);
+            setTotalDocs(data.search_results.length);
+          }
+          if(data.updated_count){
+            toast.success("Updated " + data.updated_count + " documents")
+          }
+          if(data.count_result){
+            toast.success("Found " + data.count_result + " documents")
+          }
         })
         .catch((e) => {
           console.error(e);

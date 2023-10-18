@@ -7,11 +7,13 @@ export default function HelperWizard({
   setIsVisible,
   setHelpers,
   setFullHelpers,
+  helpers
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   setHelpers: React.Dispatch<React.SetStateAction<any[]>>;
   setFullHelpers: React.Dispatch<React.SetStateAction<any[]>>;
+  helpers: any[];
 }) {
   const [inputValue, setInputValue] = useState("");
   const { setPostMessage, setActiveHelper } = useContext(SwizzleContext);
@@ -28,6 +30,11 @@ export default function HelperWizard({
     }
     const fileName = cleanInputValue + ".js";
     const newHelperName = cleanInputValue;
+
+    if(helpers.includes(newHelperName)){
+      toast.error("That endpoint already exists")
+      return
+    }
 
     let isDuplicate = false;
     setFullHelpers((helpers: any[]) => {

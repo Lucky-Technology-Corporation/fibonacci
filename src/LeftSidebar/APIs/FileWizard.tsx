@@ -9,11 +9,13 @@ export default function APIWizard({
   setIsVisible,
   setFiles,
   setFullFiles,
+  files
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   setFiles: React.Dispatch<React.SetStateAction<any[]>>;
   setFullFiles: React.Dispatch<React.SetStateAction<any[]>>;
+  files: any[];
 }) {
   const [inputValue, setInputValue] = useState("");
 
@@ -59,6 +61,11 @@ export default function APIWizard({
     var newFileName = inputValue;
     if (!newFileName.endsWith(".js") || !newFileName.endsWith(".jsx")) {
       newFileName = newFileName + ".js";
+    }
+
+    if(files.includes(newFileName)){
+      toast.error("That endpoint already exists")
+      return
     }
 
     let isDuplicate = false;
