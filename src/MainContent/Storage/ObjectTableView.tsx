@@ -141,6 +141,7 @@ export default function ObjectTableView() {
     }
     runQuery(searchQuery, filterName, "_swizzle_storage", sortedByColumn, sortDirection)
       .then((data) => {
+        console.log(data)
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
@@ -163,6 +164,7 @@ export default function ObjectTableView() {
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
+    console.log(x, y)
     setRowDetailData(rowData);
     setClickPosition({ x: x, y: y });
   };
@@ -256,7 +258,7 @@ export default function ObjectTableView() {
                 rowKey={row._id}
                 keys={keys}
                 data={Object.entries(row).reduce((result, [key, value]) => {
-                  const fileURL = `${baseUrl}/swizzle/db/storage/${value}/${row._id}.${row.fileExtension}`;
+                  const fileURL = `${domain.replace("https://", "https://api.")}/swizzle/db/storage/${value}.${row.fileExtension || row.fileName.split(".").pop()}`;
                   return {
                     ...result,
                     [key]: key === "_id" ? fileURL : value,
@@ -266,7 +268,7 @@ export default function ObjectTableView() {
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-                shouldBlockEdits={["_swizzle_uid"]}
+                shouldBlockEdits={["_swizzle_uid", "access", "createdAt", "fileName"]}
                 shouldHideFields={["data"]}
                 setJsonToEdit={() => {}}
                 setKeyForRowBeingEdited={() => {}}

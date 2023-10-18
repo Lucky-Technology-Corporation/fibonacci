@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { castValues } from "../../Utilities/DataCaster";
 import useDatabaseApi from "../../API/DatabaseAPI";
+import { castValues } from "../../Utilities/DataCaster";
 
 export default function RowDetail({
   collection,
@@ -148,8 +148,8 @@ export default function RowDetail({
       }`}
       style={{
         transition: "opacity 0.15s",
+        left: "12px",
         top: clickPosition.y + "px",
-        left: clickPosition.x + "px",
       }}
     >
       <table>

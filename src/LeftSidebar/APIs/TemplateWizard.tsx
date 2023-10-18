@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import useEndpointApi from "../../API/EndpointAPI";
 import useTemplateApi from "../../API/TemplatesAPI";
@@ -53,7 +54,7 @@ export default function TemplateWizard({
     if (template) {
       const initialState = {};
 
-      template.inputs.forEach((input) => {
+      (template.inputs || []).forEach((input) => {
         if (input.type === "boolean") {
           initialState[input.name] = false; // default value for checkboxes
         } else if (input.type === "string") {
@@ -112,7 +113,7 @@ export default function TemplateWizard({
     const payload = await constructPayload();
 
     //Add necessary npm packages
-    template.packages.split(",").forEach(async (package_name) => {
+    (template.packages || "").split(",").forEach(async (package_name) => {
       setPackageToInstall(package_name.trim());
       await delay(250);
     });
@@ -127,14 +128,21 @@ export default function TemplateWizard({
     const foundTemplate = templateOptions.find((template) => template.id === result.id);
     if (foundTemplate) {
       setTemplate(foundTemplate);
+      return true
     } else {
       console.log("unable to find matching template");
+      toast.error("Please try to select again")
+      return false
     }
   };
 
   const createTemplateHandler = () => {};
 
   const createHandler = () => {
+    if(!template){
+      toast.error("Please select a template")
+      return
+    }
     setStep(1);
   };
 
@@ -190,12 +198,11 @@ export default function TemplateWizard({
                       <ReactSearchAutocomplete
                         items={templateOptions.map((template) => ({
                           id: template.id,
-                          name: template.name,
+                          name: template.name + " ",
                           description: template.description,
                         }))}
                         onSelect={handleOnSelectTemplate}
-                        autoFocus
-                        placeholder="Blank template"
+                        placeholder="Type to search or SPACE to see all..."
                         styling={{
                           border: "1px solid #525363",
                           lineColor: "#525363",
@@ -211,6 +218,7 @@ export default function TemplateWizard({
                         }}
                         formatResult={formatResult}
                         showIcon={false}
+                        onSearch={() => {setTemplate(null)}}
                       />
                     </div>
                   </div>
@@ -221,7 +229,7 @@ export default function TemplateWizard({
                         onClick={() => {
                           createHandler();
                         }}
-                        className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
+                        className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698] sm:ml-3 sm:w-auto sm:text-sm`}
                       >
                         Next
                       </button>
@@ -245,8 +253,8 @@ export default function TemplateWizard({
                   <h3 className="text-lg mb-2 leading-6 font-medium text-[#D9D9D9]" id="modal-title">
                     Setup Template
                   </h3>
-                  {template &&
-                    template.inputs.map((input) => {
+                  {template && template.inputs && template.inputs.length > 0 &&
+                    (template.inputs || []).map((input) => {
                       if (input.type === "boolean") {
                         return (
                           <div className="mt-4" key={input.desc}>
@@ -295,7 +303,7 @@ export default function TemplateWizard({
                       }}
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
                     >
-                      Next
+                      Create
                     </button>
                     <button
                       type="button"
