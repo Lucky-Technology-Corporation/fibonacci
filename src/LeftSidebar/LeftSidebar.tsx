@@ -126,13 +126,15 @@ export default function LeftSidebar({
           .split("helpers/")[1]
           .replace(".js", "")
         setActiveEndpoint(newEndpoint);
-      } else{
+      } else if(currentFileProperties.fileUri.includes("user-dependencies/")){
         const newEndpoint = currentFileProperties.fileUri
           .split("user-dependencies/")[1]
           .replace(".js", "")
           .replace(/-/g, "/")
           .replace(/_/g, ":");
         setActiveEndpoint(newEndpoint);
+      } else{
+        setActiveEndpoint(null)
       }
     }
 

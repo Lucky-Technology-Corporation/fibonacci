@@ -152,7 +152,7 @@ export default function TestWindow({
               Test
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">Send mock requests to test</div>
+          <div className="text-sm text-gray-400 mt-1">You are in your <b>{environment == "prod" ? "production" : "test"}</b> environment</div>
         </div>
         <div className="flex ml-auto mr-0">
           <Button

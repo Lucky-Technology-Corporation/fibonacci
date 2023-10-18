@@ -16,7 +16,6 @@ export default function useTestApi() {
   } = useDatabaseApi();
 
   const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
-  const NEXT_PUBLIC_BASE_URL_USER = testDomain.replace("https://", "https://api.");
   const activeCollection = "_swizzle_usertests";
 
   const runTest = async (testDoc) => {
@@ -40,7 +39,7 @@ export default function useTestApi() {
 
       const method = activeEndpoint.split("/")[0].toUpperCase();
       const endpointPath = "/" + activeEndpoint.split("/")[1]
-      const url = `${NEXT_PUBLIC_BASE_URL_USER}${endpointPath}?${testDoc.queryParametersString}`;
+      const url = `${testDomain.replace("https://", "https://api.")}${endpointPath}?${testDoc.queryParametersString}`;
       const body = testDoc.body;
 
       return await execTest(url, method, body, jwtToken);
