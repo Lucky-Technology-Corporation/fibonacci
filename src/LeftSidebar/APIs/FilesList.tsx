@@ -81,6 +81,7 @@ export default function FilesList({ active }: { active: boolean }) {
           onClick={() => {
             setActiveFile("frontend/public/index.html");
           }}
+          disableDelete={true}
         />
         <FileItem
           key={"App.js"}
@@ -89,6 +90,7 @@ export default function FilesList({ active }: { active: boolean }) {
           onClick={() => {
             setActiveFile("frontend/src/App.js");
           }}
+          disableDelete={true}
         />
         <FileItem
           key={"App.css"}
@@ -97,6 +99,7 @@ export default function FilesList({ active }: { active: boolean }) {
           onClick={() => {
             setActiveFile("frontend/src/App.css");
           }}
+          disableDelete={true}
         />
       </div>
       <div className="font-semibold ml-2 mt-2 flex">
@@ -117,7 +120,7 @@ export default function FilesList({ active }: { active: boolean }) {
               <FileItem
                 key={component}
                 path={formatFileName(component)}
-                active={component == activeFile}
+                active={"frontend/src/" + component == activeFile}
                 onClick={() => {
                   setActiveFile("frontend/src/" + component);
                 }}

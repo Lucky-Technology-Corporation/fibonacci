@@ -45,7 +45,7 @@ export default function FileItem({
       >
         <div className="flex">
           <div>{path}</div>
-          {disableDelete && (
+          {!disableDelete && (
             <FontAwesomeIcon
               className={`mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer`}
               icon={faTrash}
@@ -53,9 +53,9 @@ export default function FileItem({
                 const c = confirm("Are you sure you want to delete this endpoint?");
                 if(c){
                   toast.promise(runDeleteProcess(path), {
-                    loading: "Deleting helper",
-                    success: "Helper deleted",
-                    error: "Error deleting helper"
+                    loading: "Deleting component",
+                    success: "Component deleted",
+                    error: "Error deleting component"
                   })
                 }
               }}

@@ -57,7 +57,9 @@ export default function AnalyticsPage() {
         <div className="flex-col mr-4">
           <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
         </div>
-       
+        <div className="ml-auto mr-8 no-focus-ring">
+          <DateRangePicker value={dateRange} onValueChange={setDateRange}></DateRangePicker>
+        </div>
         {/* <Button
           className="ml-auto mr-10 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
           onClick={() => {}}
@@ -126,9 +128,6 @@ export default function AnalyticsPage() {
       <div className="no-focus-ring pt-2">
         {data.length > 0 ? (
           <>
-            <div className="ml-10">
-              <DateRangePicker value={dateRange} onValueChange={setDateRange}></DateRangePicker>
-            </div>
             <div className="p-4 pt-0 flex flex-row space-x-2">
               {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
               {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
