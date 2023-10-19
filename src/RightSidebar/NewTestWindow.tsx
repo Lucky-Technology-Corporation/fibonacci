@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useTestApi from "../API/TestingAPI";
-import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
+import { ParsedActiveEndpoint, enumeratePathParams } from "../Utilities/ActiveEndpointHelper";
 import Button from "../Utilities/Button";
 import Checkbox from "../Utilities/Checkbox";
 import { SwizzleContext } from "../Utilities/GlobalContext";
@@ -67,13 +67,18 @@ export default function NewTestWindow({
 
     const documentToCreate: TestType = {
       testName,
-      pathParams: pathParams.filter((param) => param != undefined),
+      pathParams,
       queryParams,
       headers: new Map<string, string>(),
       userId,
       body: bodyObject,
       endpoint: activeEndpoint,
     };
+
+    if (parsedActiveEndpoint.pathParams.length != pathParams.filter(p => p !== undefined && p !== "").length){
+      toast.error("Please enter all path parameters");
+      return;
+    }
 
     try {
       if (testDoc) {
@@ -132,18 +137,18 @@ export default function NewTestWindow({
 
         <div className="flex w-full mb-2">
           <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold ${methodToColor(undefined, parsedActiveEndpoint.method)}`}>{parsedActiveEndpoint.method}</div>
-          {parsedActiveEndpoint.toParts().map((part, index) => {
-            if(part.startsWith(":")){
+          {enumeratePathParams(parsedActiveEndpoint.toParts()).map((part) => {
+            if(typeof part === "object"){
               return (
                 <input
                   type="text"
                   className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
-                  placeholder={part}
-                  value={pathParams[index]}
+                  placeholder={part[0]}
+                  value={pathParams[part[1]]}
                   onChange={(e) => {
                     setPathParameters((prevParams) => {
                       const newParams = [...prevParams];
-                      newParams[index] = e.target.value;
+                      newParams[part[1]] = e.target.value;
                       return newParams;
                     })
                   }}
