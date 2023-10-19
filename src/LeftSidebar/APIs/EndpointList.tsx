@@ -249,7 +249,7 @@ export default function EndpointList({ active }: { active: boolean }) {
             <HelperItem
               key={index}
               path={helper.replace("/helpers/", "")}
-              active={helper == activeEndpoint}
+              active={"!helper!" +helper == activeEndpoint}
               onClick={() => setActiveEndpoint("!helper!" + helper)}
               removeFromList={() => {
                 setHelperList((prev) => {

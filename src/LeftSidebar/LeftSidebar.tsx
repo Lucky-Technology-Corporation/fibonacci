@@ -84,10 +84,9 @@ export default function LeftSidebar({
       fileName = fileName.replace("!helper!", "");
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-        if (currentFile == `helpers/${fileName}`) return;
+        if (currentFile == `backend/helpers/${fileName}`) return;
       }
       //Open the helper
-      console.log("openActiveEndpoint", `/backend/helpers/${fileName}`)
       setPostMessage({
         type: "openFile",
         fileName: `/backend/helpers/${fileName}`,
@@ -98,12 +97,10 @@ export default function LeftSidebar({
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         const currentEndpoint = filenameToEndpoint(currentFile)
-      
         if (currentEndpoint.replace("backend/user-dependencies/", "") == activeEndpoint) {
           return
         };
       }
-      console.log("openActiveEndpoint", `/backend/user-dependencies/${fileName}`)
       //Open the endpoint
       setPostMessage({
         type: "openFile",
@@ -116,12 +113,10 @@ export default function LeftSidebar({
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) {
       return;
     }
-
     if (currentFileProperties.fileUri.includes("backend")) {
-
       if (currentFileProperties.fileUri.includes("backend/helpers/")) {
         const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("helpers/")[1])
-        setActiveEndpoint(newEndpoint);
+        setActiveEndpoint("!helper!"+newEndpoint);
       } else if(currentFileProperties.fileUri.includes("user-dependencies/")){
         const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("user-dependencies/")[1])
         setActiveEndpoint(newEndpoint);
