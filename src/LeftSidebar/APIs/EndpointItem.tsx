@@ -53,9 +53,9 @@ export default function EndpointItem({
         onClick={onClick}
       >
         <div className="flex">
-        <div><span className={`${methodToColor(method)}`}>{method}</span> {path}</div>
+        <div className="max-w-[240px] break-all pr-2"><span className={`${methodToColor(method)}`}>{method}</span> {path}</div>
         <FontAwesomeIcon
-          className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
+          className="mr-2 ml-auto mt-0.5 opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
           icon={faTrash}
           onClick={() => {
             const c = confirm("Are you sure you want to delete this endpoint?");
