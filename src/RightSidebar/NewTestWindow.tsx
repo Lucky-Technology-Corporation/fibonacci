@@ -67,7 +67,7 @@ export default function NewTestWindow({
 
     const documentToCreate: TestType = {
       testName,
-      pathParams,
+      pathParams: pathParams.filter((param) => param != undefined),
       queryParams,
       headers: new Map<string, string>(),
       userId,
@@ -132,16 +132,20 @@ export default function NewTestWindow({
 
         <div className="flex w-full mb-2">
           <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold ${methodToColor(undefined, parsedActiveEndpoint.method)}`}>{parsedActiveEndpoint.method}</div>
-          {parsedActiveEndpoint.toParts().map((part) => {
+          {parsedActiveEndpoint.toParts().map((part, index) => {
             if(part.startsWith(":")){
               return (
                 <input
                   type="text"
                   className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
                   placeholder={part}
-                  value={testName}
+                  value={pathParams[index]}
                   onChange={(e) => {
-                    setTestName(e.target.value);
+                    setPathParameters((prevParams) => {
+                      const newParams = [...prevParams];
+                      newParams[index] = e.target.value;
+                      return newParams;
+                    })
                   }}
                   style={{width: "inherit"}}
                 />
