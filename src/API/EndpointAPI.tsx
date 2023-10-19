@@ -117,13 +117,14 @@ export default function useEndpointApi() {
 
       var filePath = ""
       if(location == "backend"){
-        filePath = "/backend/user-dependencies/" + fileName.replace("/", "") + ".js"
+        filePath = "/backend/user-dependencies/" + fileName
       } else if(location == "frontend"){
-        filePath = "/frontend/src/" + fileName.replace("/", "")
+        filePath = "/frontend/src/" + fileName
       } else if(location == "helpers"){
-        filePath = "/backend/helpers/" + fileName.replace("/", "")
+        filePath = "/backend/helpers/" + fileName
       }
 
+      console.log("Deleting file", filePath)
       const response = await axios.delete(
         `${testDomain.replace("https://", "https://fermat.")}/code/delete?path=code${filePath}`,
         {

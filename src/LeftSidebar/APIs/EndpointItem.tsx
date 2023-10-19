@@ -40,13 +40,15 @@ export default function EndpointItem({
 
   const runDeleteProcess = async (method: string, path: string) => {
     try{
-      let newEndpointName = method.toLowerCase() + "/" + path
+      console.log("delete", method, path)
+      let newEndpointName = method.toLowerCase() + path
       let fileName = endpointToFilename(newEndpointName)
       
       if(newEndpointName === ""){
         newEndpointName = "get."
       }
       
+
       setPostMessage({
         type: "removeFile",
         fileName: "/backend/user-dependencies/" + fileName,

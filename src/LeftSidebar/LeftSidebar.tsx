@@ -68,7 +68,7 @@ export default function LeftSidebar({
         return
       };
     }
-
+    console.log("openActiveFile", "/"+activeFile)
     setPostMessage({
       type: "openFile",
       fileName: `/${activeFile}`,
@@ -87,6 +87,7 @@ export default function LeftSidebar({
         if (currentFile == `helpers/${fileName}`) return;
       }
       //Open the helper
+      console.log("openActiveEndpoint", `/backend/helpers/${fileName}`)
       setPostMessage({
         type: "openFile",
         fileName: `/backend/helpers/${fileName}`,
@@ -95,14 +96,14 @@ export default function LeftSidebar({
     } else {
       //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
-        console.log(currentFileProperties.fileUri)
-        console.log("equal to?")
-        console.log(activeEndpoint)
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-        if (currentFile == activeEndpoint) {
+        const currentEndpoint = filenameToEndpoint(currentFile)
+      
+        if (currentEndpoint.replace("backend/user-dependencies/", "") == activeEndpoint) {
           return
         };
       }
+      console.log("openActiveEndpoint", `/backend/user-dependencies/${fileName}`)
       //Open the endpoint
       setPostMessage({
         type: "openFile",
