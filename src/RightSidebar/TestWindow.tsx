@@ -10,14 +10,14 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 import NewTestWindow from "./NewTestWindow";
 
 export type TestType = {
-  test_name: string;
-  query_parameters: object;
-  queryParametersString: string;
-  user_id?: string;
-  body: object;
-  bodyString: string;
-  endpoint: string;
   _id?: string;
+  testName: string;
+  queryParams: Map<string, string>;
+  headers: Map<string, string>;
+  pathParams: string[];
+  userId?: string;
+  body: object;
+  endpoint: string;
 };
 
 export default function TestWindow({
@@ -130,13 +130,12 @@ export default function TestWindow({
     return (
       <NewTestWindow
         id={testDoc._id}
-        testTitle={testDoc.test_name}
-        savedQueryParameters={testDoc.queryParametersString}
-        savedUserId={testDoc.user_id}
+        testTitle={testDoc.testName}
+        savedQueryParameters={testDoc.queryParams}
+        savedUserId={testDoc.userId}
         savedBody={testDoc.bodyString}
         shouldShowNewTestWindow={showNewTestWindow}
         hideNewTestWindow={() => setShowNewTestWindow(false)}
-        savedTests={tests}
         setTests={setTests}
       />
     );
@@ -209,7 +208,7 @@ export default function TestWindow({
                   }
                   text=""
                 />
-                <div className="font-medium m-auto ml-2">{testDoc.test_name}</div>
+                <div className="font-medium m-auto ml-2">{testDoc.testName}</div>
               </div>
               <div className="flex space-x-2">
                 <Button

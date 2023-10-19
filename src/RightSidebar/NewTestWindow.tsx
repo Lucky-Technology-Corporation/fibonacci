@@ -6,8 +6,7 @@ import useTestApi from "../API/TestingAPI";
 import Button from "../Utilities/Button";
 import Checkbox from "../Utilities/Checkbox";
 import { SwizzleContext } from "../Utilities/GlobalContext";
-import InputWithPrefix from "../Utilities/InputWithPrefix";
-import BodyInfo from "./Sections/BodyInfo";
+import InputJsonForm from "./Sections/BodyInfo";
 import UserIdInfo from "./Sections/UserIdInfo";
 import { TestType } from "./TestWindow";
 import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
@@ -15,32 +14,33 @@ import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 export default function NewTestWindow({
   id,
   testTitle,
+  savedPathParameters,
   savedQueryParameters,
   savedUserId,
   savedBody,
   shouldShowNewTestWindow,
   hideNewTestWindow,
-  savedTests,
   setTests,
 }: {
   id?: string;
   testTitle?: string;
-  savedQueryParameters?: string;
+  savedPathParameters?: string[];
+  savedQueryParameters?: Map<string, string>;
   savedUserId?: string;
-  savedBody?: string;
+  savedBody?: object;
   shouldShowNewTestWindow: boolean;
   hideNewTestWindow: any;
-  savedTests?: any[];
   setTests?: (newTests: any) => void;
 }) {
   const [testName, setTestName] = useState(testTitle || "");
-  const [queryParameters, setQueryParameters] = useState(savedQueryParameters || "");
-  const [isQueryParamsChecked, setIsQueryParamsChecked] = useState(!!savedQueryParameters);
+  const [queryParams, setQueryParameters] = useState(savedQueryParameters || new Map<string, string>());
+  const [pathParams, setPathParameters] = useState(savedPathParameters || []);
   const [isUserIdChecked, setIsUserIdChecked] = useState(!!savedUserId);
   const [isBodyChecked, setIsBodyChecked] = useState(!!savedBody);
 
   const [userId, setUserId] = useState(savedUserId || "");
-  const [body, setBody] = useState(savedBody || "");
+  const [body, setBody] = useState(savedBody);
+  const [bodyRaw, setBodyRaw] = useState(!!body ? JSON.stringify(body) : "");
   const { activeEndpoint } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
   const myRef = useRef<HTMLDivElement>(null);
@@ -66,20 +66,10 @@ export default function NewTestWindow({
       return;
     }
 
-    let queryParamsObject = {};
-    if (queryParameters) {
-      const pairs = queryParameters.split("&");
-      for (let pair of pairs) {
-        console.log(`Pair: ${pair}`);
-        const [key, value] = pair.split("=");
-        queryParamsObject[key] = value;
-      }
-    }
-
     let bodyObject;
-    if (body) {
+    if (bodyRaw) {
       try {
-        bodyObject = JSON.parse(body);
+        bodyObject = JSON.parse(bodyRaw);
       } catch (err) {
         console.error("Failed to parse body:", err);
         return;
@@ -87,12 +77,12 @@ export default function NewTestWindow({
     }
 
     const documentToCreate: TestType = {
-      test_name: testName,
-      query_parameters: queryParamsObject,
-      queryParametersString: queryParameters,
-      user_id: userId,
+      testName,
+      pathParams,
+      queryParams,
+      headers: new Map<string, string>(),
+      userId,
       body: bodyObject,
-      bodyString: body,
       endpoint: activeEndpoint,
     };
 
@@ -155,36 +145,20 @@ export default function NewTestWindow({
             onChange={(e) => {
               setTestName(e.target.value);
             }}
-            onKeyDown={(event) => {
-              if (event.key == "Enter") {
-                saveTest();
-              }
-            }}
           />
         </div>
-        <div className="mt-2 mb-2">
-          <Checkbox
-            id="queryparams"
-            label="Query Parameters"
-            isChecked={isQueryParamsChecked}
-            setIsChecked={setIsQueryParamsChecked}
-          />
-          <InputWithPrefix
-            show={isQueryParamsChecked}
-            prefix={"/?" + (activeEndpoint.split("/")[1] || "")}
-            className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
-            placeholder={"key=value&key2=value2"}
-            value={queryParameters}
-            onChange={(e) => {
-              console.log(`Setting query params to: ${e.target.value}`);
-              setQueryParameters(e.target.value);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                saveTest();
-              }
-            }}
-          />
+        <div className="flex w-full mb-2">
+          {parsedActiveEndpoint.pathParams.map((param) => (
+            <input
+              type="text"
+              className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
+              placeholder={param}
+              value={testName}
+              onChange={(e) => {
+                setTestName(e.target.value);
+              }}
+            />
+          ))}
         </div>
         <div className="mb-2">
           <Checkbox id="userid" label="User ID" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />
@@ -196,27 +170,17 @@ export default function NewTestWindow({
             onChange={(e) => {
               setUserId(e.target.value);
             }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                saveTest();
-              }
-            }}
           />
         </div>
 
-        <div className={`mb-2 ${activeEndpoint.split("/")[0].toUpperCase() != "GET" ? "" : "hidden"}`}>
+        <div className={`mb-2 ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
           <Checkbox id="body" label="Body" isChecked={isBodyChecked} setIsChecked={setIsBodyChecked} />
-          <BodyInfo
+          <InputJsonForm
             className="text-s flex-grow bg-transparent"
             placeholder="{ }"
-            value={body}
+            value={bodyRaw}
             onChange={(e) => {
-              setBody(e.target.value);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                saveTest();
-              }
+              setBodyRaw(e.target.value);
             }}
             show={isBodyChecked}
           />

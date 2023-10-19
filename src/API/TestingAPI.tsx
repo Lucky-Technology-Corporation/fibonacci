@@ -27,9 +27,9 @@ export default function useTestApi() {
     }
 
     let jwtToken;
-    if (testDoc.user_id !== undefined && testDoc.user_id !== "") {
+    if (testDoc.userId !== undefined && testDoc.userId !== "") {
       const response = await axios.get(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.user_id}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
         {
           headers: {
             Authorization: authHeader(),
@@ -40,12 +40,14 @@ export default function useTestApi() {
     }
 
     const endpoint = new ParsedActiveEndpoint(activeEndpoint);
-    const url = `${testDomain.replace("https://", "https://api.")}${endpoint.fullPath}?${
-      testDoc.queryParametersString
-    }`;
+    // TODO: Get params from input
+    const url = `${testDomain.replace("https://", "https://api.")}${endpoint.getEndpointWithParams(
+      testDoc.pathParams,
+    )}`;
     const body = testDoc.body;
+    const params = Object.fromEntries(testDoc.queryParams);
 
-    return await execTest(url, endpoint.method, body, jwtToken);
+    return await execTest(url, endpoint.method, params, body, jwtToken);
   };
 
   const runAllTests = async () => {
@@ -69,7 +71,7 @@ export default function useTestApi() {
     }
   };
 
-  const execTest = async (url, method, body, token) => {
+  const execTest = async (url, method, params, body, token) => {
     try {
       const headers = token ? { Authorization: token } : undefined;
       const response = await axios.request({
@@ -77,6 +79,7 @@ export default function useTestApi() {
         method: method.toLowerCase(),
         headers,
         data: body,
+        params,
       });
       return response;
     } catch (error) {
