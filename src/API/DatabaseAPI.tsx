@@ -260,7 +260,7 @@ export default function useDatabaseApi() {
       setTimeout(() => {
         window.location.reload();
         resolve(true);
-      }, 8000);
+      }, 10000);
     });  
   };
 

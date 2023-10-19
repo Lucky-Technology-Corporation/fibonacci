@@ -51,10 +51,10 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   const createNewProject = (projectName: string) => {
     setIsCreatingProject(true);
     toast.promise(createProject(projectName), {
-      loading: "Creating project...",
+      loading: "Provisioning resources...",
       success: () => {
         window.location.reload();
-        return "Created project!";
+        return "Kicked off project creation!";
       },
       error: () => {
         setIsCreatingProject(false);
@@ -136,6 +136,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   
 
   useEffect(() => {
+    console.log("projects", projects);
     if (projects && activeProject == "" && projects.length > 0) {
       var storedActiveProject = sessionStorage.getItem("activeProject");
       if (storedActiveProject != undefined && storedActiveProject != "") {
@@ -143,6 +144,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
       } else {
         setCurrentProject(projects[0].id);
       }
+      setIsVisible(false);
     } else {
       if (projects.length == 0) {
         setIsVisible(true);

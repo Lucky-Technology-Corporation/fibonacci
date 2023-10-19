@@ -95,6 +95,9 @@ export default function LeftSidebar({
     } else {
       //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
+        console.log(currentFileProperties.fileUri)
+        console.log("equal to?")
+        console.log(activeEndpoint)
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         if (currentFile == activeEndpoint) {
           return
