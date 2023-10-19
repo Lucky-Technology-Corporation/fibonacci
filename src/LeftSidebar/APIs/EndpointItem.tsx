@@ -44,7 +44,7 @@ export default function EndpointItem({
       let fileName = endpointToFilename(newEndpointName)
       
       if(newEndpointName === ""){
-        newEndpointName = "get_"
+        newEndpointName = "get."
       }
       
       setPostMessage({

@@ -69,17 +69,10 @@ export default function LeftSidebar({
       };
     }
 
-    // if (activeFile == undefined || activeFile == ""){
-    //   programmatiFileUpdateRef.current = true;
-    //   setActiveFile("frontend/src/App.js");
-    //   return
-    // } 
-
     setPostMessage({
       type: "openFile",
       fileName: `/${activeFile}`,
     });
-
   };
 
   const openActiveEndpoint = () => {
