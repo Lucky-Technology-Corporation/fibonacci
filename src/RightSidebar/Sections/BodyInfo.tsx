@@ -1,8 +1,8 @@
-import CodeEditor from "@uiw/react-textarea-code-editor";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
-import { useState, useEffect } from "react";
+import CodeEditor from "@uiw/react-textarea-code-editor";
+import { useEffect, useState } from "react";
 
-const BodyInfo = ({ className, placeholder, value, onChange, onKeyDown, show }) => {
+const BodyInfo = ({ className, placeholder, value, onChange, show }) => {
   const [isValid, setIsValid] = useState(true);
 
   useEffect(() => {
@@ -20,7 +20,6 @@ const BodyInfo = ({ className, placeholder, value, onChange, onKeyDown, show }) 
         placeholder="{ }"
         value={value}
         onChange={onChange}
-        onKeyDown={onKeyDown}
         data-color-mode="dark"
         style={{
           fontSize: 12,
