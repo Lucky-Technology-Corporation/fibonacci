@@ -9,6 +9,8 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 import InputWithPrefix from "../Utilities/InputWithPrefix";
 import BodyInfo from "./Sections/BodyInfo";
 import UserIdInfo from "./Sections/UserIdInfo";
+import { TestType } from "./TestWindow";
+import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 
 export default function NewTestWindow({
   id,
@@ -44,6 +46,8 @@ export default function NewTestWindow({
   const myRef = useRef<HTMLDivElement>(null);
   const { createTest, updateTest } = useTestApi();
 
+  const parsedActiveEndpoint = new ParsedActiveEndpoint(activeEndpoint);
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (myRef.current && !myRef.current.contains(event.target)) {
@@ -57,15 +61,16 @@ export default function NewTestWindow({
   }, []);
 
   const saveTest = async () => {
-    if(testName == ""){
-      toast.error("Please enter a test name")
-      return 
+    if (testName == "") {
+      toast.error("Please enter a test name");
+      return;
     }
-    
+
     let queryParamsObject = {};
     if (queryParameters) {
       const pairs = queryParameters.split("&");
       for (let pair of pairs) {
+        console.log(`Pair: ${pair}`);
         const [key, value] = pair.split("=");
         queryParamsObject[key] = value;
       }
@@ -81,7 +86,7 @@ export default function NewTestWindow({
       }
     }
 
-    const documentToCreate = {
+    const documentToCreate: TestType = {
       test_name: testName,
       query_parameters: queryParamsObject,
       queryParametersString: queryParameters,
@@ -171,6 +176,7 @@ export default function NewTestWindow({
             placeholder={"key=value&key2=value2"}
             value={queryParameters}
             onChange={(e) => {
+              console.log(`Setting query params to: ${e.target.value}`);
               setQueryParameters(e.target.value);
             }}
             onKeyDown={(event) => {

@@ -1,6 +1,54 @@
 import { createContext, useEffect, useState } from "react";
 
-export const SwizzleContext = createContext(undefined);
+export interface SwizzleContextType {
+  projects;
+  setProjects;
+  activeProject;
+  setActiveProject;
+  activeProjectName;
+  setActiveProjectName;
+  isFree;
+  setIsFree;
+  domain: string;
+  setDomain: React.Dispatch<React.SetStateAction<string>>;
+  testDomain;
+  setTestDomain;
+  prodDomain;
+  setProdDomain;
+  isCreatingProject;
+  setIsCreatingProject;
+  activeToast;
+  setActiveToast;
+  postMessage;
+  setPostMessage;
+  activeEndpoint: string;
+  setActiveEndpoint;
+  environment;
+  setEnvironment;
+  ideReady;
+  setIdeReady;
+  activeFile;
+  setActiveFile;
+  testDeployStatus;
+  setTestDeployStatus;
+  prodDeployStatus;
+  setProdDeployStatus;
+  fermatJwt;
+  setFermatJwt;
+  figmaToken;
+  setFigmaToken;
+  activeHelper;
+  setActiveHelper;
+  shouldRefreshList;
+  setShouldRefreshList;
+  packageToInstall;
+  setPackageToInstall;
+  mousePosition;
+  shouldOverlay;
+  setShouldOverlay;
+}
+
+export const SwizzleContext = createContext<SwizzleContextType>(undefined);
 
 export const GlobalContextProvider = ({ children }) => {
   const [environment, setEnvironment] = useState("test"); // ["test", "prod"]
