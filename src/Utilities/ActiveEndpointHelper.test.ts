@@ -1,4 +1,4 @@
-import { ParsedActiveEndpoint } from "./ActiveEndpointHelper";
+import { ParsedActiveEndpoint, enumeratePathParams } from "./ActiveEndpointHelper";
 
 test("simple parse", () => {
   const result = new ParsedActiveEndpoint("get/hi/:var1/there/:var2");
@@ -27,5 +27,15 @@ describe("to parts", () => {
 
   it("single param", () => {
     expect(new ParsedActiveEndpoint("get/:hi").toParts()).toEqual(["/", ":hi"]);
+  });
+
+  it("enumerating parts", () => {
+    expect(enumeratePathParams(new ParsedActiveEndpoint("get/:hi/:there/buddy").toParts())).toEqual([
+      "/",
+      [":hi", 0],
+      "/",
+      [":there", 1],
+      "/buddy",
+    ]);
   });
 });

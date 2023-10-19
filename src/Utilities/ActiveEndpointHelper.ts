@@ -57,3 +57,16 @@ export class ParsedActiveEndpoint {
     return parts;
   }
 }
+
+export function enumeratePathParams(parts: string[]): (string | [string, number])[] {
+  let result: (string | [string, number])[] = [];
+  let i = 0;
+  parts.forEach((part) => {
+    if (part[0] == ":") {
+      result.push([part, i++]);
+    } else {
+      result.push(part);
+    }
+  });
+  return result;
+}
