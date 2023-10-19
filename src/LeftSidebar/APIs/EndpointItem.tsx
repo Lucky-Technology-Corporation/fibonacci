@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Method } from "../../Utilities/Method";
+import { Method, methodToColor } from "../../Utilities/Method";
 
 export default function EndpointItem({
   active = false,
@@ -22,21 +22,6 @@ export default function EndpointItem({
 }) {
   const { deleteFile } = useEndpointApi()
   const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
-
-  const methodToColor = (method: Method) => {
-    switch (method) {
-      case Method.GET:
-        return "text-green-400";
-      case Method.POST:
-        return "text-blue-400";
-      case Method.PUT:
-        return "text-yellow-400";
-      case Method.DELETE:
-        return "text-red-400";
-      case Method.PATCH:
-        return "text-purple-400";
-    }
-  };
 
   const runDeleteProcess = async (method: string, path: string) => {
     try{
@@ -68,7 +53,7 @@ export default function EndpointItem({
         onClick={onClick}
       >
         <div className="flex">
-        <div><span className={methodToColor(method)}>{method}</span> {path}</div>
+        <div><span className={`${methodToColor(method)}`}>{method}</span> {path}</div>
         <FontAwesomeIcon
           className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
           icon={faTrash}
