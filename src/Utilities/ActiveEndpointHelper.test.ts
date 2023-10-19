@@ -12,18 +12,20 @@ test("replace single path param", () => {
   );
 });
 
-test("parts with no params returns whole path", () => {
-  expect(new ParsedActiveEndpoint("get/hi/there/buddy").toParts()).toEqual(["/hi/there/buddy"]);
-});
+describe("to parts", () => {
+  it("parts with no params returns whole path", () => {
+    expect(new ParsedActiveEndpoint("get/hi/there/buddy").toParts()).toEqual(["/hi/there/buddy"]);
+  });
 
-test("parts with single param", () => {
-  expect(new ParsedActiveEndpoint("get/hi/:there/buddy").toParts()).toEqual(["/hi/", ":there", "/buddy"]);
-});
+  it("parts with single param", () => {
+    expect(new ParsedActiveEndpoint("get/hi/:there/buddy").toParts()).toEqual(["/hi/", ":there", "/buddy"]);
+  });
 
-test("back to back params", () => {
-  expect(new ParsedActiveEndpoint("get/:hi/:there/buddy").toParts()).toEqual(["/", ":hi", "/", ":there", "/buddy"]);
-});
+  it("back to back params", () => {
+    expect(new ParsedActiveEndpoint("get/:hi/:there/buddy").toParts()).toEqual(["/", ":hi", "/", ":there", "/buddy"]);
+  });
 
-test("single param", () => {
-  expect(new ParsedActiveEndpoint("get/:hi").toParts()).toEqual(["/", ":hi"]);
+  it("single param", () => {
+    expect(new ParsedActiveEndpoint("get/:hi").toParts()).toEqual(["/", ":hi"]);
+  });
 });

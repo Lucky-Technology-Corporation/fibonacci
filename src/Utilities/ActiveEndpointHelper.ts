@@ -31,6 +31,8 @@ export class ParsedActiveEndpoint {
     return path;
   }
 
+  // Returns the url in parts where path params have been separated out.
+  // Ex: /:hi/:there/buddy => ["/", ":hi", "/", ":there", "/buddy"]
   toParts(): string[] {
     const regex = /:[A-Za-z0-9-_]+/g;
     let match: RegExpExecArray;
