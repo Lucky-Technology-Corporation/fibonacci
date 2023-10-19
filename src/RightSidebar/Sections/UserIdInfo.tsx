@@ -1,4 +1,4 @@
-const UserIdInfo = ({ className, placeholder, value, onChange, onKeyDown, show }) => {
+const UserIdInfo = ({ className, placeholder, value, onChange, show }) => {
   return (
     <div className={`mt-2 flex border rounded ${className} ${show ? "opacity-100" : "opacity-0 h-0"}`}>
       <input
@@ -7,7 +7,6 @@ const UserIdInfo = ({ className, placeholder, value, onChange, onKeyDown, show }
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        onKeyDown={onKeyDown}
       />
     </div>
   );

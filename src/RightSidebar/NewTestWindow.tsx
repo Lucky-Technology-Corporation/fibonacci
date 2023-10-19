@@ -3,43 +3,31 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useTestApi from "../API/TestingAPI";
+import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import Button from "../Utilities/Button";
 import Checkbox from "../Utilities/Checkbox";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import InputJsonForm from "./Sections/BodyInfo";
 import UserIdInfo from "./Sections/UserIdInfo";
 import { TestType } from "./TestWindow";
-import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 
 export default function NewTestWindow({
-  id,
-  testTitle,
-  savedPathParameters,
-  savedQueryParameters,
-  savedUserId,
-  savedBody,
-  shouldShowNewTestWindow,
-  hideNewTestWindow,
+  testDoc,
   setTests,
+  hideNewTestWindow,
 }: {
-  id?: string;
-  testTitle?: string;
-  savedPathParameters?: string[];
-  savedQueryParameters?: Map<string, string>;
-  savedUserId?: string;
-  savedBody?: object;
-  shouldShowNewTestWindow: boolean;
-  hideNewTestWindow: any;
+  testDoc?: TestType;
   setTests?: (newTests: any) => void;
+  hideNewTestWindow: () => void;
 }) {
-  const [testName, setTestName] = useState(testTitle || "");
-  const [queryParams, setQueryParameters] = useState(savedQueryParameters || new Map<string, string>());
-  const [pathParams, setPathParameters] = useState(savedPathParameters || []);
-  const [isUserIdChecked, setIsUserIdChecked] = useState(!!savedUserId);
-  const [isBodyChecked, setIsBodyChecked] = useState(!!savedBody);
+  const [testName, setTestName] = useState(testDoc.testName || "");
+  const [queryParams, setQueryParameters] = useState(testDoc.queryParams || new Map<string, string>());
+  const [pathParams, setPathParameters] = useState(testDoc.pathParams || []);
+  const [isUserIdChecked, setIsUserIdChecked] = useState(!!testDoc.userId);
+  const [isBodyChecked, setIsBodyChecked] = useState(!!testDoc.userId);
 
-  const [userId, setUserId] = useState(savedUserId || "");
-  const [body, setBody] = useState(savedBody);
+  const [userId, setUserId] = useState(testDoc.userId || "");
+  const [body, setBody] = useState(testDoc.body || {});
   const [bodyRaw, setBodyRaw] = useState(!!body ? JSON.stringify(body) : "");
   const { activeEndpoint } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
@@ -87,15 +75,15 @@ export default function NewTestWindow({
     };
 
     try {
-      if (id) {
-        await updateTest(activeCollection, id, documentToCreate);
+      if (testDoc) {
+        await updateTest(activeCollection, testDoc._id, documentToCreate);
         if (setTests) {
           setTests((prevTests) => {
             return prevTests.map((test) => {
-              if (test._id === id) {
+              if (test._id === testDoc._id) {
                 return {
                   ...documentToCreate,
-                  _id: id,
+                  _id: testDoc._id,
                 };
               }
               return test;
@@ -117,9 +105,7 @@ export default function NewTestWindow({
 
   return (
     <div
-      className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
-        shouldShowNewTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2`}
       style={{
         transition: "opacity 0.1s",
         marginTop: "-8px",
@@ -130,7 +116,7 @@ export default function NewTestWindow({
         <div className="flex items-center pb-2">
           <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
           <div className="font-bold" style={{ fontSize: "18px" }}>
-            {testTitle ? testTitle : "New Request"}
+            {testDoc ? testDoc.testName : "New Request"}
           </div>
         </div>
 

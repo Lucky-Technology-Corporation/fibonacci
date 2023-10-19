@@ -129,14 +129,9 @@ export default function TestWindow({
   if (showNewTestWindow) {
     return (
       <NewTestWindow
-        id={testDoc._id}
-        testTitle={testDoc.testName}
-        savedQueryParameters={testDoc.queryParams}
-        savedUserId={testDoc.userId}
-        savedBody={testDoc.bodyString}
-        shouldShowNewTestWindow={showNewTestWindow}
-        hideNewTestWindow={() => setShowNewTestWindow(false)}
+        testDoc={testDoc}
         setTests={setTests}
+        hideNewTestWindow={() => setShowNewTestWindow(false)}
       />
     );
   }
