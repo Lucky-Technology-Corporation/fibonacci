@@ -19,6 +19,7 @@ export default function APIWizard({
 }) {
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
+  const [validUrl, setValidUrl] = useState<boolean>(true)
   const { setPostMessage, setActiveEndpoint } = useContext(SwizzleContext);
 
   const methods: any = [
@@ -123,8 +124,13 @@ export default function APIWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
-                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-:_]/g, "");
-                      setInputValue(sanitizedValue.trim());
+                      const regex = /^(\/|(\/(:)?[a-zA-Z0-9-_]+)+)$/
+                      if(!regex.test(e.target.value)){
+                        setValidUrl(false)
+                      } else{
+                        setValidUrl(true)
+                      }
+                      setInputValue(e.target.value);
                     }}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
                     placeholder={"/path/:variable"}
@@ -142,9 +148,10 @@ export default function APIWizard({
                       onClick={() => {
                         createHandler();
                       }}
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
+                      className={`${validUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
+                      disabled={!validUrl}
                     >
-                      Next
+                      {validUrl ? "Next" : "Invalid URL"}
                     </button>
                     <button
                       type="button"
