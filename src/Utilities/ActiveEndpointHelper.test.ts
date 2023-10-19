@@ -11,3 +11,19 @@ test("replace single path param", () => {
     "/hi/123/there/456",
   );
 });
+
+test("parts with no params returns whole path", () => {
+  expect(new ParsedActiveEndpoint("get/hi/there/buddy").toParts()).toEqual(["/hi/there/buddy"]);
+});
+
+test("parts with single param", () => {
+  expect(new ParsedActiveEndpoint("get/hi/:there/buddy").toParts()).toEqual(["/hi/", ":there", "/buddy"]);
+});
+
+test("back to back params", () => {
+  expect(new ParsedActiveEndpoint("get/:hi/:there/buddy").toParts()).toEqual(["/", ":hi", "/", ":there", "/buddy"]);
+});
+
+test("single param", () => {
+  expect(new ParsedActiveEndpoint("get/:hi").toParts()).toEqual(["/", ":hi"]);
+});

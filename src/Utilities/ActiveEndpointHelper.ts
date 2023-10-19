@@ -30,4 +30,27 @@ export class ParsedActiveEndpoint {
 
     return path;
   }
+
+  toParts(): string[] {
+    const regex = /:[A-Za-z0-9-_]+/g;
+    let match: RegExpExecArray;
+
+    let path = this.fullPath;
+    let parts = [];
+    let remainderIdx = 0;
+
+    while ((match = regex.exec(path)) !== null) {
+      parts.push(path.substring(remainderIdx, match.index));
+      parts.push(path.substring(match.index, match.index + match[0].length));
+
+      regex.lastIndex = match.index + match[0].length;
+      remainderIdx = regex.lastIndex;
+    }
+
+    if (remainderIdx < path.length) {
+      parts.push(path.substring(remainderIdx));
+    }
+
+    return parts;
+  }
 }
