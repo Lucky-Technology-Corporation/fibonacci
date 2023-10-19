@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import { filenameToEndpoint } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
 import SectionAction from "../SectionAction";
@@ -77,7 +78,7 @@ export default function EndpointList({ active }: { active: boolean }) {
         }
         const transformedEndpoints = data.children
           .map((endpoint: any) => {
-            return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
+            return filenameToEndpoint(endpoint.name)
           })
           .filter((endpoint: string) => {
             return endpoint != "_swizzle_blank";

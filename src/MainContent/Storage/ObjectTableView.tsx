@@ -85,16 +85,6 @@ export default function ObjectTableView() {
     }
   };
 
-  const [baseUrl, setBaseUrl] = useState<string>("");
-  useEffect(() => {
-    if (testDomain == undefined || domain == undefined) return;
-    if (environment == "test") {
-      setBaseUrl(testDomain.replace("https://", "https://runner."));
-    } else {
-      setBaseUrl(domain.replace("https://", "https://runner."));
-    }
-  }, [environment, activeProject]);
-
   const ITEMS_PER_PAGE = 20;
 
   const fetchData = (page: number) => {

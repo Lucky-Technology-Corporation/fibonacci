@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Switch from "react-switch";
 import useApi from "../API/DeploymentAPI";
 import UserDropdown from "../UserDropdown";
+import { endpointToFilename, filenameToEndpoint } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { Page } from "../Utilities/Page";
 import EndpointList from "./APIs/EndpointList";
@@ -83,33 +84,33 @@ export default function LeftSidebar({
 
   const openActiveEndpoint = () => {
     if (activeEndpoint == undefined || activeEndpoint == "") return;
-    var fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
+    var fileName = endpointToFilename(activeEndpoint)
 
     if (fileName.startsWith("!helper!")) {
+      //Check if we're already on the helper
       fileName = fileName.replace("!helper!", "");
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-        if (currentFile == `helpers/${fileName}.js`) return;
+        if (currentFile == `helpers/${fileName}`) return;
       }
-
+      //Open the helper
       setPostMessage({
         type: "openFile",
-        fileName: `/backend/helpers/${fileName}.js`,
+        fileName: `/backend/helpers/${fileName}`,
       });
-
-      // programmatiFileUpdateRef.current = true;
       setActiveEndpoint(activeEndpoint.replace("!helper!", ""));
     } else {
+      //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         if (currentFile == activeEndpoint) {
           return
         };
       }
-
+      //Open the endpoint
       setPostMessage({
         type: "openFile",
-        fileName: `/backend/user-dependencies/${fileName}.js`,
+        fileName: `/backend/user-dependencies/${fileName}`,
       });
     }
   };
@@ -122,16 +123,10 @@ export default function LeftSidebar({
     if (currentFileProperties.fileUri.includes("backend")) {
 
       if (currentFileProperties.fileUri.includes("backend/helpers/")) {
-        const newEndpoint = currentFileProperties.fileUri
-          .split("helpers/")[1]
-          .replace(".js", "")
+        const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("helpers/")[1])
         setActiveEndpoint(newEndpoint);
       } else if(currentFileProperties.fileUri.includes("user-dependencies/")){
-        const newEndpoint = currentFileProperties.fileUri
-          .split("user-dependencies/")[1]
-          .replace(".js", "")
-          .replace(/-/g, "/")
-          .replace(/_/g, ":");
+        const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("user-dependencies/")[1])
         setActiveEndpoint(newEndpoint);
       } else{
         setActiveEndpoint(null)

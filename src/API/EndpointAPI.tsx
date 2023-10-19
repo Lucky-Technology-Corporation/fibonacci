@@ -2,6 +2,7 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
+import { endpointToFilename } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -140,14 +141,14 @@ export default function useEndpointApi() {
 
   const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
+      const fileName = endpointToFilename(activeEndpoint);
 
       var body = (body = {
         question_type: aiCommand,
         user_query: userQuery,
         fermat_domain: testDomain.replace("https://", "https://fermat."),
         fermat_jwt: await getFermatJwt(),
-        current_file: "backend/user-dependencies/" + fileName + ".js",
+        current_file: "backend/user-dependencies/" + fileName,
       });
 
       const response = await axios.post(
@@ -190,8 +191,8 @@ export default function useEndpointApi() {
 
   const getAutocheckResponse = async () => {
     try {
-      const fileName = activeEndpoint.replace(/\//g, "-").replace(/:/g, "_");
-      const fileContents = await getFile("backend/user-dependencies/" + fileName + ".js");
+      const fileName = endpointToFilename(activeEndpoint);
+      const fileContents = await getFile("backend/user-dependencies/" + fileName);
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,

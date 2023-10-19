@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import useSettingsApi from "../API/SettingsAPI";
 
@@ -58,7 +58,7 @@ export default function SecretInput({ name, desc, inputState, setInputState }) {
         (env) =>
           !filledSecrets[env] && (
             <div className="relative mt-4" key={env}>
-              <div className="text-gray-300">{`${desc} (${env})`}</div>
+              <div className="text-gray-300">{`${name} (${env})`}</div>
               <input
                 type={showText ? "text" : "password"}
                 className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"

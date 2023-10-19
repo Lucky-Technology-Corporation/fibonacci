@@ -15,7 +15,7 @@ export default function EndpointHeader() {
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
-  const [AICommand, setAICommand] = useState<string>("edit");
+  const [AICommand, setAICommand] = useState<string>("ask");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
@@ -38,7 +38,7 @@ export default function EndpointHeader() {
   };
 
   const aiOptions = [
-    { id: "edit", name: "Edit" },
+    // { id: "edit", name: "Edit" },
     { id: "ask", name: "Answer" },
     // { id: "create", name: "Create" },
   ];
@@ -111,7 +111,7 @@ export default function EndpointHeader() {
               className="grow mx-2 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
               placeholder={
                 AICommand == "ask"
-                  ? "Ask any question..."
+                  ? "Ask any question about your project..."
                   : AICommand == "edit"
                   ? "Change this code to..."
                   : "Create a new endpoint that..."

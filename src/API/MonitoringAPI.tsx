@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
+import { endpointToFilename } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useEndpointApi from "./EndpointAPI";
 
@@ -38,7 +39,7 @@ export default function useMonitoringApi() {
 
   const analyzeError = async (requestDetails: any) => {
     try {
-      var currentFile = requestDetails.method.toLowerCase() + requestDetails.url.replace(/\//g, "-") + ".js";
+      var currentFile = endpointToFilename(requestDetails.method.toLowerCase() + requestDetails.url)
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,

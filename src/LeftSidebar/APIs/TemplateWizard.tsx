@@ -267,7 +267,7 @@ export default function TemplateWizard({
                       } else if (input.type === "string" && !input.secret) {
                         return (
                           <div className="mt-4">
-                            <div className="text-gray-300">{input.desc}</div>
+                            <div className="text-gray-300">{input.name}</div>
                             <input
                               className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
                               placeholder={input.desc}

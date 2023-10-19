@@ -4,6 +4,7 @@ import useEndpointApi from "../../API/EndpointAPI";
 import EndpointItem from "../../LeftSidebar/APIs/EndpointItem";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
+import { filenameToEndpoint } from "../../Utilities/EndpointParser";
 import FloatingModal from "../../Utilities/FloatingModal";
 import FullPageModal from "../../Utilities/FullPageModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -63,7 +64,7 @@ export default function AppCodePage() {
     }
     const transformedEndpoints = data.children
       .map((endpoint: any) => {
-        return endpoint.name.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
+        return filenameToEndpoint(endpoint.name);
       })
       .filter((endpoint: string) => {
         return endpoint != "_swizzle_blank";

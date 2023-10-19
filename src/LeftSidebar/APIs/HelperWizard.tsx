@@ -102,7 +102,7 @@ export default function HelperWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
-                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_]/g, "")
                       setInputValue(sanitizedValue.trim());
                     }}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"

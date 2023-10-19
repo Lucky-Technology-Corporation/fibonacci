@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Dropdown from "../../Utilities/Dropdown";
+import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function APIWizard({
@@ -38,39 +39,25 @@ export default function APIWizard({
       return
     }
 
-    if(inputValue.endsWith("/")){
-      cleanInputValue = cleanInputValue.slice(0, -1)
+    if (inputValue.endsWith(".js")) {
+      cleanInputValue = inputValue.slice(0, -3);
     }
-
-    if (inputValue.startsWith("/")) {
-      cleanInputValue = cleanInputValue.substring(1).replace(/\//g, "-").replace(/:/g, "_");
-    } else {
-      cleanInputValue = cleanInputValue.replace(/\//g, "-").replace(/:/g, "_");
+    if(inputValue.startsWith("/")){
+      cleanInputValue = cleanInputValue.substring(1)
     }
-    const fileName = selectedMethod.toLowerCase() + "-" + cleanInputValue + ".js";
-
-    const methodAndPath = fileName.replace(/-/g, "/").replace(/_/g, ":").replace(".js", "");
-    const [method, ...pathComponents] = methodAndPath.split("/");
-    const path = pathComponents.join("/");
-
-    let newEndpointName;
-    if (path === "") {
-      newEndpointName = `${method}/`;
-    } else {
-      newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
-    }
+  
+    const newEndpointName = selectedMethod + "/" + cleanInputValue.replace(/\/+$/, "");
+    const fileName = endpointToFilename(newEndpointName);
 
     if(endpoints.includes(newEndpointName)){
       toast.error("That endpoint already exists")
       return
     }
 
-    let isDuplicate = false;
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {
         return [...endpoints, newEndpointName];
       }
-      isDuplicate = true;
       return endpoints;
     });
 
@@ -78,14 +65,9 @@ export default function APIWizard({
       if (!endpoints.includes(newEndpointName)) {
         return [...endpoints, newEndpointName];
       }
-      isDuplicate = true;
       return endpoints;
     });
 
-    if (isDuplicate) {
-      toast.error("That endpoint already exists");
-      return;
-    }
     setPostMessage({
       type: "newFile",
       fileName: "/backend/user-dependencies/" + fileName,
@@ -140,7 +122,7 @@ export default function APIWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
-                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9:/]/g, "");
+                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-:_]/g, "");
                       setInputValue(sanitizedValue.trim());
                     }}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
 
@@ -39,21 +40,16 @@ export default function EndpointItem({
 
   const runDeleteProcess = async (method: string, path: string) => {
     try{
-      const fileName = method.toLowerCase() + path.replace(/\//g, "-").replace(/:/g, "_");
+      let newEndpointName = method.toLowerCase() + "/" + path
+      let fileName = endpointToFilename(newEndpointName)
       
-      let newEndpointName;
-      if (path === "") {
-        newEndpointName = `${method}/`;
-      } else {
-        newEndpointName = `${method}/${path.replace(/\/+$/, "")}`;
-      }
       if(newEndpointName === ""){
         newEndpointName = "get_"
       }
       
       setPostMessage({
         type: "removeFile",
-        fileName: "/backend/user-dependencies/" + fileName.replace("/", "") + ".js",
+        fileName: "/backend/user-dependencies/" + fileName,
         endpointName: newEndpointName,
       });
       await deleteFile(fileName, "backend")
