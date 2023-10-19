@@ -4,5 +4,5 @@ export function endpointToFilename(path: string): string {
 }
 
 export function filenameToEndpoint(filename: string): string {
-    return filename.replace(".js", "").replace(/\./g, '/').replace(/\(/g, ":").replace(/\)/g, "")
+    return decodeURIComponent(filename).replace(".js", "").replace(/\./g, '/').replace(/\(/g, ":").replace(/\)/g, "")
 }
