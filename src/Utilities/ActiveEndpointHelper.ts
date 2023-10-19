@@ -1,6 +1,7 @@
 export class ParsedActiveEndpoint {
   method: string;
   pathParams: string[];
+  pathComponents: string[];
   fullPath: string;
 
   constructor(activeEndpoint: string) {

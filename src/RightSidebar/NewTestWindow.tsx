@@ -7,6 +7,7 @@ import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import Button from "../Utilities/Button";
 import Checkbox from "../Utilities/Checkbox";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { methodToColor } from "../Utilities/Method";
 import InputJsonForm from "./Sections/BodyInfo";
 import UserIdInfo from "./Sections/UserIdInfo";
 import { TestType } from "./TestWindow";
@@ -66,7 +67,7 @@ export default function NewTestWindow({
 
     const documentToCreate: TestType = {
       testName,
-      pathParams,
+      pathParams: pathParams.filter((param) => param != undefined),
       queryParams,
       headers: new Map<string, string>(),
       userId,
@@ -115,17 +116,9 @@ export default function NewTestWindow({
       <div className="flex flex-col justify-between px-4 py-2 pb-4">
         <div className="flex items-center pb-2">
           <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
-          <div className="font-bold" style={{ fontSize: "18px" }}>
-            {testDoc ? testDoc.testName : "New Request"}
-          </div>
-        </div>
-
-        <div className="font-bold my-2">Test Name</div>
-
-        <div className="flex w-full mb-2">
           <input
             type="text"
-            className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
+            className="text-sm font-semibold w-full p-1 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
             placeholder={"Test Name"}
             value={testName}
             onChange={(e) => {
@@ -133,20 +126,41 @@ export default function NewTestWindow({
             }}
           />
         </div>
+
+
+        <div className="font-bold my-2">Request URL</div>
+
         <div className="flex w-full mb-2">
-          {parsedActiveEndpoint.pathParams.map((param) => (
-            <input
-              type="text"
-              className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
-              placeholder={param}
-              value={testName}
-              onChange={(e) => {
-                setTestName(e.target.value);
-              }}
-            />
-          ))}
+          <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold ${methodToColor(undefined, parsedActiveEndpoint.method)}`}>{parsedActiveEndpoint.method}</div>
+          {parsedActiveEndpoint.toParts().map((part, index) => {
+            if(part.startsWith(":")){
+              return (
+                <input
+                  type="text"
+                  className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
+                  placeholder={part}
+                  value={pathParams[index]}
+                  onChange={(e) => {
+                    setPathParameters((prevParams) => {
+                      const newParams = [...prevParams];
+                      newParams[index] = e.target.value;
+                      return newParams;
+                    })
+                  }}
+                  style={{width: "inherit"}}
+                />
+              )
+            } else{
+              return (
+                <div className="text-s py-1 bg-transparent rounded outline-0 focus:border-[#68697a] mr-2 opacity-70">
+                  {part}
+                </div>
+              )
+            }
+          })}
+
         </div>
-        <div className="mb-2">
+        <div className="mt-1 mb-2">
           <Checkbox id="userid" label="User ID" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />
           <UserIdInfo
             show={isUserIdChecked}
