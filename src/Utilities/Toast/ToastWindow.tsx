@@ -74,14 +74,14 @@ export default function ToastWindow({
   return (
     <div
       className={`z-50 absolute ${
-        isExpandable ? "w-fit max-w-[600px]" : isLarge ? "w-[600px]" : "w-[350px]"
+        isExpandable ? "w-fit w-[400px]" : isLarge ? "w-[600px]" : "w-[350px]"
       } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg fixed ${
         isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
         transition: "opacity 0.1s",
-        top: isExpandable && mousePosition.y + "px",
-        left: isExpandable && mousePosition.x + "px",
+        top: isExpandable && (mousePosition.y + 8) + "px",
+        left: isExpandable && (mousePosition.x - 200) + "px",
         marginLeft: getMargin(),
         marginTop: getTopMargin(),
       }}
