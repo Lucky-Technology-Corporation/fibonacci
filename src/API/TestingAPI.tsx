@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios, { Method } from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useDatabaseApi from "./DatabaseAPI";
-import { TestType } from "../RightSidebar/TestWindow";
+import { QueryParams, TestType } from "../RightSidebar/TestWindow";
 import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -45,9 +45,7 @@ export default function useTestApi() {
       testDoc.pathParams,
     )}`;
     const body = testDoc.body;
-    const params = Object.fromEntries(testDoc.queryParams);
-
-    return await execTest(url, endpoint.method, params, body, jwtToken);
+    return await execTest(url, endpoint.method as Method, testDoc.queryParams, body, jwtToken);
   };
 
   const runAllTests = async () => {
@@ -71,12 +69,15 @@ export default function useTestApi() {
     }
   };
 
-  const execTest = async (url, method, params, body, token) => {
+  const execTest = async (url: string, method: Method, params: QueryParams, body?: object, token?: string) => {
     try {
+      // console.debug(
+      //   `Exec test with URL = ${url}, method = ${method}, params = ${params}, body = ${body}, token = ${token}`,
+      // );
       const headers = token ? { Authorization: token } : undefined;
       const response = await axios.request({
         url,
-        method: method.toLowerCase(),
+        method,
         headers,
         data: body,
         params,

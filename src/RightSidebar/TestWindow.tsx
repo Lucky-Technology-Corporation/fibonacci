@@ -9,14 +9,22 @@ import Dot from "../Utilities/Dot";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import NewTestWindow from "./NewTestWindow";
 
+export type QueryParams = {
+  [param: string]: string;
+};
+
+export type Headers = {
+  [header: string]: string;
+};
+
 export type TestType = {
   _id?: string;
   testName: string;
-  queryParams: Map<string, string>;
-  headers: Map<string, string>;
+  queryParams: QueryParams;
+  headers: Headers;
   pathParams: string[];
   userId?: string;
-  body: object;
+  body?: object;
   endpoint: string;
 };
 
@@ -28,7 +36,13 @@ export default function TestWindow({
   setShouldShowTestWindow: any;
 }) {
   const handleNewRequestClick = () => {
-    setTestDoc({});
+    setTestDoc({
+      testName: "",
+      queryParams: {},
+      headers: {},
+      pathParams: [],
+      endpoint: activeEndpoint,
+    });
     setShowNewTestWindow(true);
   };
 
@@ -128,11 +142,7 @@ export default function TestWindow({
 
   if (showNewTestWindow) {
     return (
-      <NewTestWindow
-        testDoc={testDoc}
-        setTests={setTests}
-        hideNewTestWindow={() => setShowNewTestWindow(false)}
-      />
+      <NewTestWindow testDoc={testDoc} setTests={setTests} hideNewTestWindow={() => setShowNewTestWindow(false)} />
     );
   }
   return (
