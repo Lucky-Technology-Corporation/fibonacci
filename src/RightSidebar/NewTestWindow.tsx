@@ -21,8 +21,11 @@ export default function NewTestWindow({
   setTests?: (newTests: any) => void;
   hideNewTestWindow: () => void;
 }) {
+  const lastEditedRef = useRef(null);
   const [testName, setTestName] = useState(testDoc.testName || "");
-  const [queryParams, setQueryParameters] = useState(testDoc.queryParams || new Map<string, string>());
+  const [queryParams, setQueryParameters] = useState(Object.entries(testDoc.queryParams || {}).map((param, index) => ({ id: index, key: param[0], value: param[1] })));
+  const [emptyRow, setEmptyRow] = useState({ key: "", value: "" });
+
   const [pathParams, setPathParameters] = useState(testDoc.pathParams || []);
   const [isUserIdChecked, setIsUserIdChecked] = useState(!!testDoc.userId);
   const [isBodyChecked, setIsBodyChecked] = useState(!!testDoc.userId);
@@ -35,6 +38,30 @@ export default function NewTestWindow({
   const myRef = useRef<HTMLDivElement>(null);
   const { createTest, updateTest } = useTestApi();
 
+
+  const handleInputChange = (id, newKey, newValue) => {
+    setQueryParameters((prevParams) =>
+      prevParams.map((param) => {
+        if (param.id === id) {
+          return { ...param, key: newKey, value: newValue };
+        }
+        return param;
+      })
+    );
+  };
+  
+
+  // useEffect(() => {
+  //   if (emptyRow.key || emptyRow.value) {
+  //     setQueryParameters([...queryParams, { id: queryParams.length, key: emptyRow.key, value: emptyRow.value }]);
+  //     setEmptyRow({ key: "", value: "" });
+  //     if (lastEditedRef.current) {
+  //       lastEditedRef.current.focus();  // Set focus back to last edited input
+  //     }
+  
+  //   }
+  // }, [emptyRow]);
+  
   const parsedActiveEndpoint = new ParsedActiveEndpoint(activeEndpoint);
 
   useEffect(() => {
@@ -65,10 +92,11 @@ export default function NewTestWindow({
       }
     }
 
+    const queryParamsMap = new Map<string, string>(queryParams.map(({ key, value }) => [key, value]));
     const documentToCreate: TestType = {
       testName,
       pathParams,
-      queryParams,
+      queryParams: queryParamsMap,
       headers: new Map<string, string>(),
       userId,
       body: bodyObject,
@@ -137,7 +165,7 @@ export default function NewTestWindow({
 
         <div className="flex w-full mb-2">
           <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold ${methodToColor(undefined, parsedActiveEndpoint.method)}`}>{parsedActiveEndpoint.method}</div>
-          {enumeratePathParams(parsedActiveEndpoint.toParts()).map((part) => {
+          {enumeratePathParams(parsedActiveEndpoint.toParts()).map((part, index) => {
             if(typeof part === "object"){
               return (
                 <input
@@ -153,16 +181,68 @@ export default function NewTestWindow({
                     })
                   }}
                   style={{width: "inherit"}}
+                  key={index}
                 />
               )
             } else{
               return (
-                <div className="text-s py-1 bg-transparent rounded outline-0 focus:border-[#68697a] mr-2 opacity-70">
+                <div key={index} className="text-s py-1 bg-transparent rounded outline-0 focus:border-[#68697a] mr-2 opacity-70">
                   {part}
                 </div>
               )
             }
           })}
+        </div>
+        <div className="flex w-full mb-2">
+          <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>Query String</div>
+            <div key="grouped-rows">
+              {queryParams.map(({ id, key, value })  => (
+                <div className="flex w-full" key={id}>
+                  <input
+                    placeholder="Key"
+                    value={key}
+                    onChange={(e) => handleInputChange(id, e.target.value, value)}
+                    className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
+                  />
+                  <div className="p-1 mx-1 my-1">=</div>
+                  <input
+                    placeholder="Value"
+                    value={value}
+                    onChange={(e) => handleInputChange(id, key, e.target.value)}
+                    className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
+                    ref={id == queryParams.length - 1 ? lastEditedRef : null}
+                  />
+                </div>
+              ))}
+
+              {/* Empty set of boxes */}
+              <div className="flex w-full" key="empty-row">
+                <input
+                  placeholder="New Key"
+                  value={emptyRow.key}
+                  onChange={(e) => setEmptyRow({ ...emptyRow, key: e.target.value })}
+                  onBlur={() => {
+                    if(emptyRow.key == ""){ return }
+                    setQueryParameters([...queryParams, { id: queryParams.length, key: emptyRow.key, value: emptyRow.value }]);
+                    setEmptyRow({ key: "", value: "" });
+                  }}
+                  onKeyDown={(e) => {
+                    if(e.key == "Tab"){
+                      e.preventDefault();
+                      (e.target as HTMLInputElement).blur();
+                    }
+                  }}
+                  className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
+                />
+                <div className="p-1 mx-1 my-1">=</div>
+                <input
+                  placeholder="New Value"
+                  value={emptyRow.value}
+                  disabled={true}
+                  className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
+                />
+              </div>
+            </div>
 
         </div>
         <div className="mt-1 mb-2">
