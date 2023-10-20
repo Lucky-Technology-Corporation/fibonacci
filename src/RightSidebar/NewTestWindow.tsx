@@ -1,12 +1,11 @@
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useTestApi from "../API/TestingAPI";
 import { ParsedActiveEndpoint, enumeratePathParams } from "../Utilities/ActiveEndpointHelper";
 import Button from "../Utilities/Button";
 import Checkbox from "../Utilities/Checkbox";
-import { SwizzleContext } from "../Utilities/GlobalContext";
 import { methodToColor } from "../Utilities/Method";
 import InputJsonForm from "./Sections/BodyInfo";
 import UserIdInfo from "./Sections/UserIdInfo";
@@ -40,14 +39,19 @@ export default function NewTestWindow({
   const { createTest, updateTest } = useTestApi();
 
   const handleInputChange = (id: number, newKey: string, newValue: string) => {
-    setQueryParameters((prevParams) =>
-      prevParams.map((param) => {
-        if (param.id === id) {
-          return { ...param, key: newKey, value: newValue };
-        }
-        return param;
-      }),
-    );
+    const updatedQueryParams = [...queryParams];
+    const index = updatedQueryParams.findIndex(q => q.id === id);
+
+    if (index > -1) {
+      updatedQueryParams[index] = { id, key: newKey, value: newValue };
+
+      // Remove the row if both key and value are empty
+      if (newKey === '' && newValue === '') {
+        updatedQueryParams.splice(index, 1);
+      }
+
+      setQueryParameters(updatedQueryParams);
+    }
   };
 
   const parsedActiveEndpoint = new ParsedActiveEndpoint(testDoc.endpoint);
@@ -129,6 +133,14 @@ export default function NewTestWindow({
     hideNewTestWindow();
   };
 
+  const prevLength = useRef(queryParams.length);
+  useEffect(() => {
+    if (queryParams.length > prevLength.current && lastEditedRef.current) {
+      lastEditedRef.current.focus();
+    }
+    prevLength.current = queryParams.length;
+  }, [queryParams]);
+  
   return (
     <div
       className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2`}
@@ -170,7 +182,7 @@ export default function NewTestWindow({
                   type="text"
                   className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
                   placeholder={part[0]}
-                  value={pathParams[part[1]]}
+                  value={pathParams[part[1]] ?? ""}
                   onChange={(e) => {
                     setPathParameters((prevParams) => {
                       const newParams = [...prevParams];
@@ -194,25 +206,27 @@ export default function NewTestWindow({
             }
           })}
         </div>
-        <div className="flex w-full mb-2">
-          <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
             Query String
           </div>
-          <div key="grouped-rows">
+        <div className="flex w-full mb-2">
+
+          <div key="grouped-rows" className="w-full">
             {queryParams.map(({ id, key, value }) => (
               <div className="flex w-full" key={id}>
+                <div className="p-1 mx-1 ml-0 my-1">{id == 0 ? "?" : "&"}</div>
                 <input
                   placeholder="Key"
                   value={key}
                   onChange={(e) => handleInputChange(id, e.target.value, value)}
-                  className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
+                  className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
                 />
                 <div className="p-1 mx-1 my-1">=</div>
                 <input
                   placeholder="Value"
                   value={value}
                   onChange={(e) => handleInputChange(id, key, e.target.value)}
-                  className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
+                  className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
                   ref={id == queryParams.length - 1 ? lastEditedRef : null}
                 />
               </div>
@@ -220,6 +234,7 @@ export default function NewTestWindow({
 
             {/* Empty set of boxes */}
             <div className="flex w-full" key="empty-row">
+              <div className="p-1 mx-1 ml-0 my-1">{queryParams.length == 0 ? "?" : "&"}</div>
               <input
                 placeholder="New Key"
                 value={emptyRow.key}
@@ -240,14 +255,14 @@ export default function NewTestWindow({
                     (e.target as HTMLInputElement).blur();
                   }
                 }}
-                className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
+                className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
               />
               <div className="p-1 mx-1 my-1">=</div>
               <input
                 placeholder="New Value"
                 value={emptyRow.value}
                 disabled={true}
-                className="text-s p-1 shrink bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
+                className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
               />
             </div>
           </div>

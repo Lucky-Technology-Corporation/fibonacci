@@ -1,10 +1,10 @@
 import axios, { Method } from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
+import { TestType } from "../RightSidebar/TestWindow";
+import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useDatabaseApi from "./DatabaseAPI";
-import { QueryParams, TestType } from "../RightSidebar/TestWindow";
-import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 

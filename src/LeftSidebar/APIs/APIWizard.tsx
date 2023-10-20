@@ -33,11 +33,15 @@ export default function APIWizard({
       toast.error("Please enter a value");
       return;
     }
-    //check if valid url
-    // const regex = /^\/(?!\/|::)([a-zA-Z0-9:]+\/)*(?!\/|::)[a-zA-Z0-9:]*$/;
-    const regex = /^(\/|(\/(:)?[a-zA-Z0-9-_]+)+)$/
+    
+    //Remove trailing /
+    if(cleanInputValue.endsWith("/")){
+      cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1)
+    }
+
+    const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
     if(!regex.test(inputValue)){
-      toast.error("Invalid path")
+      toast.error("Invalid path.")
       return
     }
 
