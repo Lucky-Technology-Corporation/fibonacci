@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import Button from "../../Utilities/Button";
+import { castValues } from "../../Utilities/DataCaster";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
@@ -229,7 +230,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   };
 
   const saveNewDocumentValue = (newData: any, documentId: string) => {
-    toast.promise(updateDocument(activeCollection, documentId, newData), {
+    toast.promise(updateDocument(activeCollection, documentId, castValues(newData)), {
       loading: "Updating document...",
       success: "Updated document!",
       error: "Failed to update document",
@@ -242,7 +243,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       return prevData.map((row) => {
         if (row._id == keyForRowBeingEdited[0]) {
           const newData = { ...row, [keyForRowBeingEdited[1]]: JSON.parse(data) };
-          saveNewDocumentValue(newData, keyForRowBeingEdited[0]);
+          saveNewDocumentValue(newData, row._id);
           return newData;
         } else {
           return row;
