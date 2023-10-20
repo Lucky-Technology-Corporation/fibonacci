@@ -93,6 +93,7 @@ export default function LeftSidebar({
       });
       setActiveEndpoint(activeEndpoint.replace("!helper!", ""));
     } else {
+      console.log("openActiveEndpoint")
       //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
@@ -110,7 +111,8 @@ export default function LeftSidebar({
   };
 
   useEffect(() => {
-    if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) {
+    console.log("currentFileProperties did change", currentFileProperties)
+    if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.startsWith("file:///")) {
       return;
     }
     if (currentFileProperties.fileUri.includes("backend")) {
