@@ -248,7 +248,7 @@ export default function ObjectTableView() {
                 rowKey={row._id}
                 keys={keys}
                 data={Object.entries(row).reduce((result, [key, value]) => {
-                  const fileURL = `${domain.replace("https://", "https://api.")}/swizzle/db/storage/${value}.${row.fileExtension || row.fileName.split(".").pop()}`;
+                  const fileURL = `${domain.replace("https://", "https://api.")}/swizzle/storage/${value}.${row.fileExtension || row.fileName.split(".").pop()}`;
                   return {
                     ...result,
                     [key]: key === "_id" ? fileURL : value,
