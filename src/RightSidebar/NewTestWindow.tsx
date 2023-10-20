@@ -29,24 +29,23 @@ export default function NewTestWindow({
 
   const [pathParams, setPathParameters] = useState(testDoc.pathParams);
   const [isUserIdChecked, setIsUserIdChecked] = useState(!!testDoc.userId);
-  const [isBodyChecked, setIsBodyChecked] = useState(!!testDoc.userId); // TODO: Seems wrong
+  const [isBodyChecked, setIsBodyChecked] = useState(!!testDoc.body);
 
   const [userId, setUserId] = useState(testDoc.userId || "");
-  const [body, setBody] = useState(testDoc.body || {});
-  const [bodyRaw, setBodyRaw] = useState(!!body ? JSON.stringify(body) : "");
+  const [bodyRaw, setBodyRaw] = useState(!!testDoc.body ? JSON.stringify(testDoc.body) : "");
   const activeCollection = "_swizzle_usertests";
   const myRef = useRef<HTMLDivElement>(null);
   const { createTest, updateTest } = useTestApi();
 
   const handleInputChange = (id: number, newKey: string, newValue: string) => {
     const updatedQueryParams = [...queryParams];
-    const index = updatedQueryParams.findIndex(q => q.id === id);
+    const index = updatedQueryParams.findIndex((q) => q.id === id);
 
     if (index > -1) {
       updatedQueryParams[index] = { id, key: newKey, value: newValue };
 
       // Remove the row if both key and value are empty
-      if (newKey === '' && newValue === '') {
+      if (newKey === "" && newValue === "") {
         updatedQueryParams.splice(index, 1);
       }
 
@@ -140,7 +139,7 @@ export default function NewTestWindow({
     }
     prevLength.current = queryParams.length;
   }, [queryParams]);
-  
+
   return (
     <div
       className={`z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2`}
@@ -207,10 +206,9 @@ export default function NewTestWindow({
           })}
         </div>
         <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
-            Query String
-          </div>
+          Query String
+        </div>
         <div className="flex w-full mb-2">
-
           <div key="grouped-rows" className="w-full">
             {queryParams.map(({ id, key, value }) => (
               <div className="flex w-full" key={id}>
