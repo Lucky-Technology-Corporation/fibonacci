@@ -142,7 +142,7 @@ export default function DatabaseRow({
                 (value || "").toString().match(/\.(jpeg|jpg|png|gif|svg)$/) ? (
                 <img
                   src={value}
-                  className="h-8 w-8 rounded-md cursor-pointer"
+                  className="h-8 rounded-md cursor-pointer"
                   onClick={() => {
                     if (!shouldBlockEdits.includes(key)) {
                       setupEditing(key);
