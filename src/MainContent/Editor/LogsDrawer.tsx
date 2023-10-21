@@ -1,4 +1,4 @@
-import Button from "../../Utilities/Button";
+import { Button } from '@Components'
 import HoverableObject from "./HoverableObject";
 
 export default function LogsDrawer({}: {}) {

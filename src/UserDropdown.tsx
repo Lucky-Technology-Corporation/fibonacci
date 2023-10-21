@@ -5,9 +5,9 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Fragment, useContext, useState } from "react";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 import toast from "react-hot-toast";
-import useSettingsApi from "./API/SettingsAPI";
-import FullPageModal from "./Utilities/FullPageModal";
-import { SwizzleContext } from "./Utilities/GlobalContext";
+import useSettingsApi from "@/API/SettingsAPI";
+import { FullPageModal } from '@Components';
+import { SwizzleContext } from '@Store';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");

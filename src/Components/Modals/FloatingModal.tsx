@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import Button from "./Button";
+import { Button } from '@Components';
 
 export default function FloatingModal({ content, closeModal }: { content: ReactNode; closeModal: () => void }) {
   return (

@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
-import { filenameToEndpoint } from "../../Utilities/EndpointParser";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Method } from "../../Utilities/Method";
+import { filenameToEndpoint } from '@Utilities'
+import { SwizzleContext } from '@Store'
+import { Method } from '@Types';
 import SectionAction from "../SectionAction";
 import APIWizard from "./APIWizard";
 import EndpointItem from "./EndpointItem";

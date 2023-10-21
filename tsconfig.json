@@ -20,7 +20,18 @@
     "noImplicitAny": false,
     "strictNullChecks": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@Components": ["./src/Components"],
+      "@Components/*": ["./src/Components/*"],
+      "@Utilities": ["./src/Utilities"],
+      "@Utilities/*": ["./src/Utilities/*"],
+      "@Store": ["./src/Store"],
+      "@Store/*": ["./src/Store/*"],
+      "@Types": ["./src/Types"],
+      "@Types/*": ["./src/Types/*"],
+    }
   },
   "include": ["src", "typings.d.ts", "src/Utilities/.tsx"],
   "references": [{ "path": "./tsconfig.node.json" }]

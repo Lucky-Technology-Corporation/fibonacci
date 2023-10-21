@@ -1,7 +1,7 @@
 import { Resizable } from 're-resizable';
 import { useContext } from 'react';
 import Draggable from 'react-draggable';
-import { SwizzleContext } from '../Utilities/GlobalContext';
+import { SwizzleContext } from '@Store';
 
 export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void}){
 

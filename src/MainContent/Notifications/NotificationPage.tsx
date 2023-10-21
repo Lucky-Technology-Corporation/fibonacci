@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import useNotificationApi from "../../API/NotificationsAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { SwizzleContext } from '@Store'
 import NotificationControls from "./NotificationControls";
 import NotificationPageSetUp from "./NotificationPageSetUp";
 

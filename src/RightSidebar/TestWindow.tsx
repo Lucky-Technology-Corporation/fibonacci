@@ -4,9 +4,8 @@ import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
 import LoadingIcons from "react-loading-icons";
 import useTestApi from "../API/TestingAPI";
-import Button from "../Utilities/Button";
-import Dot from "../Utilities/Dot";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import { Button, Dot } from '@Components';
+import { SwizzleContext } from '@Store';
 import NewTestWindow from "./NewTestWindow";
 
 export default function TestWindow({

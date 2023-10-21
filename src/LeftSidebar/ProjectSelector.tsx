@@ -3,9 +3,8 @@ import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
 import useApi from "../API/DeploymentAPI";
 import useEndpointApi from "../API/EndpointAPI";
-import Dropdown from "../Utilities/Dropdown";
-import FullPageModal from "../Utilities/FullPageModal";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import { Dropdown, FullPageModal } from '@Components';
+import { SwizzleContext } from '@Store'
 
 export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isModalOpen: any, setIsModalOpen: Dispatch<SetStateAction<boolean>> }){
   const [isVisible, setIsVisible] = useState(false);

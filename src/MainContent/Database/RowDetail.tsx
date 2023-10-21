@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
-import { castValues } from "../../Utilities/DataCaster";
+import { castValues } from '@Utilities'
 
 export default function RowDetail({
   collection,

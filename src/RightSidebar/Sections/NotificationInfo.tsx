@@ -1,5 +1,5 @@
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import { copyText } from "../../Utilities/Copyable";
+import { InfoItem } from '@Components';
+import { copyText } from '@Utilities'
 
 export default function DBInfo({ show }: { show: boolean }) {
   return (

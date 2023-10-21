@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { SwizzleContext } from "../GlobalContext";
+import { SwizzleContext } from '@Store';
 import ToastWindow from "./ToastWindow";
 
 type ToastProps = {

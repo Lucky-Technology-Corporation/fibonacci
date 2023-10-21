@@ -3,12 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
-import Button from "../../Utilities/Button";
-import { replaceCodeBlocks } from "../../Utilities/DataCaster";
-import Dropdown from "../../Utilities/Dropdown";
-import FloatingModal from "../../Utilities/FloatingModal";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Method } from "../../Utilities/Method";
+import { 
+  Button,
+  Dropdown,
+  FloatingModal,
+} from '@Components';
+import { replaceCodeBlocks } from '@Utilities'
+import { SwizzleContext } from '@Store'
+import { Method } from '@Types';
 
 export default function EndpointHeader() {
   const { activeEndpoint, ideReady, setPostMessage } = useContext(SwizzleContext);

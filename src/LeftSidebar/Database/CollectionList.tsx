@@ -2,9 +2,9 @@ import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react
 import CollectionItem from "./CollectionItem";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import SectionAction from "../SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
+import { FullPageModal } from '@Components';
 import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { SwizzleContext } from '@Store'
 
 export default function CollectionList({
   active,

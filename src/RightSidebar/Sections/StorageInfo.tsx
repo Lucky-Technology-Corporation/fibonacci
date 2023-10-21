@@ -1,5 +1,5 @@
-import { copyText } from "../../Utilities/Copyable";
-import InfoItem from "../../Utilities/Toast/InfoItem";
+import { copyText } from '@Utilities'
+import { InfoItem } from '@Components';
 
 export default function StorageInfo({ show }: { show: boolean }) {
   return (

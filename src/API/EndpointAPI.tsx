@@ -2,8 +2,8 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
-import { endpointToFilename } from "../Utilities/EndpointParser";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import { endpointToFilename } from '@Utilities'
+import { SwizzleContext } from '@Store'
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 

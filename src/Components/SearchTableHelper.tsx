@@ -1,4 +1,4 @@
-export const getSearchTableHelper = (
+export const GetSearchTableHelper = (
   rows: { endpoint: string; snippet: string }[],
   onClickRow?: (row: { endpoint: string; snippet: string }) => void,
 ) => {

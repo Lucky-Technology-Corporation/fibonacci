@@ -3,9 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import NiceInfo from "../../Utilities/NiceInfo";
-import Pagination from "../../Utilities/Pagination";
+import { SwizzleContext } from '@Store'
+import { NiceInfo, Pagination } from '@Components';
 import RowDetail from "../Database/RowDetail";
 import SearchBar from "../Shared/SearchBar";
 import UserRow from "./UserRow";

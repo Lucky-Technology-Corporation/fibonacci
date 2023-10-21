@@ -1,11 +1,10 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
-import Checkbox from "../Utilities/Checkbox";
-import { copyText } from "../Utilities/Copyable";
-import { SwizzleContext } from "../Utilities/GlobalContext";
-import IconTextButton from "../Utilities/IconTextButton";
-import { Page } from "../Utilities/Page";
+import { copyText } from '@Utilities'
+import { SwizzleContext } from '@Store'
+import { Checkbox, IconTextButton } from '@Components';
+import { Page } from '@Types';
 import DeployButton from "./DeployButton";
 import AuthInfo from "./Sections/AuthInfo";
 import AutocheckInfo from "./Sections/AutocheckInfo";

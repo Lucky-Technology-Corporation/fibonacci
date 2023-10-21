@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Chevron from "../Utilities/Chevron";
+import { Chevron } from '@Components';
 
 export default function SectionTitle({
   icon,

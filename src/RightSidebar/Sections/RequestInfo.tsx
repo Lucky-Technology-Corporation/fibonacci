@@ -1,6 +1,5 @@
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import { getTableHelper } from "../../Utilities/TableHelper";
-import { copyText } from "../../Utilities/Copyable";
+import { GetTableHelper, InfoItem } from '@Components';
+import { copyText } from '@Utilities'
 
 export default function RequestInfo({ show }: { show: boolean }) {
   const handleRowClick = (row: { name: string; description?: string }) => {
@@ -34,7 +33,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
             content: (
               <div className="text-gray-400">
                 Click code to copy
-                {getTableHelper(
+                {GetTableHelper(
                   [
                     {
                       name: "request.query.queryVariable",
@@ -77,7 +76,7 @@ export default function RequestInfo({ show }: { show: boolean }) {
             content: (
               <div className="text-gray-400">
                 Click code to copy
-                {getTableHelper(
+                {GetTableHelper(
                   [
                     {
                       name: "response.send({})",

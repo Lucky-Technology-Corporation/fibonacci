@@ -3,10 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSettingsApi from "../../API/SettingsAPI";
-import Button from "../../Utilities/Button";
-import FullPageModal from "../../Utilities/FullPageModal";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import ToastWindow from "../../Utilities/Toast/ToastWindow";
+import { 
+  Button,
+  FullPageModal,
+  ToastWindow
+} from '@Components';
+import { SwizzleContext } from '@Store';
 
 export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boolean; setIsVisible: any }) {
   interface Secret {

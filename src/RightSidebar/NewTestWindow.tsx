@@ -3,10 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useTestApi from "../API/TestingAPI";
-import Button from "../Utilities/Button";
-import Checkbox from "../Utilities/Checkbox";
-import { SwizzleContext } from "../Utilities/GlobalContext";
-import InputWithPrefix from "../Utilities/InputWithPrefix";
+import { 
+  Button,
+  Checkbox,
+  InputWithPrefix,
+} from '@Components';
+import { SwizzleContext } from '@Store';
 import BodyInfo from "./Sections/BodyInfo";
 import UserIdInfo from "./Sections/UserIdInfo";
 

@@ -1,7 +1,7 @@
 import "./App.css";
 import { AuthProvider } from "react-auth-kit";
 import Dashboard from "./Dashboard";
-import { GlobalContextProvider } from "./Utilities/GlobalContext";
+import { GlobalContextProvider } from "@Store";
 
 function App() {
   return (

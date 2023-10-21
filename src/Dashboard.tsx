@@ -3,13 +3,13 @@ import { useContext, useEffect, useState } from "react";
 import { useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
 import dog from "../public/dog.json";
-import useDatabaseApi from "./API/DatabaseAPI";
-import LeftSidebar from "./LeftSidebar/LeftSidebar";
-import CenterContent from "./MainContent/CenterContent";
-import RightSidebar from "./RightSidebar/RightSidebar";
-import SignIn from "./SignIn";
-import { SwizzleContext } from "./Utilities/GlobalContext";
-import { Page } from "./Utilities/Page";
+import useDatabaseApi from "@/API/DatabaseAPI";
+import LeftSidebar from "@/LeftSidebar/LeftSidebar";
+import CenterContent from "@/MainContent/CenterContent";
+import RightSidebar from "@/RightSidebar/RightSidebar";
+import SignIn from "@/SignIn";
+import { SwizzleContext } from '@Store';
+import { Page } from '@Types';
 
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();

@@ -1,8 +1,7 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import PrivacyPolicy from "../../Utilities/PrivacyPolicy";
-import TermsOfService from "../../Utilities/TermsOfService";
+import { SwizzleContext } from '@Store'
+import { PrivacyPolicy, TermsOfService } from '@Components';
 
 export default function APIWizard({
   isVisible,

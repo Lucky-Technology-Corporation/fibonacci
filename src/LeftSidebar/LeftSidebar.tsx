@@ -6,8 +6,8 @@ import Switch from "react-switch";
 import useApi from "../API/DeploymentAPI";
 import UserDropdown from "../UserDropdown";
 import { endpointToFilename, filenameToEndpoint } from "../Utilities/EndpointParser";
-import { SwizzleContext } from "../Utilities/GlobalContext";
-import { Page } from "../Utilities/Page";
+import { SwizzleContext } from '@Store'
+import { Page } from '@Types';
 import EndpointList from "./APIs/EndpointList";
 import FilesList from "./APIs/FilesList";
 import CollectionList from "./Database/CollectionList";

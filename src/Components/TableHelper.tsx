@@ -1,4 +1,4 @@
-export const getTableHelper = (
+export const GetTableHelper = (
   rows: { name: string; description?: string }[],
   onClickRow?: (row: { name: string; description?: string }) => void,
 ) => {

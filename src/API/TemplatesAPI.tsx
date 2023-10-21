@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useAuthHeader } from "react-auth-kit";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import { SwizzleContext } from '@Store'
 import { useContext } from "react";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
