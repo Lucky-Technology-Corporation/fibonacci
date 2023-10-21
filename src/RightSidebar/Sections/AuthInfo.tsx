@@ -1,6 +1,5 @@
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import { getTableHelper } from "../../Utilities/TableHelper";
-import { copyText } from "../../Utilities/Copyable";
+import { GetTableHelper, InfoItem } from '@Components';
+import { copyText } from '@Utilities'
 
 export default function AuthInfo({ show }: { show: boolean }) {
   const handleRowClick = (row: { name: string; description?: string }) => {
@@ -40,7 +39,7 @@ export default function AuthInfo({ show }: { show: boolean }) {
                 <span className="font-bold font-mono">request.user</span> will be{" "}
                 <span className="font-bold font-mono">null</span>.<div className="h-4"></div>
                 If a user is signed in, you can access the following properties:
-                {getTableHelper(
+                {GetTableHelper(
                   [
                     {
                       name: "UID(request.user)",

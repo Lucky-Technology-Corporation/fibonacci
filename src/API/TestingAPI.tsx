@@ -1,9 +1,9 @@
 import axios, { Method } from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
+import { SwizzleContext } from '@Store'
 import { TestType } from "../RightSidebar/TestWindow";
 import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
-import { SwizzleContext } from "../Utilities/GlobalContext";
 import useDatabaseApi from "./DatabaseAPI";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;

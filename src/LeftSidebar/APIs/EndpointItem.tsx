@@ -3,9 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
-import { endpointToFilename } from "../../Utilities/EndpointParser";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Method, methodToColor } from "../../Utilities/Method";
+import { endpointToFilename } from '@Utilities'
+import { SwizzleContext } from '@Store'
+import { Method } from '@Types';
+import { methodToColor } from "../../Utilities/Method";
 
 export default function EndpointItem({
   active = false,

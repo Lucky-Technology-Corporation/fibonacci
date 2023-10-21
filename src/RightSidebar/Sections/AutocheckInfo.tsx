@@ -1,10 +1,11 @@
 import { ReactNode, useEffect, useState } from "react";
 import SectionAction from "../../LeftSidebar/SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ToastWindow from "../../Utilities/Toast/ToastWindow";
-import Button from "../../Utilities/Button";
+import { 
+  Button,
+  ToastWindow
+} from '@Components';
 
 export default function AutocheckInfo({
   isVisible,

@@ -1,9 +1,9 @@
 import { Card, DateRangePicker, DateRangePickerValue, LineChart } from "@tremor/react";
 import { useContext, useEffect, useState } from "react";
 import useMonitoringApi from "../../API/MonitoringAPI";
-import { copyText } from "../../Utilities/Copyable";
-import Dot from "../../Utilities/Dot";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { copyText } from '@Utilities'
+import { Dot } from '@Components'
+import { SwizzleContext } from '@Store'
 
 export default function AnalyticsPage() {
   const api = useMonitoringApi();

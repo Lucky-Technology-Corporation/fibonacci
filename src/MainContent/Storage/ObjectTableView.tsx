@@ -4,11 +4,13 @@ import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import useStorageApi from "../../API/StorageAPI";
-import Button from "../../Utilities/Button";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import NiceInfo from "../../Utilities/NiceInfo";
-import Pagination from "../../Utilities/Pagination";
-import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+import { 
+  Button,
+  NiceInfo,
+  Pagination,
+} from '@Components';
+import { SwizzleContext } from '@Store';
+import { getEstimatedColumnWidth } from '@Utilities';
 import DatabaseRow from "../Database/DatabaseRow";
 import RowDetail from "../Database/RowDetail";
 import SearchBar from "../Shared/SearchBar";

@@ -1,5 +1,5 @@
 import ToastWindow from "./ToastWindow";
-import { getSearchTableHelper } from "../SearchTableHelper";
+import { GetSearchTableHelper } from "../SearchTableHelper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
@@ -35,7 +35,7 @@ export default function SearchModal({ searchTerm, handleSearch, setTerm, matchin
     //No op right now?
   };
 
-  const table = getSearchTableHelper(matchingRows, handleRowClick);
+  const table = GetSearchTableHelper(matchingRows, handleRowClick);
 
   return (
     <ToastWindow

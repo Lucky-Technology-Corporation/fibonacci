@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import { SwizzleContext } from "../Utilities/GlobalContext";
-import InProgressDeploymentModal from "../Utilities/InProgressDeploymentModal";
-import { Page } from "../Utilities/Page";
+import { SwizzleContext } from '@Store'
+import { InProgressDeploymentModal } from '@Components';
+import { Page } from '@Types';
 import UserTableView from "./Auth/UserTableView";
 import DatabaseView from "./Database/DatabaseView";
 import Editor from "./Editor/Editor";

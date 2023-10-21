@@ -2,8 +2,8 @@ import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
-import { copyText } from "../../Utilities/Copyable";
-import InfoItem from "../../Utilities/Toast/InfoItem";
+import { copyText } from '@Utilities'
+import { InfoItem } from '@Components';
 
 const formatDateIfISO8601 = (date: string): string => {
   const iso8601Regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{1,3}Z/;

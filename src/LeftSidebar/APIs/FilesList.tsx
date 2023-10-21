@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { SwizzleContext } from '@Store'
 import SectionAction from "../SectionAction";
 import FileItem from "./FileItem";
 import FileWizard from "./FileWizard";

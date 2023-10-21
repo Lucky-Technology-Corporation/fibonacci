@@ -2,13 +2,15 @@ import { ReactNode, useContext, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import EndpointItem from "../../LeftSidebar/APIs/EndpointItem";
-import Button from "../../Utilities/Button";
-import Dropdown from "../../Utilities/Dropdown";
-import { filenameToEndpoint } from "../../Utilities/EndpointParser";
-import FloatingModal from "../../Utilities/FloatingModal";
-import FullPageModal from "../../Utilities/FullPageModal";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Method } from "../../Utilities/Method";
+import { 
+  Button,
+  Dropdown,
+  FloatingModal,
+  FullPageModal,
+} from '@Components';
+import { filenameToEndpoint } from '@Utilities';
+import { SwizzleContext } from '@Store'
+import { Method } from '@Types';
 
 export default function AppCodePage() {
   const { activeProject, environment, figmaToken, setFigmaToken } = useContext(SwizzleContext);

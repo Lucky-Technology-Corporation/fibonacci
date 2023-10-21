@@ -1,5 +1,4 @@
-import Button from "../../Utilities/Button";
-import Dropdown from "../../Utilities/Dropdown";
+import { Button, Dropdown } from '@Components';
 
 export default function SearchBar({
   keys,

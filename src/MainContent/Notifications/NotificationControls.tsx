@@ -1,9 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import useNotificationApi from "../../API/NotificationsAPI";
-import Button from "../../Utilities/Button";
-import Checkbox from "../../Utilities/Checkbox";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Button, Checkbox } from '@Components'
+import { SwizzleContext } from '@Store'
 import NotificationsTable from "./NotificationsTable";
 import SampleNotification from "./SampleNotification";
 

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { SwizzleContext } from "../GlobalContext";
+import { SwizzleContext } from '@Store';
 
 export default function ToastWindow({
   isHintWindowVisible,

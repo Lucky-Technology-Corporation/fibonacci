@@ -4,14 +4,15 @@ import LogRow from "./LogRow";
 import Switch from "react-switch";
 import useWebSocket from "react-use-websocket";
 import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { SwizzleContext } from '@Store'
 import { useAuthHeader } from "react-auth-kit";
 import useMonitoringApi from "../../API/MonitoringAPI";
-import Pagination from "../../Utilities/Pagination";
-import Button from "../../Utilities/Button";
-import Dropdown from "../../Utilities/Dropdown";
-import FullPageModal from "../../Utilities/FullPageModal";
-import FloatingModal from "../../Utilities/FloatingModal";
+import { 
+  Button,
+  Dropdown,
+  FloatingModal,
+  Pagination,
+} from '@Components';
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Dropdown from "../../Utilities/Dropdown";
-import { endpointToFilename } from "../../Utilities/EndpointParser";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Dropdown } from '@Components';
+import { endpointToFilename } from '@Utilities'
+import { SwizzleContext } from '@Store'
 
 export default function APIWizard({
   isVisible,

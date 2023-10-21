@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Page } from "../../Utilities/Page";
+import { SwizzleContext } from '@Store'
+import { Page } from '@Types';
 
 export default function Editor({ setCurrentFileProperties, selectedTab }: { setCurrentFileProperties: (properties: any) => void, selectedTab: Page }) {
   const iframeRef = useRef(null);

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { SwizzleContext } from '@Store'
 
 export default function HelperWizard({
   isVisible,

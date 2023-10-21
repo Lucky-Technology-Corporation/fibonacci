@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SectionAction from "../SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
+import { FullPageModal } from '@Components';
 
 export default function AuthSettings({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);

@@ -3,9 +3,8 @@ import toast from "react-hot-toast";
 import { ReactSearchAutocomplete } from "react-search-autocomplete";
 import useEndpointApi from "../../API/EndpointAPI";
 import useTemplateApi from "../../API/TemplatesAPI";
-import Checkbox from "../../Utilities/Checkbox";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import SecretInput from "../../Utilities/SecretInput";
+import { Checkbox, SecretInput } from '@Components';
+import { SwizzleContext } from '@Store'
 
 export default function TemplateWizard({
   isVisible,

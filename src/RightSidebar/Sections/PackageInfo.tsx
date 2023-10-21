@@ -4,9 +4,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Select from "react-select";
 import useEndpointApi from "../../API/EndpointAPI";
-import Button from "../../Utilities/Button";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import ToastWindow from "../../Utilities/Toast/ToastWindow";
+import { SwizzleContext } from '@Store'
+import { Button, ToastWindow } from '@Components';
 
 export default function PackageInfo({ isVisible, setIsVisible, location }: { isVisible: boolean; setIsVisible: any, location: string }) {
   const [query, setQuery] = useState("");

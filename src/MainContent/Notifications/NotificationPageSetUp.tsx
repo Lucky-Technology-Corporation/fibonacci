@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useNotificationApi from "../../API/NotificationsAPI";
-import Button from "../../Utilities/Button";
+import { Button } from '@Components'
 
 type NotificationPageSetUpProps = {
   setShowSetUp: (value: boolean) => void;
