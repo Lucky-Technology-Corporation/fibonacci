@@ -168,7 +168,7 @@ export default function DatabaseRow({
                       setupEditing(key);
                     }
                   }}
-                  value={editing === key ? pendingInputValue : value === false ? "false" : value || ""}
+                  value={editing === key ? pendingInputValue : value === false ? "false" : value === 0 ? "0" : value || ""}
                   onClick={() => {
                     if (!shouldBlockEdits.includes(key)) {
                       setupEditing(key);

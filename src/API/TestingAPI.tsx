@@ -1,7 +1,9 @@
-import axios from "axios";
+import axios, { Method } from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { SwizzleContext } from '@Store'
+import { TestType } from "../RightSidebar/TestWindow";
+import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import useDatabaseApi from "./DatabaseAPI";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -18,31 +20,32 @@ export default function useTestApi() {
   const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
 
-  const runTest = async (testDoc) => {
-      if (!activeEndpoint) {
-        console.error("No active project selected");
-        return;
-      }
+  const runTest = async (testDoc: TestType) => {
+    if (!activeEndpoint) {
+      console.error("No active project selected");
+      return;
+    }
 
-      let jwtToken;
-      if (testDoc.userId !== undefined && testDoc.userId !== "") {
-        const response = await axios.get(
-          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
-          {
-            headers: {
-              Authorization: authHeader(),
-            },
-          }
-        );
-        jwtToken = `Bearer ${response.data.jwt}`;
-      }
+    let jwtToken;
+    if (testDoc.userId !== undefined && testDoc.userId !== "") {
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      jwtToken = `Bearer ${response.data.jwt}`;
+    }
 
-      const method = activeEndpoint.split("/")[0].toUpperCase();
-      const endpointPath = "/" + activeEndpoint.split("/")[1]
-      const url = `${testDomain.replace("https://", "https://api.")}${endpointPath}?${testDoc.queryParametersString}`;
-      const body = testDoc.body;
-
-      return await execTest(url, method, body, jwtToken);
+    const endpoint = new ParsedActiveEndpoint(activeEndpoint);
+    // TODO: Get params from input
+    const url = `${testDomain.replace("https://", "https://api.")}${endpoint.getEndpointWithParams(
+      testDoc.pathParams,
+    )}`;
+    const body = testDoc.body;
+    return await execTest(url, endpoint.method as Method, testDoc.queryParams, body, jwtToken);
   };
 
   const runAllTests = async () => {
@@ -66,14 +69,18 @@ export default function useTestApi() {
     }
   };
 
-  const execTest = async (url, method, body, token) => {
+  const execTest = async (url: string, method: Method, params: QueryParams, body?: object, token?: string) => {
     try {
+      // console.debug(
+      //   `Exec test with URL = ${url}, method = ${method}, params = ${params}, body = ${body}, token = ${token}`,
+      // );
       const headers = token ? { Authorization: token } : undefined;
       const response = await axios.request({
-        url, 
-        method: method.toLowerCase(), 
-        headers, 
-        data: body
+        url,
+        method,
+        headers,
+        data: body,
+        params,
       });
       return response;
     } catch (error) {

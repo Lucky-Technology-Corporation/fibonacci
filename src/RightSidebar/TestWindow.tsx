@@ -8,6 +8,25 @@ import { Button, Dot } from '@Components';
 import { SwizzleContext } from '@Store';
 import NewTestWindow from "./NewTestWindow";
 
+export type QueryParams = {
+  [param: string]: string;
+};
+
+export type Headers = {
+  [header: string]: string;
+};
+
+export type TestType = {
+  _id?: string;
+  testName: string;
+  queryParams: QueryParams;
+  headers: Headers;
+  pathParams: string[];
+  userId?: string;
+  body?: object;
+  endpoint: string;
+};
+
 export default function TestWindow({
   shouldShowTestWindow,
   setShouldShowTestWindow,
@@ -16,23 +35,18 @@ export default function TestWindow({
   setShouldShowTestWindow: any;
 }) {
   const handleNewRequestClick = () => {
-    setTestDoc({})
+    setTestDoc({
+      testName: "",
+      queryParams: {},
+      headers: {},
+      pathParams: [],
+      endpoint: activeEndpoint,
+    });
     setShowNewTestWindow(true);
   };
 
   const handleCancelClick = () => {
     setShouldShowTestWindow(false);
-  };
-
-  type TestType = {
-    test_name: string;
-    query_parameters: object;
-    queryParametersString: string;
-    user_id: string;
-    body: object;
-    bodyString: string;
-    endpoint: string;
-    _id: string;
   };
 
   const { domain, activeProject, activeEndpoint, activeHelper, environment } = useContext(SwizzleContext);
@@ -46,7 +60,7 @@ export default function TestWindow({
 
   const api = useTestApi();
 
-  const runSingleTest = async (testDoc) => {
+  const runSingleTest = async (testDoc: TestType) => {
     setLoadingTests((prevLoadingTests) => [...prevLoadingTests, testDoc._id]);
 
     try {
@@ -60,27 +74,29 @@ export default function TestWindow({
         ...prevResponses,
         [testDoc._id]: JSON.stringify(result.data, null, 2),
       }));
-      
+
       setStatusText((prevResponses) => ({
         ...prevResponses,
         [testDoc._id]: result.status + ": " + getReasonPhrase(result.status),
       }));
 
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
-    } catch (error) {            
+    } catch (error) {
       setTestResults((prevResults) => ({
         ...prevResults,
         [testDoc._id]: error.response ? error.response.status : 500,
       }));
-      
+
       setTestResponses((prevResponses) => ({
         ...prevResponses,
         [testDoc._id]: error.response ? JSON.stringify(error.response.data, null, 2) : "Error",
       }));
-   
+
       setStatusText((prevResponses) => ({
         ...prevResponses,
-        [testDoc._id]: error.response ? (error.response.status +": " + getReasonPhrase(error.response.status)) : "Unknown error"
+        [testDoc._id]: error.response
+          ? error.response.status + ": " + getReasonPhrase(error.response.status)
+          : "Unknown error",
       }));
 
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
@@ -95,7 +111,7 @@ export default function TestWindow({
     setRunningAllTests(false);
   };
 
-  function getColorByStatus(statusCode) {
+  function getColorByStatus(statusCode: number) {
     if (statusCode >= 200 && statusCode < 300) return "green";
     if (statusCode >= 400 && statusCode < 500) return "yellow";
     if (statusCode >= 500) return "red";
@@ -103,15 +119,15 @@ export default function TestWindow({
   }
 
   useEffect(() => {
-    if(shouldShowTestWindow){
+    if (shouldShowTestWindow) {
       api
         .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
         .then((response) => {
-          console.log(response)
+          console.log(response);
           if (response && response.documents) {
             setTests(response.documents);
-          } else{
-            setTests([])
+          } else {
+            setTests([]);
           }
         })
         .catch((error) => {
@@ -121,21 +137,11 @@ export default function TestWindow({
   }, [activeEndpoint, shouldShowTestWindow]);
 
   const [showNewTestWindow, setShowNewTestWindow] = useState(false);
-  const [testDoc, setTestDoc] = useState(null);
+  const [testDoc, setTestDoc] = useState<TestType>(null);
 
   if (showNewTestWindow) {
     return (
-      <NewTestWindow
-        id={testDoc._id}
-        testTitle={testDoc.test_name}
-        savedQueryParameters={testDoc.queryParametersString}
-        savedUserId={testDoc.user_id}
-        savedBody={testDoc.bodyString}
-        shouldShowNewTestWindow={showNewTestWindow}
-        hideNewTestWindow={() => setShowNewTestWindow(false)}
-        savedTests={tests}
-        setTests={setTests}
-      />
+      <NewTestWindow testDoc={testDoc} setTests={setTests} hideNewTestWindow={() => setShowNewTestWindow(false)} />
     );
   }
   return (
@@ -156,7 +162,9 @@ export default function TestWindow({
               Test
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">You are in your <b>{environment == "prod" ? "production" : "test"}</b> environment</div>
+          <div className="text-sm text-gray-400 mt-1">
+            You are in your <b>{environment == "prod" ? "production" : "test"}</b> environment
+          </div>
         </div>
         <div className="flex ml-auto mr-0">
           <Button
@@ -186,41 +194,40 @@ export default function TestWindow({
           <div className="flex flex-col" key={index}>
             <div className="flex items-center justify-between mt-4 pb-2">
               <div className="flex items justify-left">
-                <Button onClick={() => {if(!loadingTests.includes(testDoc._id)) { runSingleTest(testDoc)} }} 
+                <Button
+                  onClick={() => {
+                    if (!loadingTests.includes(testDoc._id)) {
+                      runSingleTest(testDoc);
+                    }
+                  }}
                   className="py-1 px-1 font-medium rounded flex justify-center items-center cursor-pointer"
                   children={
                     loadingTests.includes(testDoc._id) ? (
                       <div>
                         <LoadingIcons.Circles style={{ width: "10px", height: "12px" }} />
                       </div>
-                      ) : (
-                        <FontAwesomeIcon icon={faPlay} style={{ color: "#41d373" }} />
-                    )}
-                text=""
+                    ) : (
+                      <FontAwesomeIcon icon={faPlay} style={{ color: "#41d373" }} />
+                    )
+                  }
+                  text=""
                 />
-                <div className="font-medium m-auto ml-2">{testDoc.test_name}</div>
+                <div className="font-medium m-auto ml-2">{testDoc.testName}</div>
               </div>
               <div className="flex space-x-2">
                 <Button
-                    text=""
-                    className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-                    children={
-                      <FontAwesomeIcon icon={faPencil} style={{ color: "#D9D9D9" }} />
-                    }
-                    onClick={() => {
-                      setTestDoc(testDoc);
-                      setShowNewTestWindow(true);
-                    }}
+                  text=""
+                  className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  children={<FontAwesomeIcon icon={faPencil} style={{ color: "#D9D9D9" }} />}
+                  onClick={() => {
+                    setTestDoc(testDoc);
+                    setShowNewTestWindow(true);
+                  }}
                 />
                 <Button
                   text=""
                   className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-                  children={
-                    <FontAwesomeIcon
-                      style={{ color: "#D9D9D9" }}
-                      icon={faTrash}
-                    />  
-                  }
+                  children={<FontAwesomeIcon style={{ color: "#D9D9D9" }} icon={faTrash} />}
                   onClick={() => {
                     api
                       .deleteTest(activeCollection, testDoc._id)
@@ -234,7 +241,7 @@ export default function TestWindow({
                 />
               </div>
             </div>
-            {testResponses[testDoc._id] &&
+            {testResponses[testDoc._id] && (
               <div className="bg-[#272727] p-1 rounded">
                 <div className="px-1 text-sm font-semibold">
                   <div className="mb-1">
@@ -243,10 +250,12 @@ export default function TestWindow({
                       <span>{statusText[testDoc._id]}</span>
                     </div>
                   </div>
-                </div>    
-                <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">{testResponses[testDoc._id]}</pre>
+                </div>
+                <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">
+                  {testResponses[testDoc._id]}
+                </pre>
               </div>
-            }
+            )}
           </div>
         ))}
       </div>
