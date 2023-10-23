@@ -49,8 +49,8 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   };
 
   const createNewProject = (projectName: string) => {
-    if(projectName.includes(" ") || projectName.includes("_") || projectName.includes("-")) {
-      toast.error("Project name cannot contain spaces or special characters");
+    if(projectName.includes("_") || projectName.includes("-")) {
+      toast.error("Project name cannot contain underscores or dashes");
       return;
     }
     setIsCreatingProject(true);
@@ -186,7 +186,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
       <FullPageModal
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        regexPattern={/^[a-zA-Z][a-zA-Z0-9]*$/}
+        regexPattern={/^[a-zA-Z][a-zA-Z0-9 ]*$/}
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
           title: "🥋 New project",
