@@ -44,6 +44,14 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         setIsModalOpen(false);
         await setCurrentProject(projectId)
         location.reload()
+      } else if (deploymentStatus === "DEPLOYMENT_FAILED") {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+        setIsModalOpen(false);
+        toast.error("Deployment failed");
+        setTimeout(() => {
+          location.reload();
+        }, 250);
       }
     }, POLLING_INTERVAL);
   };
