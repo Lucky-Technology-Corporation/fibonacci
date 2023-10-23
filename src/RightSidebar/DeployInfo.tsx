@@ -109,14 +109,14 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
                 </div>
               </div>
 
-              <div className="flex">
+              {/* <div className="flex">
                 <button className="border border-[#a4acbc] hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
                   <img src="eye.png" alt="eye" className="w-4 h-4 flex-center  inline-block" />
                 </button>
                 <button className="border border-orange-400 hover:bg-[#2f2f36] w-9 py-1.5 rounded mr-4">
                   <img src="turnback.png" alt="turnback" className="w-4 h-4 flex-center inline-block" />
                 </button>
-              </div>
+              </div> */}
             </div>
           );
         })
