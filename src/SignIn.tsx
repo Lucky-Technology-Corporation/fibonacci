@@ -69,8 +69,6 @@ export default function SignIn() {
       <img src="/logo_offwhite.png" className="w-20 mt-8 mb-2 m-auto" />
       <div className="m-auto text-center text-3xl mb-2 font-bold">Swizzle</div>
       <div className="m-auto text-center text-lg mb-8">Sign in to get started</div>
-      <div>{process.env.NEXT_PUBLIC_BASE_URL}</div>
-      <div>{process.env.VERCEL_ENV}</div>
       <div
         className="w-64 cursor-pointer text-center bg-black border-[#525363] hover:border-[#6f7082] hover:text-white border rounded-md p-3 text-lg font-medium m-auto"
         onClick={() => {
