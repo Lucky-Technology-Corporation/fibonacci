@@ -74,7 +74,7 @@ export default function ToastWindow({
   return (
     <div
       className={`z-50 absolute ${
-        isExpandable ? "w-fit w-[400px]" : isLarge ? "w-[600px]" : "w-[350px]"
+        isExpandable ? "w-fit w-[400px] min-w-[400px]" : isLarge ? "w-[600px]" : "w-[350px]"
       } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg fixed ${
         isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
@@ -87,7 +87,6 @@ export default function ToastWindow({
       }}
       onMouseEnter={showHintWindowIfOpen}
       onMouseLeave={hideHintWindow}
-      onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
         <div className={titleClassSet}>{title}</div>

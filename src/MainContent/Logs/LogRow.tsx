@@ -171,7 +171,7 @@ export default function LogRow({
                   {JSON.stringify(message.request, null, 2)}
                 </div>
               ),
-              isExpandable: false,
+              isExpandable: true,
             }}
             onClick={() => {
               copyText(JSON.stringify(message.request, null, 2));
@@ -189,7 +189,7 @@ export default function LogRow({
                   {JSON.stringify(message.response, null, 2)}
                 </div>
               ),
-              isExpandable: false,
+              isExpandable: true,
             }}
             onClick={() => {
               copyText(JSON.stringify(message.response, null, 2));
