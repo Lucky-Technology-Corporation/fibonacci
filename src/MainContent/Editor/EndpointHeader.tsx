@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import Button from "../../Utilities/Button";
 import { replaceCodeBlocks } from "../../Utilities/DataCaster";
-import Dropdown from "../../Utilities/Dropdown";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
@@ -99,16 +98,16 @@ export default function EndpointHeader() {
               }}
             />
             <div className="w-[1px] h-[36px] bg-[#525363] mx-4"></div>
-            <Dropdown
+            {/* <Dropdown
               className=""
               onSelect={setAICommand}
               children={aiOptions}
               direction="left"
               title={aiOptions.filter((n) => n.id == AICommand)[0].name}
-            />
+            /> */}
 
             <input
-              className="grow mx-2 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
+              className="grow mx-2 ml-0 bg-transparent border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2"
               placeholder={
                 AICommand == "ask"
                   ? "Ask any question about your project..."

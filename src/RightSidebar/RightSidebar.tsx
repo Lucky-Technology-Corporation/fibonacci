@@ -1,14 +1,15 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
 import Checkbox from "../Utilities/Checkbox";
 import { copyText } from "../Utilities/Copyable";
+import { replaceCodeBlocks } from "../Utilities/DataCaster";
+import FloatingModal from "../Utilities/FloatingModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
 import DeployButton from "./DeployButton";
 import AuthInfo from "./Sections/AuthInfo";
-import AutocheckInfo from "./Sections/AutocheckInfo";
 import DBInfo from "./Sections/DBInfo";
 import PackageInfo from "./Sections/PackageInfo";
 import RequestInfo from "./Sections/RequestInfo";
@@ -59,7 +60,7 @@ export default function RightSidebar({
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
-  const [autocheckResponse, setAutocheckResponse] = useState("");
+  const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
   const { ideReady, setPostMessage } = useContext(SwizzleContext);
@@ -194,7 +195,7 @@ export default function RightSidebar({
                       toast.error("Error running autocheck");
                       return;
                     }
-                    setAutocheckResponse(data.recommendation_text);
+                    setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
                     return "Done";
                   },
                   error: "Error running autocheck",
@@ -203,14 +204,11 @@ export default function RightSidebar({
               icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
               text="Autocheck"
             />
-            <AutocheckInfo
-              isVisible={autocheckResponse != ""}
-              setIsVisible={(show: boolean) => {
-                if (!show) {
-                  setAutocheckResponse("");
-                }
+            <FloatingModal
+              content={autocheckResponse}
+              closeModal={() => {
+                setAutocheckResponse(null);
               }}
-              autocheckResponse={autocheckResponse}
             />
             <div className="h-2" />
             <IconTextButton
@@ -281,7 +279,7 @@ export default function RightSidebar({
                       toast.error("Error running autocheck");
                       return;
                     }
-                    setAutocheckResponse(data.recommendation_text);
+                    setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
                     return "Done";
                   },
                   error: "Error running autocheck",
@@ -290,16 +288,12 @@ export default function RightSidebar({
               icon={<img src="/wand.svg" className="w-3 h-3 m-auto" />}
               text="Autocheck"
             />
-            <AutocheckInfo
-              isVisible={autocheckResponse != ""}
-              setIsVisible={(show: boolean) => {
-                if (!show) {
-                  setAutocheckResponse("");
-                }
+            <FloatingModal
+              content={autocheckResponse}
+              closeModal={() => {
+                setAutocheckResponse(null);
               }}
-              autocheckResponse={autocheckResponse}
             />
-
             <div className="h-4" />
             <div className="font-bold">Configuration</div>
             <div className="h-2" />

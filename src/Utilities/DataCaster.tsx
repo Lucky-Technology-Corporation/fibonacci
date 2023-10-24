@@ -1,3 +1,5 @@
+import { filenameToEndpoint } from "./EndpointParser";
+
 export function castValues(input: any): any {
   let output;
 
@@ -38,10 +40,38 @@ export function castValues(input: any): any {
   return output;
 }
 
+const filenameToEnglish = (filename: string) => {
+  if(filename.startsWith("get")) {
+    return "GET " + filename.slice(3);
+  } else if(filename.startsWith("post")) {
+    return "POST " + filename.slice(4);
+  }
+}
+
 export function replaceCodeBlocks(str: string) {
-  const regex = /(`{1,3})(?:[a-zA-Z]*)\n?([^`]+)\1/g;
-  return str.replace(regex, (_, __, code) => {
+  const regex = /(`+)([^\n`]+?)\1|(`{3,})(?:[a-zA-Z]*)\n?([\s\S]*?)\3/g;
+  let lastIndex = 0;
+  let result = '';
+
+  let match;
+  while ((match = regex.exec(str)) !== null) {
+    result += str.slice(lastIndex, match.index).replace(/\n/g, '<br>');
+    const code = match[2] || match[4];
     const escapedCode = code.replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
-    return `<span style="font-family: monospace;">${escapedCode}</span>`;
-  });
+    result += `<span style="font-family: monospace;">${escapedCode}</span>`;
+    lastIndex = regex.lastIndex;
+  }
+
+  result += str.slice(lastIndex).replace(/\n/g, '<br>');
+  
+  const filepathRegex = /\/swizzle\/code\/backend\/user-dependencies\/([^\/\s]+)/g;
+  result = result.replace(filepathRegex, (_, filename) => filenameToEnglish(filenameToEndpoint(filename)));
+
+  const helperRegex = /\/swizzle\/code\/backend\/helpers\/([^\/\s]+)/g;
+  result = result.replace(helperRegex, (_, filename) => filename);
+
+  const fileNameOnlyRegex = /\b(post\.|get\.)[\w\.\(\)]+\.js\b/g;
+  result = result.replace(fileNameOnlyRegex, (filename) => filenameToEnglish(filenameToEndpoint(filename)));
+
+  return result;
 }

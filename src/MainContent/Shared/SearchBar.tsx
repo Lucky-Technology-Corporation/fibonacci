@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 
@@ -8,6 +9,7 @@ export default function SearchBar({
   searchQuery,
   setSearchQuery,
   runSearch,
+  showMongo = false
 }: {
   keys: string[];
   filterName: string;
@@ -15,26 +17,39 @@ export default function SearchBar({
   searchQuery: string;
   setSearchQuery: (searchQuery: string) => void;
   runSearch: () => void;
+  showMongo?: boolean;
 }) {
   const exampleKeyOne = keys.filter(k => k != "_id")[0];
   const exampleKeyTwo = keys.filter(k => k != "_id")[keys.length - 2];
+
+  const [mappedKeys, setMappedKeys] = useState([]);
+  useEffect(() => {
+    var newKeys = keys;
+    if (showMongo) {
+      newKeys = ["_exec_mongo_query"].concat(keys);
+    } 
+    
+    const newKeyArray = newKeys
+      .filter((k) => k !== "_id")
+      .map((key) => {
+        if (key == "_swizzle_uid") {
+          return { id: key, name: "userId" };
+        } else if(key == '_exec_mongo_query'){
+          return { id: key, name: "Query" };
+        } else {
+          return { id: key, name: "Filter " + key };
+        }
+      })
+
+    setMappedKeys(newKeyArray)
+  }, [])
 
   return (
     <>
       <Dropdown
         className="ml-4"
         onSelect={setFilterName}
-        children={(["_exec_mongo_query"].concat(keys))
-          .filter((k) => k !== "_id")
-          .map((key) => {
-            if (key == "_swizzle_uid") {
-              return { id: key, name: "userId" };
-            } else if(key == '_exec_mongo_query'){
-              return { id: key, name: "Execute Mongo Query" };
-            } else {
-              return { id: key, name: "Filter " + key };
-            }
-          })}
+        children={mappedKeys}
         direction="left"
         title={(filterName == "_exec_mongo_query") ? "Execute Mongo Query" : "Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
       />
