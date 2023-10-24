@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 
@@ -44,6 +45,48 @@ export default function SearchBar({
     setMappedKeys(newKeyArray)
   }, [])
 
+  const validateInput = () => {
+    const operationType = searchQuery.split('(')[0].trim();
+    
+    if (!searchQuery.split('(')[1].startsWith('{') || !searchQuery.endsWith('})')) {
+      toast.error('The query must be enclosed in curly braces.');
+      return
+    }
+    
+    if (!/\"[\w$]+\"\s*:/.test(searchQuery)) {
+      toast.error('Keys must be enclosed in quotes.');
+      return
+    }
+    
+    if (!/\:/.test(searchQuery)) {
+      toast.error('Keys and values must be separated by a colon.');
+      return
+    }
+  
+    if (operationType.startsWith('update')) {
+      if (!/\$set|\$unset|\$inc/.test(searchQuery)) {
+        toast.error('Update operations must include an operator like $set, $unset, $inc, etc.');
+        return
+      }
+    }
+  
+    if (operationType === 'find' || operationType === 'delete') {
+      if (!/\$or|\$and|\$lt|\$lte|\$gt|\$gte|\$ne/.test(searchQuery) && !/"[^"]+"\s*:\s*[^"]+/.test(searchQuery)) {
+        toast.error("Your query must include an operator like $or, $and, $lt, $lte, $gt, $gte, $ne, etc. Or no operators at all.")
+        return
+      }
+    }
+  
+    if (operationType === 'aggregate') {
+      if (!/\$match|\$group|\$unwind|\$sort/.test(searchQuery)) {
+        toast.error('Aggregate queries must include operators like $match, $group, $unwind, $sort, etc.');
+        return
+      }
+    }
+
+    runSearch()
+  }
+
   return (
     <>
       <Dropdown
@@ -55,15 +98,19 @@ export default function SearchBar({
       />
       <input
         type="text"
-        className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
-        placeholder={filterName == "_exec_mongo_query" ? `updateOne({'${exampleKeyOne}': 'Example'}, { $set: {'${exampleKeyTwo}': 'Update'} })` : "Search"}
+        className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${filterName == "_exec_mongo_query" ? "font-mono": ""}`}
+        placeholder={filterName == "_exec_mongo_query" ? `updateOne({'${exampleKeyOne}': 'SearchText'}, { $set: {'${exampleKeyTwo}': 'UpdateText'} })` : "Search"}
         value={searchQuery}
         onChange={(e) => {
           setSearchQuery(e.target.value);
         }}
         onKeyDown={(event) => {
           if (event.key == "Enter") {
-            runSearch();
+            if(filterName == "_exec_mongo_query"){
+              validateInput()
+            } else{
+              runSearch();
+            }
           }
         }}
       />
