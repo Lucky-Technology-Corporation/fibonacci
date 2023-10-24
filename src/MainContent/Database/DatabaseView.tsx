@@ -291,6 +291,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           runSearch={runSearch}
+          showMongo={true}
         />
       </div>
 
