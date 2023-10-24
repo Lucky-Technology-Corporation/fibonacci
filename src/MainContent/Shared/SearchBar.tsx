@@ -46,6 +46,9 @@ export default function SearchBar({
   }, [])
 
   const validateInput = () => {
+    if(searchQuery == ""){
+      searchQuery = "find({})"
+    }
     const operationType = searchQuery.split('(')[0].trim();
     
     if (!searchQuery.split('(')[1].startsWith('{') || !searchQuery.endsWith('})')) {

@@ -190,7 +190,8 @@ export default function LeftSidebar({
           text="Monitoring"
           active={selectedTab == Page.Logs}
           onClick={() => {
-            setSelectedTab(Page.Logs);
+            if(selectedTab == Page.Logs){ setSelectedTab(null) }
+            else { setSelectedTab(Page.Logs); }
           }}
         />
         <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
@@ -204,7 +205,8 @@ export default function LeftSidebar({
             text="Backend"
             active={selectedTab == Page.Apis}
             onClick={() => {
-              setSelectedTab(Page.Apis);
+              if(selectedTab == Page.Apis){ setSelectedTab(null) }
+              else { setSelectedTab(Page.Apis); }
             }}
           />
         </div>
@@ -215,7 +217,8 @@ export default function LeftSidebar({
           text="Database"
           active={selectedTab == Page.Db}
           onClick={() => {
-            setSelectedTab(Page.Db);
+            if(selectedTab == Page.Db){ setSelectedTab(null) }
+            else { setSelectedTab(Page.Db); }
           }}
         />
         <CollectionList
@@ -229,7 +232,8 @@ export default function LeftSidebar({
           text="Storage"
           active={selectedTab == Page.Storage}
           onClick={() => {
-            setSelectedTab(Page.Storage);
+            if(selectedTab == Page.Storage){ setSelectedTab(null) }
+            else { setSelectedTab(Page.Storage); }
           }}
         />
 
@@ -238,7 +242,8 @@ export default function LeftSidebar({
           text="Users"
           active={selectedTab == Page.Auth}
           onClick={() => {
-            setSelectedTab(Page.Auth);
+            if(selectedTab == Page.Auth){ setSelectedTab(null) }
+            else { setSelectedTab(Page.Auth); }
           }}
         />
 
@@ -261,7 +266,8 @@ export default function LeftSidebar({
             text="Frontend"
             active={selectedTab == Page.Hosting}
             onClick={() => {
-              setSelectedTab(Page.Hosting);
+              if(selectedTab == Page.Hosting){ setSelectedTab(null) }
+              else { setSelectedTab(Page.Hosting); }
             }}
         />
         </div>
