@@ -52,6 +52,7 @@ export default function ObjectTableView() {
     const handleDragEnterLeave = (e) => {
       preventDefaults(e);
       setDragging(e.type === "dragenter" || e.type === "dragover");
+      console.log("dragState", e.type === "dragenter" || e.type === "dragover")
     };
 
     const handleDrop = (e) => {
@@ -66,7 +67,7 @@ export default function ObjectTableView() {
       document.addEventListener(eventName, handleDragEnterLeave, false);
     });
 
-    document.addEventListener("drop", handleDrop, { once: true });
+    document.addEventListener("drop", handleDrop, false);
 
     // Cleanup
     return () => {
