@@ -22,11 +22,13 @@ export default function LogRow({
   setModalText: (text: ReactNode) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [headers, setHeaders] = useState<any>({});
   const { getLogDetails, analyzeError } = useMonitoringApi();
   const { domain, environment } = useContext(SwizzleContext);
 
   useEffect(() => {
     setIsExpanded(false);
+    setHeaders(message.request.headers);
     delete message.request.headers
   }, [message]);
 
@@ -161,7 +163,8 @@ export default function LogRow({
           </div>
         </td>
         <td className={`text-left pl-4 ${message.userId == null ? "" : ""}`}>{message.userId || "None"}</td>
-        <td className="text-left pl-4">
+        <td className="text-left pl-4 flex mt-2">
+          <>
           <InfoItem
             content={<div className="text-xs font-mono underline decoration-dotted">Request</div>}
             toast={{
@@ -178,6 +181,24 @@ export default function LogRow({
             }}
             position="bottom-center"
           />
+          &nbsp;&nbsp;
+          <div className="pt-1.5">(</div><InfoItem
+            content={<div className="text-xs font-mono underline decoration-dotted">headers</div>}
+            toast={{
+              title: "Headers",
+              content: (
+                <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
+                  {JSON.stringify(headers, null, 2)}
+                </div>
+              ),
+              isExpandable: true,
+            }}
+            onClick={() => {
+              copyText(JSON.stringify(headers, null, 2));
+            }}
+            position="bottom-center"
+          /><div className="pt-1.5">)</div>
+          </>
         </td>
         <td className="text-left pl-4">
           <InfoItem
