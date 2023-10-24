@@ -46,7 +46,8 @@ export default function SignIn() {
     ) {
       console.log("Signed in!"); //do not remove the jwt from the url here. it causes a refresh loop
       setTimeout(() => {
-        location.reload();
+        // location.reload();
+        location.href= "/"
       }, 100);
     } else {
       toast.error("Couldn't sign in");

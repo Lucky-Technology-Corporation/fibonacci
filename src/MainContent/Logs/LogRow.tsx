@@ -27,6 +27,7 @@ export default function LogRow({
 
   useEffect(() => {
     setIsExpanded(false);
+    delete message.request.headers
   }, [message]);
 
   const formatDate = (inputDateStr: string) => {
@@ -164,13 +165,13 @@ export default function LogRow({
           <InfoItem
             content={<div className="text-xs font-mono underline decoration-dotted">Request</div>}
             toast={{
-              title: "Click to copy",
+              title: "Request details",
               content: (
                 <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                   {JSON.stringify(message.request, null, 2)}
                 </div>
               ),
-              isExpandable: true,
+              isExpandable: false,
             }}
             onClick={() => {
               copyText(JSON.stringify(message.request, null, 2));
@@ -182,13 +183,13 @@ export default function LogRow({
           <InfoItem
             content={<div className="text-xs font-mono underline decoration-dotted">Response</div>}
             toast={{
-              title: "Click to copy",
+              title: "Response details",
               content: (
                 <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
                   {JSON.stringify(message.response, null, 2)}
                 </div>
               ),
-              isExpandable: true,
+              isExpandable: false,
             }}
             onClick={() => {
               copyText(JSON.stringify(message.response, null, 2));
