@@ -100,8 +100,6 @@ export default function TemplateWizard({
 
     return {
       template_id: template ? template.id : "",
-      fermat_url: testDomain.replace("https://", "https://fermat."),
-      fermat_jwt: await endpointApi.getFermatJwt(),
       inputs: inputs,
     };
   };
