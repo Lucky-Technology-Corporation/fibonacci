@@ -42,12 +42,14 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
+        setIsCreatingProject(false)
         await setCurrentProject(projectId)
         location.reload()
       } else if (deploymentStatus === "DEPLOYMENT_FAILED") {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
+        setIsCreatingProject(false);
         toast.error("Deployment failed");
         setTimeout(() => {
           location.reload();
@@ -84,6 +86,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
     const deploymentStatus = await checkDeploymentStatus(project.id);
     if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
       setIsModalOpen(true);
+      setIsCreatingProject(true);
       startPolling(project.id);
       sessionStorage.setItem("activeProject", project.id);
       sessionStorage.setItem("activeProjectName", project.name);
@@ -112,6 +115,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
       }
   
       setIsModalOpen(false);
+      setIsCreatingProject(false);
       if (pollingRef.current) {
         clearInterval(pollingRef.current); 
         pollingRef.current = null;
@@ -187,6 +191,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
           }}
           title={activeProjectName}
           direction="center"
+          className="fixed"
         />
       </div>
       
