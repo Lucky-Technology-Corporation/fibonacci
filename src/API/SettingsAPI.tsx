@@ -103,11 +103,48 @@ export default function useSettingsApi() {
     }
   };
 
+  const updatePaymentMethod = async (paymentMethodId: string) => {
+    try {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/billing?payment_method_id=${paymentMethodId}`,
+        {},
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  const hasAddedPaymentMethod = async () => {
+    try {
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/billing`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return (response.data.hasPaymentMethod);
+    } catch (e: any) {
+      console.error(e);
+      return false;
+    }
+  }
+
   return {
     updateApns,
     getSecrets,
     saveSecrets,
     deleteSecret,
-    updateBilling
+    updateBilling,
+    updatePaymentMethod,
+    hasAddedPaymentMethod
   };
 }

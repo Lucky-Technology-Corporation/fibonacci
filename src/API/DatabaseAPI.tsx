@@ -244,6 +244,7 @@ export default function useDatabaseApi() {
     if (NEXT_PUBLIC_BASE_URL == "https://euler-i733tg4iuq-uc.a.run.app/api/v1" || name.includes("prod")) {
       shouldDeployProd = true;
     }
+    console.log("shouldDeployProd", shouldDeployProd)
     axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
       { name, deploy_production: shouldDeployProd },

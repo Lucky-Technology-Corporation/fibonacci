@@ -4,12 +4,14 @@ import { useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
+import useSettingsApi from "./API/SettingsAPI";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
 import CenterContent from "./MainContent/CenterContent";
 import RightSidebar from "./RightSidebar/RightSidebar";
 import SignIn from "./SignIn";
 import { SwizzleContext } from "./Utilities/GlobalContext";
 import { Page } from "./Utilities/Page";
+import PaymentRequestModal from "./Utilities/PaymentRequestModal";
 
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
@@ -27,10 +29,25 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   //Initialization code...
-  const { isFree, projects, activeProject, setProjects, isCreatingProject } = useContext(SwizzleContext);
+  const { isFree, projects, setProjects, setHasPaymentMethod, hasPaymentMethod } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
+  const { hasAddedPaymentMethod } = useSettingsApi()
 
   useEffect(() => {
+    const fetchPaymentMethod = async () => {
+      const hasPaymentMethod = await hasAddedPaymentMethod();
+      if (hasPaymentMethod) {
+        setHasPaymentMethod(true)
+      } else{
+        setHasPaymentMethod(false);
+      }
+      console.log("hasPaymentMethod", hasPaymentMethod)
+    }
+    fetchPaymentMethod()
+  }, []);
+
+  useEffect(() => {
+    console.log("hasPaymentMethod", hasPaymentMethod)
     const fetchProjects = async () => {
       try {
         const data = await getProjects();
@@ -49,8 +66,11 @@ export default function Dashboard() {
       }
     };
 
-    fetchProjects();
-  }, []);
+    if(hasPaymentMethod){
+      fetchProjects();
+    }
+
+  }, [hasPaymentMethod]);
 
   if (isAuthenticated()) {
     if (projects) {
@@ -81,8 +101,6 @@ export default function Dashboard() {
             <CenterContent
               selectedTab={selectedTab}
               setCurrentFileProperties={setCurrentFileProperties}
-              didDeploy={didDeploy}
-              setDidDeploy={setDidDeploy}
               activeCollection={activeCollection}
               activeLogsPage={activeLogsPage}
               isModalOpen={isModalOpen}
@@ -93,6 +111,12 @@ export default function Dashboard() {
           </div>
         </div>
       );
+    } else if(hasPaymentMethod != null && hasPaymentMethod === false){
+      return (
+        <PaymentRequestModal 
+          isVisible={!hasPaymentMethod}
+        />
+      )
     } else {
       return (
         <div className="w-full mt-12 text-center">

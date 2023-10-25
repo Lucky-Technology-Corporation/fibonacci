@@ -46,6 +46,8 @@ export interface SwizzleContextType {
   mousePosition;
   shouldOverlay;
   setShouldOverlay;
+  hasPaymentMethod;
+  setHasPaymentMethod;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -53,6 +55,7 @@ export const SwizzleContext = createContext<SwizzleContextType>(undefined);
 export const GlobalContextProvider = ({ children }) => {
   const [environment, setEnvironment] = useState("test"); // ["test", "prod"]
   const [projects, setProjects] = useState(null);
+  const [hasPaymentMethod, setHasPaymentMethod] = useState(null);
   const [activeProject, setActiveProject] = useState("");
   const [activeProjectName, setActiveProjectName] = useState("");
   const [isFree, setIsFree] = useState(false);
@@ -136,6 +139,8 @@ export const GlobalContextProvider = ({ children }) => {
         mousePosition,
         shouldOverlay,
         setShouldOverlay,
+        hasPaymentMethod,
+        setHasPaymentMethod,
       }}
     >
       {children}

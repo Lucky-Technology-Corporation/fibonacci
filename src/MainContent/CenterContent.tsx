@@ -13,8 +13,6 @@ import ObjectTableView from "./Storage/ObjectTableView";
 type CenterContentProps = {
   selectedTab: Page;
   setCurrentFileProperties: (properties: any) => void;
-  didDeploy: boolean;
-  setDidDeploy: (didDeploy: boolean) => void;
   activeCollection: string;
   activeLogsPage: string;
   isModalOpen: any;
@@ -24,8 +22,6 @@ type CenterContentProps = {
 export default function CenterContent({
   selectedTab,
   setCurrentFileProperties,
-  didDeploy,
-  setDidDeploy,
   activeCollection,
   activeLogsPage,
   isModalOpen,
@@ -40,8 +36,6 @@ export default function CenterContent({
       <InProgressDeploymentModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)} />
-
-      {/* <PaymentRequestModal /> */}
 
       <div
         style={{
