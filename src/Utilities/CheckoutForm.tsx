@@ -73,7 +73,7 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
             <button type="submit" disabled={!stripe || loading} className='ml-auto mr-0'>
                 <Button
                     className={`${loading ? "opacity-70" : ""} w-auto text-sm inline-flex justify-center rounded-md shadow-sm px-4 py-2 bg-gradient-to-r from-indigo-700 to-violet-700 hover:to-violet-600 text-base font-bold text-white hover:bg-[#85869866]`}
-                    children={loading ? "Loading..." : "Save Payment Method"}
+                    children={loading ? "Loading..." : setIsVisible == undefined ? "Start 7-day free trial" : "Save Payment Method"}
                     onClick={() => {}}
                 />
             </button>
