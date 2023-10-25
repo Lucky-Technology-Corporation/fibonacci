@@ -1,9 +1,20 @@
-import "./App.css";
+import { loadIntercom } from "next-intercom";
 import { AuthProvider } from "react-auth-kit";
+import "./App.css";
 import Dashboard from "./Dashboard";
 import { GlobalContextProvider } from "./Utilities/GlobalContext";
 
 function App() {
+
+  loadIntercom({
+    appId: "cxvvsphp",
+    email: "",
+    name: "",
+    ssr: false,
+    initWindow: true,
+    delay: 0,
+  });
+
   return (
     <AuthProvider
       authType={"cookie"}

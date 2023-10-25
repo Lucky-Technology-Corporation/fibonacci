@@ -33,6 +33,7 @@
     "lottie-react": "^2.4.0",
     "monaco-editor": "^0.38.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
+    "next-intercom": "^0.1.4",
     "npm": "^9.8.1",
     "pluralize": "^8.0.0",
     "re-resizable": "^6.9.11",

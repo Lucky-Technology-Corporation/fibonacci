@@ -26,6 +26,23 @@ export default function useSettingsApi() {
       return null;
     }
   };
+  
+  const deleteProject = async (projectId: string) => {
+    try {
+      const response = await axios.delete(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}`,
+        {
+          headers: {
+            Authorization: authHeader(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  };
 
   const updateApns = async (p8Key: string, key_id: string, team_id: string) => {
     try {
@@ -145,7 +162,8 @@ export default function useSettingsApi() {
     deleteSecret,
     updateBilling,
     updatePaymentMethod,
-    hasAddedPaymentMethod
+    hasAddedPaymentMethod,
+    deleteProject
   };
 }
 

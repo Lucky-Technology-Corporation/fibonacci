@@ -15,9 +15,9 @@ function classNames(...classes: string[]) {
 export default function UserDropdown() {
   const signOut = useSignOut();
   const auth = useAuthUser();
-  const {updateBilling} = useSettingsApi()
+  const {deleteProject} = useSettingsApi()
 
-  const { setActiveProject, setActiveProjectName, isFree, setIsFree } = useContext(SwizzleContext);
+  const { setActiveProject, setActiveProjectName, activeProject, activeProjectName } = useContext(SwizzleContext);
 
   const [inviteVisible, setInviteVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -70,12 +70,26 @@ export default function UserDropdown() {
                       "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
                     )}
                     onClick={() => {
-                      toast.error("Collaboration is pre-alpha. Your account only has access to beta or higher.");
-                      return;
-                      setInviteVisible(true);
+                      const c = prompt(`Are you sure you want to delete this project? Type the project name: ${activeProjectName} to confirm.`);
+                      if (c == activeProjectName) {
+                        toast.promise(deleteProject(activeProject), {
+                          loading: "Deleting project...",
+                          success: () => {
+                            setTimeout(() => {
+                              window.location.reload();
+                            }, 500)
+                            return "Project deleted!"
+                          },
+                          error: "Error deleting project",
+                        });
+                      } else if(c == ""){
+                        toast("Project not deleted.")
+                      } else{
+                        toast.error(`Project name did not match. To avoid accidental deletion, please type the project name: ${activeProjectName} exactly.`)
+                      }
                     }}
                   >
-                    Invite Collaborators
+                    Delete Project
                   </a>
                 )}
               </Menu.Item>

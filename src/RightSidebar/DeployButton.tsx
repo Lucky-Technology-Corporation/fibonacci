@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
+import useSettingsApi from "../API/SettingsAPI.tsx";
+import PaymentRequestModal from "../Utilities/PaymentRequestModal.tsx";
 import DeployInfo from "./DeployInfo.tsx";
 
 export default function DeployButton({}: {}) {
@@ -8,9 +10,16 @@ export default function DeployButton({}: {}) {
   const [isDeploymentInProgress, setIsDeploymentInProgress] = useState(false);
   const [showDeployInfo, setShowDeployInfo] = useState(false);
   const [shouldCancelHide, setShouldCancelHide] = useState(false);
+  const [showStripeView, setShowStripeView] = useState(false);
 
   const { deploy } = useEndpointApi();
+  const { hasAddedPaymentMethod } = useSettingsApi()
 
+  const fetchPaymentMethod = async () => {
+    const hasPaymentMethod = await hasAddedPaymentMethod();
+    return hasPaymentMethod;
+  }
+  
   const teaseDeploy = () => {
     if (!isDeploymentInProgress) {
       setDeployProgress(8);
@@ -22,7 +31,14 @@ export default function DeployButton({}: {}) {
     }
   };
 
-  const runDeploy = () => {
+  const runDeploy = async () => {
+    if (isDeploymentInProgress) return;
+    const hasPaymentMethod = await fetchPaymentMethod();
+    if(!hasPaymentMethod){
+      setShowStripeView(true);
+      return;
+    }
+
     toast.promise(deploy(), {
       loading: "Deploying...",
       success: "Deployed!",
@@ -87,29 +103,34 @@ export default function DeployButton({}: {}) {
   }, [shouldCancelHide])
 
   return (
-    <div className="relative w-full mb-1">
-      <div
-        id="deploy-progress-bar"
-        className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
-        style={{
-          width: `${deployProgress}%`,
-          transition: "width 0.2s ease-out",
-        }}
-      />
-      <button
-        className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
-        onMouseEnter={() => setShowDeployInfo(true)}
-        onMouseLeave={() => {if(!setShouldCancelHide){ setShowDeployInfo(false) }}}
-        onClick={runDeploy}
-      >
-        <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
-        {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
-      </button>
+    <>
+      <div className="relative w-full mb-1">
+        <div
+          id="deploy-progress-bar"
+          className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
+          style={{
+            width: `${deployProgress}%`,
+            transition: "width 0.2s ease-out",
+          }}
+        />
+        <button
+          className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
+          onMouseEnter={() => setShowDeployInfo(true)}
+          onMouseLeave={() => {if(!setShouldCancelHide){ setShowDeployInfo(false) }}}
+          onClick={runDeploy}
+        >
+          <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
+          {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
+        </button>
 
-      <div className={`absolute top-full right-0 mt-2 ${showDeployInfo ? "" : "pointer-events-none"}`}>
-        <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} shouldShowDeployInfo={showDeployInfo} setShouldCancelHide={setShouldCancelHide} />
+        <div className={`absolute top-full right-0 mt-2 ${showDeployInfo ? "" : "pointer-events-none"}`}>
+          <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} shouldShowDeployInfo={showDeployInfo} setShouldCancelHide={setShouldCancelHide} />
+        </div>
       </div>
-
-    </div>
+      <PaymentRequestModal 
+        isVisible={showStripeView}
+        setIsVisible={setShowStripeView}
+      />
+    </>
   );
 }

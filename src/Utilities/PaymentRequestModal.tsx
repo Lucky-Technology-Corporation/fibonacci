@@ -35,13 +35,13 @@ export default function PaymentRequestModal({
                 Update payment method
               </h3>
               <div className="mt-1">
-                <div className="text-sm text-[#D9D9D9]">$20 / month for unlimited AI, plus
-                <ul className='list-disc ml-4 my-2'>
-                  <li>1 million requests</li>
-                  <li>1 million database calls</li>
-                  <li>1 GB storage</li>
-                </ul>
-                For subsequent usage, see <a href="https://www.swizzle.co/#Pricing" target='_blank' rel="noreferrer" className='font-normal underline text-gray-200'>usage</a> pricing.</div>
+                <div className="text-sm text-[#D9D9D9]">Only pay for what you use!
+                  <ul className='list-disc ml-4 my-2'>
+                    <li>$0.50 / 100k requests</li>
+                    <li>$0.25 / GB storage</li>
+                    <li>MongoDB serverless pricing (<a href="https://www.mongodb.com/docs/atlas/billing/serverless-instance-costs/" target='_blank' rel="noreferrer" className='font-normal underline text-gray-200'>details</a>)</li>
+                  </ul>
+                </div>
               </div>
               <Elements stripe={stripePromise}>
                 <CheckoutForm setIsVisible={setIsVisible} />
