@@ -81,5 +81,4 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
         </div>
       </form>
     );
-  
 }
