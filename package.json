@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "prod": "webpack serve --mode production",
-    "build": "echo NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL > .env && tsc && webpack --mode production",
+    "build": "echo NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL; echo NEXT_PUBLIC_STRIPE_PK=$NEXT_PUBLIC_STRIPE_PK > .env && cat .env && tsc && webpack --mode production",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "webpack serve",
     "test": "jest"
