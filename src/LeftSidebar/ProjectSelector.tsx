@@ -45,7 +45,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         setIsCreatingProject(false)
         await setCurrentProject(projectId)
         location.reload()
-      } else if (deploymentStatus === "DEPLOYMENT_FAILED") {
+      } else if (deploymentStatus === "DEPLOYMENT_FAILURE") {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
