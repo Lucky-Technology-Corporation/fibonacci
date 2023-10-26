@@ -10,6 +10,7 @@ import CenterContent from "./MainContent/CenterContent";
 import RightSidebar from "./RightSidebar/RightSidebar";
 import SignIn from "./SignIn";
 import { SwizzleContext } from "./Utilities/GlobalContext";
+import InProgressDeploymentModal from "./Utilities/InProgressDeploymentModal";
 import { Page } from "./Utilities/Page";
 
 export default function Dashboard() {
@@ -91,6 +92,10 @@ export default function Dashboard() {
             />
 
             <RightSidebar selectedTab={selectedTab} currentFileProperties={currentFileProperties} />
+
+            <InProgressDeploymentModal 
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)} />
           </div>
         </div>
       );
