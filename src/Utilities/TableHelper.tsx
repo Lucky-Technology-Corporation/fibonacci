@@ -15,7 +15,7 @@ export const getTableHelper = (
                 transition: "background-color 0.3s",
               }}
             >
-              <td className="font-mono py-1">{row.name}</td>
+              <td className="font-mono py-1 text-xs">{row.name}</td>
               <td>{row.description || ""}</td>
             </tr>
           );

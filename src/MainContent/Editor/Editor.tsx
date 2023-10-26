@@ -42,6 +42,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
         fileUri: event.data.fileUri,
         hasPassportAuth: event.data.hasPassportAuth,
         hasGetDb: event.data.hasGetDb,
+        hasStorage: event.data.hasStorage
       });
     }
   };

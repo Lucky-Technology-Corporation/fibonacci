@@ -1,5 +1,5 @@
-import InfoItem from "../../Utilities/Toast/InfoItem";
 import { copyText } from "../../Utilities/Copyable";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 
 export default function DBInfo({ show }: { show: boolean }) {
   return (
@@ -33,7 +33,7 @@ export default function DBInfo({ show }: { show: boolean }) {
               <div className="text-gray-400">
                 You can interact with your MongoDB instance easily.{" "}
                 <a
-                  href="https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/read-operations/retrieve/"
+                  href="https://docs.swizzle.co/database"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -43,21 +43,21 @@ export default function DBInfo({ show }: { show: boolean }) {
                 <span className="underline">Add a document</span>
                 <br />
                 <span
-                  className="font-bold font-mono text-xs break-all cursor-pointer"
+                  className="font-mono text-xs break-all cursor-pointer"
                   onClick={() => copyText(`await db.collection("users").insertOne({"name": "Jimmy"})`)}
                 >{`await db.collection("users").insertOne({"name": "Jimmy"})`}</span>
                 <div className="w-full h-2"></div>
                 <span className="underline">Get a document</span>
                 <br />
                 <span
-                  className="font-bold font-mono text-xs break-all cursor-pointer"
+                  className="font-mono text-xs break-all cursor-pointer"
                   onClick={() => copyText(`const user = await db.collection("users").findOne({"id", "0001"})`)}
                 >{`const user = await db.collection("users").findOne({"name", "Jimmy"})`}</span>
                 <div className="w-full h-2"></div>
                 <span className="underline">Update the document</span>
                 <br />
                 <span
-                  className="font-bold font-mono text-xs break-all cursor-pointer"
+                  className="font-mono text-xs break-all cursor-pointer"
                   onClick={() => copyText(`await user.update({"name": "Steve"})`)}
                 >{`await user.update({"name": "Steve"})`}</span>
               </div>

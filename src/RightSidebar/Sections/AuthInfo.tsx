@@ -1,8 +1,8 @@
-import InfoItem from "../../Utilities/Toast/InfoItem";
-import { getTableHelper } from "../../Utilities/TableHelper";
 import { copyText } from "../../Utilities/Copyable";
+import { getTableHelper } from "../../Utilities/TableHelper";
+import InfoItem from "../../Utilities/Toast/InfoItem";
 
-export default function AuthInfo({ show }: { show: boolean }) {
+export default function AuthInfo({ show, isAuthChecked }: { show: boolean, isAuthChecked: boolean }) {
   const handleRowClick = (row: { name: string; description?: string }) => {
     copyText(row.name);
   };
@@ -35,24 +35,20 @@ export default function AuthInfo({ show }: { show: boolean }) {
             isLarge: true,
             content: (
               <div className="text-gray-400">
-                If the request is made from a client that has not signed in and{" "}
-                <span className="font-bold font-mono">optionalAuthentication</span> is enabled,{" "}
+                <div className={isAuthChecked ? "hidden" : ""}>
+                If the request is made from a client that has not signed in,{" "}
                 <span className="font-bold font-mono">request.user</span> will be{" "}
-                <span className="font-bold font-mono">null</span>.<div className="h-4"></div>
+                <span className="font-bold font-mono">null</span>.<div className="h-4"></div></div>
                 If a user is signed in, you can access the following properties:
                 {getTableHelper(
                   [
                     {
-                      name: "UID(request.user)",
+                      name: "request.user.userId",
                       description: "Swizzle UID",
                     },
                     {
                       name: "request.user.createdAt",
                       description: "Date",
-                    },
-                    {
-                      name: "request.user.isAnonymous",
-                      description: "boolean",
                     },
                     {
                       name: "request.user.yourKeyHere",

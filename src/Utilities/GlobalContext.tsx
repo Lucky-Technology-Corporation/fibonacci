@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 export interface SwizzleContextType {
   projects;
@@ -44,6 +44,7 @@ export interface SwizzleContextType {
   packageToInstall;
   setPackageToInstall;
   mousePosition;
+  setMousePosition;
   shouldOverlay;
   setShouldOverlay;
   hasPaymentMethod;
@@ -76,20 +77,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [shouldRefreshList, setShouldRefreshList] = useState(false);
   const [packageToInstall, setPackageToInstall] = useState("");
   const [shouldOverlay, setShouldOverlay] = useState(false);
-
-  const [mousePosition, setPosition] = useState({ x: 0, y: 0 });
-  const handleMouseMove = (event) => {
-    setPosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
-  };
-  useEffect(() => {
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   return (
     <SwizzleContext.Provider
@@ -137,6 +125,7 @@ export const GlobalContextProvider = ({ children }) => {
         packageToInstall,
         setPackageToInstall,
         mousePosition,
+        setMousePosition,
         shouldOverlay,
         setShouldOverlay,
         hasPaymentMethod,

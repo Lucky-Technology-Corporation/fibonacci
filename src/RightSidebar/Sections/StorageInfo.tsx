@@ -1,7 +1,12 @@
 import { copyText } from "../../Utilities/Copyable";
+import { getTableHelper } from "../../Utilities/TableHelper";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 
 export default function StorageInfo({ show }: { show: boolean }) {
+  const handleRowClick = (row: { name: string; description?: string }) => {
+    copyText(row.name);
+  };
+
   return (
     <>
       <div
@@ -31,14 +36,16 @@ export default function StorageInfo({ show }: { show: boolean }) {
             isLarge: true,
             content: (
               <div className="text-gray-400">
-                You can interact with your MongoDB instance easily.
-                <div className="w-full h-2"></div>
-                <span className="underline">Add a document</span>
-                <br />
-                <span
-                  className="font-bold font-mono text-xs break-all cursor-pointer"
-                  onClick={() => copyText(`await db.collection("users").insertOne({"name": "Jimmy"})`)}
-                >{`await db.collection("users").insertOne({"name": "Jimmy"})`}</span>
+                Save a file to storage. The url returned is the relative path (does not include your domain)
+                {getTableHelper(
+                  [
+                    {
+                      name: "const url = async saveFile(fileName, fileData, isPrivate)",
+                      description: "Save a file. If isPrivate is true, the file must be signed with getFile to access",
+                    },
+                  ],
+                  handleRowClick,
+                )}
               </div>
             ),
           }}
@@ -64,14 +71,20 @@ export default function StorageInfo({ show }: { show: boolean }) {
             isLarge: true,
             content: (
               <div className="text-gray-400">
-                You can interact with your MongoDB instance easily.
-                <div className="w-full h-2"></div>
-                <span className="underline">Add a document</span>
-                <br />
-                <span
-                  className="font-bold font-mono text-xs break-all cursor-pointer"
-                  onClick={() => copyText(`await db.collection("users").insertOne({"name": "Jimmy"})`)}
-                >{`await db.collection("users").insertOne({"name": "Jimmy"})`}</span>
+                Get the URL for a file in storage. The url returned is the relative path (does not include your domain)
+                {getTableHelper(
+                  [
+                    {
+                      name: "const url = async getFile(filename)",
+                      description: "Get a signed url for the first file matching the filename",
+                    },
+                    {
+                      name: "const signedUrl = async getFile(url)",
+                      description: "Get a signed (publicly accessible) URL for a file",
+                    },
+                  ],
+                  handleRowClick,
+                )}
               </div>
             ),
           }}
@@ -97,14 +110,20 @@ export default function StorageInfo({ show }: { show: boolean }) {
             isLarge: true,
             content: (
               <div className="text-gray-400">
-                You can interact with your MongoDB instance easily.
-                <div className="w-full h-2"></div>
-                <span className="underline">Add a document</span>
-                <br />
-                <span
-                  className="font-bold font-mono text-xs break-all cursor-pointer"
-                  onClick={() => copyText(`await db.collection("users").insertOne({"name": "Jimmy"})`)}
-                >{`await db.collection("users").insertOne({"name": "Jimmy"})`}</span>
+                Delete a specific file
+                {getTableHelper(
+                  [
+                    {
+                      name: "async deleteFile(filename)",
+                      description: "Deletes the first file matching the filename",
+                    },
+                    {
+                      name: "async deleteFile(url)",
+                      description: "Deletes the file at the provided url",
+                    },
+                  ],
+                  handleRowClick,
+                )}
               </div>
             ),
           }}

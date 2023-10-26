@@ -92,6 +92,10 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   };
 
   useEffect(() => {
+    if(items.map(item => item.value).includes(packageToInstall)){
+      toast.error(packageToInstall + " is already installed")
+      return
+    }
     if (packageToInstall != "") {
       addPackageToProject(packageToInstall);
     }
@@ -111,9 +115,12 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     }
   }
 
+  const selectRef = useRef()
+
   const renderSearchField = () => {
     return (
       <Select
+        ref={selectRef}
         value={selectedOption}
         onChange={setSelectedOption}
         onInputChange={handleInputChange}
@@ -127,6 +134,8 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
             boxShadow: "none",
             color: "#D9D9D9",
             fontSize: "0.875rem",
+            zIndex: 999999999,
+            background: "transparent",
           }),
           control: (provided, state) => ({
             ...provided,
@@ -186,6 +195,8 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       title={""}
       titleClass="text-md font-bold"
       isLarge={false}
+      overrideLeftMargin={-180}
+      overrideTopMargin={-4}
       content={
         //table of packages
         <div className="overflow-scroll max-h-[70vh]">
@@ -199,7 +210,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
               className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
             />
           </div>
-          {renderSearchField()}
+          <div onClick={() => (selectRef.current as any)?.focus()}>{renderSearchField()}</div>
           <div className="flex flex-col items-center justify-center mt-3">
             <table className="w-full">
               <thead>

@@ -39,7 +39,8 @@ const noStorageImport = `const router = express.Router();
 const withStorageImport = `const router = express.Router();
 const { saveFile, getFile, deleteFile } = require('swizzle-js');
 `;
-const justStorageImport = `const { saveFile, getFile, deleteFile } = require('swizzle-js');`;
+const justStorageImport = `const { saveFile, getFile, deleteFile } = require('swizzle-js');
+`;
 
 export default function RightSidebar({
   selectedTab,
@@ -50,6 +51,7 @@ export default function RightSidebar({
 }) {
   const programmaticDbUpdateRef = useRef(false);
   const programmaticAuthUpdateRef = useRef(false);
+  const programmaticStorageUpdateRef = useRef(false);
 
   const [isHelper, setIsHelper] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -110,31 +112,31 @@ export default function RightSidebar({
     }
   }, [isDBChecked]);
 
-  useEffect(() => {
-    if (programmaticAuthUpdateRef.current) {
-      programmaticAuthUpdateRef.current = false;
-    } else {
-      if (isNotificationsChecked) {
-        const firstMessage = {
-          findText: noNotificationImport,
-          replaceText: withNotificationImport,
-          type: "findAndReplace",
-        };
-        setPostMessage(firstMessage);
-      } else {
-        const firstMessage = {
-          findText: justNotificationImport,
-          replaceText: "",
-          type: "findAndReplace",
-        };
-        setPostMessage(firstMessage);
-      }
-    }
-  }, [isNotificationsChecked]);
+  // useEffect(() => {
+  //   if (programmaticNotificationUpdateRef.current) {
+  //     programmaticNotificationUpdateRef.current = false;
+  //   } else {
+  //     if (isNotificationsChecked) {
+  //       const firstMessage = {
+  //         findText: noNotificationImport,
+  //         replaceText: withNotificationImport,
+  //         type: "findAndReplace",
+  //       };
+  //       setPostMessage(firstMessage);
+  //     } else {
+  //       const firstMessage = {
+  //         findText: justNotificationImport,
+  //         replaceText: "",
+  //         type: "findAndReplace",
+  //       };
+  //       setPostMessage(firstMessage);
+  //     }
+  //   }
+  // }, [isNotificationsChecked]);
 
   useEffect(() => {
-    if (programmaticAuthUpdateRef.current) {
-      programmaticAuthUpdateRef.current = false;
+    if (programmaticStorageUpdateRef.current) {
+      programmaticStorageUpdateRef.current = false;
     } else {
       if (isStorageChecked) {
         const firstMessage = {
@@ -156,6 +158,7 @@ export default function RightSidebar({
 
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
+    console.log(currentFileProperties)
 
     if (currentFileProperties.fileUri.includes("backend/helpers/")) {
       setIsHelper(true);
@@ -170,6 +173,10 @@ export default function RightSidebar({
     if (currentFileProperties.hasPassportAuth !== isAuthChecked) {
       programmaticAuthUpdateRef.current = true;
       setIsAuthChecked(!!currentFileProperties.hasPassportAuth);
+    }
+    if(currentFileProperties.hasStorage !== isStorageChecked){
+      programmaticStorageUpdateRef.current = true
+      setIsStorageChecked(!!currentFileProperties.hasStorage)
     }
   }, [currentFileProperties]);
 
@@ -262,7 +269,7 @@ export default function RightSidebar({
                   setShouldShowTestWindow(true);
                 }}
                 icon={<img src="/beaker.svg" className="w-3 h-3 m-auto" />}
-                text="Test Request"
+                text="Test"
               />
               <TestWindow
                 shouldShowTestWindow={shouldShowTestWindow}
@@ -330,7 +337,7 @@ export default function RightSidebar({
                     isChecked={isAuthChecked}
                     setIsChecked={setIsAuthChecked}
                   />
-                  <AuthInfo show={true} />
+                  <AuthInfo show={true} isAuthChecked={isAuthChecked} />
                 </div>
                 <div className="h-2" />
                 <div className="text-left w-full space-y-2">

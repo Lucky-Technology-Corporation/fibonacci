@@ -171,12 +171,12 @@ export default function TemplateWizard({
       style={{ transition: "opacity 0.2s" }}
     >
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true"></div>
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
-        <div className="inline-block align-bottom bg-[#32333b] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
-          <div className="bg-[#32333b] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="inline-block align-bottom bg-[#181922] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
+          <div className="border-[#525363] border bg-[#181922] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               {step == 0 ? (
                 <>
@@ -193,6 +193,7 @@ export default function TemplateWizard({
                           id: template.id,
                           name: template.name + " ",
                           description: template.description,
+                          icon_url: template.icon_url
                         }))}
                         onSelect={handleOnSelectTemplate}
                         placeholder="Type to search or SPACE to see all..."
@@ -201,8 +202,8 @@ export default function TemplateWizard({
                           lineColor: "#525363",
                           borderRadius: "0.375rem",
                           boxShadow: "none",
-                          backgroundColor: "#32333b",
-                          hoverBackgroundColor: "#525363",
+                          backgroundColor: "#181922",
+                          hoverBackgroundColor: "#52536355",
                           color: "#D9D9D9",
                           fontSize: "0.875rem",
                           iconColor: "#D9D9D9",
@@ -215,8 +216,8 @@ export default function TemplateWizard({
                       />
                     </div>
                   </div>
-                  <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
-                    <div className="bg-[#32333b] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
+                  <div className="bg-[#181922] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
+                    <div className="bg-[#181922] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
                       <button
                         type="button"
                         onClick={() => {
@@ -288,7 +289,7 @@ export default function TemplateWizard({
                       }
                     })}
 
-                  <div className="bg-[#32333b] py-3 pt-0 mt-4 sm:flex sm:flex-row-reverse">
+                  <div className="bg-[#181922] py-3 pt-0 mt-4 sm:flex sm:flex-row-reverse">
                     <button
                       type="button"
                       onClick={() => {

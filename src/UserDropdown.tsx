@@ -70,7 +70,7 @@ export default function UserDropdown() {
                       "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
                     )}
                     onClick={() => {
-                      const c = prompt(`Are you sure you want to delete this project? Type the project name: ${activeProjectName} to confirm.`);
+                      const c = prompt(`Are you sure you want to delete this project? Type the project name to confirm:\n\n${activeProjectName}`);
                       if (c == activeProjectName) {
                         toast.promise(deleteProject(activeProject), {
                           loading: "Deleting project...",
@@ -85,7 +85,7 @@ export default function UserDropdown() {
                       } else if(c == ""){
                         toast("Project not deleted.")
                       } else{
-                        toast.error(`Project name did not match. To avoid accidental deletion, please type the project name: ${activeProjectName} exactly.`)
+                        toast.error(`Project name did not match. To avoid accidental deletion, please type the project name: "${activeProjectName}" exactly.`)
                       }
                     }}
                   >

@@ -29,11 +29,25 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   //Initialization code...
-  const { isFree, projects, setProjects, activeProject, testDomain } = useContext(SwizzleContext);
+  const { isFree, projects, setProjects, activeProject, testDomain, setMousePosition } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
   const auth = useAuthUser()
 
   initIntercomWindow({ appId: 'cxvvsphp', name: auth().user, projectId: activeProject, testDomain: testDomain })
+
+  const handleMouseMove = (event) => {
+    setMousePosition({
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+  useEffect(() => {
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
 
   useEffect(() => {
     const fetchProjects = async () => {

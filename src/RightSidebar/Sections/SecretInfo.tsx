@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSettingsApi from "../../API/SettingsAPI";
 import Button from "../../Utilities/Button";
+import { copyText } from "../../Utilities/Copyable";
 import FullPageModal from "../../Utilities/FullPageModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
@@ -143,7 +144,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         title={""}
         titleClass="text-md font-bold"
         isLarge={false}
-        overrideLeftMargin={-426}
+        overrideLeftMargin={-180}
         overrideTopMargin={-4}
         content={
           <div className="overflow-scroll max-h-[70vh]">
@@ -181,7 +182,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                 return (
                   <div key={secret.name} className="flex flex-col w-full mb-4">
                     <div className="flex justify-between items-center pb-2">
-                      <span className="font-bold flex-1">{secret.name}</span>
+                      <span className="font-bold flex-1 cursor-pointer" onClick={() => copyText(`process.env.${secret.name}`)}>process.env.{secret.name}</span>
                       <div className="opacity-70 hover:opacity-100 cursor-pointer">
                         <FontAwesomeIcon
                           icon={faTrash}

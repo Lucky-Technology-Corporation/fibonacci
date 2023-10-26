@@ -266,11 +266,11 @@ export default function NewTestWindow({
           </div>
         </div>
         <div className="mt-1 mb-2">
-          <Checkbox id="userid" label="User ID" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />
+          <Checkbox id="userid" label="Simulate user" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />
           <UserIdInfo
             show={isUserIdChecked}
             className="text-s flex-grow p-2 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a]"
-            placeholder={"507f1f77bcf86cd799439011"}
+            placeholder={"userId (e.g. 507f1f77bcf86cd799439011)"}
             value={userId}
             onChange={(e) => {
               setUserId(e.target.value);
