@@ -33,7 +33,7 @@ export default function Dashboard() {
   const { getProjects } = useDatabaseApi();
   const auth = useAuthUser()
 
-  initIntercomWindow({ appId: 'cxvvsphp', name: auth().user, projectId: activeProject, testDomain: testDomain })
+  initIntercomWindow({ appId: 'cxvvsphp', name: (auth() || {"user": "unknown"}).user, projectId: activeProject, testDomain: testDomain })
 
   const handleMouseMove = (event) => {
     setMousePosition({
