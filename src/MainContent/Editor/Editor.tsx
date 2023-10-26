@@ -95,7 +95,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
        Switch back to Test View in the top left to edit your code.<br/><br/>Then, Deploy your code to update the production app.
       </div>
     </div>
-    <div style={{ overflow: "hidden", height: "calc(100vh - 60px)", pointerEvents: environment == "test" ? "auto" : "none" }}>
+    <div style={{ overflow: "hidden", height: "calc(100vh - 60px)", pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}>
       <iframe
         ref={iframeRef}
         src={theiaUrl}
