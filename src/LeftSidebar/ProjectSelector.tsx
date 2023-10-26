@@ -178,17 +178,17 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
           onSelect={(id: string) => {
             setCurrentProject(id);
           }}
-          // lastChild={{
-          //   id: "_create_new_project",
-          //   name: "+ New Project",
-          // }}
-          // lastOnSelect={() => {
-          //   if (isCreatingProject) {
-          //     alert("A project is already being created for you now!");
-          //     return;
-          //   }
-          //   setIsVisible(true);
-          // }}
+          lastChild={{
+            id: "_create_new_project",
+            name: "+ New Project",
+          }}
+          lastOnSelect={() => {
+            if (isCreatingProject) {
+              alert("A project is already being created for you now!");
+              return;
+            }
+            setIsVisible(true);
+          }}
           title={activeProjectName}
           direction="center"
           className="fixed"
