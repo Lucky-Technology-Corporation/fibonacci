@@ -7,7 +7,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -86,7 +86,16 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
   ) : (
-    <div style={{ overflow: "hidden", height: "calc(100vh - 60px)" }}>
+    <>
+    <div className={`bg-black bg-opacity-70 absolute w-full h-full top-0 left-0 right-0 bottom-0 z-50 pointer-events-none ${environment == "test" && "hidden"}`}>
+      <div className="m-auto mt-20 text-center text-lg font-semibold">
+        You're viewing Production
+      </div>
+      <div className="m-auto mt-4 text-center">
+       Switch back to Test View in the top left to edit your code.<br/><br/>Then, Deploy your code to update the production app.
+      </div>
+    </div>
+    <div style={{ overflow: "hidden", height: "calc(100vh - 60px)", pointerEvents: environment == "test" ? "auto" : "none" }}>
       <iframe
         ref={iframeRef}
         src={theiaUrl}
@@ -103,5 +112,6 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
       ></iframe>
       
     </div>
+    </>
   );
 }

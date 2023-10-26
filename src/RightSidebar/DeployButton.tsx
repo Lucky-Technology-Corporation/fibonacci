@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
 import useSettingsApi from "../API/SettingsAPI.tsx";
+import { SwizzleContext } from "../Utilities/GlobalContext.tsx";
 import PaymentRequestModal from "../Utilities/PaymentRequestModal.tsx";
 import DeployInfo from "./DeployInfo.tsx";
 
@@ -14,6 +15,7 @@ export default function DeployButton({}: {}) {
 
   const { deploy } = useEndpointApi();
   const { hasAddedPaymentMethod } = useSettingsApi()
+  const { environment } = useContext(SwizzleContext)
 
   const fetchPaymentMethod = async () => {
     const hasPaymentMethod = await hasAddedPaymentMethod();
@@ -37,6 +39,11 @@ export default function DeployButton({}: {}) {
     if(!hasPaymentMethod){
       setShowStripeView(true);
       return;
+    }
+
+    if(environment == "prod"){
+      toast.error("Switch to Test to deploy your updated code")
+      return
     }
 
     toast.promise(deploy(), {
@@ -115,7 +122,7 @@ export default function DeployButton({}: {}) {
         />
         <button
           className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
-          onMouseEnter={() => setShowDeployInfo(true)}
+          onMouseEnter={() => {if(environment == "test"){ setShowDeployInfo(true)}}}
           onMouseLeave={() => {if(!setShouldCancelHide){ setShowDeployInfo(false) }}}
           onClick={runDeploy}
         >
