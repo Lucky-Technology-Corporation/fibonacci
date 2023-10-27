@@ -7,19 +7,15 @@ import TermsOfService from "../../Utilities/TermsOfService";
 export default function APIWizard({
   isVisible,
   setIsVisible,
-  setFiles,
-  setFullFiles,
   files
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
-  setFiles: React.Dispatch<React.SetStateAction<any[]>>;
-  setFullFiles: React.Dispatch<React.SetStateAction<any[]>>;
-  files: any[];
+  files: string[]
 }) {
   const [inputValue, setInputValue] = useState("");
 
-  const { setPostMessage } = useContext(SwizzleContext);
+  const { setPostMessage, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
 
   const templateOptions: { id: string; name: string }[] = [
     {
@@ -53,14 +49,15 @@ export default function APIWizard({
       toast.error("Please enter a filename");
       return;
     }
-    if (inputValue.includes("/")) {
-      toast.error("Subdirectories are not supported yet. Please enter a filename without a slash");
-      return;
-    }
+    
 
     var newFileName = inputValue;
     if (!newFileName.endsWith(".js") || !newFileName.endsWith(".jsx")) {
       newFileName = newFileName + ".js";
+    }
+
+    if(newFileName.startsWith("/")){
+      newFileName = newFileName.substring(1)
     }
 
     if(files.includes(newFileName)){
@@ -68,27 +65,6 @@ export default function APIWizard({
       return
     }
 
-    let isDuplicate = false;
-    setFullFiles((files: any[]) => {
-      if (!files.includes(newFileName)) {
-        return [...files, newFileName];
-      }
-      isDuplicate = true;
-      return files;
-    });
-
-    setFiles((files: any[]) => {
-      if (!files.includes(newFileName)) {
-        return [...files, newFileName];
-      }
-      isDuplicate = true;
-      return files;
-    });
-
-    if (isDuplicate) {
-      toast.error("That file already exists");
-      return;
-    }
     setPostMessage({ type: "newFile", fileName: "/frontend/src/" + newFileName });
 
     if (template == "privacy") {
@@ -99,6 +75,8 @@ export default function APIWizard({
     if (template == "blank") {
       setIsVisible(false);
     }
+
+    setShouldRefreshList(!shouldRefreshList);
   };
 
   useEffect(() => {
@@ -293,11 +271,11 @@ export default function APIWizard({
                         type="text"
                         value={inputValue}
                         onChange={(e) => {
-                          const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_]/g, "")
+                          const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_/]/g, "");
                           setInputValue(sanitizedValue.trim());
                         }}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={`MyNewComponent`}
+                        placeholder={`/path/to/MyNewComponent`}
                         onKeyDown={(event: any) => {
                           if (event.key == "Enter") {
                             createHandler();

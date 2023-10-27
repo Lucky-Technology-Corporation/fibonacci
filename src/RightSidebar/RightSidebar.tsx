@@ -180,6 +180,11 @@ export default function RightSidebar({
     }
   }, [currentFileProperties]);
 
+  const getImport = (fileName) => {
+    const importName = fileName.endsWith('/') ? fileName.slice(0, -1).split('/').pop() : fileName.split('/').pop().replace(".js", "")
+    return `const ${importName} = require("/${fileName.split("/frontend/src/")[1]}")`
+  }
+
   return (
     <div
       className={`w-[200px] text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
@@ -190,6 +195,28 @@ export default function RightSidebar({
         <DeployButton />
         {selectedTab == Page.Hosting && (
           <>
+
+            {(currentFileProperties.fileUri && 
+              typeof currentFileProperties.fileUri === 'string' &&
+              currentFileProperties.fileUri.includes("/frontend/src")) && 
+              currentFileProperties.fileUri.includes("/frontend/src/App.js") == false &&
+              currentFileProperties.fileUri.includes("/frontend/src/index.html") == false &&
+              currentFileProperties.fileUri.includes("/frontend/src/App.css") == false && (
+              <>
+                <div className="h-4" />
+                <div className="font-bold">Use</div>
+                <div className="h-2" />
+                <IconTextButton
+                  onClick={() => {
+                    copyText(getImport(currentFileProperties.fileUri))
+                    setTimeout(() => {toast("Paste at the very top of any API file to use this helper")}, 250)
+                  }}
+                  icon={<img src="/copy.svg" className="w-3 h-3 m-auto" />}
+                  text="Copy Import"
+                />
+              </>
+            )}
+            
             <div className="h-4" />
             <div className="font-bold">Testing</div>
             <div className="h-2" />

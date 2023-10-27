@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (
-      <Card className="dark-tremor h-90">
+      <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded !mx-6">
         <div className="mb-2 text-[#cccccc] font-md">{title}</div>
         <LineChart className="dark-tremor" data={chartdata} index="date" categories={categories} yAxisWidth={40} />
       </Card>

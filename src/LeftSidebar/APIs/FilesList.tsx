@@ -1,4 +1,4 @@
-import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -14,19 +14,18 @@ export default function FilesList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fullFileList, setFullFileList] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
+  const [fileTree, setFileTree] = useState(null);
+  const [expandedDirs, setExpandedDirs] = useState({});
+
   const { testDomain, activeFile, setActiveFile, shouldRefreshList } = useContext(SwizzleContext);
+  const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"];
 
   useEffect(() => {
     getFiles("files")
       .then((data) => {
-        if (data == undefined || data.children == undefined || data.children.length == 0) {
-          return;
+        if (data && data.children) {
+          setFileTree(data);
         }
-        const transformedEndpoints = data.children.map((endpoint: any) => {
-          return endpoint.name;
-        });
-        setFullFileList(transformedEndpoints);
-        setFiles(transformedEndpoints);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -34,23 +33,76 @@ export default function FilesList({ active }: { active: boolean }) {
       });
   }, [testDomain, shouldRefreshList]);
 
-  //Used to filter the endopint list
-  useEffect(() => {
-    if (searchFilter == "") {
-      setFiles(fullFileList);
-      return;
-    }
-    const filteredEndpoints = files.filter((file) => {
-      return file.includes(searchFilter);
-    });
-    setFiles(filteredEndpoints);
-  }, [searchFilter]);
+  // //Used to filter the endopint list
+  // useEffect(() => {
+  //   if (searchFilter == "") {
+  //     setFiles(fullFileList);
+  //     return;
+  //   }
+  //   const filteredEndpoints = files.filter((file) => {
+  //     return file.includes(searchFilter);
+  //   });
+  //   setFiles(filteredEndpoints);
+  // }, [searchFilter]);
 
   const formatFileName = (file: string) => {
     return file;
   };
 
-  const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"];
+  const getFilePathArray = () => {
+    if(!fileTree) return
+    const filePaths = [];
+    const extractPaths = (node, parentPath = '') => node.isDir ? node.children.forEach(child => extractPaths(child, `${parentPath}${node.name}/`)) : filePaths.push(`${parentPath}${node.name}`);
+    fileTree.children.forEach(child => extractPaths(child, ''));
+    return filePaths;
+  }
+
+  const toggleExpand = (path) => {
+    setExpandedDirs((prev) => ({ ...prev, [path]: !prev[path] }));
+  };  
+
+  const renderFiles = (node, parentPath = '') => {
+    if (!node) return null;
+  
+    const fullPath = `${parentPath}${node.name}/`;
+  
+    if (node.isDir) {
+      return (
+        <div key={node.path}>
+          <div onClick={() => toggleExpand(fullPath)} className="font-bold mx-2 flex my-2 cursor-pointer">
+            {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
+            <div className="ml-2">{node.name}</div>
+          </div>
+          {expandedDirs[fullPath] && (
+            <div className="ml-4">
+              {node.children.map((child) => renderFiles(child, fullPath))}
+            </div>
+          )}
+        </div>
+      );
+    } else {
+      if (
+        !restrictedFiles.includes(node.name) &&
+        (node.name.includes('.js') || node.name.includes('.jsx'))
+      ) {  
+        return (
+          <FileItem
+            key={node.path}
+            path={formatFileName(node.name)}
+            active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
+            onClick={() => {
+              console.log(fullPath)
+              setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
+            }}
+            removeFromList={() => {
+              // Remove logic here
+            }}
+          />
+        );
+      } 
+      return null
+    }
+  }
 
   //Fetch from backend and populate it here.
   return (
@@ -113,36 +165,13 @@ export default function FilesList({ active }: { active: boolean }) {
         <div className="flex items-center">Components</div>
       </div>
       <div className="ml-1">
-        {files
-          .filter((file) => !restrictedFiles.includes(file) && (file.includes(".js") || file.includes(".jsx")))
-          .map((component) => {
-            return (
-              <FileItem
-                key={component}
-                path={formatFileName(component)}
-                active={"frontend/src/" + component == activeFile}
-                onClick={() => {
-                  setActiveFile("frontend/src/" + component);
-                }}
-                removeFromList={() => {
-                  setFiles((prev) => {
-                    return prev.filter((e) => e != component);
-                  });
-                  setFullFileList((prev) => {
-                    return prev.filter((e) => e != component);
-                  });
-                }}
-              />
-            );
-          })}
+        {fileTree ? fileTree.children.map((child) => renderFiles(child, '')) : null}
       </div>
 
       <FileWizard
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        setFiles={setFiles}
-        setFullFiles={setFullFileList}
-        files={fullFileList}
+        files={getFilePathArray()}
       />
     </div>
   );
