@@ -182,7 +182,7 @@ export default function RightSidebar({
 
   const getImport = (fileName) => {
     const importName = fileName.endsWith('/') ? fileName.slice(0, -1).split('/').pop() : fileName.split('/').pop().replace(".js", "")
-    return `const ${importName} = require("/${fileName.split("/frontend/src/")[1]}")`
+    return `import ${importName} from "/${fileName.split("/frontend/src/")[1]}"`
   }
 
   return (
@@ -196,7 +196,7 @@ export default function RightSidebar({
         {selectedTab == Page.Hosting && (
           <>
 
-            {(currentFileProperties.fileUri && 
+            {/* {(currentFileProperties.fileUri && 
               typeof currentFileProperties.fileUri === 'string' &&
               currentFileProperties.fileUri.includes("/frontend/src")) && 
               currentFileProperties.fileUri.includes("/frontend/src/App.js") == false &&
@@ -215,7 +215,7 @@ export default function RightSidebar({
                   text="Copy Import"
                 />
               </>
-            )}
+            )} */}
             
             <div className="h-4" />
             <div className="font-bold">Testing</div>
