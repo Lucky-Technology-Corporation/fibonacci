@@ -119,7 +119,7 @@ export default function APIWizard({
                 </div>
                 <div className="mt-3 mb-2 flex">
                   <Dropdown
-                    className="mr-2"
+                    className="mr-2 fixed"
                     onSelect={(item: any) => {
                       setSelectedMethod(item);
                     }}

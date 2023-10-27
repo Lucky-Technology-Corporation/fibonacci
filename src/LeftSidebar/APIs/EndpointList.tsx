@@ -3,10 +3,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import Dropdown from "../../Utilities/Dropdown";
 import { filenameToEndpoint } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
-import SectionAction from "../SectionAction";
 import APIWizard from "./APIWizard";
 import EndpointItem from "./EndpointItem";
 import HelperItem from "./HelperItem";
@@ -27,48 +27,14 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
 
+  const methods: any = [
+    { id: "endpoint", name: "+ Endpoint" },
+    { id: "helper", name: "+ Helper" },
+    { id: "template", name: "+ Template" },
+  ];
+
   const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, shouldRefreshList } =
     useContext(SwizzleContext);
-
-    // const [fullEndpointObj, setFullEndpointObj] = useState<Record<string, string[]>>({});
-  // const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
-  // const [hoveredFolder, setHoveredFolder] = useState<string | null>(null);
-
-  // const toggleCollapse = (path: string) => {
-  //   setCollapsedFolders((prev) => ({
-  //     ...prev,
-  //     [path]: !prev[path],
-  //   }));
-  // };
-
-  // const transformToNested = (endpointList) => {
-  //   const result = {};
-  //   endpointList.forEach((endpoint) => {
-  //     const [method, ...pathComponents] = endpoint.split("/");
-  //     const path = pathComponents.join("/");
-
-  //     // Special case for root and root parameter
-  //     if (path === "" || path.startsWith(":")) {
-  //       if (!result[""]) {
-  //         result[""] = [];
-  //       }
-  //       result[""].push(endpoint);
-  //       return;
-  //     }
-
-  //     // For non-root endpoints
-  //     const rootName = path.split("/")[0];
-  //     const singularRoot = pluralize.singular(rootName);
-
-  //     if (!result[singularRoot]) {
-  //       result[singularRoot] = [];
-  //     }
-
-  //     // Push the full endpoint (e.g., "GET/message/:id") into the array
-  //     result[singularRoot].push(endpoint);
-  //   });
-  //   return result;
-  // };
 
   useEffect(() => {
     getFiles("endpoints")
@@ -86,8 +52,6 @@ export default function EndpointList({ active }: { active: boolean }) {
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
         setActiveEndpoint(transformedEndpoints[0]);
-        // const nestedEndpoints = transformToNested(transformedEndpoints);
-        // setFullEndpointObj(nestedEndpoints);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -134,14 +98,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-      <SectionAction
-        text="+ Add Template"
-        onClick={() => {
-          setIsTemplateWizardVisible(true);
-        }}
-        className="py-1.5 px-1 !my-1.5 !mb-2 mx-1"
-      />
-
       <div className="flex ml-2 mt-2">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
@@ -160,15 +116,27 @@ export default function EndpointList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex">
-        <SectionAction
-          text="+"
-          onClick={() => {
-            setIsVisible(true);
+      <div className="ml-1 mr-1">
+        <Dropdown
+          className=""
+          onSelect={(item: any) => {
+            if(item == "endpoint"){
+              setIsVisible(true);
+            } else if(item == "helper"){
+              setIsHelperWizardVisible(true)
+            } else if(item == "template"){
+              setIsTemplateWizardVisible(true)
+            }
           }}
-          className="max-w-[21px] mr-2"
+          children={methods}
+          direction="left"
+          title={"+ New"}        
+          selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
         />
-        <div className="flex items-center">APIs</div>
+      </div>
+
+      <div className="font-semibold ml-2 mt-2 flex pb-1">
+        <div className="flex items-center">Endpoints</div>
       </div>
 
       <div className="ml-1">
@@ -189,59 +157,10 @@ export default function EndpointList({ active }: { active: boolean }) {
             }}
           />
         ))}
-        {/* {Object.keys(fullEndpointObj).map((path) => (
-          <div key={path} className={"vertical-line mt-4 ml-2 cursor-pointer"}>
-            <div
-              onClick={() => {
-                toggleCollapse(path);
-                setHoveredFolder(null);
-              }}
-              className={`ml-2 ${hoveredFolder === path ? "text-white font-bold" : "font-base"}`}
-              onMouseEnter={() => setHoveredFolder(path)}
-              onMouseLeave={() => setHoveredFolder(null)}
-            >
-              <div className="font-mono text-xs flex">
-                <img
-                  src={
-                    collapsedFolders[path]
-                      ? hoveredFolder === path
-                        ? "/open.svg"
-                        : "/closed.svg"
-                      : hoveredFolder === path
-                      ? "/closed.svg"
-                      : "/open.svg"
-                  }
-                  className="w-6 h-6 mr-1 m-auto ml-0"
-                />
-                <div className="m-auto ml-0">{path}</div>
-              </div>
-            </div>
-            {!collapsedFolders[path] && (
-              <div className="ml-2">
-                {fullEndpointObj[path].map((endpoint, index) => (
-                  <EndpointItem
-                    key={index}
-                    path={endpoint.substring(endpoint.indexOf("/"))}
-                    method={endpoint.split("/")[0].toUpperCase() as Method}
-                    active={endpoint == activeEndpoint}
-                    onClick={() => setActiveEndpoint(endpoint)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ))} */}
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex">
-        <SectionAction
-          text="+"
-          onClick={() => {
-            setIsHelperWizardVisible(true);
-          }}
-          className="max-w-[21px] mr-2"
-        />
-        <div className="flex items-center">Functions</div>
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
+        <div className="flex items-center">Helpers</div>
       </div>
       <div className="ml-1">
         {fullHelperList.map((helper, index) => {

@@ -75,8 +75,9 @@ export default function APIWizard({
     if (template == "blank") {
       setIsVisible(false);
     }
-
-    setShouldRefreshList(!shouldRefreshList);
+    setTimeout(() => {
+      setShouldRefreshList(!shouldRefreshList);
+    }, 250);
   };
 
   useEffect(() => {
@@ -249,24 +250,17 @@ export default function APIWizard({
               <>
                 <div className="flex justify-between">
                   <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    New File
+                    New Component
                   </h3>
+                </div>
+                <div className="mt-1">
+                  Include a path to create the component in a specific folder. If the folder does not exist, it will be created.
                 </div>
                 {overrideRender ? (
                   overrideRender
                 ) : (
                   <>
                     <div className="mt-3 mb-2 flex">
-                      {/* <Dropdown
-                        className="mr-2 whitespace-nowrap"
-                        onSelect={(item: any) => {
-                          setTemplate(item);
-                          setInputValue(item + ".html");
-                        }}
-                        children={templateOptions}
-                        direction="left"
-                        title={templateOptions.filter((item) => item.id == template)[0].name}
-                      /> */}
                       <input
                         type="text"
                         value={inputValue}

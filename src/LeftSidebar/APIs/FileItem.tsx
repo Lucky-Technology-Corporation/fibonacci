@@ -10,25 +10,28 @@ export default function FileItem({
   path,
   onClick,
   disableDelete = false,
-  removeFromList
+  removeFromList,
+  fullPath,
 }: {
   active?: boolean;
   path: string;
   onClick?: () => void;
   disableDelete?: boolean
   removeFromList?: () => void
+  fullPath?: string
 }) {
 
   const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
 
   const runDeleteProcess = async (fileName: string) => {
+
     try{
       setPostMessage({
         type: "removeFile",
-        fileName: "/frontend/src/" + fileName,
+        fileName: fullPath.replace("/home/swizzle/code/", ""),
       });
-      await deleteFile(fileName, "frontend")
+      await deleteFile(fullPath.replace("/home/swizzle/code/frontend/src/", ""), "frontend")
       removeFromList()
     } catch(e){
       throw "Error deleting endpoint"

@@ -209,7 +209,7 @@ export default function RightSidebar({
                 <IconTextButton
                   onClick={() => {
                     copyText(getImport(currentFileProperties.fileUri))
-                    setTimeout(() => {toast("Paste at the very top of any API file to use this helper")}, 250)
+                    setTimeout(() => {toast("Paste at the very top of any other component to use it")}, 250)
                   }}
                   icon={<img src="/copy.svg" className="w-3 h-3 m-auto" />}
                   text="Copy Import"
