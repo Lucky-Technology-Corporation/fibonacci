@@ -15,7 +15,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [fileTree, setFileTree] = useState(null);
   const [expandedDirs, setExpandedDirs] = useState({});
 
-  const { testDomain, activeFile, setActiveFile, shouldRefreshList } = useContext(SwizzleContext);
+  const { testDomain, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
   const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"];
 
   const methods: any = [
@@ -141,12 +141,9 @@ export default function FilesList({ active }: { active: boolean }) {
               setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
             }}
             removeFromList={() => {
-              console.log(node.path)
-              console.log(fileTree)
-              setFileTree((prev) => {
-                const newChildren = prev.children.filter((child) => child.path !== node.path);
-                return { ...prev, children: newChildren };
-              });
+              setTimeout(() => {
+                setShouldRefreshList(!shouldRefreshList)
+              }, 250)
             }}
           />
         );

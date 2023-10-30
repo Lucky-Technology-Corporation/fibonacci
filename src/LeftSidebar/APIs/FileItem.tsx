@@ -29,7 +29,7 @@ export default function FileItem({
     try{
       setPostMessage({
         type: "removeFile",
-        fileName: fullPath.replace("/home/swizzle/code/", ""),
+        fileName: fullPath.replace("/home/swizzle/code", ""),
       });
       await deleteFile(fullPath.replace("/home/swizzle/code/frontend/src/", ""), "frontend")
       removeFromList()
