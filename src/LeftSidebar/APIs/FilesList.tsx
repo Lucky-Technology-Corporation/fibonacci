@@ -45,7 +45,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const getFilePathArray = () => {
     if(!fileTree) return
     const filePaths = [];
-    const extractPaths = (node, parentPath = '') => node.isDir ? node.children.forEach(child => extractPaths(child, `${parentPath}${node.name}/`)) : filePaths.push(`${parentPath}${node.name}`);
+    const extractPaths = (node, parentPath = '') => (node.isDir && node.children != undefined) ? node.children.forEach(child => extractPaths(child, `${parentPath}${node.name}/`)) : filePaths.push(`${parentPath}${node.name}`);
     fileTree.children.forEach(child => extractPaths(child, ''));
     return filePaths;
   }
@@ -100,6 +100,8 @@ export default function FilesList({ active }: { active: boolean }) {
 
   
     if (node.isDir) {
+      if (node.children == undefined || node.children.length === 0) return null; // Skip empty folders
+
       let childMatch = false;
       const children = node.children.map((child) => {
         const childElement = renderFiles(child, `${parentPath}${node.name}/`, showCurrent);

@@ -85,12 +85,20 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
 
     const deploymentStatus = await checkDeploymentStatus(project.id);
     if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
+      if (deploymentStatus == "DEPLOYMENT_FAILURE"){
+        toast.error("Deployment failed");
+        return
+      }
       setIsModalOpen(true);
       setIsCreatingProject(true);
       startPolling(project.id);
       sessionStorage.setItem("activeProject", project.id);
       sessionStorage.setItem("activeProjectName", project.name);
       setActiveProjectName(project.name);
+      setTestDomain(undefined)
+      setProdDomain(undefined)
+      setTestDeployStatus(project.test_deployment_status);
+      setProdDeployStatus(project.prod_deployment_status);
       return false
     } else {
       setActiveProjectName(project.name);
