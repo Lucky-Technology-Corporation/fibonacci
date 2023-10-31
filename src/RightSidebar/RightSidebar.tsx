@@ -12,9 +12,7 @@ import DeployButton from "./DeployButton";
 import AuthInfo from "./Sections/AuthInfo";
 import DBInfo from "./Sections/DBInfo";
 import PackageInfo from "./Sections/PackageInfo";
-import RequestInfo from "./Sections/RequestInfo";
 import SecretInfo from "./Sections/SecretInfo";
-import StorageInfo from "./Sections/StorageInfo";
 import TestWindow from "./TestWindow";
 import WebPreview from "./WebPreview";
 
@@ -350,47 +348,28 @@ export default function RightSidebar({
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
             {!isHelper && (
               <>
-                <div className="h-6" />
-                <div className="font-bold">Available Variables</div>
-                <div className="h-1" />
-                <div className="text-left w-full">
-                  <RequestInfo show={true} />
-                </div>
-                <div className="h-3" />
+                <div className="h-5" />
+                <div style={{height: "1px"}} className="bg-gray-600 w-full mb-2"></div>
                 <div className="text-left w-full space-y-2">
+                  <div className="font-bold mb-1 w-full flex">Authentication <a href="https://docs.swizzle.co/users" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
                   <Checkbox
                     id="auth"
-                    label="Authentication"
+                    label="Require"
+                    checkedLabel="Required"
                     isChecked={isAuthChecked}
                     setIsChecked={setIsAuthChecked}
                   />
                   <AuthInfo show={true} isAuthChecked={isAuthChecked} />
                 </div>
                 <div className="h-2" />
+                <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
                 <div className="text-left w-full space-y-2">
-                  <Checkbox id="db" label="Database" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
+                  <div className="font-bold mb-1 mt-2 w-full flex">Database <a href="https://docs.swizzle.co/database" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
+                  <Checkbox id="db" label="Import" checkedLabel="Imported" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
                   <DBInfo show={isDBChecked} />
                 </div>
-                {/* <div className="h-2" />
-                <div className="text-left w-full space-y-2">
-                  <Checkbox
-                    id="notifications"
-                    label="Push Notifications"
-                    isChecked={isNotificationsChecked}
-                    setIsChecked={setIsNotificationsChecked}
-                  />
-                  <NotificationInfo show={isNotificationsChecked} />
-                </div> */}
                 <div className="h-2" />
-                <div className="text-left w-full space-y-2">
-                  <Checkbox
-                    id="storage"
-                    label="Storage"
-                    isChecked={isStorageChecked}
-                    setIsChecked={setIsStorageChecked}
-                  />
-                  <StorageInfo show={isStorageChecked} />
-                </div>
+                <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
               </>
             )}
           </>

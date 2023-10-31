@@ -63,7 +63,7 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
 
   return (
     <div
-      className={`w-[370px] bg-[#191A23] border border-[#f07434] rounded-lg shadow-lg pt-2 pb-2 ${shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      className={`z-50 w-[370px] bg-[#191A23] border border-[#f07434] rounded-lg shadow-lg pt-2 pb-2 ${shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       style={{ transition: "opacity 0.2s", marginTop: "0px" }}
       ref={myRef}
       onMouseEnter={() => setShouldCancelHide(true)}

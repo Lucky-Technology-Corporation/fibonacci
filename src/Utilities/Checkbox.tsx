@@ -3,11 +3,13 @@ import React from "react";
 export default function Checkbox({
   id,
   label,
+  checkedLabel,
   isChecked,
   setIsChecked,
 }: {
   id: string;
   label: string;
+  checkedLabel?: string;
   isChecked: boolean;
   setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -30,12 +32,12 @@ export default function Checkbox({
           </svg>
         </span>
         <span
-          className={`text-sm ${isChecked ? "font-bold" : "font-base"}`}
+          className={`text-sm`}
           style={{
             transition: "font-weight 0.2s",
           }}
         >
-          {label}
+          {isChecked ? (checkedLabel ? checkedLabel : label) : label}
         </span>
       </label>
     </>

@@ -36,10 +36,15 @@ export default function AuthInfo({ show, isAuthChecked }: { show: boolean, isAut
             content: (
               <div className="text-gray-400">
                 <div className={isAuthChecked ? "hidden" : ""}>
-                If the request is made from a client that has not signed in,{" "}
-                <span className="font-bold font-mono">request.user</span> will be{" "}
-                <span className="font-bold font-mono">null</span>.<div className="h-4"></div></div>
-                If a user is signed in, you can access the following properties:
+                  If the request is made from a client that has not signed in,{" "}
+                  <span className="font-bold font-mono">request.user</span> will be{" "}
+                  <span className="font-bold font-mono">null</span>.<div className="h-4"></div>
+                </div>
+                <div className={isAuthChecked ? "" : "hidden"}>
+                  If the request is made from a client that has signed in,{" "}
+                  the endpoint will not excecute and return a 401 error.<div className="h-4"></div>
+                </div>
+                If a user is signed in (the request includes the header <span className="font-mono text-xs">{`Authorization: Bearer <token>`}</span>), you can access the following properties:
                 {getTableHelper(
                   [
                     {
