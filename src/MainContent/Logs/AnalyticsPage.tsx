@@ -59,7 +59,7 @@ export default function AnalyticsPage() {
     return (
       <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded !mx-6">
         <div className="mb-2 text-[#cccccc] font-md">{title}</div>
-        <LineChart className="dark-tremor" data={chartdata} index="date" categories={categories} yAxisWidth={40} />
+        <LineChart className="dark-tremor" data={chartdata} index="date" categories={categories} yAxisWidth={40} colors={["indigo"]} />
       </Card>
     );
   };
@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
             <div className="h-1"></div>
             <div className="flex">
               <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
-              Test App
+              Test Frontend
             </div>
             <div
               className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"
@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
             <div className="h-1"></div>
             <div className="flex">
               <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
-              Production App
+              Production Frontend
             </div>
             <div
               className="text-[#cccccc] font-mono cursor-pointer text-xs mt-0.5 mr-auto"

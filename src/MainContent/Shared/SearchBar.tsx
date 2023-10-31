@@ -41,9 +41,9 @@ export default function SearchBar({
           return { id: key, name: "Filter " + key };
         }
       })
-
+      
     setMappedKeys(newKeyArray)
-  }, [])
+  }, [keys])
 
   const validateInput = () => {
     if(searchQuery == ""){
@@ -93,15 +93,16 @@ export default function SearchBar({
   return (
     <>
       <Dropdown
-        className="ml-4"
+        className="fixed"
+        selectorClass="ml-4"
         onSelect={setFilterName}
         children={mappedKeys}
-        direction="left"
-        title={(filterName == "_exec_mongo_query") ? "Execute Mongo Query" : "Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
+        direction="center"
+        title={(filterName == "_exec_mongo_query") ? "Mongo Query" : "Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
       />
       <input
         type="text"
-        className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${filterName == "_exec_mongo_query" ? "font-mono": ""}`}
+        className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${filterName == "_exec_mongo_query" ? "font-mono text-xs": ""}`}
         placeholder={filterName == "_exec_mongo_query" ? `updateOne({'${exampleKeyOne}': 'SearchText'}, { $set: {'${exampleKeyTwo}': 'UpdateText'} })` : "Search"}
         value={searchQuery}
         onChange={(e) => {

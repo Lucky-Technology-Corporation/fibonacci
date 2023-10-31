@@ -295,7 +295,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         />
       </div>
 
-      <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 12px)" }}>
+      <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>
         <table className="table-auto my-4 ml-4 block" style={{ tableLayout: "auto" }}>
           <thead className="bg-[#85869822]">
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>

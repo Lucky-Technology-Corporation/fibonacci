@@ -1,17 +1,12 @@
-import { PauseIcon, PlayIcon } from "@heroicons/react/20/solid";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
-import LogRow from "./LogRow";
-import Switch from "react-switch";
-import useWebSocket from "react-use-websocket";
 import toast from "react-hot-toast";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { useAuthHeader } from "react-auth-kit";
 import useMonitoringApi from "../../API/MonitoringAPI";
-import Pagination from "../../Utilities/Pagination";
 import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
-import FullPageModal from "../../Utilities/FullPageModal";
 import FloatingModal from "../../Utilities/FloatingModal";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
+import Pagination from "../../Utilities/Pagination";
+import LogRow from "./LogRow";
 
 export default function LogsPage() {
   const { activeProject, environment } = useContext(SwizzleContext);
@@ -183,12 +178,13 @@ export default function LogsPage() {
       </div>
       <div className={`flex pr-2 h-9 mb-4`}>
         <Dropdown
-          className="ml-4"
+          className="fixed"
+          selectorClass="ml-4"
           onSelect={(id: string) => {
             setFilterName(id);
           }}
           children={searchTypes}
-          direction="left"
+          direction="center"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
         />
         {filterQuery != null && filterQuery != "" && (

@@ -62,7 +62,7 @@ export default function Dropdown({
         <Menu.Items
           className={`${className ? className : "absolute"} ${
             direction != "center" ? direction + "-0" : ""
-          } z-50 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none`}
+          } z-50 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#333336] ring-1 ring-inset ring-[#525363] focus:outline-none`}
         >
           <div className="py-1">
             {children.map((child: any) => (

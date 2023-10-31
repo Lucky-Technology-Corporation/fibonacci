@@ -215,7 +215,7 @@ export default function UserTableView() {
           runSearch={runSearch}
         />
       </div>
-      <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 12px)" }}>
+      <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>
         <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: "auto", minWidth: "100%" }}>
           <thead className="bg-[#85869822]">
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
