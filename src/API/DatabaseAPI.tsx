@@ -245,24 +245,17 @@ export default function useDatabaseApi() {
       shouldDeployProd = true;
     }
     console.log("shouldDeployProd", shouldDeployProd)
-    axios.post(
+    await axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
       { name, deploy_production: shouldDeployProd },
       {
         headers: {
           Authorization: authHeader(),
-        },
-        timeout: 180000,
+        }
       },
     );
     
-    //Reload after 5 seconds to start the polling flow
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        window.location.reload();
-        resolve(true);
-      }, 10000);
-    });  
+    return true  
   };
 
   const getProjects = async () => {
