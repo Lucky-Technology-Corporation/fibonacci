@@ -346,9 +346,9 @@ export default function RightSidebar({
               text="Packages"
             />
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
+            <div className="h-5" />
             {!isHelper && (
               <>
-                <div className="h-5" />
                 <div style={{height: "1px"}} className="bg-gray-600 w-full mb-2"></div>
                 <div className="text-left w-full space-y-2">
                   <div className="font-bold mb-1 w-full flex">Authentication <a href="https://docs.swizzle.co/users" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
@@ -362,16 +362,16 @@ export default function RightSidebar({
                   <AuthInfo show={true} isAuthChecked={isAuthChecked} />
                 </div>
                 <div className="h-2" />
-                <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
-                <div className="text-left w-full space-y-2">
-                  <div className="font-bold mb-1 mt-2 w-full flex">Database <a href="https://docs.swizzle.co/database" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
-                  <Checkbox id="db" label="Import" checkedLabel="Imported" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
-                  <DBInfo show={isDBChecked} />
-                </div>
-                <div className="h-2" />
-                <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
               </>
             )}
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div className="text-left w-full space-y-2">
+              <div className="font-bold mb-1 mt-2 w-full flex">Database <a href="https://docs.swizzle.co/database" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
+              <Checkbox id="db" label="Import" checkedLabel="Imported" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
+              <DBInfo show={isDBChecked} />
+            </div>
+            <div className="h-2" />
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
           </>
         )}
       </div>

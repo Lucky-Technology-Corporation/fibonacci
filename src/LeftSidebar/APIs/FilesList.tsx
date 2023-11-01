@@ -14,13 +14,14 @@ export default function FilesList({ active }: { active: boolean }) {
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fileTree, setFileTree] = useState(null);
   const [expandedDirs, setExpandedDirs] = useState({});
+  const [fileType, setFileType] = useState<string>("file");
 
   const { testDomain, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
   const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"];
 
   const methods: any = [
     { id: "file", name: "+ Component" },
-    // { id: "template", name: "+ Template" },
+    { id: "page", name: "+ Page" },
   ];
 
   useEffect(() => {
@@ -38,9 +39,6 @@ export default function FilesList({ active }: { active: boolean }) {
   }, [testDomain, shouldRefreshList]);
 
 
-  const formatFileName = (file: string) => {
-    return file;
-  };
 
   const getFilePathArray = () => {
     if(!fileTree) return
@@ -93,6 +91,11 @@ export default function FilesList({ active }: { active: boolean }) {
 
   const renderFiles = (node, parentPath = '', searchActive = false) => {
     if (!node) return null;
+    if (Array.isArray(node)) {
+      return node.map((node, index) => 
+        renderFiles(node, parentPath, searchActive)
+      );
+    }
   
     const fullPath = `${parentPath}${node.name}/`;
 
@@ -133,7 +136,7 @@ export default function FilesList({ active }: { active: boolean }) {
         return (
           <FileItem
             key={node.path}
-            path={formatFileName(node.name)}
+            path={node.name}
             fullPath={node.path}
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
@@ -151,7 +154,14 @@ export default function FilesList({ active }: { active: boolean }) {
       return null
     }
   }
-
+  const renderSection = (rootNode, folderName) => {
+    const folderNode = rootNode.children.find(child => child.name === folderName && child.isDir);
+    if (folderNode && folderNode.children) {
+      return renderFiles(folderNode.children, folderName + "/", searchFilter != "");
+    }
+    return null;
+  };
+  
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
@@ -178,6 +188,8 @@ export default function FilesList({ active }: { active: boolean }) {
         <Dropdown
           className=""
           onSelect={(item: any) => {
+            console.log("set file type", item)
+            setFileType(item);
             setIsVisible(true);
           }}
           children={methods}
@@ -187,11 +199,14 @@ export default function FilesList({ active }: { active: boolean }) {
         />
       </div>
 
+      <div className="font-semibold ml-2 flex pt-2 pb-1">
+        <div className="flex items-center">Base</div>
+      </div>
       <div className="ml-1">
         <div className={searchFilter != "" ? ("index.html".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
           key={"index.html"}
-          path={formatFileName("index.html")}
+          path={("index.html")}
           active={"frontend/public/index.html" == activeFile}
           onClick={() => {
             setActiveFile("frontend/public/index.html");
@@ -199,21 +214,10 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
-        <div className={searchFilter != "" ? ("app.js".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
-        <FileItem
-          key={"App.js"}
-          path={formatFileName("App.js")}
-          active={"frontend/src/App.js" == activeFile}
-          onClick={() => {
-            setActiveFile("frontend/src/App.js");
-          }}
-          disableDelete={true}
-        />
-        </div>
         <div className={searchFilter != "" ? ("app.css".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
           key={"App.css"}
-          path={formatFileName("App.css")}
+          path={("App.css")}
           active={"frontend/src/App.css" == activeFile}
           onClick={() => {
             setActiveFile("frontend/src/App.css");
@@ -222,14 +226,26 @@ export default function FilesList({ active }: { active: boolean }) {
         />
         </div>
       </div>
+
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
+        <div className="flex items-center">Pages</div>
+      </div>
       <div className="ml-1">
-        {fileTree ? fileTree.children.map((child) => renderFiles(child, '', searchFilter != "")) : null}
+        {fileTree ? renderSection(fileTree, 'pages') : null}
+      </div>
+
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
+        <div className="flex items-center">Components</div>
+      </div>
+      <div className="ml-1">
+        {fileTree ? renderSection(fileTree, 'components') : null}
       </div>
 
       <FileWizard
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         files={getFilePathArray()}
+        fileType={fileType}
       />
     </div>
   );

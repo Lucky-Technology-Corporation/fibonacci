@@ -1,31 +1,31 @@
 import { useState } from "react";
-import SectionAction from "../SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
+import Dropdown from "../../Utilities/Dropdown";
+import TemplateWizard from "../APIs/TemplateWizard";
 
 export default function AuthSettings({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const methods: any = [
+    { id: "method", name: "+ Auth Method" }
+  ];
 
   //Fetch from backend and populate it here.
   return (
-    <div className={`flex-col w-full px-2 mt-2 text-sm ${active ? "" : "hidden"}`}>
-      <SectionAction
-        text="Auth Settings"
-        onClick={() => {
+    <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"}`}>
+      <Dropdown
+        className=""
+        onSelect={(item: any) => {
           setIsVisible(true);
         }}
-        className="py-1.5 px-1 !my-1.5 !mb-2"
+        children={methods}
+        direction="left"
+        title={"+ New"}        
+        selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
       />
-      <FullPageModal
+
+      <TemplateWizard
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        modalDetails={{
-          title: "Auth Settings",
-          description: <>Auth settings are not ready for use yet.</>,
-          placeholder: "Nothing to do here...",
-          confirmText: "Okay",
-          confirmHandler: () => {},
-          shouldShowInput: true,
-        }}
+        type="auth"
       />
     </div>
   );

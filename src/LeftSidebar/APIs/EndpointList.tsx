@@ -199,10 +199,6 @@ export default function EndpointList({ active }: { active: boolean }) {
       <TemplateWizard
         isVisible={isTemplateWizardVisible}
         setIsVisible={setIsTemplateWizardVisible}
-        setEndpoints={setEndpoints}
-        setFullEndpoints={setFullEndpointList}
-        setHelpers={setHelperList}
-        setFullHelpers={setFullHelperList}
       />
     </div>
   );

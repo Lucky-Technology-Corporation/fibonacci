@@ -39,6 +39,7 @@
     "re-resizable": "^6.9.11",
     "react": "^18.2.0",
     "react-auth-kit": "^2.12.4",
+    "react-autosuggest": "^10.1.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.6",
     "react-hot-toast": "^2.4.1",

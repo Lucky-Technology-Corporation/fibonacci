@@ -1,48 +1,26 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Checkbox from "../../Utilities/Checkbox";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
-import PrivacyPolicy from "../../Utilities/PrivacyPolicy";
-import TermsOfService from "../../Utilities/TermsOfService";
 
 export default function APIWizard({
   isVisible,
   setIsVisible,
-  files
+  files,
+  fileType
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
-  files: string[]
+  files: string[];
+  fileType: string
 }) {
   const [inputValue, setInputValue] = useState("");
+  const [fallbackInputValue, setFallbackInputValue] = useState("");
 
+  const [authRequired, setAuthRequired] = useState(false);
   const { setPostMessage, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
 
-  const templateOptions: { id: string; name: string }[] = [
-    {
-      id: "blank",
-      name: "Blank File",
-    },
-    {
-      id: "privacy",
-      name: "Privacy Policy",
-    },
-    {
-      id: "terms",
-      name: "Terms of Service",
-    },
-    // {
-    //   id: "download",
-    //   name: "App Download",
-    // }
-  ];
-
-  const [template, setTemplate] = useState<string>("blank");
   const [overrideRender, setOverrideRender] = useState<ReactNode | null>(null);
-
-  const [appName, setAppName] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [companyAddress, setCompanyAddress] = useState("");
-  const [contactEmail, setContactEmail] = useState("");
 
   const createHandler = () => {
     if (inputValue == "") {
@@ -60,176 +38,49 @@ export default function APIWizard({
       newFileName = newFileName.substring(1)
     }
 
-    if(files.includes(newFileName)){
+    const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".js", "")) : "components/" + convertPath(newFileName.replace(".js", ""))
+    if(files.includes(testPath)){
       toast.error("That endpoint already exists")
       return
     }
 
-    setPostMessage({ type: "newFile", fileName: "/frontend/src/" + newFileName });
+    if(fileType == "page"){
+      if(newFileName.endsWith(".js")){
+        newFileName = newFileName.substring(0, newFileName.length - 3)
+      }
+      if(newFileName.startsWith("/")){
+        newFileName = newFileName.substring(1)
+      }
 
-    if (template == "privacy") {
-      setOverrideRender(getPrivacyInputs());
-    } else if (template == "terms") {
-      setOverrideRender(getTermsInputs());
+      const routePath = "/" + newFileName
+      const parsedFileName = convertPath(newFileName);
+      setPostMessage({ type: "newFile", fileName: "/frontend/src/pages/" + parsedFileName, routePath: routePath});  
+    } else if(fileType == "file"){
+      setPostMessage({ type: "newFile", fileName: "/frontend/src/components/" + newFileName});  
     }
-    if (template == "blank") {
-      setIsVisible(false);
-    }
+    
     setTimeout(() => {
       setShouldRefreshList(!shouldRefreshList);
     }, 250);
+
+    setIsVisible(false);
   };
+
+  const convertPath = (path) => {
+    const segments = path.split('/').filter(Boolean);
+    const lastSegment = segments.pop();
+    const lastSegmentCapitalized = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
+    segments.push(lastSegmentCapitalized);
+    return segments.join('.') + '.js';
+  }
+  
 
   useEffect(() => {
     if (isVisible) {
       setInputValue("");
-      setTemplate("blank");
+      setFallbackInputValue("");
     }
   }, [isVisible]);
-
-  const createPrivacyPolicy = () => {
-    const message = {
-      content: PrivacyPolicy({ app_name: "", company_name: "", company_address: "", contact_email: "" }),
-      type: "replaceText",
-    };
-    setPostMessage(message);
-    setIsVisible(false);
-  };
-
-  const getPrivacyInputs = () => {
-    return (
-      <>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={appName}
-            onChange={(e) => setAppName(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`App name`}
-          />
-        </div>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`Company name`}
-          />
-        </div>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={companyAddress}
-            onChange={(e) => setCompanyAddress(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`Company address`}
-          />
-        </div>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`Contact email`}
-          />
-        </div>
-        <div className="bg-[#32333b] py-3 pt-0 mt-3 sm:flex sm:flex-row-reverse">
-          <button
-            type="button"
-            onClick={() => {
-              createPrivacyPolicy();
-            }}
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Next
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsVisible(false);
-            }}
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Cancel
-          </button>
-        </div>
-      </>
-    );
-  };
-
-  const createTerms = () => {
-    const message = {
-      content: TermsOfService({ app_name: "", company_name: "", company_address: "", contact_email: "" }),
-      type: "replaceText",
-    };
-    setPostMessage(message);
-    setIsVisible(false);
-  };
-
-  const getTermsInputs = () => {
-    return (
-      <>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={appName}
-            onChange={(e) => setAppName(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`App name`}
-          />
-        </div>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`Company name`}
-          />
-        </div>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={companyAddress}
-            onChange={(e) => setCompanyAddress(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`Company address`}
-          />
-        </div>
-        <div className="mt-3 mb-2 flex">
-          <input
-            type="text"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-            placeholder={`Contact email`}
-          />
-        </div>
-        <div className="bg-[#32333b] py-3 pt-0 mt-3 sm:flex sm:flex-row-reverse">
-          <button
-            type="button"
-            onClick={() => {
-              createTerms();
-            }}
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Next
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsVisible(false);
-            }}
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Cancel
-          </button>
-        </div>
-      </>
-    );
-  };
 
   return (
     <div
@@ -250,17 +101,28 @@ export default function APIWizard({
               <>
                 <div className="flex justify-between">
                   <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    New Component
+                    {fileType == "file" ? "New Component" : "New Page"}
                   </h3>
                 </div>
-                <div className="mt-1">
-                  Include a path to create the component in a specific folder. If the folder does not exist, it will be created.
+                <div className="my-2">
+                  {fileType == "file" 
+                    ? "Include a path to create the component in a specific folder. If the folder does not exist, it will be created." 
+                    : <div className="mt-1"><Checkbox
+                        id="requireAuth"
+                        label="Require Authentication"
+                        isChecked={authRequired}
+                        setIsChecked={setAuthRequired}
+                      /></div>
+                  }
                 </div>
                 {overrideRender ? (
                   overrideRender
                 ) : (
                   <>
-                    <div className="mt-3 mb-2 flex">
+                    <div className="mt-1">
+                    {fileType == "file" ? "Component Path" : "Page URL (e.g. /about)"}
+                    </div>
+                    <div className="mt-1 mb-2 flex">
                       <input
                         type="text"
                         value={inputValue}
@@ -269,7 +131,7 @@ export default function APIWizard({
                           setInputValue(sanitizedValue.trim());
                         }}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={`/path/to/MyNewComponent`}
+                        placeholder={`/path/to/name`}
                         onKeyDown={(event: any) => {
                           if (event.key == "Enter") {
                             createHandler();
@@ -277,6 +139,28 @@ export default function APIWizard({
                         }}
                       />
                     </div>
+                    {authRequired && (
+                      <>
+                      <div className="mt-1">Unauthenticated fallback path (e.g. /login)</div>
+                      <div className="mt-1 mb-2 flex">
+                        <input
+                          type="text"
+                          value={fallbackInputValue}
+                          onChange={(e) => {
+                            const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_/]/g, "");
+                            setFallbackInputValue(sanitizedValue.trim());
+                          }}
+                          className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
+                          placeholder={`/login`}
+                          onKeyDown={(event: any) => {
+                            if (event.key == "Enter") {
+                              createHandler();
+                            }
+                          }}
+                        />
+                      </div>
+                      </>
+                    )}
                     <div className="bg-[#32333b] py-3 pt-0 mt-3 sm:flex sm:flex-row-reverse">
                       <button
                         type="button"

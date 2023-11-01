@@ -42,7 +42,7 @@ export default function HelperItem({
         onClick={onClick}
       >
         <div className="flex">
-          <div>{path}</div>
+          <div className="font-normal">{path}</div>
           <FontAwesomeIcon
             className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
             icon={faTrash}

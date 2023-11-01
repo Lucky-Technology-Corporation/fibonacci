@@ -38,6 +38,18 @@ export default function FileItem({
     }
   }
 
+  const formatPath = (path: string) => {
+    if((fullPath || "").includes("frontend/src/pages")){
+      var p = path.replace(".js", "").replace(/\./g, "/").toLowerCase()
+      if(!p.startsWith("/")){
+        p = "/" + p
+      }
+      return p
+    } else{
+      return path
+    }
+  }
+
   return (
     <>
       <div
@@ -47,8 +59,8 @@ export default function FileItem({
         onClick={onClick}
       >
         <div className="flex">
-          <div>{path}</div>
-          {!disableDelete && (
+          <div className="font-normal">{formatPath(path)}</div>
+          {(!disableDelete && !fullPath.includes("/pages/..js")) && (
             <FontAwesomeIcon
               className={`mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer`}
               icon={faTrash}

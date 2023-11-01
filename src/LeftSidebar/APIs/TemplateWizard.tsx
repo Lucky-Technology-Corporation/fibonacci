@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
+import Autosuggest from 'react-autosuggest';
 import toast from "react-hot-toast";
-import { ReactSearchAutocomplete } from "react-search-autocomplete";
-import useEndpointApi from "../../API/EndpointAPI";
 import useTemplateApi from "../../API/TemplatesAPI";
 import Checkbox from "../../Utilities/Checkbox";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -10,17 +9,11 @@ import SecretInput from "../../Utilities/SecretInput";
 export default function TemplateWizard({
   isVisible,
   setIsVisible,
-  setEndpoints,
-  setFullEndpoints,
-  setHelpers,
-  setFullHelpers,
+  type,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
-  setEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
-  setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
-  setHelpers: React.Dispatch<React.SetStateAction<any[]>>;
-  setFullHelpers: React.Dispatch<React.SetStateAction<any[]>>;
+  type?: string
 }) {
   type Input = {
     name: string;
@@ -42,13 +35,12 @@ export default function TemplateWizard({
   const [template, setTemplate] = useState<TemplateType | null>(null);
   const [step, setStep] = useState(0);
 
-  // const [templateOptions, setTemplateOptions] = useState([{ id: "1", name: "Plaid", description: "Add Plaid stuff" }, { id: "2", name: "Stripe", description: "Add Stripe stuff" }]);
   const [templateOptions, setTemplateOptions] = useState([]);
   const [inputState, setInputState] = useState({});
+  const [filterValue, setFilterValue] = useState("");
   const { testDomain, setShouldRefreshList, shouldRefreshList, setPackageToInstall } = useContext(SwizzleContext);
 
   const api = useTemplateApi();
-  const endpointApi = useEndpointApi();
 
   useEffect(() => {
     if (template) {
@@ -69,7 +61,10 @@ export default function TemplateWizard({
 
   useEffect(() => {
     async function fetchTemplates() {
-      const response = await api.getTemplates();
+      var response = await api.getTemplates();
+      if(type){
+        response = response.filter((template) => template.type == type)
+      }
       setTemplateOptions(response);
     }
     if (isVisible) {
@@ -129,7 +124,6 @@ export default function TemplateWizard({
     }
   };
 
-  const createTemplateHandler = () => {};
 
   const createHandler = () => {
     if(!template){
@@ -145,22 +139,37 @@ export default function TemplateWizard({
     }
   }, [isVisible]);
 
-  const formatResult = (item) => {
-    return (
-      <>
-        <div className="flex">
-          <div className="my-auto">
-            <img src={item.icon_url || "/puzzle.svg"} className="w-6 h-6 rounded-full mr-2" />
-          </div>
-          <div>
-            <span className="font-bold">{item.name}</span>
-            <br />
-            <span className="">{item.description}</span>
-          </div>
-        </div>
-      </>
-    );
+  const onFilterChange = (event, { newValue }) => {
+    setTemplate(null)
+    setFilterValue(newValue);
+  }
+  const [suggestions, setSuggestions] = useState(templateOptions);
+  const onSuggestionsFetchRequested = ({ value }) => {
+    setTemplate(null)
+    setSuggestions(templateOptions.filter((template) => template.name.toLowerCase().includes(value.toLowerCase())))
   };
+  const onSuggestionsClearRequested = () => {
+    setSuggestions(templateOptions)
+  };
+  const getSuggestionValue = suggestion => suggestion.name;
+  const renderSuggestion = suggestion => (
+    <div className="w-full p-2 flex hover:bg-[#858698aa]">
+      <div className="">
+        <img src={suggestion.icon_url || "/puzzle.svg"} className="w-4 h-4 rounded mt-0.5 mr-2"/>
+      </div>
+      <div>
+        {suggestion.name}
+      </div>
+    </div>
+  );
+  const renderSuggestionsContainer = ({ containerProps, children, query }) => (
+    <div {...containerProps} className="fixed max-h-36 z-50 overflow-scroll bg-[#2e2f39] rounded-bl rounded-br" style={{width: "calc(100% - 3rem)"}}>
+      {children}
+    </div>
+  );
+  const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
+    handleOnSelectTemplate(suggestion)
+  }
 
   return (
     <div
@@ -187,43 +196,48 @@ export default function TemplateWizard({
                     <p className="text-sm text-[#D9D9D9]">Quickly import code</p>
                   </div>
                   <div className="mt-4">
-                    <div className="w-full mb-2">
-                      <ReactSearchAutocomplete
-                        items={templateOptions.map((template) => ({
-                          id: template.id,
-                          name: template.name + " ",
-                          description: template.description,
-                          icon_url: template.icon_url
-                        }))}
-                        onSelect={handleOnSelectTemplate}
-                        placeholder="Type to search or SPACE to see all..."
-                        styling={{
-                          border: "1px solid #525363",
-                          lineColor: "#525363",
-                          borderRadius: "0.375rem",
-                          boxShadow: "none",
-                          backgroundColor: "#181922",
-                          hoverBackgroundColor: "#52536355",
-                          color: "#D9D9D9",
-                          fontSize: "0.875rem",
-                          iconColor: "#D9D9D9",
-                          placeholderColor: "#74758a",
-                          height: "36px",
-                        }}
-                        formatResult={formatResult}
-                        showIcon={false}
-                        onSearch={() => {setTemplate(null)}}
-                      />
+                    <div className="w-full mb-2 fixed">
+                    <Autosuggest
+                      suggestions={suggestions}
+                      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                      onSuggestionsClearRequested={onSuggestionsClearRequested}
+                      getSuggestionValue={getSuggestionValue}
+                      renderSuggestion={renderSuggestion}
+                      renderSuggestionsContainer={renderSuggestionsContainer}
+                      onSuggestionSelected={onSuggestionSelected}
+                      shouldRenderSuggestions={() => { return (!template || filterValue == "")}}
+                      inputProps={{
+                        placeholder: "Type to filter",
+                        value: filterValue,
+                        onChange: onFilterChange,
+                        style: {border: "1px solid #525363",
+                        lineColor: "#525363",
+                        borderRadius: "0.375rem",
+                        boxShadow: "none",
+                        backgroundColor: "#181922",
+                        hoverBackgroundColor: "#52536355",
+                        color: "#D9D9D9",
+                        fontSize: "0.875rem",
+                        iconColor: "#D9D9D9",
+                        placeholderColor: "#74758a",
+                        height: "36px",
+                        outline: "none",
+                        width: "calc(100% - 3rem)",
+                        paddingLeft: "0.5rem",
+                        paddingRight: "0.5rem",
+                      }
+                      }}
+                    />
                     </div>
                   </div>
-                  <div className="bg-[#181922] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
-                    <div className="bg-[#181922] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse">
+                  <div className="bg-[#181922] py-3 pt-0 mt-16 sm:flex sm:flex-row-reverse">
+                    <div className={`bg-[#181922] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse`}>
                       <button
                         type="button"
                         onClick={() => {
                           createHandler();
                         }}
-                        className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698] sm:ml-3 sm:w-auto sm:text-sm`}
+                        className={`${template ? "" : "hidden"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698] sm:ml-3 sm:w-auto sm:text-sm`}
                       >
                         Next
                       </button>

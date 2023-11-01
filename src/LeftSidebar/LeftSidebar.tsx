@@ -10,6 +10,7 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 import { Page } from "../Utilities/Page";
 import EndpointList from "./APIs/EndpointList";
 import FilesList from "./APIs/FilesList";
+import AuthSettings from "./Auth/AuthSettings";
 import CollectionList from "./Database/CollectionList";
 import LogsList from "./Monitoring/LogsList";
 import ProjectSelector from "./ProjectSelector";
@@ -116,6 +117,9 @@ export default function LeftSidebar({
       return;
     }
     if (currentFileProperties.fileUri.includes("backend")) {
+      if(selectedTab != Page.Apis){
+        setSelectedTab(Page.Apis)
+      }
       if (currentFileProperties.fileUri.includes("backend/helpers/")) {
         const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("helpers/")[1])
         setActiveEndpoint("!helper!"+newEndpoint);
@@ -128,6 +132,9 @@ export default function LeftSidebar({
     }
 
     if (currentFileProperties.fileUri.includes("frontend")) {
+      if(selectedTab != Page.Hosting){
+        setSelectedTab(Page.Hosting)
+      }
       const newFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       setActiveFile(newFile);
     }
@@ -246,6 +253,7 @@ export default function LeftSidebar({
             else { setSelectedTab(Page.Auth); }
           }}
         />
+        <AuthSettings active={selectedTab == Page.Auth} />
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
