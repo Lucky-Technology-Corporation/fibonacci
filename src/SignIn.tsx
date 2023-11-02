@@ -48,7 +48,7 @@ export default function SignIn() {
       setTimeout(() => {
         // location.reload();
         location.href= "/"
-      }, 100);
+      }, 150);
     } else {
       toast.error("Couldn't sign in");
     }
@@ -61,7 +61,9 @@ export default function SignIn() {
     const jwt = urlParams.get("jwt");
     if (jwt && jwt.length > 0) {
       signOut();
-      signInWithJWT(jwt);
+      setTimeout(() => {
+        signInWithJWT(jwt);
+      }, 100)
     }
   }, []);
 
