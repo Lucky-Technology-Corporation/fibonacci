@@ -1,6 +1,6 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -21,18 +21,23 @@ export default function FileItem({
   fullPath?: string
 }) {
 
+  const [isPrivate, setIsPrivate] = useState(false)
   const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
 
   const runDeleteProcess = async (fileName: string) => {
 
     try{
-      setPostMessage({
+      var postBody = {
         type: "removeFile",
         fileName: fullPath.replace("/home/swizzle/code", ""),
-      });
+      }
+      if(fullPath.includes("/frontend/src/pages")){ 
+        postBody["routePath"] = formatPath(path)
+      }
+      setPostMessage(postBody);
       await deleteFile(fullPath.replace("/home/swizzle/code/frontend/src/", ""), "frontend")
-      removeFromList()
+      setShouldRefreshList(!shouldRefreshList)
     } catch(e){
       throw "Error deleting endpoint"
     }
@@ -40,9 +45,17 @@ export default function FileItem({
 
   const formatPath = (path: string) => {
     if((fullPath || "").includes("frontend/src/pages")){
-      var p = path.replace(".js", "").replace(/\./g, "/").toLowerCase()
+      var p = path
+      if(p.includes(".private")){
+        p = p.replace(".private", "")
+        setIsPrivate(true)
+      }
+      var p = p.replace(".js", "").replace(/\./g, "/").toLowerCase()
       if(!p.startsWith("/")){
         p = "/" + p
+      }
+      if(p == "/home"){
+        p = "/"
       }
       return p
     } else{

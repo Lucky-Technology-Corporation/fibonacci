@@ -58,7 +58,7 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
                   window.open(testDomain, '_blank')
               }} />
               <img src="/close.svg" className='absolute top-1 right-1 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={(e) =>{ setIsVisible(false)}} />
-              <div style={{ width: "100%", height: "calc(100% - 19px)" }}>
+              <div style={{ width: "100%", height: "calc(100% - 19px)", backgroundColor: "#ffffff" }}>
                 <iframe 
                   src={testDomain} 
                   title="Preview" 

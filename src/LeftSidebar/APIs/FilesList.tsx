@@ -10,9 +10,10 @@ import FileWizard from "./FileWizard";
 
 export default function FilesList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const { getFiles } = useEndpointApi();
+  const { getFiles, getFile } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fileTree, setFileTree] = useState(null);
+  const [pages, setPages] = useState<any[]>([]);
   const [expandedDirs, setExpandedDirs] = useState({});
   const [fileType, setFileType] = useState<string>("file");
 
@@ -25,7 +26,6 @@ export default function FilesList({ active }: { active: boolean }) {
   ];
 
   useEffect(() => {
-    console.log("refrehsing FileList")
     getFiles("files")
       .then((data) => {
         if (data && data.children) {
@@ -33,12 +33,42 @@ export default function FilesList({ active }: { active: boolean }) {
         }
       })
       .catch((e) => {
-        toast.error("Error fetching endpoints");
+        toast.error("Error fetching components");
         console.error(e);
       });
   }, [testDomain, shouldRefreshList]);
 
+  useEffect(() => {
+    getFile("frontend/src/RouteList.js")
+      .then((data) => {
+        console.log(data)
+        createPageArrayFromFile(data)
+      })
+      .catch((e) => {
+        toast.error("Error fetching pages")
+        console.error("pageError", e);
+      })
+  }, [fileTree, shouldRefreshList])
 
+  const createPageArrayFromFile = (data) => {
+    if (typeof data !== "string") { return; }
+    console.log("data", data)
+    const routeBlockRegex = /<Routes>[\s\S]*?<\/Routes>/;
+    const routeTagsRegex = /<(Route|PrivateRoute)\s+path="(.*?)"\s*element={<(.*?)\s*\/>}/g;
+
+    const routeBlock = data.match(routeBlockRegex);
+
+    var routes = [];
+    if (routeBlock) {
+      let match;
+      
+      while ((match = routeTagsRegex.exec(routeBlock[0])) !== null) {
+        routes.push({ path: match[2], component: match[3] });
+      }
+    }
+    console.log("routes", routes)
+    setPages(routes)
+  }
 
   const getFilePathArray = () => {
     if(!fileTree) return
@@ -231,7 +261,20 @@ export default function FilesList({ active }: { active: boolean }) {
         <div className="flex items-center">Pages</div>
       </div>
       <div className="ml-1">
-        {fileTree ? renderSection(fileTree, 'pages') : null}
+        {pages.map((page) => {
+          return (
+            <FileItem
+              key={page.path}
+              path={page.path}
+              active={"frontend/src/pages/" + page.component + ".js" == activeFile}
+              fullPath={"/home/swizzle/code/frontend/src/pages/" + page.component + ".js"}
+              onClick={() => {
+                setActiveFile("frontend/src/pages/" + page.component + ".js");
+              }}
+              disableDelete={page.component == "Home"}
+            />
+          )
+        })}
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">

@@ -27,7 +27,12 @@ export default function APIWizard({
       toast.error("Please enter a filename");
       return;
     }
-    
+    console.log("start createHandler", newFileName)
+
+    if(inputValue == "/"){
+      toast.error("Your homepage already exists")
+      return
+    }
 
     var newFileName = inputValue;
     if (!newFileName.endsWith(".js") || !newFileName.endsWith(".jsx")) {
@@ -36,6 +41,13 @@ export default function APIWizard({
 
     if(newFileName.startsWith("/")){
       newFileName = newFileName.substring(1)
+    }
+
+    console.log("newFileName", newFileName)
+
+    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "Home.js"){
+      toast.error("The name Home is reserved for the homepage")
+      return
     }
 
     const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".js", "")) : "components/" + convertPath(newFileName.replace(".js", ""))
@@ -49,12 +61,20 @@ export default function APIWizard({
         newFileName = newFileName.substring(0, newFileName.length - 3)
       }
       if(newFileName.startsWith("/")){
-        newFileName = newFileName.substring(1)
+        if(newFileName == "/"){
+          newFileName = "Home"
+        } else{
+          newFileName = newFileName.substring(1)
+        }
       }
-
+      
       const routePath = "/" + newFileName
-      const parsedFileName = convertPath(newFileName);
-      setPostMessage({ type: "newFile", fileName: "/frontend/src/pages/" + parsedFileName, routePath: routePath});  
+      var parsedFileName = convertPath(newFileName);
+      var unauthenticatedFallback = null
+      if(authRequired){
+        unauthenticatedFallback = fallbackInputValue
+      }
+      setPostMessage({ type: "newFile", fileName: "/frontend/src/pages/" + parsedFileName, routePath: routePath, fallbackPath: unauthenticatedFallback});  
     } else if(fileType == "file"){
       setPostMessage({ type: "newFile", fileName: "/frontend/src/components/" + newFileName});  
     }
@@ -67,11 +87,22 @@ export default function APIWizard({
   };
 
   const convertPath = (path) => {
+    console.log("convertPath", path)
     const segments = path.split('/').filter(Boolean);
-    const lastSegment = segments.pop();
-    const lastSegmentCapitalized = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
-    segments.push(lastSegmentCapitalized);
-    return segments.join('.') + '.js';
+
+    // Capitalize the first letter of each segment and letters after underscores, also handle dashes
+    const capitalizedSegments = segments.map(segment => {
+      // Convert dashes to camelCase
+      const camelCaseSegment = segment.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+      
+      // Capitalize first letter and letters after underscores
+      return camelCaseSegment
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('_');
+    });
+    
+    return capitalizedSegments.join('_') + '.js';  
   }
   
 
@@ -79,6 +110,7 @@ export default function APIWizard({
     if (isVisible) {
       setInputValue("");
       setFallbackInputValue("");
+      setAuthRequired(false);
     }
   }, [isVisible]);
 

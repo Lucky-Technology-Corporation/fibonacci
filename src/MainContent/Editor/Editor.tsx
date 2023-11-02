@@ -50,7 +50,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
   useEffect(() => {
     if (currentFileRef.current != null) {
       if(selectedTab == Page.Hosting && currentFileRef.current.includes("backend")){ 
-        setActiveFile("frontend/src/App.js");
+        setActiveFile("frontend/src/pages/Home.js");
       }
       else if(selectedTab == Page.Apis && currentFileRef.current.includes("frontend")){
         setActiveEndpoint("backend/user-dependencies/get-.js");
