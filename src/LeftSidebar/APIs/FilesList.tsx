@@ -63,7 +63,18 @@ export default function FilesList({ active }: { active: boolean }) {
       let match;
       
       while ((match = routeTagsRegex.exec(routeBlock[0])) !== null) {
-        routes.push({ path: match[2], component: match[3] });
+        console.log(match)
+        var authRequired = false
+        var fallbackPath = ""
+        if(match[1] == "SwizzlePrivateRoute"){
+          authRequired = true
+          const regex = /unauthenticatedFallback="([^"]+)"/;
+          const fallback = match[0].match(regex);
+          if(fallback){
+            fallbackPath = fallback[1]
+          }
+        }
+        routes.push({ path: match[2], component: match[3], authRequired: authRequired, fallbackPath: fallbackPath });
       }
     }
     console.log("routes", routes)
@@ -146,7 +157,7 @@ export default function FilesList({ active }: { active: boolean }) {
   
       return (
         <div key={node.path}>
-          <div onClick={() => toggleExpand(fullPath)} className="font-bold flex my-1 py-2 px-2 hover:bg-[#85869833] rounded cursor-pointer">
+          <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-2 px-2 hover:bg-[#85869833] rounded cursor-pointer">
             {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
             <div className="ml-2">{node.name}</div>
           </div>
@@ -280,6 +291,8 @@ export default function FilesList({ active }: { active: boolean }) {
                 setActiveFile("frontend/src/pages/" + page.component + ".js");
               }}
               disableDelete={page.component == "Home"}
+              isPrivate={page.authRequired}
+              fallbackUrl={page.fallbackPath}
             />
           )
         })}

@@ -1,7 +1,8 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import toast from "react-hot-toast";
+import { Tooltip } from 'react-tooltip';
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
@@ -12,6 +13,8 @@ export default function FileItem({
   disableDelete = false,
   removeFromList,
   fullPath,
+  isPrivate = false,
+  fallbackUrl = ""
 }: {
   active?: boolean;
   path: string;
@@ -19,9 +22,10 @@ export default function FileItem({
   disableDelete?: boolean
   removeFromList?: () => void
   fullPath?: string
+  isPrivate?: boolean
+  fallbackUrl?: string
 }) {
 
-  const [isPrivate, setIsPrivate] = useState(false)
   const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
 
@@ -46,10 +50,6 @@ export default function FileItem({
   const formatPath = (path: string) => {
     if((fullPath || "").includes("frontend/src/pages")){
       var p = path
-      if(p.includes(".private")){
-        p = p.replace(".private", "")
-        setIsPrivate(true)
-      }
       var p = p.replace(".js", "").replace(/\./g, "/").toLowerCase()
       if(!p.startsWith("/")){
         p = "/" + p
@@ -73,9 +73,20 @@ export default function FileItem({
       >
         <div className="flex">
           <div className="font-normal">{formatPath(path)}</div>
+          {isPrivate ? (
+            <>
+            <Tooltip id="my-tooltip" className="fixed z-50" />
+            <a className="ml-auto mr-2 opacity-50 text-white hover:text-white hover:opacity-70" data-tooltip-id="my-tooltip" data-tooltip-content={`Unauthenticated redirect: ${fallbackUrl}`}>
+              <FontAwesomeIcon
+                className={``}
+                icon={faLock}
+              />  
+            </a>
+            </>
+          ) : <div className="ml-auto"></div>}
           {(!disableDelete && !fullPath.includes("/pages/..js")) && (
             <FontAwesomeIcon
-              className={`mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer`}
+              className={`mr-2 opacity-50 hover:opacity-100 rounded transition-all cursor-pointer mt-0.5`}
               icon={faTrash}
               onClick={() => {
                 const c = confirm("Are you sure you want to delete this endpoint?");
