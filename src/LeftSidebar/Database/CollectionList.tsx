@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
-import CollectionItem from "./CollectionItem";
-import useDatabaseApi from "../../API/DatabaseAPI";
-import SectionAction from "../SectionAction";
-import FullPageModal from "../../Utilities/FullPageModal";
 import toast from "react-hot-toast";
+import useDatabaseApi from "../../API/DatabaseAPI";
+import FullPageModal from "../../Utilities/FullPageModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import SectionAction from "../SectionAction";
+import CollectionItem from "./CollectionItem";
 
 export default function CollectionList({
   active,
@@ -33,6 +33,10 @@ export default function CollectionList({
   };
 
   const createNewCollection = (collectionName: string) => {
+    if(collectionName.startsWith("_")) {
+      toast.error("Collection names cannot start with an underscore");
+      return;
+    }
     toast.promise(createCollection(collectionName), {
       loading: "Creating collection...",
       success: () => {
