@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { FiEye, FiEyeOff } from "react-icons/fi";
 import useSettingsApi from "../API/SettingsAPI";
 
-export default function SecretInput({ name, desc, inputState, setInputState }) {
+export default function SecretInput({ name, secretName, desc, inputState, setInputState }) {
   const [showText, setShowText] = useState(false);
   const api = useSettingsApi();
   const [filledSecrets, setFilledSecrets] = useState({
@@ -12,17 +11,17 @@ export default function SecretInput({ name, desc, inputState, setInputState }) {
 
   useEffect(() => {
     const checkSecrets = async () => {
-      const testFilled = await isSecretFilled(name, "test");
-      const prodFilled = await isSecretFilled(name, "prod");
+      const testFilled = await isSecretFilled(secretName, "test");
+      const prodFilled = await isSecretFilled(secretName, "prod");
       setFilledSecrets({
         test: testFilled,
         prod: prodFilled,
       });
     };
     checkSecrets();
-  }, [name]);
+  }, [secretName]);
 
-  async function isSecretFilled(name: string, environment: "test" | "prod"): Promise<boolean> {
+  async function isSecretFilled(secretName: string, environment: "test" | "prod"): Promise<boolean> {
     try {
       const secrets = await api.getSecrets();
 
@@ -32,9 +31,9 @@ export default function SecretInput({ name, desc, inputState, setInputState }) {
       }
 
       if (environment === "test") {
-        return secrets.Test[name] !== undefined && secrets.Test[name] !== "";
+        return secrets.Test && secrets.Test[secretName] !== undefined && secrets.Test[secretName] !== "";
       } else if (environment === "prod") {
-        return secrets.Prod[name] || false;
+        return secrets.Prod && secrets.Prod[secretName] !== undefined && secrets.Prod[secretName] !== "";
       } else {
         console.error("Invalid environment specified");
         return false;
@@ -48,7 +47,7 @@ export default function SecretInput({ name, desc, inputState, setInputState }) {
   const updateValue = (env, value) => {
     setInputState((prevState) => ({
       ...prevState,
-      [`${name}_${env}`]: value,
+      [`${secretName}_${env}`]: value,
     }));
   };
 
@@ -57,18 +56,15 @@ export default function SecretInput({ name, desc, inputState, setInputState }) {
       {["test", "prod"].map(
         (env) =>
           !filledSecrets[env] && (
-            <div className="relative mt-4" key={env}>
+            <div className="relative mt-4" key={secretName + "_" + env}>
               <div className="text-gray-300">{`${env == "test" ? "Test mode" : "Production mode"} ${name}`}</div>
               <input
-                type={showText ? "text" : "password"}
+                type={"text"}
                 className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
                 placeholder={`${desc} (${env})`}
-                value={inputState[`${name}_${env}`] || ""}
+                value={inputState[`${secretName}_${env}`] || ""}
                 onChange={(e) => updateValue(env, e.target.value)}
               />
-              <span className="absolute right-3 mt-5 cursor-pointer" onClick={() => setShowText((prev) => !prev)}>
-                {showText ? <FiEye /> : <FiEyeOff />}
-              </span>
             </div>
           ),
       )}

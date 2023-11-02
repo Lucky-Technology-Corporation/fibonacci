@@ -47,12 +47,17 @@ export default function TemplateWizard({
       const initialState = {};
 
       (template.inputs || []).forEach((input) => {
-        if (input.type === "boolean") {
-          initialState[input.name] = false; // default value for checkboxes
-        } else if (input.type === "string") {
-          initialState[input.name] = ""; // default value for text inputs
+        if(!input.secret){ 
+          if (input.type === "boolean") {
+            initialState[input.name] = false; // default value for checkboxes
+          } else if (input.type === "string") {
+            initialState[input.name] = ""; // default value for text inputs
+          }
+          // add more conditions if there are other input types
+        } else{
+          initialState[input.secret_name+"_test"] = "";
+          initialState[input.secret_name+"_prod"] = "";
         }
-        // add more conditions if there are other input types
       });
 
       setInputState(initialState);
@@ -75,6 +80,7 @@ export default function TemplateWizard({
   const constructPayload = async () => {
     const inputs = [];
     for (const key in inputState) {
+      console.log(key, inputState[key])
       const value = inputState[key];
 
       let secret_type = "";
@@ -92,14 +98,34 @@ export default function TemplateWizard({
         secret_type,
       });
     }
-
+    console.log({
+      template_id: template ? template.id : "",
+      inputs: inputs,
+    })
     return {
       template_id: template ? template.id : "",
       inputs: inputs,
     };
   };
 
-  async function handleOnSecondNext() {
+  const isAllInputsFilled = () => {
+    console.log(inputState)
+    for (const key in inputState) {
+      console.log(key, inputState[key])
+      const value = inputState[key];
+      if (value === "" || value === null || value === undefined) {
+        return false;
+      }
+    }
+    return true;
+  };  
+
+  async function createTemplateWithInputs() {
+    if (!isAllInputsFilled()) {
+      toast.error("Please fill in all the inputs.");
+      return;
+    }
+
     const payload = await constructPayload();
 
     //Add necessary npm packages
@@ -125,7 +151,7 @@ export default function TemplateWizard({
   };
 
 
-  const createHandler = () => {
+  const chooseTemplateType = () => {
     if(!template){
       toast.error("Please select a template")
       return
@@ -235,7 +261,7 @@ export default function TemplateWizard({
                       <button
                         type="button"
                         onClick={() => {
-                          createHandler();
+                          chooseTemplateType();
                         }}
                         className={`${template ? "" : "hidden"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698] sm:ml-3 sm:w-auto sm:text-sm`}
                       >
@@ -265,7 +291,7 @@ export default function TemplateWizard({
                     (template.inputs || []).map((input) => {
                       if (input.type === "boolean") {
                         return (
-                          <div className="mt-4" key={input.desc}>
+                          <div className="mt-4" key={input.name}>
                             <div className="text-gray-300">{input.desc}</div>
                             <Checkbox
                               id={input.name}
@@ -279,7 +305,7 @@ export default function TemplateWizard({
                         );
                       } else if (input.type === "string" && !input.secret) {
                         return (
-                          <div className="mt-4">
+                          <div className="mt-4" key={input.name}>
                             <div className="text-gray-300">{input.name}</div>
                             <input
                               className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
@@ -295,9 +321,11 @@ export default function TemplateWizard({
                         return (
                           <SecretInput
                             name={input.name}
+                            secretName={input.secret_name}
                             desc={input.desc}
                             inputState={inputState}
                             setInputState={setInputState}
+                            key={input.secret_name}
                           />
                         );
                       }
@@ -307,7 +335,14 @@ export default function TemplateWizard({
                     <button
                       type="button"
                       onClick={() => {
-                        handleOnSecondNext();
+                        toast.promise(createTemplateWithInputs(), {
+                          loading: "Creating template...",
+                          success: () => {
+                            setStep(0);
+                            return "Created template!";
+                          },
+                          error: <b>Failed to create template</b>,
+                        });
                       }}
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
                     >

@@ -86,6 +86,10 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   }, [selectedOption]);
 
   const addPackageToProject = (message) => {
+    if (installedPackages.includes(message)) {
+      console.log(message + " is already installed")
+      return;
+    }
     const messageBody = { type: "addPackage", packageName: message, directory: location };
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
