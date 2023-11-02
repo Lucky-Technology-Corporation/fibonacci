@@ -53,8 +53,8 @@ export default function FilesList({ active }: { active: boolean }) {
   const createPageArrayFromFile = (data) => {
     if (typeof data !== "string") { return; }
     console.log("data", data)
-    const routeBlockRegex = /<Routes>[\s\S]*?<\/Routes>/;
-    const routeTagsRegex = /<(Route|PrivateRoute)\s+path="(.*?)"\s*element={<(.*?)\s*\/>}/g;
+    const routeBlockRegex = /<SwizzleRoutes>[\s\S]*?<\/SwizzleRoutes>/;
+    const routeTagsRegex = /<(SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s[^>]*element={<(.*?)\s*\/>}/g;
 
     const routeBlock = data.match(routeBlockRegex);
 
@@ -229,9 +229,6 @@ export default function FilesList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="font-semibold ml-2 flex pt-2 pb-1">
-        <div className="flex items-center">Base</div>
-      </div>
       <div className="ml-1">
         <div className={searchFilter != "" ? ("index.html".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
@@ -251,6 +248,17 @@ export default function FilesList({ active }: { active: boolean }) {
           active={"frontend/src/App.css" == activeFile}
           onClick={() => {
             setActiveFile("frontend/src/App.css");
+          }}
+          disableDelete={true}
+        />
+        </div>
+        <div className={searchFilter != "" ? ("api.js".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        <FileItem
+          key={"Api.js"}
+          path={("Api.js")}
+          active={"frontend/src/Api.js" == activeFile}
+          onClick={() => {
+            setActiveFile("frontend/src/Api.js");
           }}
           disableDelete={true}
         />
