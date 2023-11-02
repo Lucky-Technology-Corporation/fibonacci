@@ -1,4 +1,5 @@
 import { loadIntercom } from "next-intercom";
+import { useEffect } from "react";
 import { AuthProvider } from "react-auth-kit";
 import "./App.css";
 import Dashboard from "./Dashboard";
@@ -6,14 +7,16 @@ import { GlobalContextProvider } from "./Utilities/GlobalContext";
 
 function App() {
 
-  loadIntercom({
-    appId: "cxvvsphp",
-    email: "",
-    name: "",
-    ssr: false,
-    initWindow: true,
-    delay: 0,
-  });
+  useEffect(() => {
+    loadIntercom({
+      appId: "cxvvsphp",
+      email: "",
+      name: "",
+      ssr: false,
+      initWindow: true,
+      delay: 0,
+    });
+  }, [])
 
   return (
     <AuthProvider

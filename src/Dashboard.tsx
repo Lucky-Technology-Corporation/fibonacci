@@ -33,7 +33,6 @@ export default function Dashboard() {
   const { getProjects } = useDatabaseApi();
   const auth = useAuthUser()
 
-  initIntercomWindow({ appId: 'cxvvsphp', name: (auth() || {"user": "unknown"}).user, projectId: activeProject, testDomain: testDomain })
 
   const handleMouseMove = (event) => {
     setMousePosition({
@@ -48,6 +47,9 @@ export default function Dashboard() {
     };
   }, []);
 
+  useEffect(() => {
+    initIntercomWindow({ appId: 'cxvvsphp', name: (auth() || {"user": "unknown"}).user, projectId: activeProject, testDomain: testDomain })
+  }, [auth, activeProject, testDomain])
 
   useEffect(() => {
     const fetchProjects = async () => {
