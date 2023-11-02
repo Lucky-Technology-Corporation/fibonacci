@@ -45,10 +45,26 @@ export default function APIWizard({
 
     console.log("newFileName", newFileName)
 
-    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "Home.js"){
-      toast.error("The name Home is reserved for the homepage")
+    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzleHomePage.js"){
+      toast.error("SwizzleHomePage is a reserved endpoint")
       return
     }
+
+    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzleRoute.js"){
+      toast.error("SwizzleRoute is a reserved endpoint")
+      return
+    }
+
+    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzlePrivateRoute.js"){
+      toast.error("SwizzlePrivateRoute is a reserved endpoint")
+      return
+    }
+
+    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzleRoutes.js"){
+      toast.error("SwizzleRoutes is a reserved endpoint")
+      return
+    }
+
 
     const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".js", "")) : "components/" + convertPath(newFileName.replace(".js", ""))
     if(files.includes(testPath)){
