@@ -45,7 +45,7 @@ export default function APIWizard({
       return
     }
 
-    if (inputValue.endsWith(".js")) {
+    if (inputValue.endsWith(".ts")) {
       cleanInputValue = inputValue.slice(0, -3);
     }
     if(inputValue.startsWith("/")){

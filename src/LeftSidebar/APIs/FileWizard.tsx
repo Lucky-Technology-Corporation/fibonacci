@@ -35,8 +35,8 @@ export default function APIWizard({
     }
 
     var newFileName = inputValue;
-    if (!newFileName.endsWith(".js") || !newFileName.endsWith(".jsx")) {
-      newFileName = newFileName + ".js";
+    if (!newFileName.endsWith(".ts") || !newFileName.endsWith(".tsx")) {
+      newFileName = newFileName + ".tsx";
     }
 
     if(newFileName.startsWith("/")){
@@ -45,36 +45,36 @@ export default function APIWizard({
 
     console.log("newFileName", newFileName)
 
-    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzleHomePage.js"){
+    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleHomePage.tsx"){
       toast.error("SwizzleHomePage is a reserved endpoint")
       return
     }
 
-    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzleRoute.js"){
+    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleRoute.tsx"){
       toast.error("SwizzleRoute is a reserved endpoint")
       return
     }
 
-    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzlePrivateRoute.js"){
+    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzlePrivateRoute.tsx"){
       toast.error("SwizzlePrivateRoute is a reserved endpoint")
       return
     }
 
-    if(fileType == "page" && convertPath(newFileName.replace(".js", "")) == "SwizzleRoutes.js"){
+    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleRoutes.tsx"){
       toast.error("SwizzleRoutes is a reserved endpoint")
       return
     }
 
 
-    const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".js", "")) : "components/" + convertPath(newFileName.replace(".js", ""))
+    const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".tsx", "")) : "components/" + convertPath(newFileName.replace(".tsx", ""))
     if(files.includes(testPath)){
       toast.error("That endpoint already exists")
       return
     }
 
     if(fileType == "page"){
-      if(newFileName.endsWith(".js")){
-        newFileName = newFileName.substring(0, newFileName.length - 3)
+      if(newFileName.endsWith(".tsx")){
+        newFileName = newFileName.substring(0, newFileName.length - 4)
       }
       if(newFileName.startsWith("/")){
         if(newFileName == "/"){
@@ -118,7 +118,7 @@ export default function APIWizard({
         .join('_');
     });
     
-    return capitalizedSegments.join('_') + '.js';  
+    return capitalizedSegments.join('_') + '.tsx';  
   }
   
 

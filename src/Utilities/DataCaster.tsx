@@ -70,7 +70,7 @@ export function replaceCodeBlocks(str: string) {
   const helperRegex = /\/swizzle\/code\/backend\/helpers\/([^\/\s]+)/g;
   result = result.replace(helperRegex, (_, filename) => filename);
 
-  const fileNameOnlyRegex = /\b(post\.|get\.)[\w\.\(\)]+\.js\b/g;
+  const fileNameOnlyRegex = /\b(post\.|get\.)[\w\.\(\)]+\.ts\b/g;
   result = result.replace(fileNameOnlyRegex, (filename) => filenameToEnglish(filenameToEndpoint(filename)));
 
   return result;

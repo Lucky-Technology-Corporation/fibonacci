@@ -50,7 +50,7 @@ export default function FileItem({
   const formatPath = (path: string) => {
     if((fullPath || "").includes("frontend/src/pages")){
       var p = path
-      var p = p.replace(".js", "").replace(/\./g, "/").toLowerCase()
+      var p = p.replace(".ts", "").replace(/\./g, "/").toLowerCase()
       if(!p.startsWith("/")){
         p = "/" + p
       }
@@ -84,7 +84,7 @@ export default function FileItem({
             </a>
             </>
           ) : <div className="ml-auto"></div>}
-          {(!disableDelete && !fullPath.includes("/pages/..js")) && (
+          {(!disableDelete && !fullPath.includes("/pages/SwizzleHomePage.ts")) && (
             <FontAwesomeIcon
               className={`mr-2 opacity-50 hover:opacity-100 rounded transition-all cursor-pointer mt-0.5`}
               icon={faTrash}

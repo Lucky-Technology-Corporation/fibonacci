@@ -25,10 +25,10 @@ export default function HelperWizard({
     }
 
     var cleanInputValue = inputValue;
-    if (inputValue.endsWith(".js")) {
+    if (inputValue.endsWith(".ts")) {
       cleanInputValue = inputValue.slice(0, -3);
     }
-    const fileName = cleanInputValue + ".js";
+    const fileName = cleanInputValue + ".ts";
     const newHelperName = cleanInputValue;
 
     if(helpers.includes(newHelperName)){

@@ -179,7 +179,7 @@ export default function RightSidebar({
   }, [currentFileProperties]);
 
   const getImport = (fileName) => {
-    const importName = fileName.endsWith('/') ? fileName.slice(0, -1).split('/').pop() : fileName.split('/').pop().replace(".js", "")
+    const importName = fileName.endsWith('/') ? fileName.slice(0, -1).split('/').pop() : fileName.split('/').pop().replace(".tsx", "")
     return `import ${importName} from "/${fileName.split("/frontend/src/")[1]}"`
   }
 
@@ -275,7 +275,7 @@ export default function RightSidebar({
                 <div className="h-2" />
                 <IconTextButton
                   onClick={() => {
-                    copyText(`const ${currentFileProperties.fileUri.split("/backend/helpers/")[1].replace(".js", "")} = require("../helpers/${currentFileProperties.fileUri.split("/backend/helpers/")[1]}")`)
+                    copyText(`const ${currentFileProperties.fileUri.split("/backend/helpers/")[1].replace(".ts", "")} = require("../helpers/${currentFileProperties.fileUri.split("/backend/helpers/")[1]}")`)
                     setTimeout(() => {toast("Paste at the very top of any API file to use this helper")}, 250)
                   }}
                   icon={<img src="/copy.svg" className="w-3 h-3 m-auto" />}

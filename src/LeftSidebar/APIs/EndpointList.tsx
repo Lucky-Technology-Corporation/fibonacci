@@ -65,7 +65,7 @@ export default function EndpointList({ active }: { active: boolean }) {
         }
 
         const transformedHelpers = data.children.map((endpoint: any) => {
-          return endpoint.name.replace(".js", "");
+          return endpoint.name.replace(".ts", "");
         });
 
         setHelperList(transformedHelpers);

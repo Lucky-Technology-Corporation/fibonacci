@@ -18,7 +18,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [fileType, setFileType] = useState<string>("file");
 
   const { testDomain, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
-  const restrictedFiles = ["App.js", "App.css", "index.js", "index.css"];
+  const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
   const methods: any = [
     { id: "file", name: "+ Component" },
@@ -39,7 +39,7 @@ export default function FilesList({ active }: { active: boolean }) {
   }, [testDomain, shouldRefreshList]);
 
   useEffect(() => {
-    getFile("frontend/src/RouteList.js")
+    getFile("frontend/src/RouteList.tsx")
       .then((data) => {
         console.log(data)
         createPageArrayFromFile(data)
@@ -172,7 +172,7 @@ export default function FilesList({ active }: { active: boolean }) {
       if (
         showCurrent &&
         !restrictedFiles.includes(node.name) &&
-        (node.name.includes('.js') || node.name.includes('.jsx'))
+        (node.name.includes('.ts') || node.name.includes('.tsx'))
       ) {  
         return (
           <FileItem
@@ -263,13 +263,13 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
-        <div className={searchFilter != "" ? ("api.js".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        <div className={searchFilter != "" ? ("api.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
-          key={"Api.js"}
-          path={("Api.js")}
-          active={"frontend/src/Api.js" == activeFile}
+          key={"Api.tsx"}
+          path={("Api.tsx")}
+          active={"frontend/src/Api.tsx" == activeFile}
           onClick={() => {
-            setActiveFile("frontend/src/Api.js");
+            setActiveFile("frontend/src/Api.tsx");
           }}
           disableDelete={true}
         />
@@ -285,10 +285,10 @@ export default function FilesList({ active }: { active: boolean }) {
             <FileItem
               key={page.path}
               path={page.path}
-              active={"frontend/src/pages/" + page.component + ".js" == activeFile}
-              fullPath={"/home/swizzle/code/frontend/src/pages/" + page.component + ".js"}
+              active={"frontend/src/pages/" + page.component + ".tsx" == activeFile}
+              fullPath={"/home/swizzle/code/frontend/src/pages/" + page.component + ".tsx"}
               onClick={() => {
-                setActiveFile("frontend/src/pages/" + page.component + ".js");
+                setActiveFile("frontend/src/pages/" + page.component + ".tsx");
               }}
               disableDelete={page.component == "Home"}
               isPrivate={page.authRequired}
