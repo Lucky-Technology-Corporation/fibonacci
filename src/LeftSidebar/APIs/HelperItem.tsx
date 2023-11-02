@@ -24,9 +24,9 @@ export default function HelperItem({
     try{
       setPostMessage({
         type: "removeFile",
-        fileName: "/backend/helpers/" + fileName + ".js",
+        fileName: "/backend/helpers/" + fileName + ".ts",
       });
-      await deleteFile(fileName + ".js", "helpers")
+      await deleteFile(fileName + ".ts", "helpers")
       removeFromList()
     } catch(e){
       throw "Error deleting endpoint"
