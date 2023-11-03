@@ -66,8 +66,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [activeToast, setActiveToast] = useState(null);
   const [postMessage, setPostMessage] = useState(null);
-  const [activeEndpoint, setActiveEndpoint] = useState("backend/user-dependencies/get-.ts");
-  const [activeFile, setActiveFile] = useState("frontend/src/pages/Home.tsx");
+  const [activeEndpoint, setActiveEndpoint] = useState("backend/user-dependencies/get..ts");
+  const [activeFile, setActiveFile] = useState("frontend/src/pages/SwizzleHomePage.tsx");
   const [activeHelper, setActiveHelper] = useState(null);
   const [ideReady, setIdeReady] = useState(false);
   const [testDeployStatus, setTestDeployStatus] = useState("DEPLOYMENT_IN_PROGRESS");
