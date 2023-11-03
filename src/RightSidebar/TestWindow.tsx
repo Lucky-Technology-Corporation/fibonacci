@@ -97,7 +97,7 @@ export default function TestWindow({
         ...prevResponses,
         [testDoc._id]: error.response
           ? error.response.status + ": " + getReasonPhrase(error.response.status)
-          : "Unknown error",
+          : "Unknown error (server might be restarting)",
       }));
 
       setLoadingTests((prevLoadingTests) => prevLoadingTests.filter((id) => id !== testDoc._id));
@@ -164,7 +164,7 @@ export default function TestWindow({
             </div>
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            You are in your <b>{environment == "prod" ? "production" : "test"}</b> environment
+            Mock requests in your <span className={environment == "prod" ? "" : "text-[#f39c12]"}>{environment == "prod" ? "production" : "test"}</span> environment
           </div>
         </div>
         <div className="flex ml-auto mr-0">

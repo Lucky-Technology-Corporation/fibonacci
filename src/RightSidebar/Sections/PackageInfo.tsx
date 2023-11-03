@@ -129,7 +129,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
         onChange={setSelectedOption}
         onInputChange={handleInputChange}
         options={items}
-        placeholder="Search NPM..."
+        placeholder="Add NPM Package..."
         styles={{
           input: (provided, state) => ({
             ...provided,
@@ -227,12 +227,16 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
                 {installedPackages.map((packageName) => {
                   return (
                     <tr key={packageName}>
-                      <td>{packageName}</td>
-                      <td className={`opacity-70 hover:opacity-100 cursor-pointer ${checkIfRequired(packageName) ? "hidden" : ""}`}>
+                      <td className={checkIfRequired(packageName) ? "opacity-70" : ""}>{packageName}</td>
+                      <td className={`opacity-70 hover:opacity-100 cursor-pointer flex ${checkIfRequired(packageName) ? "opacity-30 hover:opacity-50" : ""}`}>
                         <FontAwesomeIcon
-                          className="ml-auto"
+                          className="ml-auto mr-0"
                           icon={faTrash}
                           onClick={() => {
+                            if(checkIfRequired(packageName)){
+                              toast.error(packageName + " is required for this project and cannot be removed")
+                              return
+                            }
                             removePackageFromProject(packageName);
                             toast.success(`Removed ${packageName} from project`);
                           }}

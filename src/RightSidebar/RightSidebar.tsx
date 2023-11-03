@@ -275,7 +275,7 @@ export default function RightSidebar({
                 <div className="h-2" />
                 <IconTextButton
                   onClick={() => {
-                    copyText(`const ${currentFileProperties.fileUri.split("/backend/helpers/")[1].replace(".ts", "")} = require("../helpers/${currentFileProperties.fileUri.split("/backend/helpers/")[1]}")`)
+                    copyText(`import ${currentFileProperties.fileUri.split("/backend/helpers/")[1].replace(".ts", "")} from "../helpers/${currentFileProperties.fileUri.split("/backend/helpers/")[1]}"`)
                     setTimeout(() => {toast("Paste at the very top of any API file to use this helper")}, 250)
                   }}
                   icon={<img src="/copy.svg" className="w-3 h-3 m-auto" />}
@@ -350,7 +350,7 @@ export default function RightSidebar({
             {!isHelper && (
               <>
                 <div style={{height: "1px"}} className="bg-gray-600 w-full mb-2"></div>
-                <div className="text-left w-full space-y-2">
+                <div className="text-left w-full space-y-2 mt-0.5">
                   <div className="font-bold mb-1 w-full flex">Authentication <a href="https://docs.swizzle.co/users" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
                   <Checkbox
                     id="auth"
@@ -365,7 +365,7 @@ export default function RightSidebar({
               </>
             )}
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
-            <div className="text-left w-full space-y-2">
+            <div className="text-left w-full space-y-2 mt-0.5">
               <div className="font-bold mb-1 mt-2 w-full flex">Database <a href="https://docs.swizzle.co/database" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
               <Checkbox id="db" label="Import" checkedLabel="Imported" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
               <DBInfo show={isDBChecked} />
