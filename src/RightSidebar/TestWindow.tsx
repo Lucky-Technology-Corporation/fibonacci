@@ -164,7 +164,11 @@ export default function TestWindow({
             </div>
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            Mock requests in your <span className={environment == "prod" ? "" : "text-[#f39c12]"}>{environment == "prod" ? "production" : "test"}</span> environment
+            Mock requests in your{" "}
+            <span className={environment == "prod" ? "" : "text-[#f39c12]"}>
+              {environment == "prod" ? "production" : "test"}
+            </span>{" "}
+            environment
           </div>
         </div>
         <div className="flex ml-auto mr-0">

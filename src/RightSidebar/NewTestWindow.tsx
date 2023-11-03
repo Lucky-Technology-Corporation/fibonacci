@@ -120,7 +120,8 @@ export default function NewTestWindow({
           });
         }
       } else {
-        await createTest(activeCollection, documentToCreate);
+        const resp = await createTest(activeCollection, documentToCreate);
+        documentToCreate._id = resp.documentIds[0];
         if (setTests) {
           setTests((prevTests) => [...prevTests, documentToCreate]);
         }
