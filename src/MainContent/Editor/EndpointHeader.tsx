@@ -262,6 +262,13 @@ export default function EndpointHeader() {
                 onSuggestionSelected={onSuggestionSelected}
                 shouldRenderSuggestions={() => { return prompt != "" }}
                 inputProps={{
+                  onKeyDown: (event) => {
+                    if(event.key == "Enter"){
+                      runQuery(prompt)
+                      setPrompt("")
+                      return
+                    }
+                  },
                   placeholder: "Type to search...",
                   value: prompt,
                   onChange: onPromptChange,

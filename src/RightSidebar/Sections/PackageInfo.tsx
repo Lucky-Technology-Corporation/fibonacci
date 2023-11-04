@@ -35,7 +35,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   const { npmSearch, getPackageJson } = useEndpointApi();
 
-  const { setPostMessage, domain, packageToInstall } = useContext(SwizzleContext);
+  const { setPostMessage, domain, packageToInstall, frontendPackageToInstall } = useContext(SwizzleContext);
 
   useEffect(() => {
     if (domain == null || domain == undefined || domain == "") {
@@ -89,12 +89,17 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     if (installedPackages.includes(message)) {
       return;
     }
+    console.log("Adding " + message + " to " + location)
     const messageBody = { type: "addPackage", packageName: message, directory: location };
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
   };
 
   useEffect(() => {
+    if(location == "frontend"){
+      return
+    }
+
     if(items.map(item => item.value).includes(packageToInstall)){
       toast.error(packageToInstall + " is already installed")
       return
@@ -103,6 +108,20 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       addPackageToProject(packageToInstall);
     }
   }, [packageToInstall]);
+
+  useEffect(() => {
+    if(location == "backend"){
+      return
+    }
+
+    if(items.map(item => item.value).includes(packageToInstall)){
+      toast.error(packageToInstall + " is already installed")
+      return
+    }
+    if (packageToInstall != "") {
+      addPackageToProject(packageToInstall);
+    }
+  }, [frontendPackageToInstall]);
 
   const removePackageFromProject = (message) => {
     const messageBody = { type: "removePackage", packageName: message, directory: location };

@@ -29,7 +29,8 @@ export default function TemplateWizard({
     desc: string;
     inputs: Input[];
     github_url: string | null;
-    packages: string;
+    packages?: string;
+    frontend_packages?: string;
   };
 
   const [template, setTemplate] = useState<TemplateType | null>(null);
@@ -38,7 +39,7 @@ export default function TemplateWizard({
   const [templateOptions, setTemplateOptions] = useState([]);
   const [inputState, setInputState] = useState({});
   const [filterValue, setFilterValue] = useState("");
-  const { testDomain, setShouldRefreshList, shouldRefreshList, setPackageToInstall } = useContext(SwizzleContext);
+  const { testDomain, setShouldRefreshList, shouldRefreshList, setPackageToInstall, setFrontendPackageToInstall } = useContext(SwizzleContext);
 
   const api = useTemplateApi();
 
@@ -120,6 +121,9 @@ export default function TemplateWizard({
     //Add necessary npm packages
     const packageList = (template.packages || "").trim().replace(",", " ")
     setPackageToInstall(packageList)
+
+    const frontendPackageList = (template.frontend_packages || "").trim().replace(",", " ")
+    setFrontendPackageToInstall(frontendPackageList)
 
     //Create files
     await api.createFromTemplate(payload);

@@ -142,13 +142,18 @@ export default function useEndpointApi() {
   const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
       const fileName = endpointToFilename(activeEndpoint);
+      
+      var currentFile = "backend/user-dependencies/" + fileName
+      if(fileName.includes("!helper!")){
+        currentFile = "backend/helpers/" + fileName.replace("!helper!", "")
+      }
 
       var body = (body = {
         question_type: aiCommand,
         user_query: userQuery,
         fermat_domain: testDomain.replace("https://", "https://fermat."),
         fermat_jwt: await getFermatJwt(),
-        current_file: "backend/user-dependencies/" + fileName,
+        current_file: currentFile,
       });
 
       const response = await axios.post(

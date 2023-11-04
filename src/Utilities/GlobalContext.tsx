@@ -43,6 +43,8 @@ export interface SwizzleContextType {
   setShouldRefreshList;
   packageToInstall;
   setPackageToInstall;
+  frontendPackageToInstall;
+  setFrontendPackageToInstall;
   mousePosition;
   setMousePosition;
   shouldOverlay;
@@ -76,6 +78,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [figmaToken, setFigmaToken] = useState("");
   const [shouldRefreshList, setShouldRefreshList] = useState(false);
   const [packageToInstall, setPackageToInstall] = useState("");
+  const [frontendPackageToInstall, setFrontendPackageToInstall] = useState("");
   const [shouldOverlay, setShouldOverlay] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -124,6 +127,8 @@ export const GlobalContextProvider = ({ children }) => {
         setShouldRefreshList,
         packageToInstall,
         setPackageToInstall,
+        frontendPackageToInstall,
+        setFrontendPackageToInstall,
         mousePosition,
         setMousePosition,
         shouldOverlay,
