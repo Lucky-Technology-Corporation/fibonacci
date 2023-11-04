@@ -69,7 +69,6 @@ export default function LeftSidebar({
         return
       };
     }
-    console.log("openActiveFile", "/"+activeFile)
     setPostMessage({
       type: "openFile",
       fileName: `/${activeFile}`,
@@ -94,7 +93,6 @@ export default function LeftSidebar({
       });
       setActiveEndpoint(activeEndpoint.replace("!helper!", ""));
     } else {
-      console.log("openActiveEndpoint")
       //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
@@ -112,7 +110,7 @@ export default function LeftSidebar({
   };
 
   useEffect(() => {
-    console.log("currentFileProperties did change", currentFileProperties)
+    console.log("currentFileProperties", currentFileProperties)
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.startsWith("file:///")) {
       return;
     }
@@ -139,6 +137,16 @@ export default function LeftSidebar({
       setActiveFile(newFile);
     }
   }, [currentFileProperties]);
+
+  useEffect(() => {
+    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined){
+      if(selectedTab == Page.Hosting){
+        setActiveFile("frontend/src/pages/Home.tsx")
+      } else {
+        setActiveFile("backend/user-dependencies/get..ts")
+      }
+    }
+  }, [ideReady])
 
   const changeEnvironment = async (env) => {
     const status = await getProjectDeploymentStatus(activeProject, env)

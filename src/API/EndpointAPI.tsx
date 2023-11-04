@@ -124,7 +124,6 @@ export default function useEndpointApi() {
         filePath = "/backend/helpers/" + fileName
       }
 
-      console.log("Deleting file", filePath)
       const response = await axios.delete(
         `${testDomain.replace("https://", "https://fermat.")}/code/delete?path=code${filePath}`,
         {

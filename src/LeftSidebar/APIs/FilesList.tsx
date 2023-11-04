@@ -41,7 +41,6 @@ export default function FilesList({ active }: { active: boolean }) {
   useEffect(() => {
     getFile("frontend/src/RouteList.tsx")
       .then((data) => {
-        console.log(data)
         createPageArrayFromFile(data)
       })
       .catch((e) => {
@@ -52,7 +51,6 @@ export default function FilesList({ active }: { active: boolean }) {
 
   const createPageArrayFromFile = (data) => {
     if (typeof data !== "string") { return; }
-    console.log("data", data)
     const routeBlockRegex = /<SwizzleRoutes>[\s\S]*?<\/SwizzleRoutes>/;
     const routeTagsRegex = /<(SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s[^>]*element={<(.*?)\s*\/>}/g;
 
@@ -63,7 +61,6 @@ export default function FilesList({ active }: { active: boolean }) {
       let match;
       
       while ((match = routeTagsRegex.exec(routeBlock[0])) !== null) {
-        console.log(match)
         var authRequired = false
         var fallbackPath = ""
         if(match[1] == "SwizzlePrivateRoute"){
@@ -77,7 +74,6 @@ export default function FilesList({ active }: { active: boolean }) {
         routes.push({ path: match[2], component: match[3], authRequired: authRequired, fallbackPath: fallbackPath });
       }
     }
-    console.log("routes", routes)
     setPages(routes)
   }
 
@@ -91,7 +87,6 @@ export default function FilesList({ active }: { active: boolean }) {
 
   const [allDirsExpanded, setAllDirsExpanded] = useState(false);
   const expandAllDirs = (node, parentPath = '') => {
-    console.log("expanding all dirs")
     let allDirs = {};
   
     const traverse = (node, currentPath) => {
@@ -181,7 +176,6 @@ export default function FilesList({ active }: { active: boolean }) {
             fullPath={node.path}
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
-              console.log(fullPath)
               setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
             }}
             removeFromList={() => {
@@ -229,7 +223,6 @@ export default function FilesList({ active }: { active: boolean }) {
         <Dropdown
           className=""
           onSelect={(item: any) => {
-            console.log("set file type", item)
             setFileType(item);
             setIsVisible(true);
           }}

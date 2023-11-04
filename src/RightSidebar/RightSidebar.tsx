@@ -16,36 +16,14 @@ import SecretInfo from "./Sections/SecretInfo";
 import TestWindow from "./TestWindow";
 import WebPreview from "./WebPreview";
 
-const noDb = `const router = express.Router();
-`;
-const withDb = `const router = express.Router();
-const { db } = require('swizzle-js');
-`;
-const justDb = `const { db } = require('swizzle-js');
-`;
-
-const noNotificationImport = `const router = express.Router();
-`;
-const withNotificationImport = `const router = express.Router();
-const { sendNotification } = require('swizzle-js');
-`;
-const justNotificationImport = `const { sendNotification } = require('swizzle-js');
-`;
-
-const noStorageImport = `const router = express.Router();
-`;
-const withStorageImport = `const router = express.Router();
-const { saveFile, getFile, deleteFile } = require('swizzle-js');
-`;
-const justStorageImport = `const { saveFile, getFile, deleteFile } = require('swizzle-js');
-`;
-
 export default function RightSidebar({
   selectedTab,
   currentFileProperties,
+  setCurrentFileProperties
 }: {
   selectedTab: Page;
   currentFileProperties: any;
+  setCurrentFileProperties: (properties: any) => void;
 }) {
   const programmaticDbUpdateRef = useRef(false);
   const programmaticAuthUpdateRef = useRef(false);
@@ -66,97 +44,55 @@ export default function RightSidebar({
   const { ideReady, setPostMessage } = useContext(SwizzleContext);
   const { getAutocheckResponse } = useEndpointApi();
 
-  useEffect(() => {
-    if (programmaticAuthUpdateRef.current) {
-      programmaticAuthUpdateRef.current = false;
-    } else {
-      if (isAuthChecked) {
-        const firstMessage = {
-          findText: ", optionalAuthentication,",
-          replaceText: ", requiredAuthentication,",
-          type: "findAndReplace",
-        };
-        setPostMessage(firstMessage);
-      } else {
-        const firstMessage = {
-          findText: ", requiredAuthentication,",
-          replaceText: ", optionalAuthentication,",
-          type: "findAndReplace",
-        };
-        setPostMessage(firstMessage);
-      }
-    }
-  }, [isAuthChecked]);
+  const toggleAuth = (isRequired: boolean) => {
+    setIsAuthChecked(isRequired);
 
-  useEffect(() => {
-    if (programmaticDbUpdateRef.current) {
-      programmaticDbUpdateRef.current = false;
-    } else {
-      var message = {};
-      if (isDBChecked) {
-        message = {
-          findText: noDb,
-          replaceText: withDb,
-          type: "findAndReplace",
-        };
-      } else {
-        message = {
-          findText: justDb,
-          replaceText: "",
-          type: "findAndReplace",
-        };
-      }
-      setPostMessage(message);
+    var newImportStatement = currentFileProperties.importStatement
+    if(isRequired){
+      newImportStatement = newImportStatement.replace("optionalAuthentication", "requiredAuthentication")
+    } else{
+      newImportStatement = newImportStatement.replace("requiredAuthentication", "optionalAuthentication")
     }
-  }, [isDBChecked]);
 
-  // useEffect(() => {
-  //   if (programmaticNotificationUpdateRef.current) {
-  //     programmaticNotificationUpdateRef.current = false;
-  //   } else {
-  //     if (isNotificationsChecked) {
-  //       const firstMessage = {
-  //         findText: noNotificationImport,
-  //         replaceText: withNotificationImport,
-  //         type: "findAndReplace",
-  //       };
-  //       setPostMessage(firstMessage);
-  //     } else {
-  //       const firstMessage = {
-  //         findText: justNotificationImport,
-  //         replaceText: "",
-  //         type: "findAndReplace",
-  //       };
-  //       setPostMessage(firstMessage);
-  //     }
-  //   }
-  // }, [isNotificationsChecked]);
+    const message = {
+      findText: currentFileProperties.importStatement,
+      replaceText: newImportStatement,
+      type: "findAndReplace",
+    };
+    setPostMessage(message);
+    setCurrentFileProperties({...currentFileProperties, hasPassportAuth: isRequired, importStatement: newImportStatement})
 
-  useEffect(() => {
-    if (programmaticStorageUpdateRef.current) {
-      programmaticStorageUpdateRef.current = false;
-    } else {
-      if (isStorageChecked) {
-        const firstMessage = {
-          findText: noStorageImport,
-          replaceText: withStorageImport,
+    //Modify middleware
+    setTimeout(() => {
+      if (currentFileProperties.fileUri.includes("backend/user-dependencies/")) {
+        const message = {
+          findText: isRequired ? "optionalAuthentication, async" : "requiredAuthentication, async",
+          replaceText: isRequired ? "requiredAuthentication, async" : "optionalAuthentication, async",
           type: "findAndReplace",
         };
-        setPostMessage(firstMessage);
-      } else {
-        const firstMessage = {
-          findText: justStorageImport,
-          replaceText: "",
-          type: "findAndReplace",
-        };
-        setPostMessage(firstMessage);
+        setPostMessage(message);
       }
-    }
-  }, [isStorageChecked]);
+    }, 100)
+  }
+
+  const toggleDb = (isRequired: boolean) => {
+    setIsDBChecked(isRequired)
+
+    var newImportStatement = currentFileProperties.importStatement;
+    newImportStatement = modifySwizzleImport(newImportStatement, 'db', isRequired ? 'add' : 'remove');
+    const message = {
+      findText: currentFileProperties.importStatement,
+      replaceText: newImportStatement,
+      type: "findAndReplace",
+    };
+    console.log(message)
+    setPostMessage(message);
+    setCurrentFileProperties({...currentFileProperties, hasGetDb: isRequired, importStatement: newImportStatement})
+  }
+
 
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
-    console.log(currentFileProperties)
 
     if (currentFileProperties.fileUri.includes("backend/helpers/")) {
       setIsHelper(true);
@@ -164,23 +100,27 @@ export default function RightSidebar({
       setIsHelper(false);
     }
 
-    if (currentFileProperties.hasGetDb !== isDBChecked) {
-      programmaticDbUpdateRef.current = true;
-      setIsDBChecked(!!currentFileProperties.hasGetDb);
-    }
-    if (currentFileProperties.hasPassportAuth !== isAuthChecked) {
-      programmaticAuthUpdateRef.current = true;
-      setIsAuthChecked(!!currentFileProperties.hasPassportAuth);
-    }
-    if(currentFileProperties.hasStorage !== isStorageChecked){
-      programmaticStorageUpdateRef.current = true
-      setIsStorageChecked(!!currentFileProperties.hasStorage)
-    }
+    programmaticAuthUpdateRef.current = true;
+    programmaticDbUpdateRef.current = true;
+    const importStatement = currentFileProperties.importStatement;
+    if(importStatement == undefined) return;
+    setIsDBChecked(importStatement.includes("db"));
+    setIsAuthChecked(currentFileProperties.hasPassportAuth);
+
   }, [currentFileProperties]);
 
-  const getImport = (fileName) => {
-    const importName = fileName.endsWith('/') ? fileName.slice(0, -1).split('/').pop() : fileName.split('/').pop().replace(".tsx", "")
-    return `import ${importName} from "/${fileName.split("/frontend/src/")[1]}"`
+  const modifySwizzleImport = (importStatement: string, newImport: string, action = 'add') => {
+    const imports = importStatement.split("{")[1].split("}")[0].split(",").map((i) => i.trim());
+  
+    if (action === 'add' && !imports.includes(newImport)) {
+      imports.push(newImport);
+    } else if (action === 'remove' && imports.includes(newImport)) {
+      const index = imports.indexOf(newImport);
+      imports.splice(index, 1);
+    }
+  
+    const newImports = `{ ${imports.join(', ')} }`;
+    return `import ${newImports} from 'swizzle-js';`;
   }
 
   return (
@@ -193,28 +133,6 @@ export default function RightSidebar({
         <DeployButton />
         {selectedTab == Page.Hosting && (
           <>
-
-            {/* {(currentFileProperties.fileUri && 
-              typeof currentFileProperties.fileUri === 'string' &&
-              currentFileProperties.fileUri.includes("/frontend/src")) && 
-              currentFileProperties.fileUri.includes("/frontend/src/App.js") == false &&
-              currentFileProperties.fileUri.includes("/frontend/src/index.html") == false &&
-              currentFileProperties.fileUri.includes("/frontend/src/App.css") == false && (
-              <>
-                <div className="h-4" />
-                <div className="font-bold">Use</div>
-                <div className="h-2" />
-                <IconTextButton
-                  onClick={() => {
-                    copyText(getImport(currentFileProperties.fileUri))
-                    setTimeout(() => {toast("Paste at the very top of any other component to use it")}, 250)
-                  }}
-                  icon={<img src="/copy.svg" className="w-3 h-3 m-auto" />}
-                  text="Copy Import"
-                />
-              </>
-            )} */}
-            
             <div className="h-4" />
             <div className="font-bold">Testing</div>
             <div className="h-2" />
@@ -251,7 +169,6 @@ export default function RightSidebar({
               text="Preview"
             />
             <WebPreview isVisible={isPreviewVisible} setIsVisible={setIsPreviewVisible} />
-            {/* <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} /> */}
 
             <div className="h-4" />
             <div className="font-bold">Configuration</div>
@@ -357,7 +274,10 @@ export default function RightSidebar({
                     label="Require"
                     checkedLabel="Required"
                     isChecked={isAuthChecked}
-                    setIsChecked={setIsAuthChecked}
+                    setIsChecked={() =>{
+                      console.log("toggle auth", !isAuthChecked)
+                      toggleAuth(!isAuthChecked);
+                    }}
                   />
                   <AuthInfo show={true} isAuthChecked={isAuthChecked} />
                 </div>
@@ -367,7 +287,9 @@ export default function RightSidebar({
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="text-left w-full space-y-2 mt-0.5">
               <div className="font-bold mb-1 mt-2 w-full flex">Database <a href="https://docs.swizzle.co/database" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
-              <Checkbox id="db" label="Import" checkedLabel="Imported" isChecked={isDBChecked} setIsChecked={setIsDBChecked} />
+              <Checkbox id="db" label="Import" checkedLabel="Imported" isChecked={isDBChecked} setIsChecked={() => {
+                toggleDb(!isDBChecked);
+              }} />
               <DBInfo show={isDBChecked} />
             </div>
             <div className="h-2" />

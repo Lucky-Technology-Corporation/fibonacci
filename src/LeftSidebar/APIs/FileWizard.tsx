@@ -27,7 +27,6 @@ export default function APIWizard({
       toast.error("Please enter a filename");
       return;
     }
-    console.log("start createHandler", newFileName)
 
     if(inputValue == "/"){
       toast.error("Your homepage already exists")
@@ -42,8 +41,6 @@ export default function APIWizard({
     if(newFileName.startsWith("/")){
       newFileName = newFileName.substring(1)
     }
-
-    console.log("newFileName", newFileName)
 
     if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleHomePage.tsx"){
       toast.error("SwizzleHomePage is a reserved endpoint")
@@ -103,7 +100,6 @@ export default function APIWizard({
   };
 
   const convertPath = (path) => {
-    console.log("convertPath", path)
     const segments = path.split('/').filter(Boolean);
 
     // Capitalize the first letter of each segment and letters after underscores, also handle dashes

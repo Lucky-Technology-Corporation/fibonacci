@@ -44,9 +44,7 @@ export default function SignIn() {
         tokenType: "Bearer",
       })
     ) {
-      console.log("Signed in!"); //do not remove the jwt from the url here. it causes a refresh loop
       setTimeout(() => {
-        // location.reload();
         location.href= "/"
       }, 150);
     } else {

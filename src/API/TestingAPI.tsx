@@ -84,7 +84,6 @@ export default function useTestApi() {
       });
       return response;
     } catch (error) {
-      console.log(`Error running ${method} test:`, error);
       throw error;
     }
   };

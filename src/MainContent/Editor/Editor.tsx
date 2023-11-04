@@ -42,18 +42,19 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
         fileUri: event.data.fileUri,
         hasPassportAuth: event.data.hasPassportAuth,
         hasGetDb: event.data.hasGetDb,
-        hasStorage: event.data.hasStorage
+        hasStorage: event.data.hasStorage,
+        importStatement: event.data.swizzleImportStatement
       });
     }
   };
 
   useEffect(() => {
     if (currentFileRef.current != null) {
-      if(selectedTab == Page.Hosting && currentFileRef.current.includes("backend")){ 
+      if(selectedTab == Page.Hosting && currentFileRef.current.includes("backend/")){ 
         setActiveFile("frontend/src/pages/Home.tsx");
       }
-      else if(selectedTab == Page.Apis && currentFileRef.current.includes("frontend")){
-        setActiveEndpoint("backend/user-dependencies/get-.ts");
+      else if(selectedTab == Page.Apis && currentFileRef.current.includes("frontend/src")){
+        setActiveEndpoint("backend/user-dependencies/get..ts");
       }
       return;
     }

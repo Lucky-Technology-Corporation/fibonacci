@@ -124,7 +124,6 @@ export default function TestWindow({
       api
         .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
         .then((response) => {
-          console.log(response);
           if (response && response.documents) {
             setTests(response.documents);
           } else {

@@ -107,7 +107,7 @@ export default function Dashboard() {
               setIsModalOpen={setIsModalOpen}
             />
 
-            <RightSidebar selectedTab={selectedTab} currentFileProperties={currentFileProperties} />
+            <RightSidebar selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties}/>
 
             <InProgressDeploymentModal 
               isOpen={isModalOpen}

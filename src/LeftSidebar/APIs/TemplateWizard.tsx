@@ -80,7 +80,6 @@ export default function TemplateWizard({
   const constructPayload = async () => {
     const inputs = [];
     for (const key in inputState) {
-      console.log(key, inputState[key])
       const value = inputState[key];
 
       let secret_type = "";
@@ -98,10 +97,7 @@ export default function TemplateWizard({
         secret_type,
       });
     }
-    console.log({
-      template_id: template ? template.id : "",
-      inputs: inputs,
-    })
+
     return {
       template_id: template ? template.id : "",
       inputs: inputs,
@@ -109,9 +105,7 @@ export default function TemplateWizard({
   };
 
   const isAllInputsFilled = () => {
-    console.log(inputState)
     for (const key in inputState) {
-      console.log(key, inputState[key])
       const value = inputState[key];
       if (value === "" || value === null || value === undefined) {
         return false;
@@ -121,11 +115,6 @@ export default function TemplateWizard({
   };  
 
   async function createTemplateWithInputs() {
-    if (!isAllInputsFilled()) {
-      toast.error("Please fill in all the inputs.");
-      return;
-    }
-
     const payload = await constructPayload();
 
     //Add necessary npm packages
@@ -144,7 +133,6 @@ export default function TemplateWizard({
       setTemplate(foundTemplate);
       return true
     } else {
-      console.log("unable to find matching template");
       toast.error("Please try to select again")
       return false
     }
@@ -236,22 +224,23 @@ export default function TemplateWizard({
                         placeholder: "Type to filter",
                         value: filterValue,
                         onChange: onFilterChange,
-                        style: {border: "1px solid #525363",
-                        lineColor: "#525363",
-                        borderRadius: "0.375rem",
-                        boxShadow: "none",
-                        backgroundColor: "#181922",
-                        hoverBackgroundColor: "#52536355",
-                        color: "#D9D9D9",
-                        fontSize: "0.875rem",
-                        iconColor: "#D9D9D9",
-                        placeholderColor: "#74758a",
-                        height: "36px",
-                        outline: "none",
-                        width: "calc(100% - 3rem)",
-                        paddingLeft: "0.5rem",
-                        paddingRight: "0.5rem",
-                      }
+                        style: {
+                          border: "1px solid #525363",
+                          lineColor: "#525363",
+                          borderRadius: "0.375rem",
+                          boxShadow: "none",
+                          backgroundColor: "#181922",
+                          hoverBackgroundColor: "#52536355",
+                          color: "#D9D9D9",
+                          fontSize: "0.875rem",
+                          iconColor: "#D9D9D9",
+                          placeholderColor: "#74758a",
+                          height: "36px",
+                          outline: "none",
+                          width: "calc(100% - 3rem)",
+                          paddingLeft: "0.5rem",
+                          paddingRight: "0.5rem",
+                        }
                       }}
                     />
                     </div>
@@ -335,13 +324,18 @@ export default function TemplateWizard({
                     <button
                       type="button"
                       onClick={() => {
+                        if (!isAllInputsFilled()) {
+                          toast.error("Please fill in all the inputs.");
+                          return;
+                        }
+                    
                         toast.promise(createTemplateWithInputs(), {
                           loading: "Creating template...",
                           success: () => {
                             setStep(0);
                             return "Created template!";
                           },
-                          error: <b>Failed to create template</b>,
+                          error: "Didn't create template",
                         });
                       }}
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"

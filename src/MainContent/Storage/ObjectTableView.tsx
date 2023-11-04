@@ -52,7 +52,6 @@ export default function ObjectTableView() {
     const handleDragEnterLeave = (e) => {
       preventDefaults(e);
       setDragging(e.type === "dragenter" || e.type === "dragover");
-      console.log("dragState", e.type === "dragenter" || e.type === "dragover")
     };
 
     const handleDrop = (e) => {
@@ -132,7 +131,6 @@ export default function ObjectTableView() {
     }
     runQuery(searchQuery, filterName, "_swizzle_storage", sortedByColumn, sortDirection)
       .then((data) => {
-        console.log(data)
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
@@ -155,7 +153,6 @@ export default function ObjectTableView() {
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
-    console.log(x, y)
     setRowDetailData(rowData);
     setClickPosition({ x: x, y: y });
   };

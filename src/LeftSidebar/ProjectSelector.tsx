@@ -160,7 +160,6 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   
 
   useEffect(() => {
-    console.log("projects", projects);
     if (projects && activeProject == "" && projects.length > 0) {
       var storedActiveProject = sessionStorage.getItem("activeProject");
       if (storedActiveProject != undefined && storedActiveProject != "") {

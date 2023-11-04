@@ -27,12 +27,10 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
         console.error(result.error);
       } else {
         const paymentReqResult = await updatePaymentMethod(result.paymentMethod.id)
-        console.log("paymentReqResult", paymentReqResult)
         if(paymentReqResult == null || paymentReqResult.success == false){
           alert('Something went wrong. Please try again.');
           setLoading(false)
         } else{
-            console.log("here")
             setHasPaymentMethod(true)
             if(setIsVisible == undefined) return;
             setIsVisible(false)

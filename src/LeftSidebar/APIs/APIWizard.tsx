@@ -60,8 +60,6 @@ export default function APIWizard({
       return
     }
 
-    console.log("creating " + newEndpointName)
-
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {
         return [...endpoints, newEndpointName];
@@ -83,7 +81,6 @@ export default function APIWizard({
     });
     setIsVisible(false);
     setTimeout(() => {
-      console.log("setting newly created endpoint", newEndpointName);
       setActiveEndpoint(newEndpointName);
     }, 500);
   };
