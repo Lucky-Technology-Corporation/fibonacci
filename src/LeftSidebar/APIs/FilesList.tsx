@@ -196,6 +196,15 @@ export default function FilesList({ active }: { active: boolean }) {
     }
     return null;
   };
+
+  const filterIfNeeded = (pages) => {
+    if(searchFilter == ""){
+      return pages
+    }
+    else{
+      return pages.filter(page => page.path.toLowerCase().includes(searchFilter.toLowerCase()) || page.component.toLowerCase().includes(searchFilter.toLowerCase()))
+    }
+  }
   
   //Fetch from backend and populate it here.
   return (
@@ -256,7 +265,7 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
-        <div className={searchFilter != "" ? ("api.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        {/* <div className={searchFilter != "" ? ("api.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
           key={"Api.tsx"}
           path={("Api.tsx")}
@@ -266,14 +275,14 @@ export default function FilesList({ active }: { active: boolean }) {
           }}
           disableDelete={true}
         />
-        </div>
+        </div> */}
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
         <div className="flex items-center">Pages</div>
       </div>
       <div className="ml-1">
-        {pages.map((page) => {
+        {filterIfNeeded(pages).map((page) => {
           return (
             <FileItem
               key={page.path}
