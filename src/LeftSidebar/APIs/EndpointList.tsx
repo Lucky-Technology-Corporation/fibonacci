@@ -199,6 +199,7 @@ export default function EndpointList({ active }: { active: boolean }) {
       <TemplateWizard
         isVisible={isTemplateWizardVisible}
         setIsVisible={setIsTemplateWizardVisible}
+        type="dropin"
       />
     </div>
   );

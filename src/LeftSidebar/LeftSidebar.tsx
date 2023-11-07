@@ -141,8 +141,10 @@ export default function LeftSidebar({
   useEffect(() => {
     if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined){
       if(selectedTab == Page.Hosting){
-        setActiveFile("frontend/src/pages/Home.tsx")
+        console.log("Setting active file to frontend/src/pages/SwizzleHomePage.tsx")
+        setActiveFile("frontend/src/pages/SwizzleHomePage.tsx")
       } else {
+        console.log("Setting active file to backend/user-dependencies/get..ts")
         setActiveFile("backend/user-dependencies/get..ts")
       }
     }

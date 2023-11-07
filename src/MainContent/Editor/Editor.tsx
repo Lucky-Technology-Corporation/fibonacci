@@ -3,7 +3,7 @@ import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 
-export default function Editor({ setCurrentFileProperties, selectedTab }: { setCurrentFileProperties: (properties: any) => void, selectedTab: Page }) {
+export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page }) {
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
@@ -54,11 +54,14 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
   useEffect(() => {
     console.log("selectedTab", selectedTab)
     if(selectedTab == Page.Hosting){ 
-      console.log("setActiveFile", "frontend/src/pages/SwizzleHomePage.tsx");
-      setActiveFile("frontend/src/pages/SwizzleHomePage.tsx");
+      if(!(currentFileProperties.fileUri || "").includes("frontend/")){
+        setActiveFile("frontend/src/pages/SwizzleHomePage.tsx");
+      }
     }
     else if(selectedTab == Page.Apis){
-      setActiveEndpoint("get/");
+      if(!(currentFileProperties.fileUri || "").includes("backend/")){
+        setActiveEndpoint("get/");
+      }
     }
   }, [selectedTab])
 

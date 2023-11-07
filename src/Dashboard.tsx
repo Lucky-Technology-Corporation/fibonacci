@@ -100,6 +100,7 @@ export default function Dashboard() {
 
             <CenterContent
               selectedTab={selectedTab}
+              currentFileProperties={currentFileProperties}
               setCurrentFileProperties={setCurrentFileProperties}
               activeCollection={activeCollection}
               activeLogsPage={activeLogsPage}

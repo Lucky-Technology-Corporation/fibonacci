@@ -11,6 +11,7 @@ import ObjectTableView from "./Storage/ObjectTableView";
 
 type CenterContentProps = {
   selectedTab: Page;
+  currentFileProperties: any;
   setCurrentFileProperties: (properties: any) => void;
   activeCollection: string;
   activeLogsPage: string;
@@ -20,6 +21,7 @@ type CenterContentProps = {
 
 export default function CenterContent({
   selectedTab,
+  currentFileProperties,
   setCurrentFileProperties,
   activeCollection,
   activeLogsPage,
@@ -43,7 +45,7 @@ export default function CenterContent({
         )}
         <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
           <EndpointHeader />
-          <Editor setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} />
+          <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} />
         </div>
         <div
           style={{
