@@ -42,7 +42,7 @@ export default function RightSidebar({
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
 
   const { ideReady, setPostMessage } = useContext(SwizzleContext);
-  const { getAutocheckResponse } = useEndpointApi();
+  const { getAutocheckResponse, restartFrontend } = useEndpointApi();
 
   const toggleAuth = (isRequired: boolean) => {
     setIsAuthChecked(isRequired);
@@ -133,6 +133,18 @@ export default function RightSidebar({
         <DeployButton />
         {selectedTab == Page.Hosting && (
           <>
+            <div className="h-4" />
+            <IconTextButton
+              onClick={() => {toast.promise(restartFrontend(), {
+                  loading: "Restarting frontend...",
+                  success: "Restarted!",
+                  error: "Error restarting frontend",
+                });
+              }}
+              icon={<img src="/restart.svg" className="w-3 h-3 m-auto" />}
+              text="Restart Frontend"
+            />
+
             <div className="h-4" />
             <div className="font-bold">Testing</div>
             <div className="h-2" />

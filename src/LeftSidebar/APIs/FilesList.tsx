@@ -265,17 +265,17 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
-        {/* <div className={searchFilter != "" ? ("api.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        <div className={searchFilter != "" ? ("app.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
-          key={"Api.tsx"}
-          path={("Api.tsx")}
-          active={"frontend/src/Api.tsx" == activeFile}
+          key={"App.tsx"}
+          path={("App.tsx")}
+          active={"frontend/src/App.tsx" == activeFile}
           onClick={() => {
-            setActiveFile("frontend/src/Api.tsx");
+            setActiveFile("frontend/src/App.tsx");
           }}
           disableDelete={true}
         />
-        </div> */}
+        </div>
       </div>
 
       <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">

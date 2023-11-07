@@ -139,6 +139,26 @@ export default function useEndpointApi() {
     }
   }
 
+  const restartFrontend = async () => {
+    try {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_frontend`, {
+        headers: {
+          Authorization: await getFermatJwt(),
+        },
+      });
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+
   const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
       const fileName = endpointToFilename(activeEndpoint);
@@ -288,5 +308,6 @@ export default function useEndpointApi() {
     getCodeFromFigma,
     refreshFermatJwt,
     deleteFile,
+    restartFrontend
   };
 }
