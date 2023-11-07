@@ -80,34 +80,19 @@ export default function DeployButton({}: {}) {
     }, 3500);
   };
 
-  // //Command-S deploy trigger
-  // useEffect(() => {
-  //   const handleKeyDown = (event: KeyboardEvent) => {
-  //     if ((window.navigator.platform.match("Mac") ? event.metaKey : event.ctrlKey) && event.key === "s") {
-  //       event.preventDefault();
-  //       if (window.navigator.platform.match("Mac")) {
-  //         toast("Reloading test environment (Shift-⌘-S to deploy to production)", { icon: "⏳" });
-  //       } else {
-  //         toast("Reloading test environment (Shift-Ctrl-S to deploy to production)", { icon: "⏳" });
-  //       }
-  //       runDeploy();
-  //     }
-  //   };
-  //   window.addEventListener("keydown", handleKeyDown);
-
-  //   // Clean up the effect
-  //   return () => {
-  //     window.removeEventListener("keydown", handleKeyDown);
-  //   };
-  // }, []);
 
   useEffect(() => {
+    console.log("shouldCancelHide", shouldCancelHide)
     if(!shouldCancelHide){
       setTimeout(() => {
         setShowDeployInfo(false);
       }, 100);
     }
   }, [shouldCancelHide])
+
+  const tryToClose = () => { //TODO: this isn't picking up the shouldCancelHide state correctly. Fix it to keep the deployment details open on mouse over
+    if(!shouldCancelHide){ setShowDeployInfo(false) }
+  }
 
   return (
     <>
@@ -123,7 +108,7 @@ export default function DeployButton({}: {}) {
         <button
           className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
           onMouseEnter={() => {if(environment == "test"){ setShowDeployInfo(true)}}}
-          onMouseLeave={() => {if(!setShouldCancelHide){ setShowDeployInfo(false) }}}
+          onMouseLeave={() => {setTimeout(() => { tryToClose() }, 100); }}
           onClick={runDeploy}
         >
           <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />

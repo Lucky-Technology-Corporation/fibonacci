@@ -33,9 +33,9 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   ]
   const requiredReactPackages = ["react", "react-dom", "react-scripts"]
 
-  const { npmSearch, getPackageJson } = useEndpointApi();
+  const { npmSearch, getPackageJson, restartFrontend } = useEndpointApi();
 
-  const { setPostMessage, domain, packageToInstall, frontendPackageToInstall } = useContext(SwizzleContext);
+  const { setPostMessage, domain, shouldRefreshList } = useContext(SwizzleContext);
 
   useEffect(() => {
     if (domain == null || domain == undefined || domain == "") {
@@ -50,7 +50,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       });
       setInstalledPackages(dependencies);
     });
-  }, [domain]);
+  }, [domain, shouldRefreshList]);
 
   const debounceTimer = useRef(null);
 
@@ -81,47 +81,22 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   useEffect(() => {
     if (selectedOption == null) return;
-    addPackageToProject(selectedOption.value);
+    addPackageToProject(selectedOption.value, location);
     toast.success(`Added ${selectedOption.value} to project`);
   }, [selectedOption]);
 
-  const addPackageToProject = (message) => {
+  const addPackageToProject = async (message, folder) => {
     if (installedPackages.includes(message)) {
       return;
     }
-    console.log("Adding " + message + " to " + location)
-    const messageBody = { type: "addPackage", packageName: message, directory: location };
+
+    const messageBody = { type: "addPackage", packageName: message, directory: folder };
     setPostMessage(messageBody);
     setInstalledPackages([...installedPackages, message]);
+    if(folder == "frontend"){
+      await restartFrontend()
+    }
   };
-
-  useEffect(() => {
-    if(location == "frontend"){
-      return
-    }
-
-    if(items.map(item => item.value).includes(packageToInstall)){
-      toast.error(packageToInstall + " is already installed")
-      return
-    }
-    if (packageToInstall != "") {
-      addPackageToProject(packageToInstall);
-    }
-  }, [packageToInstall]);
-
-  useEffect(() => {
-    if(location == "backend"){
-      return
-    }
-
-    if(items.map(item => item.value).includes(packageToInstall)){
-      toast.error(packageToInstall + " is already installed")
-      return
-    }
-    if (packageToInstall != "") {
-      addPackageToProject(packageToInstall);
-    }
-  }, [frontendPackageToInstall]);
 
   const removePackageFromProject = (message) => {
     const messageBody = { type: "removePackage", packageName: message, directory: location };

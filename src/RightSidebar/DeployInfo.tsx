@@ -49,25 +49,25 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
     }
   }, [shouldShowDeployInfo]);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (myRef.current && !myRef.current.contains(event.target)) {
-        setShouldShowDeployInfo(false);
-      }
-    }
-    window.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      window.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  // useEffect(() => {
+  //   function handleClickOutside(event) {
+  //     if (myRef.current && !myRef.current.contains(event.target)) {
+  //       setShouldShowDeployInfo(false);
+  //     }
+  //   }
+  //   window.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     window.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
 
   return (
     <div
       className={`z-50 w-[370px] bg-[#191A23] border border-[#f07434] rounded-lg shadow-lg pt-2 pb-2 ${shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       style={{ transition: "opacity 0.2s", marginTop: "0px" }}
       ref={myRef}
-      onMouseEnter={() => setShouldCancelHide(true)}
-      onMouseLeave={() => setShouldCancelHide(false)}
+      onMouseEnter={() =>  { console.log("enter zone"); setShouldCancelHide(true)}}
+      onMouseLeave={() => { console.log("exit zone"); setShouldCancelHide(false); } }
     >
       {logs.length === 0 ? (
         <div className="text-center p-4">No deployments yet</div>

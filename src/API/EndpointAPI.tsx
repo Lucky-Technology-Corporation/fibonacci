@@ -147,7 +147,8 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_frontend`, {
+      console.log(await getFermatJwt())
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_frontend`, {}, {
         headers: {
           Authorization: await getFermatJwt(),
         },

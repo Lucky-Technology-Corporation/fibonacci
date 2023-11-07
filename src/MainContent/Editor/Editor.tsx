@@ -24,6 +24,7 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
 
     postMessageToIframe(postMessage);
     setPostMessage(null);
+    console.log("postMessage", postMessage)
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
@@ -33,7 +34,9 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
 
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
-      setIdeReady(true);
+      setTimeout(() => {
+        setIdeReady(true);
+      }, 200)
     }
     
     if (event.data.type === "fileChanged") {
@@ -41,22 +44,21 @@ export default function Editor({ setCurrentFileProperties, selectedTab }: { setC
       setCurrentFileProperties({
         fileUri: event.data.fileUri,
         hasPassportAuth: event.data.hasPassportAuth,
-        hasGetDb: event.data.hasGetDb,
-        hasStorage: event.data.hasStorage,
+        hasGetDb: event.data.hasGetDb, //unused
+        hasStorage: event.data.hasStorage, //unused
         importStatement: event.data.swizzleImportStatement
       });
     }
   };
 
   useEffect(() => {
-    if (currentFileRef.current != null) {
-      if(selectedTab == Page.Hosting && currentFileRef.current.includes("backend/")){ 
-        setActiveFile("frontend/src/pages/Home.tsx");
-      }
-      else if(selectedTab == Page.Apis && currentFileRef.current.includes("frontend/src")){
-        setActiveEndpoint("backend/user-dependencies/get..ts");
-      }
-      return;
+    console.log("selectedTab", selectedTab)
+    if(selectedTab == Page.Hosting){ 
+      console.log("setActiveFile", "frontend/src/pages/SwizzleHomePage.tsx");
+      setActiveFile("frontend/src/pages/SwizzleHomePage.tsx");
+    }
+    else if(selectedTab == Page.Apis){
+      setActiveEndpoint("get/");
     }
   }, [selectedTab])
 

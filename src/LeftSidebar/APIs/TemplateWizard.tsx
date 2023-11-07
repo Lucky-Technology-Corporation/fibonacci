@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
 import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
 import useTemplateApi from "../../API/TemplatesAPI";
 import Checkbox from "../../Utilities/Checkbox";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -39,9 +40,10 @@ export default function TemplateWizard({
   const [templateOptions, setTemplateOptions] = useState([]);
   const [inputState, setInputState] = useState({});
   const [filterValue, setFilterValue] = useState("");
-  const { testDomain, setShouldRefreshList, shouldRefreshList, setPackageToInstall, setFrontendPackageToInstall } = useContext(SwizzleContext);
+  const { testDomain, setShouldRefreshList, shouldRefreshList, setPostMessage } = useContext(SwizzleContext);
 
   const api = useTemplateApi();
+  const endpointApi = useEndpointApi()
 
   useEffect(() => {
     if (template) {
@@ -120,15 +122,23 @@ export default function TemplateWizard({
 
     //Add necessary npm packages
     const packageList = (template.packages || "").trim().replace(",", " ")
-    setPackageToInstall(packageList)
+    const messageBody = { type: "addPackage", packageName: packageList, directory: "backend" };
+    setPostMessage(messageBody);
+
 
     const frontendPackageList = (template.frontend_packages || "").trim().replace(",", " ")
-    setFrontendPackageToInstall(frontendPackageList)
+    setTimeout(() => {
+      const messageBody = { type: "addPackage", packageName: frontendPackageList, directory: "frontend" };
+      setPostMessage(messageBody);
+    }, 150)
+
 
     //Create files
     await api.createFromTemplate(payload);
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
+
+    await endpointApi.restartFrontend()
   }
 
   const handleOnSelectTemplate = (result: { id: any; name: string }) => {

@@ -33,7 +33,7 @@ export default function EndpointList({ active }: { active: boolean }) {
     { id: "template", name: "+ Template" },
   ];
 
-  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, shouldRefreshList } =
+  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList } =
     useContext(SwizzleContext);
 
   useEffect(() => {
