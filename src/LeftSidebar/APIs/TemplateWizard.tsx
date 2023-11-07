@@ -139,6 +139,7 @@ export default function TemplateWizard({
     setIsVisible(false);
 
     await endpointApi.restartFrontend()
+    await endpointApi.restartBackend()
   }
 
   const handleOnSelectTemplate = (result: { id: any; name: string }) => {

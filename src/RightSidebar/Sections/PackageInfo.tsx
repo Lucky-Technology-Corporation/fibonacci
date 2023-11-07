@@ -38,7 +38,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   ]
   const requiredReactPackages = ["react", "react-dom", "react-scripts"]
 
-  const { npmSearch, getPackageJson, restartFrontend } = useEndpointApi();
+  const { npmSearch, getPackageJson, restartFrontend, restartBackend } = useEndpointApi();
 
   const { setPostMessage, domain, shouldRefreshList } = useContext(SwizzleContext);
 
@@ -101,6 +101,8 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     setInstalledPackages([...installedPackages, message]);
     if(folder == "frontend"){
       await restartFrontend()
+    } else{
+      await restartBackend()
     }
   };
 

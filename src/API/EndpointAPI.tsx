@@ -139,6 +139,27 @@ export default function useEndpointApi() {
     }
   }
 
+  const restartBackend = async () => {
+    try {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      console.log(await getFermatJwt())
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_backend`, {}, {
+        headers: {
+          Authorization: await getFermatJwt(),
+        },
+      });
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+
   const restartFrontend = async () => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
@@ -309,6 +330,7 @@ export default function useEndpointApi() {
     getCodeFromFigma,
     refreshFermatJwt,
     deleteFile,
-    restartFrontend
+    restartFrontend,
+    restartBackend
   };
 }

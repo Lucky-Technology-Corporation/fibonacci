@@ -72,7 +72,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
       },
       error: () => {
         setIsCreatingProject(false);
-        return "Failed to create project";
+        return "Failed to create project. You can only have 1 project at a time.";
       },
     });
   };
