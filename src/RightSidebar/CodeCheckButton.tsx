@@ -40,7 +40,7 @@ export default function CodeCheckButton({}: {}) {
       if (element) {
         element.style.transition = "width 0.2s ease-out";
       }
-      toast.success("Deployed!", {
+      toast.success("Deployed your frontend and backend!", {
         icon: "🫡",
       });
     }, 3200);

@@ -98,7 +98,7 @@ export default function UserRow({
         <EllipsisVerticalIcon onClick={showDetailView} className="h-5 m-auto py-0.5 cursor-pointer text-[#D9D9D9]" />
       </td>
       <td>
-        <img src={`https://flagsapi.com/${rowValues["countryCode"]}/flat/48.png`} />
+        {rowValues["countryCode"] && <img src={`https://flagsapi.com/${rowValues["countryCode"]}/flat/48.png`} />}
       </td>
       <td className="flex">
         {(rowValues["subscription"] ?? "").includes("subscribed") ? (

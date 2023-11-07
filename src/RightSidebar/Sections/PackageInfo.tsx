@@ -29,7 +29,12 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     "passport-anonymous",
     "passport-jwt",
     "swizzle-js",
-    "uuid"
+    "uuid",
+    "axios",
+    "typescript",
+    "@types/node",
+    "@types/react",
+    "@types/react-dom"
   ]
   const requiredReactPackages = ["react", "react-dom", "react-scripts"]
 
@@ -61,11 +66,12 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
       npmSearch(query).then((data) => {
-        setItems(
-          data.map((item) => {
-            return { label: item.package.name, value: item.package.name };
-          }),
-        );
+        var items = data.map((item) => {
+          return { label: item.package.name, value: item.package.name };
+        })
+        const manualInstall = { label: "Manual: 'npm install " + query + "'", value: query }
+        items = [manualInstall, ...items]
+        setItems(items);
       });
     }, 200);
   }, [query]);
