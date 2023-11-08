@@ -52,7 +52,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const createPageArrayFromFile = (data) => {
     if (typeof data !== "string") { return; }
     const routeBlockRegex = /<SwizzleRoutes>[\s\S]*?<\/SwizzleRoutes>/;
-    const routeTagsRegex = /<(SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s[^>]*element={<(.*?)\s*\/>}/g;
+    const routeTagsRegex = /<(SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s[^>]*pageComponent={<(.*?)\s*\/>}/g;
 
     const routeBlock = data.match(routeBlockRegex);
 
@@ -74,6 +74,7 @@ export default function FilesList({ active }: { active: boolean }) {
         routes.push({ path: match[2], component: match[3], authRequired: authRequired, fallbackPath: fallbackPath });
       }
     }
+    console.log(routes)
     setPages(routes)
   }
 

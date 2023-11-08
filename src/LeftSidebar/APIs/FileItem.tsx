@@ -30,11 +30,16 @@ export default function FileItem({
   const { deleteFile } = useEndpointApi()
 
   const runDeleteProcess = async (fileName: string) => {
-
     try{
+      var fileNameParsed = fullPath.replace("/home/swizzle/code", "")
+      fileNameParsed = capitalizeAfterLastSlash(fileNameParsed)
+      if(!fileNameParsed.endsWith(".tsx")){ 
+        fileNameParsed = fileNameParsed + ".tsx"
+      }
+
       var postBody = {
         type: "removeFile",
-        fileName: fullPath.replace("/home/swizzle/code", ""),
+        fileName: fileNameParsed,
       }
       if(fullPath.includes("/frontend/src/pages")){ 
         postBody["routePath"] = formatPath(path)
@@ -47,6 +52,13 @@ export default function FileItem({
     }
   }
 
+  function capitalizeAfterLastSlash(str) {
+    return str.replace(/\/([^/]*)$/, (match, lastSegment) =>
+      match.replace(lastSegment.charAt(0), lastSegment.charAt(0).toUpperCase())
+    );
+  }
+
+  
   const formatPath = (path: string) => {
     if((fullPath || "").includes("frontend/src/pages")){
       var p = path
