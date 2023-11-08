@@ -78,6 +78,13 @@ export default function FilesList({ active }: { active: boolean }) {
           const pageComponentRegex = /pageComponent={<(\w+)/
           const pageComponent = match[2].match(pageComponentRegex);
           componentName = pageComponent[1]
+
+          authRequired = true
+          const regex = /unauthenticatedFallback="([^"]+)"/;
+          const fallback = match[0].match(regex);
+          if(fallback){
+            fallbackPath = fallback[1]
+          }
         }
         
         routes.push({ path: match[1], component: componentName, authRequired: authRequired, fallbackPath: fallbackPath });
