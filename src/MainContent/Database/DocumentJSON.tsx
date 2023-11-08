@@ -109,7 +109,7 @@ export default function DocumentJSON({
                   const newDoc = {
                     ...item,
                   };
-                  newDoc._id = response.document_id;
+                  newDoc._id = response.documentIds[0];
                   return "Created document!";
                 },
                 error: "Failed to create document",
@@ -149,7 +149,7 @@ export default function DocumentJSON({
               const newDoc = {
                 ...dataArray,
               };
-              newDoc._id = response.document_id;
+              newDoc._id = response.documentIds[0];
               onChange([newDoc]); // Wrap the object in an array since it's a single document
               setIsVisible(false);
               return "Created document!";

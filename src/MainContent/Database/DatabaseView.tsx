@@ -2,7 +2,6 @@ import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { v4 as uuidv4 } from "uuid";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import Button from "../../Utilities/Button";
 import { castValues } from "../../Utilities/DataCaster";
@@ -113,7 +112,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     } else {
       if (Array.isArray(newData)) {
         newData.forEach((item) => {
-          item._id = uuidv4();
           const index = data.findIndex((d) => d._id === item._id);
 
           if (index !== -1) {
