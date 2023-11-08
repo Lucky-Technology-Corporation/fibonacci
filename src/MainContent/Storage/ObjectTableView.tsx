@@ -145,11 +145,12 @@ export default function ObjectTableView() {
   const uploadFileHandler = () => {
     fileInputRef.current?.click();
   };
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     //upload file
-    uploadFile(file);
+    await uploadFile(file);
+    fetchData(currentPage);
   };
 
   const showDetailView = (rowData: any, x: number, y: number) => {
