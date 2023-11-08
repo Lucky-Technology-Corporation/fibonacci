@@ -327,8 +327,8 @@ export default function RightSidebar({
             {selectedTab == Page.Apis && currentFileProperties.fileUri && !currentFileProperties.fileUri.includes("/backend/helpers/") && (
               <>
               <div className="text-left w-full space-y-2 mt-0.5">
-                <div className="font-bold mb-1 mt-2 w-full flex">Use <a href="https://docs.swizzle.co/frontend/api" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
-                <span className="font-mono text-xs cursor-pointer" onClick={() => copyText(endpointString)}>{endpointString}</span>
+                <div className="font-bold mb-1 mt-2 w-full flex">Call from app <a href="https://docs.swizzle.co/frontend/api" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
+                <span className="font-mono text-xs cursor-pointer break-all" onClick={() => copyText(endpointString)}>{endpointString}</span>
               </div>
               <div className="h-2" />
               <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>

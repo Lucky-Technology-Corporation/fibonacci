@@ -5,6 +5,13 @@ export class ParsedActiveEndpoint {
   fullPath: string;
 
   constructor(activeEndpoint: string) {
+    if(!activeEndpoint || activeEndpoint.length === 0 || !activeEndpoint.includes("/")) {
+      this.method = "";
+      this.pathParams = [];
+      this.pathComponents = [];
+      this.fullPath = "";
+      return;
+    }
     const idx = activeEndpoint.indexOf("/");
     this.method = activeEndpoint.substring(0, idx).toUpperCase();
 
