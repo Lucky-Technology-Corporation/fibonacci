@@ -52,9 +52,9 @@ export default function FilesList({ active }: { active: boolean }) {
   const createPageArrayFromFile = (data) => {
     if (typeof data !== "string") { return; }
     const routeBlockRegex = /<SwizzleRoutes>[\s\S]*?<\/SwizzleRoutes>/;
-    const routeTagsRegex = /<(SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s[^>]*pageComponent={<(.*?)\s*\/>}/g;
+    const routeTagsRegex = /<(?:SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s*element={<((\w+).*)}.*\/>/g;
 
-    const routeBlock = data.match(routeBlockRegex);
+    var routeBlock = data.match(routeBlockRegex);
 
     var routes = [];
     if (routeBlock) {
@@ -63,6 +63,7 @@ export default function FilesList({ active }: { active: boolean }) {
       while ((match = routeTagsRegex.exec(routeBlock[0])) !== null) {
         var authRequired = false
         var fallbackPath = ""
+
         if(match[1] == "SwizzlePrivateRoute"){
           authRequired = true
           const regex = /unauthenticatedFallback="([^"]+)"/;
@@ -71,7 +72,15 @@ export default function FilesList({ active }: { active: boolean }) {
             fallbackPath = fallback[1]
           }
         }
-        routes.push({ path: match[2], component: match[3], authRequired: authRequired, fallbackPath: fallbackPath });
+
+        var componentName = match[3]
+        if(componentName == "SwizzlePrivateRoute"){
+          const pageComponentRegex = /pageComponent={<(\w+)/
+          const pageComponent = match[2].match(pageComponentRegex);
+          componentName = pageComponent[1]
+        }
+        
+        routes.push({ path: match[1], component: componentName, authRequired: authRequired, fallbackPath: fallbackPath });
       }
     }
     console.log(routes)

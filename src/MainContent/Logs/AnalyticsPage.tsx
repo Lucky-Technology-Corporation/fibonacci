@@ -147,13 +147,13 @@ export default function AnalyticsPage() {
           <div className="mx-4 font-bold text-md mb-2">
             Getting started
             <div className="m-auto ml-2 inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
-              Beta
+              Alpha
             </div>  
           </div>
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
         <div className="mx-4 mb-2">
-          Swizzle is in beta! You can help shape the future of it by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord</a>
+          Swizzle is in early alpha. You can help shape the future of it by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord</a>
         </div>
         <div className="mx-4">
           Create new API endpoints in the 
