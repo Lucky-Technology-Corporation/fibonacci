@@ -144,15 +144,22 @@ export default function AnalyticsPage() {
 
       <div className={`space-between mb-6 bg-[#32333b63] mx-10 rounded py-2 pb-4 ${isHintHidden && "hidden"}`}>
         <div className="flex w-full">
-          <div className="mx-4 font-bold text-md mb-2">Getting started</div>
+          <div className="mx-4 font-bold text-md mb-2">
+            Getting started
+            <div className="m-auto ml-2 inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
+              Beta
+            </div>  
+          </div>
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
+        </div>
+        <div className="mx-4 mb-2">
+          Swizzle is in beta! You can help shape the future of it by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord</a>
         </div>
         <div className="mx-4">
           Create new API endpoints in the 
           <img src="/cloud.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
           <span className="font-bold mr-1">Backend.</span> Add a template to speed up your workflow.
         </div>
-
         <div className="mx-4 mt-2">
           Browse your 
           <img src="/database.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
