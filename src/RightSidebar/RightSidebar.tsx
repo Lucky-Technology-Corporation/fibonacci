@@ -1,6 +1,7 @@
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
+import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import Checkbox from "../Utilities/Checkbox";
 import { copyText } from "../Utilities/Copyable";
 import { replaceCodeBlocks } from "../Utilities/DataCaster";
@@ -40,9 +41,15 @@ export default function RightSidebar({
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-
-  const { ideReady, setPostMessage } = useContext(SwizzleContext);
+  const [endpointString, setEndpointString] = useState<string>("");
+  const { ideReady, setPostMessage, activeEndpoint } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
+
+
+  useEffect(() => {
+    const parsedActiveEndpoint = new ParsedActiveEndpoint(activeEndpoint)
+    setEndpointString(`const response = await api.${parsedActiveEndpoint.method.toLowerCase()}("${parsedActiveEndpoint.fullPath}")`)
+  }, [activeEndpoint])
 
   const toggleAuth = (isRequired: boolean) => {
     setIsAuthChecked(isRequired);
@@ -317,6 +324,16 @@ export default function RightSidebar({
             </div>
             <div className="h-2" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            {selectedTab == Page.Apis && currentFileProperties.fileUri && !currentFileProperties.fileUri.includes("/backend/helpers/") && (
+              <>
+              <div className="text-left w-full space-y-2 mt-0.5">
+                <div className="font-bold mb-1 mt-2 w-full flex">Use <a href="https://docs.swizzle.co/frontend" target="_blank" rel="noreferrer" className="ml-auto mr-0">Docs</a></div>
+                <span className="font-mono text-xs cursor-pointer" onClick={() => copyText(endpointString)}>{endpointString}</span>
+              </div>
+              <div className="h-2" />
+              <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+              </>
+            )}
           </>
         )}
       </div>
