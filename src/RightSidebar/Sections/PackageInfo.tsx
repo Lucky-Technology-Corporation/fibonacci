@@ -43,9 +43,11 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   const { setPostMessage, domain, shouldRefreshList } = useContext(SwizzleContext);
 
   useEffect(() => {
+    console.log("refreshing package list")
     if (domain == null || domain == undefined || domain == "") {
       return;
     }
+    if(!isVisible){ return }
     getPackageJson(location).then((data) => {
       if (data == undefined || data.dependencies == undefined) {
         return;
@@ -55,7 +57,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       });
       setInstalledPackages(dependencies);
     });
-  }, [domain, shouldRefreshList]);
+  }, [domain, shouldRefreshList, isVisible]);
 
   const debounceTimer = useRef(null);
 

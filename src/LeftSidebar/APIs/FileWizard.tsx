@@ -28,12 +28,23 @@ export default function APIWizard({
       return;
     }
 
+    const regex = /^\/?([a-zA-Z][a-zA-z0-9-]*)(?:\/([a-zA-Z][a-zA-z0-9-]*))*\/?$/g
+    if(!regex.test(inputValue)){
+      toast.error("Please enter a valid path")
+      return
+    }
+
     if(inputValue == "/"){
       toast.error("Your homepage already exists")
       return
     }
 
     var newFileName = inputValue;
+
+    if(newFileName.endsWith("/")){
+      newFileName = newFileName.substring(0, newFileName.length - 1)
+    }
+
     if (!newFileName.endsWith(".ts") || !newFileName.endsWith(".tsx")) {
       newFileName = newFileName + ".tsx";
     }
@@ -171,7 +182,7 @@ export default function APIWizard({
                         type="text"
                         value={inputValue}
                         onChange={(e) => {
-                          const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_/]/g, "");
+                          const sanitizedValue = e.target.value;
                           setInputValue(sanitizedValue.trim());
                         }}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"

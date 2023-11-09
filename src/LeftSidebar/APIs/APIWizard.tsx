@@ -80,9 +80,7 @@ export default function APIWizard({
       endpointName: newEndpointName,
     });
     setIsVisible(false);
-    setTimeout(() => {
-      setActiveEndpoint(newEndpointName);
-    }, 500);
+
   };
 
   useEffect(() => {

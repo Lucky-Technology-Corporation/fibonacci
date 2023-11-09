@@ -138,17 +138,17 @@ export default function LeftSidebar({
     }
   }, [currentFileProperties]);
 
-  useEffect(() => {
-    if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined){
-      if(selectedTab == Page.Hosting){
-        console.log("Setting active file to frontend/src/pages/SwizzleHomePage.tsx")
-        setActiveFile("frontend/src/pages/SwizzleHomePage.tsx")
-      } else {
-        console.log("Setting active file to backend/user-dependencies/get..ts")
-        setActiveFile("backend/user-dependencies/get..ts")
-      }
-    }
-  }, [ideReady])
+  // useEffect(() => {
+  //   if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined){
+  //     if(selectedTab == Page.Hosting){
+  //       console.log("Setting active file to frontend/src/pages/SwizzleHomePage.tsx")
+  //       setActiveFile("frontend/src/pages/SwizzleHomePage.tsx")
+  //     } else {
+  //       console.log("Setting active file to backend/user-dependencies/get..ts")
+  //       setActiveFile("backend/user-dependencies/get..ts")
+  //     }
+  //   }
+  // }, [ideReady])
 
   const changeEnvironment = async (env) => {
     const status = await getProjectDeploymentStatus(activeProject, env)
