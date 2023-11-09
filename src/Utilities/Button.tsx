@@ -5,6 +5,7 @@ export default function Button({
   children,
   onMouseEnter = () => {},
   onMouseLeave = () => {},
+  style
 }: {
   text?: any;
   onClick: () => void;
@@ -12,12 +13,13 @@ export default function Button({
   children?: any;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  style?: any;
 }) {
   const defaultClass =
     "text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border";
 
   return (
-    <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className={className ? className : defaultClass} style={{transition: "background 0.3s ease-in-out"}}>
+    <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} className={className ? className : defaultClass} style={{transition: "background 0.3s ease-in-out", ...style}}>
       {children || text}
     </div>
   );

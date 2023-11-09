@@ -141,7 +141,7 @@ export default function SearchBar({
       <input
         type="text"
         className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${filterName == "_exec_mongo_query" ? "font-mono text-xs": ""}`}
-        placeholder={filterName == "_exec_mongo_query" ? `updateOne({'${exampleKeyOne}': 'SearchText'}, { $set: {'${exampleKeyTwo}': 'UpdateText'} })` : "Search"}
+        placeholder={filterName == "_exec_mongo_query" ? `updateOne({"${exampleKeyOne}": "SearchText"}, { "$set": {"${exampleKeyTwo}": "UpdateText"} })` : "Search"}
         value={searchQuery}
         onChange={(e) => {
           setSearchQuery(e.target.value);
