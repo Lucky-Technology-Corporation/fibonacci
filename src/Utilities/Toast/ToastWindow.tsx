@@ -80,12 +80,7 @@ export default function ToastWindow({
     }else{
       setLeftPosition(startingPosition)
     }
-    // if(leftPosition + 400 > window.innerWidth) {
-    //   setLeftPosition(leftPosition - (window.innerWidth - (leftPosition + 400)))
-    // }
-    // if(leftPosition < 0) {
-    //   setLeftPosition(0)
-    // }
+
   }, [mousePosition])
 
   return (

@@ -68,7 +68,9 @@ export default function SearchBar({
     }
 
     if (!searchQuery.split('(')[1].startsWith('{') || !searchQuery.endsWith('})')) {
-      toast.error('The query must be enclosed in curly braces.');
+      if(!searchQuery.split('(')[1].startsWith('[') || !searchQuery.endsWith('])')){
+        toast.error('The query must be enclosed in { } or [ ].');
+      }
       return
     }
     
@@ -82,24 +84,33 @@ export default function SearchBar({
       return
     }
   
+    // Update operation validation
     if (operationType.startsWith('update')) {
-      if (!/\$set|\$unset|\$inc/.test(searchQuery)) {
-        toast.error('Update operations must include an operator like $set, $unset, $inc, etc.');
-        return
+      // Extended the regex to include more update operators from your list
+      const updateOpsRegex = /\$set|\$unset|\$inc|\$rename|\$addToSet|\$pop|\$push|\$pull|\$pullAll|\$pushAll|\$bit|\$each|\$(?:update)|\$isolated/g;
+      if (!updateOpsRegex.test(searchQuery)) {
+        toast.error('Update operations must include appropriate update operators.');
+        return;
       }
     }
-  
+
+    // Find or Delete operation validation
     if (operationType === 'find' || operationType === 'delete') {
-      if (!/\$or|\$and|\$lt|\$lte|\$gt|\$gte|\$ne/.test(searchQuery) && !/"[^"]+"\s*:\s*[^"]+/.test(searchQuery)) {
-        toast.error("Your query must include an operator like $or, $and, $lt, $lte, $gt, $gte, $ne, etc. Or no operators at all.")
-        return
+      // Extended the regex to include more query operators from your list
+      const findDeleteOpsRegex = /\$or|\$and|\$lt|\$lte|\$gt|\$gte|\$ne|\$in|\$nin|\$exists|\$type|\$regex|\$elemMatch|\$size|\$mod|\$not|\$nor|\$all|\$where/g;
+      if (!findDeleteOpsRegex.test(searchQuery) && !/"[^"]+"\s*:\s*[^"]+/.test(searchQuery)) {
+        toast.error("Your query has an invalid operator. Use no operators or valid query operators like $or, $and, etc.");
+        return;
       }
     }
-  
+
+    // Aggregate operation validation
     if (operationType === 'aggregate') {
-      if (!/\$match|\$group|\$unwind|\$sort/.test(searchQuery)) {
-        toast.error('Aggregate queries must include operators like $match, $group, $unwind, $sort, etc.');
-        return
+      // Extended the regex to include more aggregation operators from your list
+      const aggregateOpsRegex = /\$match|\$group|\$unwind|\$sort|\$project|\$limit|\$skip|\$sum|\$avg|\$first|\$last|\$addToSet|\$push|\$cond|\$multiply|\$divide|\$subtract|\$add|\$toLower|\$toUpper|\$dayOfYear|\$dayOfMonth|\$dayOfWeek|\$year|\$month|\$week|\$hour|\$minute|\$second|\$millisecond|\$dateToString/g;
+      if (!aggregateOpsRegex.test(searchQuery)) {
+        toast.error('Aggregate queries must include appropriate aggregation operators.');
+        return;
       }
     }
 
