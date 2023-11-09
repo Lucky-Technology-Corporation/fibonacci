@@ -146,7 +146,7 @@ export default function TestWindow({
   }
   return (
     <div
-      className={`scrollable-div z-50 absolute w-[500px] mr-[315px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
+      className={`scrollable-div z-50 absolute w-[500px] mr-[450px] bg-[#191A23] border border-[#525363] rounded-lg shadow-lg pt-2 ${
         shouldShowTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
