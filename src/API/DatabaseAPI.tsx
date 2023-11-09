@@ -262,9 +262,7 @@ export default function useDatabaseApi() {
   const getProjects = async () => {
     try {
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects`, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
       return response.data;
     } catch (e: any) {
