@@ -58,7 +58,7 @@ export default function SignIn() {
     const urlParams = new URLSearchParams(window.location.search);
     const jwt = urlParams.get("jwt");
     if (jwt && jwt.length > 0) {
-      signOut();
+      // signOut();
       setTimeout(() => {
         signInWithJWT(jwt);
       }, 100)
