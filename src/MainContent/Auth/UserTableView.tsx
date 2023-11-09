@@ -55,13 +55,16 @@ export default function UserTableView() {
   const fetchData = (page: number) => {
     getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
+        console.log(data)
         if (data == null || data.documents == null) {
           setData([]);
           setKeys([]);
           setTotalDocs(0);
           return;
         }
+
         addFlags(data).then((data) => {
+          console.log(data)
           setData(data.documents || []);
           setKeys(data.keys.sort() || []);
           setTotalDocs(data.pagination.total_documents);
@@ -74,26 +77,32 @@ export default function UserTableView() {
   };
 
   const addFlags = async (data: any) => {
-    if (!data || !data.documents) {
-      return;
+    try{
+      if (!data || !data.documents) {
+        return;
+      }
+      const endpoint = "http://ip-api.com/batch";
+      var requestBody = [];
+      for (var i = 0; i < data.documents.length; i++) {
+        requestBody[i] = {
+          query: data.documents[i].created_ip,
+          fields: "countryCode",
+        };
+      }
+      const flagResponse = await fetch(endpoint, {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+      });
+      const flagData = await flagResponse.json();
+      console.log(flagData)
+      for (var i = 0; i < data.documents.length; i++) {
+        data.documents[i].countryCode = flagData[i].countryCode;
+      }
+      return data;
+    } catch(e){
+      console.log(e)
+      return data
     }
-    const endpoint = "http://ip-api.com/batch";
-    var requestBody = [];
-    for (var i = 0; i < data.documents.length; i++) {
-      requestBody[i] = {
-        query: data.documents[i].created_ip,
-        fields: "countryCode",
-      };
-    }
-    const flagResponse = await fetch(endpoint, {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-    });
-    const flagData = await flagResponse.json();
-    for (var i = 0; i < data.documents.length; i++) {
-      data.documents[i].countryCode = flagData[i].countryCode;
-    }
-    return data;
   };
 
   useEffect(() => {
