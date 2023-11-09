@@ -36,7 +36,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     "@types/react",
     "@types/react-dom"
   ]
-  const requiredReactPackages = ["react", "react-dom", "react-scripts"]
+  const requiredReactPackages = ["react", "react-dom", "react-scripts", "axios", "typescript", "react-router-dom", "react-auth-kit"]
 
   const { npmSearch, getPackageJson, restartFrontend, restartBackend } = useEndpointApi();
 
@@ -202,13 +202,13 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       title={""}
       titleClass="text-md font-bold"
       isLarge={false}
-      overrideLeftMargin={-180}
+      overrideLeftMargin={-300}
       overrideTopMargin={-4}
       content={
         //table of packages
         <div className="overflow-scroll max-h-[70vh]">
           <div className="flex mb-2 space-between">
-            <div className="font-bold text-lg">Packages</div>
+            <div className="font-bold text-lg">{location == "frontend" ? "React" : "Node"} Packages</div>
             <Button
               text="Close"
               onClick={() => {

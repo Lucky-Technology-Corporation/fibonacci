@@ -25,7 +25,7 @@ export default function Dropdown({
   className,
   direction = "left",
   title,
-  selectorClass
+  selectorClass = "",
 }: DropdownProps) {
   const [selected, setSelected] = useState<string>();
 

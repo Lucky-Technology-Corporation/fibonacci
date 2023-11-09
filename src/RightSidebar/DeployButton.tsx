@@ -1,7 +1,10 @@
+import { faRocket } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
 import useSettingsApi from "../API/SettingsAPI.tsx";
+import Button from "../Utilities/Button.tsx";
 import { SwizzleContext } from "../Utilities/GlobalContext.tsx";
 import PaymentRequestModal from "../Utilities/PaymentRequestModal.tsx";
 import DeployInfo from "./DeployInfo.tsx";
@@ -96,26 +99,37 @@ export default function DeployButton({}: {}) {
 
   return (
     <>
-      <div className="relative w-full mb-1">
+      <div className="relative w-10 my-auto mr-2 min-w-10 flex-shrink-0">
         <div
           id="deploy-progress-bar"
-          className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
+          className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded my-1"
           style={{
             width: `${deployProgress}%`,
             transition: "width 0.2s ease-out",
           }}
         />
-        <button
-          className="border border-orange-400 text-orange-400 w-full py-1.5 rounded"
+        {/* <button
+          className="border border-orange-400 text-orange-400 w-full rounded py-1"
           onMouseEnter={() => {if(environment == "test"){ setShowDeployInfo(true)}}}
           onMouseLeave={() => {setTimeout(() => { tryToClose() }, 100); }}
           onClick={runDeploy}
+          // style={{paddingTop: "0.33rem", paddingBottom: "0.33rem"}}
         >
-          <img src="/rocket.svg" alt="rocket" className="w-4 h-4 inline-block mr-2" />
-          {deployProgress > 8 ? (deployProgress == 100 ? "Deployed!" : "Deploying...") : "Deploy"}
-        </button>
+          <img src="/rocket.svg" alt="rocket" className="w-4 h-4 my-1 mx-auto" />
+        </button> */}
 
-        <div className={`absolute top-full right-0 mt-2 ${showDeployInfo ? "" : "pointer-events-none"}`}>
+        <Button
+          className={`text-sm py-1.5 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+          children={<FontAwesomeIcon icon={faRocket} className="py-1"/>}
+          onClick={() => {
+            runDeploy()
+          }}
+          onMouseEnter={() => {if(environment == "test"){ setShowDeployInfo(true)}}}
+          onMouseLeave={() => {setTimeout(() => { tryToClose() }, 100); }}
+        />
+
+
+        <div className={`fixed left-2 mt-2 ${showDeployInfo ? "" : "pointer-events-none"}`} style={{zIndex: 51}}>
           <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} shouldShowDeployInfo={showDeployInfo} setShouldCancelHide={setShouldCancelHide} />
         </div>
       </div>

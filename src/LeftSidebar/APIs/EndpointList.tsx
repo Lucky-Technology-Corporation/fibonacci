@@ -1,4 +1,4 @@
-import { faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -22,7 +22,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   const { getFiles } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
 
-  const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
@@ -33,7 +32,7 @@ export default function EndpointList({ active }: { active: boolean }) {
     { id: "template", name: "+ Template" },
   ];
 
-  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList } =
+  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
     useContext(SwizzleContext);
 
   useEffect(() => {
@@ -135,7 +134,8 @@ export default function EndpointList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pb-1">
+      <div className="font-semibold ml-2 mt-2 flex pb-1 opacity-70">
+        <FontAwesomeIcon icon={faGear} className="w-3 h-3 my-auto mr-1" />
         <div className="flex items-center">Endpoints</div>
       </div>
 
@@ -159,7 +159,8 @@ export default function EndpointList({ active }: { active: boolean }) {
         ))}
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
+        <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
         <div className="flex items-center">Helpers</div>
       </div>
       <div className="ml-1">

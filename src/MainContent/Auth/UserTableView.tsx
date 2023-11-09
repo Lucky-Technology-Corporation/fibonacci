@@ -194,7 +194,7 @@ export default function UserTableView() {
           <div className={`font-bold text-base`}>Users</div>
           <div className={`text-sm mt-0.5`}>
             <a
-              href="https://www.notion.so/Swizzle-e254b35ddef5441d920377fef3615eab?pvs=4"
+              href="https://docs.swizzle.co/backend/users"
               target="_blank"
               rel="nofollow"
               className="underline decoration-dotted text-[#d2d3e0] hover:text-white"

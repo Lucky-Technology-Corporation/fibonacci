@@ -152,24 +152,34 @@ export default function AnalyticsPage() {
           </div>
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
-        <div className="mx-4 mb-2">
-          Swizzle is in early alpha. You can help shape the future of it by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord</a>
-        </div>
         <div className="mx-4">
-          Create new API endpoints in the 
-          <img src="/cloud.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
-          <span className="font-bold mr-1">Backend.</span> Add a template to speed up your workflow.
+          You can help shape the future of Swizzle by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord.</a>
         </div>
         <div className="mx-4 mt-2">
-          Browse your 
+          Setup the accounts in
+          <img src="/auth.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
+          <span className="font-bold mr-1">Users.</span>
+        </div>
+        <div className="mx-4 mt-2">
+          Build the core logic in 
+          <img src="/cloud.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
+          <span className="font-bold mr-1">Backend.</span>
+        </div>
+        <div className="mx-4 mt-2">
+          Build the interface in 
+          <img src="/world.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
+          <span className="font-bold mr-1">Frontend.</span>
+        </div>
+        <div className="mx-4 mt-2">
+          Use the 
           <img src="/database.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
           <span className="font-bold mr-1">Database</span>
-          to add, edit, or delete data.
+          to save data quickly and 
+          <img src="/files.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" /> 
+          <span className="font-bold mr-1">Storage</span>
+          to save big files.
         </div>
 
-        <div className="mx-4 mt-2">
-          Read <a href="https://docs.swizzle.co" target="_blank" rel="noreferrer">the docs</a> to learn more
-        </div>
 
       </div>
 

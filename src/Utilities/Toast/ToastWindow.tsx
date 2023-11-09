@@ -87,7 +87,7 @@ export default function ToastWindow({
     <div
       className={`z-50 absolute ${
         isExpandable ? "w-fit w-[400px] min-w-[400px]" : isLarge ? "w-[600px]" : "w-[350px]"
-      } bg-[#191A23] border border-[#525363] rounded-lg shadow-lg fixed ${
+      } bg-[#252629] border border-[#525363] rounded-lg shadow-lg fixed ${
         isHintWindowVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{

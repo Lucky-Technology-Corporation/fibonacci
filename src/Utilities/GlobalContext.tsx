@@ -47,6 +47,8 @@ export interface SwizzleContextType {
   setShouldOverlay;
   hasPaymentMethod;
   setHasPaymentMethod;
+  fullEndpointList;
+  setFullEndpointList;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -75,6 +77,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [shouldRefreshList, setShouldRefreshList] = useState(false);
   const [shouldOverlay, setShouldOverlay] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
 
   return (
     <SwizzleContext.Provider
@@ -125,6 +128,8 @@ export const GlobalContextProvider = ({ children }) => {
         setShouldOverlay,
         hasPaymentMethod,
         setHasPaymentMethod,
+        fullEndpointList, 
+        setFullEndpointList
       }}
     >
       {children}

@@ -4,6 +4,7 @@ import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import Switch from "react-switch";
 import useApi from "../API/DeploymentAPI";
+import DeployButton from "../RightSidebar/DeployButton";
 import UserDropdown from "../UserDropdown";
 import { endpointToFilename, filenameToEndpoint } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
@@ -161,7 +162,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <div className="min-w-[240px] border-r border-[#4C4F6B] bg-[#191A23] overflow-scroll">
+    <div className="min-w-[240px] border-r border-gray-700 bg-[#191A23] overflow-scroll">
       <div className="flex flex-col items-center pt-4 h-screen">
         <div className="flex">
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
@@ -196,10 +197,11 @@ export default function LeftSidebar({
           />
         </div>
 
-        <div className="flex">
+        <div className="flex mt-2">
           <ProjectSelector
             isModalOpen={isModalOpen}
             setIsModalOpen={setIsModalOpen} />
+          <DeployButton />
         </div>
 
         <SectionTitle
@@ -216,6 +218,21 @@ export default function LeftSidebar({
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
+        
+        <SectionTitle
+          icon="/auth.svg"
+          text="Users"
+          active={selectedTab == Page.Auth}
+          onClick={() => {
+            if(selectedTab == Page.Auth){ setSelectedTab(null) }
+            else { setSelectedTab(Page.Auth); }
+          }}
+        />
+        <AuthSettings active={selectedTab == Page.Auth} />
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
+        
         <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
           <SectionTitle
             icon="/cloud.svg"
@@ -228,6 +245,28 @@ export default function LeftSidebar({
           />
         </div>
         <EndpointList active={selectedTab == Page.Apis} />
+
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
+
+        <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
+          <SectionTitle
+            icon="/world.svg"
+            text="Frontend"
+            active={selectedTab == Page.Hosting}
+            onClick={() => {
+              if(selectedTab == Page.Hosting){ setSelectedTab(null) }
+              else { setSelectedTab(Page.Hosting); }
+            }}
+        />
+        </div>
+        <FilesList active={selectedTab == Page.Hosting} />
+
+
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
 
         <SectionTitle
           icon="/database.svg"
@@ -254,16 +293,6 @@ export default function LeftSidebar({
           }}
         />
 
-        <SectionTitle
-          icon="/auth.svg"
-          text="Users"
-          active={selectedTab == Page.Auth}
-          onClick={() => {
-            if(selectedTab == Page.Auth){ setSelectedTab(null) }
-            else { setSelectedTab(Page.Auth); }
-          }}
-        />
-        <AuthSettings active={selectedTab == Page.Auth} />
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
@@ -277,19 +306,6 @@ export default function LeftSidebar({
             setSelectedTab(Page.AppCode);
           }}
         /> */}
-
-        <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
-          <SectionTitle
-            icon="/world.svg"
-            text="Frontend"
-            active={selectedTab == Page.Hosting}
-            onClick={() => {
-              if(selectedTab == Page.Hosting){ setSelectedTab(null) }
-              else { setSelectedTab(Page.Hosting); }
-            }}
-        />
-        </div>
-        <FilesList active={selectedTab == Page.Hosting} />
 
         {/* Working, but temporarily hidden */}
         {/* <SectionTitle

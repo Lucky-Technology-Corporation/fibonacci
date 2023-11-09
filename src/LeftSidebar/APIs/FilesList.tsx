@@ -1,4 +1,4 @@
-import { faFolderClosed, faFolderOpen, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faFile, faFolderClosed, faFolderOpen, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -282,7 +282,7 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
-        <div className={searchFilter != "" ? ("app.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        {/* <div className={searchFilter != "" ? ("app.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
           key={"App.tsx"}
           path={("App.tsx")}
@@ -292,10 +292,11 @@ export default function FilesList({ active }: { active: boolean }) {
           }}
           disableDelete={true}
         />
-        </div>
+        </div> */}
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex opacity-70">
+        <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
         <div className="flex items-center">Pages</div>
       </div>
       <div className="ml-1">
@@ -317,7 +318,8 @@ export default function FilesList({ active }: { active: boolean }) {
         })}
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1">
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
+        <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
         <div className="flex items-center">Components</div>
       </div>
       <div className="ml-1">

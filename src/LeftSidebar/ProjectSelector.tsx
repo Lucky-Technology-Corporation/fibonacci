@@ -179,7 +179,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
 
   return (
     <>
-      <div className="mx-2 mt-2 max-w-full flex flex-nowrap items-center">
+      <div className="mx-2 flex flex-nowrap items-center">
         <Dropdown
           children={projects}
           onSelect={(id: string) => {
