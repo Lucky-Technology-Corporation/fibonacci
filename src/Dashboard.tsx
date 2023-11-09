@@ -34,18 +34,18 @@ export default function Dashboard() {
   const auth = useAuthUser()
 
 
-  const handleMouseMove = (event) => {
-    setMousePosition({
-      x: event.clientX,
-      y: event.clientY,
-    });
-  };
-  useEffect(() => {
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+  // const handleMouseMove = (event) => {
+  //   setMousePosition({
+  //     x: event.clientX,
+  //     y: event.clientY,
+  //   });
+  // };
+  // useEffect(() => {
+  //   document.addEventListener("mousemove", handleMouseMove);
+  //   return () => {
+  //     document.removeEventListener("mousemove", handleMouseMove);
+  //   };
+  // }, []);
 
   useEffect(() => {
     initIntercomWindow({ appId: 'cxvvsphp', name: (auth() || {"user": "unknown"}).user, projectId: activeProject, testDomain: testDomain })

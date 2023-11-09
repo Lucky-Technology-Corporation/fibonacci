@@ -107,7 +107,7 @@ export default function DatabaseRow({
         .filter((k) => !shouldHideFields.includes(k))
         .map((key, index) => {
           const originalValue = rowValues[key];
-          const isObject = typeof originalValue === "object" && originalValue !== null && !Array.isArray(originalValue);
+          const isObject = typeof originalValue === "object" && originalValue !== null
 
           let value = originalValue;
           if (typeof originalValue === "string") {

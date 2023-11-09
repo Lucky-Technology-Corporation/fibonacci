@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SwizzleContext } from "../GlobalContext";
 
 export default function ToastWindow({
@@ -71,6 +71,23 @@ export default function ToastWindow({
 
   const titleClassSet = titleClass ? titleClass : "text-sm font-bold font-mono";
 
+
+  const [leftPosition, setLeftPosition] = useState(0);
+  useEffect(() => {
+    const startingPosition = mousePosition.x - 220
+    if(startingPosition + 400 > window.innerWidth) {
+      setLeftPosition(startingPosition - 400)
+    }else{
+      setLeftPosition(startingPosition)
+    }
+    // if(leftPosition + 400 > window.innerWidth) {
+    //   setLeftPosition(leftPosition - (window.innerWidth - (leftPosition + 400)))
+    // }
+    // if(leftPosition < 0) {
+    //   setLeftPosition(0)
+    // }
+  }, [mousePosition])
+
   return (
     <div
       className={`z-50 absolute ${
@@ -80,8 +97,8 @@ export default function ToastWindow({
       }`}
       style={{
         transition: "opacity 0.1s",
-        top: isExpandable && (mousePosition.y + 8) + "px",
-        left: isExpandable && (mousePosition.x - 200) + "px",
+        top: isExpandable && (mousePosition.y + 16) + "px",
+        left: isExpandable && leftPosition + "px",
         marginLeft: getMargin(),
         marginTop: getTopMargin(),
       }}

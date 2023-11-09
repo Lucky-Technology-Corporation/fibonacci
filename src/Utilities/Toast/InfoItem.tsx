@@ -23,7 +23,7 @@ export default function InfoItem({
 }) {
   const [id, setId] = useState(Math.random().toString(36).substring(7));
   const timerRef = useRef<number | undefined>();
-  const { activeToast, setActiveToast } = useContext(SwizzleContext);
+  const { activeToast, setActiveToast, setMousePosition } = useContext(SwizzleContext);
 
   const [isHintWindowVisible, setIsHintWindowVisible] = useState(false);
   const showHintWindow = () => {
@@ -70,12 +70,18 @@ export default function InfoItem({
     }
     return "";
   }
+  const elementRef = useRef(null);
 
   return (
     <>
       <div
+        ref={elementRef}
         className="py-1 flex items-center mt-1 cursor-pointer"
-        onMouseEnter={showHintWindow}
+        onMouseEnter={() => {
+          const rect = elementRef.current.getBoundingClientRect();
+          setMousePosition({ x: rect.left, y: rect.top + 8 })
+          showHintWindow()
+        }}
         onMouseLeave={hideHintWindow}
         onClick={onClick}
       >
