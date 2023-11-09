@@ -55,7 +55,6 @@ export default function UserTableView() {
   const fetchData = (page: number) => {
     getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
-        console.log(data)
         if (data == null || data.documents == null) {
           setData([]);
           setKeys([]);
@@ -63,12 +62,9 @@ export default function UserTableView() {
           return;
         }
 
-        addFlags(data).then((data) => {
-          console.log(data)
-          setData(data.documents || []);
-          setKeys(data.keys.sort() || []);
-          setTotalDocs(data.pagination.total_documents);
-        });
+        setData(data.documents || []);
+        setKeys(data.keys.sort() || []);
+        setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
         console.error(e);
@@ -76,6 +72,7 @@ export default function UserTableView() {
       });
   };
 
+  //SSL is a paid feature so we're removing this for now
   const addFlags = async (data: any) => {
     try{
       if (!data || !data.documents) {
@@ -127,11 +124,9 @@ export default function UserTableView() {
     }
     runQuery(searchQuery, filterName, "_swizzle_users", sortedByColumn, sortDirection)
       .then((data) => {
-        addFlags(data).then((data) => {
-          setData(data.documents || []);
-          setKeys(data.keys.sort() || []);
-          setTotalDocs(data.pagination.total_documents);
-        });
+        setData(data.documents || []);
+        setKeys(data.keys.sort() || []);
+        setTotalDocs(data.pagination.total_documents);
       })
       .catch((e) => {
         console.error(e);
@@ -232,8 +227,9 @@ export default function UserTableView() {
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 rounded-tl-md w-6 cursor-pointer"></th>
               {/* country flag */}
-              <th className="w-6"></th>
-              <th className="w-32"></th>
+              {/* <th className="w-6"></th> */}
+              {/* Subscription info */}
+              <th className="w-36"></th>
               {keys
                 .filter((k) => hiddenColumns.indexOf(k) == -1)
                 .map((key, index) => (
