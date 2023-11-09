@@ -1,4 +1,5 @@
 import jwt_decode from "jwt-decode";
+import { useEffect } from "react";
 import { useSignIn, useSignOut } from "react-auth-kit";
 import toast from "react-hot-toast";
 
@@ -28,24 +29,25 @@ export default function SignIn() {
     }
   };
 
-  const signInWithJWT = (jwt: string) => {
-    const userName = getNameFromJWT(jwt);
-    const id = getIdFromJWT(jwt);
+  const signInWithJWT = () => {
+    // const userName = getNameFromJWT(jwt);
+    // const id = getIdFromJWT(jwt);
     if (
       signIn({
-        token: jwt,
+        token: "dummy",
         expiresIn: 10080,
         authState: {
           isAuthenticated: true,
-          user: userName,
-          developerId: id,
+          user: "Account",
+          // developerId: id,
         },
         tokenType: "Bearer",
       })
     ) {
-      setTimeout(() => {
-        location.href= "/"
-      }, 150);
+      // setTimeout(() => {
+      //   location.href= "/"
+      // }, 150);
+      console.log("signed in")
     } else {
       toast.error("Couldn't sign in");
     }
@@ -53,16 +55,13 @@ export default function SignIn() {
 
   //check if there's a jwt query param
   //TODO: Check that this is working!
-  // useEffect(() => {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const jwt = urlParams.get("jwt");
-  //   if (jwt && jwt.length > 0) {
-  //     // signOut();
-  //     setTimeout(() => {
-  //       signInWithJWT(jwt);
-  //     }, 100)
-  //   }
-  // }, []);
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const signedIn = urlParams.get("signed_in");
+    if (signedIn && signedIn.length > 0) {
+      signInWithJWT()
+    }
+  }, []);
 
   return (
     <>
