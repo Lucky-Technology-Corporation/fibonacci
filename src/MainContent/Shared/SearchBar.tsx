@@ -10,7 +10,9 @@ export default function SearchBar({
   searchQuery,
   setSearchQuery,
   runSearch,
-  showMongo = false
+  showMongo = false,
+  refreshHandler,
+  numberOfResults = 0,
 }: {
   keys: string[];
   filterName: string;
@@ -19,6 +21,8 @@ export default function SearchBar({
   setSearchQuery: (searchQuery: string) => void;
   runSearch: () => void;
   showMongo?: boolean;
+  refreshHandler: () => void;
+  numberOfResults?: number;
 }) {
   const exampleKeyOne = keys.filter(k => k != "_id")[0];
   const exampleKeyTwo = keys.filter(k => k != "_id")[keys.length - 2];
@@ -92,6 +96,7 @@ export default function SearchBar({
 
   return (
     <>
+    {numberOfResults > 0 ? (
       <Dropdown
         className="fixed"
         selectorClass="ml-4"
@@ -100,6 +105,16 @@ export default function SearchBar({
         direction="center"
         title={(filterName == "_exec_mongo_query") ? "Mongo Query" : "Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
       />
+    ) : (
+      <Button
+        className="ml-4 px-5 py-4 mt-0.5 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+        text={"Clear"}
+        onClick={() => {
+          setSearchQuery("");
+          refreshHandler()
+        }}
+      />
+    )}
       <input
         type="text"
         className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${filterName == "_exec_mongo_query" ? "font-mono text-xs": ""}`}
