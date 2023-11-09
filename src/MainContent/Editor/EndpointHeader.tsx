@@ -289,7 +289,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               }}
             />
             <Button
-              className={`text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+              className={`text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis ? "" : "hidden"}`}
               children={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
               onClick={() => {
                 toggleDebug()
