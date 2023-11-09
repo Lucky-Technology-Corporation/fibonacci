@@ -1,5 +1,4 @@
 import jwt_decode from "jwt-decode";
-import { useEffect } from "react";
 import { useSignIn, useSignOut } from "react-auth-kit";
 import toast from "react-hot-toast";
 
@@ -54,16 +53,16 @@ export default function SignIn() {
 
   //check if there's a jwt query param
   //TODO: Check that this is working!
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const jwt = urlParams.get("jwt");
-    if (jwt && jwt.length > 0) {
-      // signOut();
-      setTimeout(() => {
-        signInWithJWT(jwt);
-      }, 100)
-    }
-  }, []);
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const jwt = urlParams.get("jwt");
+  //   if (jwt && jwt.length > 0) {
+  //     // signOut();
+  //     setTimeout(() => {
+  //       signInWithJWT(jwt);
+  //     }, 100)
+  //   }
+  // }, []);
 
   return (
     <>

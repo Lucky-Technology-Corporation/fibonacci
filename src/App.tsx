@@ -21,7 +21,7 @@ function App() {
   return (
     <AuthProvider
       authType={"cookie"}
-      authName={"_auth"}
+      authName={"jwt"}
       cookieDomain={window.location.hostname}
       cookieSecure={window.location.protocol === "https:"}
     >
