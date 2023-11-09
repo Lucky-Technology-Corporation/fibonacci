@@ -4,6 +4,7 @@ import { useAuthHeader, useSignOut } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+axios.defaults.withCredentials = true;
 
 export default function useDatabaseApi() {
   const authHeader = useAuthHeader();
