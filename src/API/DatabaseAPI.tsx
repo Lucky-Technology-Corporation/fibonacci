@@ -250,9 +250,7 @@ export default function useDatabaseApi() {
       `${NEXT_PUBLIC_BASE_URL}/projects`,
       { name, deploy_production: shouldDeployProd },
       {
-        headers: {
-          Authorization: authHeader(),
-        }
+        withCredentials: true,
       },
     );
     
