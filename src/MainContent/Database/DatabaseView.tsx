@@ -181,6 +181,8 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
             setDidSearch(true);
             setData(data.search_results || []);
             setTotalDocs(data.search_results.length);
+          } else{
+            handleRefresh()
           }
           if(data.updated_count){
             toast.success("Updated " + data.updated_count + " documents")
