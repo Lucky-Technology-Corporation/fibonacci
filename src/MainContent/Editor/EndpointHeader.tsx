@@ -77,7 +77,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       "link": "https://docs.swizzle.co/users/create-a-user",
       "title": "Create a user",
       "import": "createUser",
-      "description": "<span class='font-mono cursor-pointer text-xs'>let user = await createUser(properties?, request?)</span><span class='hidden'>to create a new user santa</span>",
+      "description": "<span class='font-mono cursor-pointer text-xs'>let user = await createUser(optionalProperties, optionalRequestObject)</span><span class='hidden'>to create a new user santa</span>",
     },
     {
       "type": "doc",
@@ -109,7 +109,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       "link": "https://docs.swizzle.co/users/get-access-tokens",
       "title": "Get access tokens",
       "import": "signTokens",
-      "description": "<span class='font-mono cursor-pointer text-xs'>let { accessToken, refreshToken } = await signTokens(userId, hours?)</span><span class='hidden'>to create new access tokens for a user</span>"
+      "description": "<span class='font-mono cursor-pointer text-xs'>let { accessToken, refreshToken } = await signTokens(userId, hoursToExpire)</span><span class='hidden'>to create new access tokens for a user</span>"
     },
     {
       "type": "doc",
