@@ -205,7 +205,7 @@ export default function UserTableView() {
           </div>
         </div>
       </div>
-      <div className={`flex pr-2 h-8 ${data.length == 0 ? "hidden" : ""}`}>
+      <div className={`flex pr-2 h-8`}>
         <SearchBar
           keys={keys}
           filterName={filterName}
@@ -213,6 +213,8 @@ export default function UserTableView() {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           runSearch={runSearch}
+          refreshHandler={handleRefresh}
+          numberOfResults={data.length}
         />
       </div>
       <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>

@@ -1,3 +1,5 @@
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Button from "../../Utilities/Button";
@@ -55,6 +57,16 @@ export default function SearchBar({
     }
     const operationType = searchQuery.split('(')[0].trim();
     
+    if (!/find|update|delete|aggregate/.test(operationType)) {
+      toast.error('The query must start with find, update, delete, or aggregate.');
+      return
+    }
+
+    if(!searchQuery.includes("(") || !searchQuery.includes(")")){
+      toast.error('The query arguments must be enclosed in parentheses: find({"key": "value"}).');
+      return
+    }
+
     if (!searchQuery.split('(')[1].startsWith('{') || !searchQuery.endsWith('})')) {
       toast.error('The query must be enclosed in curly braces.');
       return
@@ -96,25 +108,25 @@ export default function SearchBar({
 
   return (
     <>
-    {numberOfResults > 0 ? (
-      <Dropdown
-        className="fixed"
-        selectorClass="ml-4"
-        onSelect={setFilterName}
-        children={mappedKeys}
-        direction="center"
-        title={(filterName == "_exec_mongo_query") ? "Mongo Query" : "Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
-      />
-    ) : (
+    {searchQuery != "" ?
       <Button
-        className="ml-4 px-5 py-4 mt-0.5 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-        text={"Clear"}
+        className="ml-4 px-2 py-4 mt-0.5 font-medium rounded-md flex justify-center items-center cursor-pointer"
+        children={<FontAwesomeIcon icon={faXmark} className="w-4 h-4" />}
         onClick={() => {
           setSearchQuery("");
           refreshHandler()
         }}
       />
-    )}
+      : <div className="w-2"></div>
+    }
+      <Dropdown
+        className="fixed"
+        selectorClass="ml-2"
+        onSelect={setFilterName}
+        children={mappedKeys}
+        direction="center"
+        title={(filterName == "_exec_mongo_query") ? "Mongo Query" : "Filter " + (keys.filter((key) => key == filterName)[0] || "").replace("_swizzle_uid", "userId")}
+      />
       <input
         type="text"
         className={`text-sm h-[36px] flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a] ${filterName == "_exec_mongo_query" ? "font-mono text-xs": ""}`}

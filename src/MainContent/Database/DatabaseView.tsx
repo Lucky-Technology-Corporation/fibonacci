@@ -281,7 +281,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         </div>
       </div>
 
-      <div className={`flex pr-2 h-8 ${data.length == 0 ? "hidden" : ""}`}>
+      <div className={`flex pr-2 h-8`}>
         <SearchBar
           keys={keys}
           filterName={filterName}
@@ -290,6 +290,8 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           setSearchQuery={setSearchQuery}
           runSearch={runSearch}
           showMongo={true}
+          numberOfResults={data.length}
+          refreshHandler={handleRefresh}
         />
       </div>
 
