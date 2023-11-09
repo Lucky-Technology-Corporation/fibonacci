@@ -15,9 +15,7 @@ export default function useSettingsApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/billing?override_to_payment_method_update=${override_to_payment_method_update}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -32,9 +30,7 @@ export default function useSettingsApi() {
       const response = await axios.delete(
         `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -50,9 +46,7 @@ export default function useSettingsApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/setNotificationKeys?env=${environment}`,
         { p8_key_base64: p8Key, key_id: key_id, developer_id: team_id },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -68,9 +62,7 @@ export default function useSettingsApi() {
         return null;
       }
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
       return response.data;
     } catch (e: any) {
@@ -88,9 +80,7 @@ export default function useSettingsApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`,
         newSecrets,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -108,9 +98,7 @@ export default function useSettingsApi() {
       const response = await axios.delete(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -126,9 +114,7 @@ export default function useSettingsApi() {
         `${NEXT_PUBLIC_BASE_URL}/billing?payment_method_id=${paymentMethodId}`,
         {},
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -143,9 +129,7 @@ export default function useSettingsApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/billing`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return (response.data.hasPaymentMethod);

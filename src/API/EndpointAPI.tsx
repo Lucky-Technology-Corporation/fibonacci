@@ -26,9 +26,7 @@ export default function useEndpointApi() {
         throw "No project id";
       }
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/fermat/jwt`, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
 
       const jwt = response.data.fermat_token;
@@ -75,9 +73,7 @@ export default function useEndpointApi() {
   const deploy = async () => {
     try {
       const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {}, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
       return response.data;
     } catch (e) {
@@ -202,9 +198,7 @@ export default function useEndpointApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
         body,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -227,9 +221,7 @@ export default function useEndpointApi() {
         fermat_jwt: await getFermatJwt(),
       },
       {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       },
     );
 
@@ -247,9 +239,7 @@ export default function useEndpointApi() {
           file_contents: fileContents,
         },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true
         },
       );
       return response.data;

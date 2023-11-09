@@ -14,9 +14,7 @@ export default function useApi() {
     const response = await axios.get(
       `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/list?page=${page}&page_size=${pageSize}`,
       {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       },
     );
     return response.data;
@@ -27,9 +25,7 @@ export default function useApi() {
     const response = await axios.get(
       `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/deploymentStatus?env=${enviro}`,
       {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       },
     );
     if(env == 'test'){

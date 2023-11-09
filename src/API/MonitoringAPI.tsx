@@ -26,9 +26,7 @@ export default function useMonitoringApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring?env=${environment}`,
         body,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -51,9 +49,7 @@ export default function useMonitoringApi() {
           fermat_jwt: await getFermatJwt(),
         },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -85,9 +81,7 @@ export default function useMonitoringApi() {
       }
 
       const response = await axios.get(url, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
 
       if (unwrapResults) {
@@ -111,9 +105,7 @@ export default function useMonitoringApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/monitoring/logs/${requestId}?env=${environment}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;

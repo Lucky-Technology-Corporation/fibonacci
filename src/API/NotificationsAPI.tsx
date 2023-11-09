@@ -23,9 +23,7 @@ export default function useNotificationApi() {
 
       const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/notification?env=${environment}`;
       const response = await axios.post(url, payload, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
 
       return response.data;
@@ -43,9 +41,7 @@ export default function useNotificationApi() {
 
       const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/getNotificationKeys`;
       const response = await axios.get(url, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
 
       return response.data;
@@ -70,9 +66,7 @@ export default function useNotificationApi() {
       const url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/setNotificationKeys`;
 
       await axios.post(url, payload, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
     } catch (error) {
       console.error("Error posting notification key", error);

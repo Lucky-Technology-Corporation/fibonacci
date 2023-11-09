@@ -22,8 +22,8 @@ export default function useStorageApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/storage/public/${fileName}?env=${environment}`,
         formData,
         {
+          withCredentials: true,
           headers: {
-            Authorization: authHeader(),
             "Content-Type": "multipart/form-data",
           },
         },
@@ -44,9 +44,7 @@ export default function useStorageApi() {
       const response = await axios.delete(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/storage/public/${fileName}?env=${environment}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;

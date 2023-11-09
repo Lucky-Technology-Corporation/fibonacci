@@ -16,9 +16,7 @@ export default function useDatabaseApi() {
     const response = await axios.get(
       `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections?env=${environment}`,
       {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       },
     );
     return response.data;
@@ -229,9 +227,7 @@ export default function useDatabaseApi() {
       var url = `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${collectionName}/search?env=${environment}`;
 
       const response = await axios.post(url, queryObject, {
-        headers: {
-          Authorization: authHeader(),
-        },
+        withCredentials: true,
       });
       return response.data;
     } catch (e: any) {
