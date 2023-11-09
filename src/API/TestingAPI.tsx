@@ -17,7 +17,7 @@ export default function useTestApi() {
     deleteDocument: deleteTest,
   } = useDatabaseApi();
 
-  const { testDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
+  const { testDomain, prodDomain, activeProject, activeEndpoint, environment } = useContext(SwizzleContext);
   const activeCollection = "_swizzle_usertests";
 
   const runTest = async (testDoc: TestType) => {
@@ -41,7 +41,8 @@ export default function useTestApi() {
 
     const endpoint = new ParsedActiveEndpoint(activeEndpoint);
     // TODO: Get params from input
-    const url = `${testDomain.replace("https://", "https://api.")}${endpoint.getEndpointWithParams(
+    var domainToUse = environment == "test" ? testDomain : prodDomain
+    const url = `${domainToUse.replace("https://", "https://api.")}${endpoint.getEndpointWithParams(
       testDoc.pathParams,
     )}`;
     const body = testDoc.body;
