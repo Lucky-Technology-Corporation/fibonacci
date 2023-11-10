@@ -40,19 +40,21 @@ export default function Dashboard() {
       target: '.env-toggle',
       title: 'Environment',
       placement: 'right' as Placement,
-      content: 'Your project has two environments: test and production. Use test environment to develop and the production environment to serve your users. All resources (database, storage, etc) are DIFFERENT between the two environments.',
+      content: <>
+        Your project has two environments: <span className="text-[#f39c12]">test</span> and <span className="font-bold">production</span>. Use test environment to develop and the production environment to serve your users.<br/>All resources (database, storage, etc) are DIFFERENT between the two environments.
+        </>,
     },
     {
       target: '.user-tab',
       title: 'Users',
       placement: 'right' as Placement,
-      content: 'Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the request.user object.',
+      content: <>Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the <span className="font-mono">request.user</span> object.</>,
     },
     {
       target: '.auth-method',
       title: 'Authentication',
       placement: 'right' as Placement,
-      content: 'This is where you can drop in authentication methods like Email/Password, Google, etc.',
+      content: <>This is where you can drop in authentication methods like Email/Password, Google, etc.</>,
     },
     {
       target: '.backend-tab',
@@ -195,6 +197,12 @@ export default function Dashboard() {
             continuous={true}
             debug={true}
             spotlightClicks={true}
+            disableScrolling={true}
+            styles={{
+              options: {
+                primaryColor: '#7980ff',
+              }
+            }}
           />
           <div>
             <Toaster />
