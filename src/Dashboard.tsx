@@ -37,6 +37,11 @@ export default function Dashboard() {
 
   const onboardingSteps = [
     {
+      target: '.env-toggle',
+      title: 'Environment',
+      content: 'Your project has two environments: test and production. Use test environment to develop and the production environment to serve your users. All resources (database, storage, etc) are DIFFERENT between the two environments.',
+    },
+    {
       target: '.user-tab',
       title: 'Users',
       content: 'Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the request.user object.',
@@ -47,13 +52,59 @@ export default function Dashboard() {
       content: 'This is where you can drop in authentication methods like Email/Password, Google, etc.',
     },
     {
-      target: '.my-first-step',
+      target: '.backend-tab',
       title: 'Backend',
-      content: 'This where you add your endpoints - functions that run on the server which the frontend can call.',
+      content: 'This where you add your server endpoints: functions that the frontend can call.',
     },
     {
-      target: '.my-other-step',
-      content: 'This another awesome feature!',
+      target: '.magic-bar',
+      title: 'Magic Bar',
+      content: 'Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.',
+    },
+    {
+      target: '.auth-toggle',
+      title: 'Require Authentication',
+      content: 'Toggle this to require users to be logged in to access this endpoint. This guarantees that the request.user object will be populated with a user object.',
+    },
+    {
+      target: '.db-toggle',
+      title: 'Import Database',
+      content: 'Toggle this to quickly import the db variable. You can use db to query your database (for example: db.collections("messages").find({"sender": "John"})).',
+    },
+    {
+      target: '.tester-button',
+      title: 'Tests',
+      content: 'Opens a window where you can test your endpoints. You\'ll be able to simulate requests with different parameters, users, etc and see the response.',
+    },
+    {
+      target: '.autocheck-button',
+      title: 'Autocheck',
+      content: 'Runs your code (along with helpers, your database, etc) through an AI engine to check for bugs, security issues, and more.',
+    },
+    {
+      target: '.secrets-button',
+      title: 'Secrets',
+      content: 'Add your API keys and other secrets here. You can access them in your code with the secrets variable (process.env.SECRET_NAME). You can have different secret values in test and production.',
+    },
+    {
+      target: '.packages-button',
+      title: 'Packages',
+      content: 'Add NPM packages to your backend here.',
+    },
+    {
+      target: '.restart-button',
+      title: 'Restart',
+      content: 'Restart your backend server here. Your server will automatically restart when you save a file, but you can also restart it manually here.',
+    },
+    {
+      target: '.frontend-tab',
+      title: 'Frontend',
+      content: 'Build your user-facing website here. ',
+    },
+    {
+      target: '.database-tab',
+      title: 'Database',
+      content: 'This is your database. A collection contains a list of documents (JSON objects). You can quickly add, edit, and delete documents from your backend with a MongoDB query',
     },
   ]
 
@@ -115,6 +166,9 @@ export default function Dashboard() {
             steps={onboardingSteps}
             stepIndex={stepIndex}
             run={runState}
+            continuous={true}
+            debug={true}
+            spotlightClicks={true}
           />
           <div>
             <Toaster />
