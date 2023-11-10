@@ -166,7 +166,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     const ai = {
       "type": "ai",
       "image": "wand",
-      "title": `\"${value}\"`,
+      "title": `Prompt AI: \"${value}\"`,
       "description": "Ask GPT (full project access)",
     }
 

@@ -227,8 +227,9 @@ export default function LeftSidebar({
             if(selectedTab == Page.Auth){ setSelectedTab(null) }
             else { setSelectedTab(Page.Auth); }
           }}
+          className="user-tab"
         />
-        <AuthSettings active={selectedTab == Page.Auth} />
+        <AuthSettings active={selectedTab == Page.Auth} className="auth-method" />
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
@@ -242,6 +243,7 @@ export default function LeftSidebar({
               if(selectedTab == Page.Apis){ setSelectedTab(null) }
               else { setSelectedTab(Page.Apis); }
             }}
+            className="backend-tab"
           />
         </div>
         <EndpointList active={selectedTab == Page.Apis} />
@@ -259,6 +261,7 @@ export default function LeftSidebar({
               if(selectedTab == Page.Hosting){ setSelectedTab(null) }
               else { setSelectedTab(Page.Hosting); }
             }}
+            className="frontend-tab"
         />
         </div>
         <FilesList active={selectedTab == Page.Hosting} />

@@ -3,6 +3,7 @@ import { initIntercomWindow } from 'next-intercom';
 import { useContext, useEffect, useState } from "react";
 import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
+import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
@@ -34,18 +35,45 @@ export default function Dashboard() {
   const auth = useAuthUser()
 
 
-  // const handleMouseMove = (event) => {
-  //   setMousePosition({
-  //     x: event.clientX,
-  //     y: event.clientY,
-  //   });
-  // };
-  // useEffect(() => {
-  //   document.addEventListener("mousemove", handleMouseMove);
-  //   return () => {
-  //     document.removeEventListener("mousemove", handleMouseMove);
-  //   };
-  // }, []);
+  const onboardingSteps = [
+    {
+      target: '.user-tab',
+      title: 'Users',
+      content: 'Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the request.user object.',
+    },
+    {
+      target: '.auth-method',
+      title: 'Authentication',
+      content: 'This is where you can drop in authentication methods like Email/Password, Google, etc.',
+    },
+    {
+      target: '.my-first-step',
+      title: 'Backend',
+      content: 'This where you add your endpoints - functions that run on the server which the frontend can call.',
+    },
+    {
+      target: '.my-other-step',
+      content: 'This another awesome feature!',
+    },
+  ]
+
+  const [stepIndex, setStepIndex] = useState(0)
+  const [runState, setRunState] = useState(true)
+  
+  const handleJoyrideCallback = (data: any) => {
+    const { action, index, status, type } = data
+    console.log(data)
+    if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
+      
+      if(index == 0 && action == ACTIONS.NEXT){
+        setSelectedTab(Page.Auth)
+      }
+
+      setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1) )
+    } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      setRunState(false)
+    }
+  }
 
   useEffect(() => {
     initIntercomWindow({ appId: 'cxvvsphp', name: (auth() || {"user": "unknown"}).user, projectId: activeProject, testDomain: testDomain })
@@ -82,6 +110,12 @@ export default function Dashboard() {
             transition: "transform 0.5s",
           }}
         >
+          <Joyride
+            callback={handleJoyrideCallback}
+            steps={onboardingSteps}
+            stepIndex={stepIndex}
+            run={runState}
+          />
           <div>
             <Toaster />
           </div>

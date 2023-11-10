@@ -6,11 +6,13 @@ export default function SectionTitle({
   text,
   active,
   onClick,
+  className = "",
 }: {
   icon: string;
   text: string;
   active: boolean;
   onClick: () => void;
+  className?: string;
 }) {
   const [isHovering, setIsHovering] = useState(false);
 
@@ -25,7 +27,7 @@ export default function SectionTitle({
 
   return (
     <div
-      className={`w-full font-semibold px-2 py-1 mt-4 text-sm flex align-middle cursor-pointer ${
+      className={`${className} w-full font-semibold px-2 py-1 mt-4 text-sm flex align-middle cursor-pointer ${
         active ? "text-gray-200" : "text-gray-400 hover:text-gray-300"
       }`}
       onClick={onClick}

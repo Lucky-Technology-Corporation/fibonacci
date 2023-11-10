@@ -2,7 +2,7 @@ import { useState } from "react";
 import Dropdown from "../../Utilities/Dropdown";
 import TemplateWizard from "../APIs/TemplateWizard";
 
-export default function AuthSettings({ active }: { active: boolean }) {
+export default function AuthSettings({ active, className = "" }: { active: boolean, className?: string }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const methods: any = [
     { id: "method", name: "+ Auth Method" }
@@ -10,7 +10,7 @@ export default function AuthSettings({ active }: { active: boolean }) {
 
   //Fetch from backend and populate it here.
   return (
-    <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"}`}>
+    <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"} ${className}`}>
       <Dropdown
         className=""
         onSelect={(item: any) => {
