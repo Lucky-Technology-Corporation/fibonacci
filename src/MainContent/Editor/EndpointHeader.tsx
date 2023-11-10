@@ -248,7 +248,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       runQuery(suggestion.title)
     } else{
       if(suggestion.type == "endpoint"){
-        setPostMessage({type: "upsertImport", content: 'import api from "../Api";'})
+        setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n'})
         copyText(`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`)
       } else if(suggestion.type == "doc"){
         const copyable = suggestion.description.split("text-xs'>")[1].split("</span>")[0]
