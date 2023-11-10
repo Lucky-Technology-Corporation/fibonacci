@@ -3,7 +3,7 @@ import { initIntercomWindow } from 'next-intercom';
 import { useContext, useEffect, useState } from "react";
 import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
-import Joyride, { ACTIONS, EVENTS, STATUS } from 'react-joyride';
+import Joyride, { ACTIONS, EVENTS, Placement, STATUS } from 'react-joyride';
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
@@ -39,71 +39,85 @@ export default function Dashboard() {
     {
       target: '.env-toggle',
       title: 'Environment',
+      placement: 'right' as Placement,
       content: 'Your project has two environments: test and production. Use test environment to develop and the production environment to serve your users. All resources (database, storage, etc) are DIFFERENT between the two environments.',
     },
     {
       target: '.user-tab',
       title: 'Users',
+      placement: 'right' as Placement,
       content: 'Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the request.user object.',
     },
     {
       target: '.auth-method',
       title: 'Authentication',
+      placement: 'right' as Placement,
       content: 'This is where you can drop in authentication methods like Email/Password, Google, etc.',
     },
     {
       target: '.backend-tab',
       title: 'Backend',
+      placement: 'right' as Placement,
       content: 'This where you add your server endpoints: functions that the frontend can call.',
     },
     {
       target: '.endpoints-list',
       title: 'Endpoints',
+      placement: 'right' as Placement,
       content: 'These are publicly accessible functions that the frontend can call.',
     },
     {
       target: '.helpers-list',
       title: 'Helpers',
+      placement: 'right' as Placement,
       content: 'These are private functions that can be called by other endpoints or helpers. You can use helpers to organize your code and avoid repetition.',
     },
     {
       target: '.magic-bar',
       title: 'Magic Bar',
+      placement: 'bottom' as Placement,
       content: 'Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.',
     },
     {
       target: '.auth-toggle',
       title: 'Require Authentication',
+      placement: 'left' as Placement,
       content: 'Toggle this to require users to be logged in to access this endpoint. This guarantees that the request.user object will be populated with a user object.',
     },
     {
       target: '.db-toggle',
       title: 'Import Database',
+      placement: 'left' as Placement,
       content: 'Toggle this to quickly import the db variable. You can use db to query your database (for example: db.collections("messages").find({"sender": "John"})).',
     },
     {
       target: '.tester-button',
       title: 'Tests',
+      placement: 'left' as Placement,
       content: 'Opens a window where you can test your endpoints. You\'ll be able to simulate requests with different parameters, users, etc and see the response.',
     },
     {
       target: '.autocheck-button',
       title: 'Autocheck',
+      placement: 'left' as Placement,
       content: 'Runs your code (along with helpers, your database, etc) through an AI engine to check for bugs, security issues, and more.',
     },
     {
       target: '.secrets-button',
       title: 'Secrets',
+      placement: 'left' as Placement,
       content: 'Add your API keys and other secrets here. You can access them in your code with the secrets variable (process.env.SECRET_NAME). You can have different secret values in test and production.',
     },
     {
       target: '.packages-button',
       title: 'Packages',
+      placement: 'left' as Placement,
       content: 'Add NPM packages to your backend here.',
     },
     {
       target: '.restart-button',
       title: 'Restart',
+      placement: 'left' as Placement,
       content: 'Restart your backend server here. Your server will automatically restart when you save a file, but you can also restart it manually here.',
     },
     {
