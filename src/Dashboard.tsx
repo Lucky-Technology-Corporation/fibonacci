@@ -57,6 +57,16 @@ export default function Dashboard() {
       content: 'This where you add your server endpoints: functions that the frontend can call.',
     },
     {
+      target: '.endpoints-list',
+      title: 'Endpoints',
+      content: 'These are publicly accessible functions that the frontend can call.',
+    },
+    {
+      target: '.helpers-list',
+      title: 'Helpers',
+      content: 'These are private functions that can be called by other endpoints or helpers. You can use helpers to organize your code and avoid repetition.',
+    },
+    {
       target: '.magic-bar',
       title: 'Magic Bar',
       content: 'Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.',
@@ -116,8 +126,10 @@ export default function Dashboard() {
     console.log(data)
     if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
       
-      if(index == 0 && action == ACTIONS.NEXT){
+      if(index == 1 && action == ACTIONS.NEXT){
         setSelectedTab(Page.Auth)
+      } else if(index == 2 && action == ACTIONS.NEXT){
+        setSelectedTab(Page.Apis)
       }
 
       setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1) )

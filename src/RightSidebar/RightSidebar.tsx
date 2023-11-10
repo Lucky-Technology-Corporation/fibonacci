@@ -203,7 +203,7 @@ export default function RightSidebar({
                 textHidden={true}
                 highlightState={isAuthChecked}
                 highlightColor="#ff64644f"
-                className={isHelper && "pointer-events-none opacity-30"}
+                className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
               />
               <div className="h-4" />
 
@@ -216,6 +216,7 @@ export default function RightSidebar({
                 textHidden={true}
                 highlightState={isDBChecked}
                 highlightColor={"#4696f969"}
+                className="db-toggle"
               />
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
@@ -244,7 +245,7 @@ export default function RightSidebar({
               icon={<img src="/beaker.svg" className="w-4 h-4 m-auto" />}
               text="Test"
               textHidden={true}
-              className={isHelper && "pointer-events-none opacity-30"}
+              className={`tester-button ${isHelper && "pointer-events-none opacity-30"}`}
             />
             <TestWindow
               shouldShowTestWindow={shouldShowTestWindow}
@@ -270,6 +271,7 @@ export default function RightSidebar({
               icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
               text="Autocheck"
               textHidden={true}
+              className="autocheck-button"
             />
             <FloatingModal
               content={autocheckResponse}
@@ -287,6 +289,7 @@ export default function RightSidebar({
               icon={<img src="/lock.svg" className="w-4 h-4 m-auto" />}
               text="Secrets"
               textHidden={true}
+              className="secrets-button"
             />
             <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
             <div className="h-4" />
@@ -297,6 +300,7 @@ export default function RightSidebar({
               icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
               text="Packages"
               textHidden={true}
+              className="packages-button"
             />
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
             <div className="h-4" />
@@ -310,6 +314,7 @@ export default function RightSidebar({
               icon={<img src="/restart.svg" className="w-4 h-4 m-auto" />}
               text="Restart Backend"
               textHidden={true}
+              className="restart-button"
             />
           </>
         )}

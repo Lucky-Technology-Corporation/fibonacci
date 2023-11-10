@@ -168,7 +168,7 @@ export default function LeftSidebar({
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
           <h1 className="font-bold text-md">Swizzle</h1>
         </div>
-        <div className="flex mt-2">
+        <div className="flex mt-2 env-toggle">
           {environment == "test" ? (
             <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div>
           ) : (

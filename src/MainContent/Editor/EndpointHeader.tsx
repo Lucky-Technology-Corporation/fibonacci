@@ -273,8 +273,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   return (
     <>
-
-        <div className="flex-col">
+        <div className="flex-col magic-bar">
           <div
             className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
               ideReady ? "" : "opacity-50 pointer-events-none"

@@ -134,54 +134,57 @@ export default function EndpointList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pb-1 opacity-70">
-        <FontAwesomeIcon icon={faGear} className="w-3 h-3 my-auto mr-1" />
-        <div className="flex items-center">Endpoints</div>
-      </div>
+      <div className="endpoints-list">
+        <div className="font-semibold ml-2 mt-2 flex pb-1 opacity-70">
+          <FontAwesomeIcon icon={faGear} className="w-3 h-3 my-auto mr-1" />
+          <div className="flex items-center">Endpoints</div>
+        </div>
 
-      <div className="ml-1">
-        {endpoints.map((endpoint, index) => (
-          <EndpointItem
-            key={index}
-            path={endpoint.substring(endpoint.indexOf("/"))}
-            method={endpoint.split("/")[0].toUpperCase() as Method}
-            active={endpoint == activeEndpoint}
-            onClick={() => setActiveEndpoint(endpoint)}
-            removeFromList={() => {
-              setEndpoints((prev) => {
-                return prev.filter((e) => e != endpoint);
-              });
-              setFullEndpointList((prev) => {
-                return prev.filter((e) => e != endpoint);
-              })
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
-        <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
-        <div className="flex items-center">Helpers</div>
-      </div>
-      <div className="ml-1">
-        {fullHelperList.map((helper, index) => {
-          return (
-            <HelperItem
+        <div className="ml-1">
+          {endpoints.map((endpoint, index) => (
+            <EndpointItem
               key={index}
-              path={helper.replace("/helpers/", "")}
-              active={"!helper!" +helper == activeEndpoint}
-              onClick={() => setActiveEndpoint("!helper!" + helper)}
+              path={endpoint.substring(endpoint.indexOf("/"))}
+              method={endpoint.split("/")[0].toUpperCase() as Method}
+              active={endpoint == activeEndpoint}
+              onClick={() => setActiveEndpoint(endpoint)}
               removeFromList={() => {
-                setHelperList((prev) => {
-                  return prev.filter((e) => e != helper);
+                setEndpoints((prev) => {
+                  return prev.filter((e) => e != endpoint);
                 });
-                setFullHelperList((prev) => {
-                  return prev.filter((e) => e != helper);
-                });
+                setFullEndpointList((prev) => {
+                  return prev.filter((e) => e != endpoint);
+                })
               }}
             />
-          );
-        })}
+          ))}
+        </div>
+      </div>
+      <div className="helpers-list">
+        <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
+          <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
+          <div className="flex items-center">Helpers</div>
+        </div>
+        <div className="ml-1">
+          {fullHelperList.map((helper, index) => {
+            return (
+              <HelperItem
+                key={index}
+                path={helper.replace("/helpers/", "")}
+                active={"!helper!" +helper == activeEndpoint}
+                onClick={() => setActiveEndpoint("!helper!" + helper)}
+                removeFromList={() => {
+                  setHelperList((prev) => {
+                    return prev.filter((e) => e != helper);
+                  });
+                  setFullHelperList((prev) => {
+                    return prev.filter((e) => e != helper);
+                  });
+                }}
+              />
+            );
+          })}
+        </div>
       </div>
       <APIWizard
         isVisible={isVisible}
