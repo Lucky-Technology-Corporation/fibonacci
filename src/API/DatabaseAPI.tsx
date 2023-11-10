@@ -46,9 +46,7 @@ export default function useDatabaseApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}${queryString}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -68,9 +66,7 @@ export default function useDatabaseApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
         { document: data },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -90,9 +86,7 @@ export default function useDatabaseApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}?env=${environment}`,
         { documents: [newDocument] },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -109,9 +103,7 @@ export default function useDatabaseApi() {
       const response = await axios.delete(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${activeCollection}/${id}?env=${environment}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -128,9 +120,7 @@ export default function useDatabaseApi() {
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections?env=${environment}`,
         { name: name },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -146,9 +136,7 @@ export default function useDatabaseApi() {
       const response = await axios.delete(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/collections/${name}?env=${environment}`,
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
@@ -189,9 +177,7 @@ export default function useDatabaseApi() {
           query: query,
         },
         {
-          headers: {
-            Authorization: authHeader(),
-          },
+          withCredentials: true,
         },
       );
       return response.data;
