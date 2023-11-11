@@ -40,97 +40,97 @@ export default function Dashboard() {
       target: '.env-toggle',
       title: 'Environment',
       placement: 'right' as Placement,
-      content: <>
-        Your project has two environments: <span className="text-[#f39c12]">test</span> and <span className="font-bold">production</span>. Use test environment to develop and the production environment to serve your users.<br/>All resources (database, storage, etc) are DIFFERENT between the two environments.
-        </>,
+      content: <div className="text-left text-sm">
+        Your project has two environments: <span className="text-[#f39c12] font-bold">test</span> and <span className="font-bold">production</span>. Use test environment to develop and the production environment to serve your users.<br/><br/>All resources (database, storage, code, etc) are DIFFERENT between the two environments.
+        </div>,
     },
     {
       target: '.user-tab',
       title: 'Users',
       placement: 'right' as Placement,
-      content: <>Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the <span className="font-mono">request.user</span> object.</>,
+      content: <div className="text-left text-sm">Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the <span className="font-mono">request.user</span> object.</div>,
     },
     {
       target: '.auth-method',
       title: 'Authentication',
       placement: 'right' as Placement,
-      content: <>This is where you can drop in authentication methods like Email/Password, Google, etc.</>,
+      content: <div className="text-left text-sm">This is where you can drop in authentication methods like Email/Password, Google, etc.</div>,
     },
     {
       target: '.backend-tab',
       title: 'Backend',
       placement: 'right' as Placement,
-      content: 'This where you add your server endpoints: functions that the frontend can call.',
+      content: <div className="text-left text-sm">This where you add your backend code.</div>,
     },
     {
       target: '.endpoints-list',
       title: 'Endpoints',
       placement: 'right' as Placement,
-      content: 'These are publicly accessible functions that the frontend can call.',
+      content: <div className="text-left text-sm">These are publicly accessible functions that the frontend can call.</div>,
     },
     {
       target: '.helpers-list',
       title: 'Helpers',
       placement: 'right' as Placement,
-      content: 'These are private functions that can be called by other endpoints or helpers. You can use helpers to organize your code and avoid repetition.',
+      content: <div className="text-left text-sm">These are private functions that can be called by other endpoints or helpers. You can use helpers to organize your code and avoid repetition.</div>,
     },
     {
       target: '.magic-bar',
       title: 'Magic Bar',
       placement: 'bottom' as Placement,
-      content: 'Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.',
+      content: <div className="text-left text-sm">Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.</div>,
     },
     {
       target: '.auth-toggle',
       title: 'Require Authentication',
       placement: 'left' as Placement,
-      content: 'Toggle this to require users to be logged in to access this endpoint. This guarantees that the request.user object will be populated with a user object.',
+      content: <div className="text-left text-sm">Toggle this to require users to be logged in to access this endpoint. This guarantees that the request.user object will be populated with a user object.</div>,
     },
     {
       target: '.db-toggle',
       title: 'Import Database',
       placement: 'left' as Placement,
-      content: 'Toggle this to quickly import the db variable. You can use db to query your database (for example: db.collections("messages").find({"sender": "John"})).',
+      content: <div className="text-left text-sm">Toggle this to quickly import the db variable. You can use db to query your database.<br/><br/>For example: <span className="font-mono">{`db.collections("messages").find({"sender": "John"}))`}</span>.</div>,
     },
     {
       target: '.tester-button',
       title: 'Tests',
       placement: 'left' as Placement,
-      content: 'Opens a window where you can test your endpoints. You\'ll be able to simulate requests with different parameters, users, etc and see the response.',
+      content: <div className="text-left text-sm">Opens a window where you can test your endpoints. You\'ll be able to simulate requests with different parameters, users, etc and see the response.</div>,
     },
     {
       target: '.autocheck-button',
       title: 'Autocheck',
       placement: 'left' as Placement,
-      content: 'Runs your code (along with helpers, your database, etc) through an AI engine to check for bugs, security issues, and more.',
+      content: <div className="text-left text-sm">Runs your code through an AI engine to check for bugs, security issues, and more.</div>,
     },
     {
       target: '.secrets-button',
       title: 'Secrets',
       placement: 'left' as Placement,
-      content: 'Add your API keys and other secrets here. You can access them in your code with the secrets variable (process.env.SECRET_NAME). You can have different secret values in test and production.',
+      content: <div className="text-left text-sm">Add your API keys and other secrets here. You can access them in your code with the secrets variable (<span className="font-mono">process.env.SECRET_NAME</span>). You can have different secret values in test and production.</div>,
     },
     {
       target: '.packages-button',
       title: 'Packages',
       placement: 'left' as Placement,
-      content: 'Add NPM packages to your backend here.',
+      content: <div className="text-left text-sm">Add NPM packages to your backend here.</div>,
     },
     {
       target: '.restart-button',
       title: 'Restart',
       placement: 'left' as Placement,
-      content: 'Restart your backend server here. Your server will automatically restart when you save a file, but you can also restart it manually here.',
+      content: <div className="text-left text-sm">Restart your backend server here. Your server will automatically restart when you save a file, but you can also restart it manually here.</div>,
     },
     {
       target: '.frontend-tab',
       title: 'Frontend',
-      content: 'Build your user-facing website here. ',
+      content: <div className="text-left text-sm">Build your user-facing website here.</div>,
     },
     {
       target: '.database-tab',
       title: 'Database',
-      content: 'This is your database. A collection contains a list of documents (JSON objects). You can quickly add, edit, and delete documents from your backend with a MongoDB query',
+      content: <div className="text-left text-sm">This is your database. A collection contains a list of documents (JSON objects). You can quickly add, edit, and delete documents from your backend with a MongoDB query</div>,
     },
   ]
 
@@ -142,7 +142,7 @@ export default function Dashboard() {
     console.log(data)
     if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
       
-      if(index == 1 && action == ACTIONS.NEXT){
+      if(index == 0 && action == ACTIONS.NEXT){
         setSelectedTab(Page.Auth)
       } else if(index == 2 && action == ACTIONS.NEXT){
         setSelectedTab(Page.Apis)
@@ -197,7 +197,6 @@ export default function Dashboard() {
             continuous={true}
             debug={true}
             spotlightClicks={true}
-            disableScrolling={true}
             styles={{
               options: {
                 primaryColor: '#7980ff',
