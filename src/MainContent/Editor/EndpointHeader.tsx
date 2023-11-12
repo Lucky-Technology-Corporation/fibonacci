@@ -189,7 +189,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const getSuggestionValue = suggestion => suggestion.title;
 
   const renderSuggestion = (suggestion, { query, isHighlighted }) => {
-    console.log("render", suggestion)
     if(suggestion.type == "doc"){
       return(
         <div className={`w-full p-2 pl-3 hover:bg-[#393939] ${isHighlighted && "bg-[#393939]" } cursor-pointer`}>

@@ -179,7 +179,9 @@ export default function AnalyticsPage() {
           <span className="font-bold mr-1">Storage</span>
           to save big files.
         </div>
-
+        {/* <div className="mx-4 mt-2">
+          Read <a href="https://docs.swizzle.co" target="_blank" rel="nofollow">the docs</a> to learn more.
+        </div> */}
 
       </div>
 

@@ -21,8 +21,8 @@ export default function FilesList({ active }: { active: boolean }) {
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
   const methods: any = [
-    { id: "file", name: "+ Component" },
     { id: "page", name: "+ Page" },
+    { id: "file", name: "+ Component" },
   ];
 
   useEffect(() => {
@@ -295,35 +295,38 @@ export default function FilesList({ active }: { active: boolean }) {
         </div> */}
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex opacity-70">
-        <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
-        <div className="flex items-center">Pages</div>
+      <div className="pages-list">
+        <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex opacity-70">
+          <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
+          <div className="flex items-center">Pages</div>
+        </div>
+        <div className="ml-1">
+          {filterIfNeeded(pages).map((page) => {
+            return (
+              <FileItem
+                key={page.path}
+                path={page.path}
+                active={"frontend/src/pages/" + page.component + ".tsx" == activeFile}
+                fullPath={"/home/swizzle/code/frontend/src/pages/" + page.component + ".tsx"}
+                onClick={() => {
+                  setActiveFile("frontend/src/pages/" + page.component + ".tsx");
+                }}
+                disableDelete={page.component == "Home"}
+                isPrivate={page.authRequired}
+                fallbackUrl={page.fallbackPath}
+              />
+            )
+          })}
+        </div>
       </div>
-      <div className="ml-1">
-        {filterIfNeeded(pages).map((page) => {
-          return (
-            <FileItem
-              key={page.path}
-              path={page.path}
-              active={"frontend/src/pages/" + page.component + ".tsx" == activeFile}
-              fullPath={"/home/swizzle/code/frontend/src/pages/" + page.component + ".tsx"}
-              onClick={() => {
-                setActiveFile("frontend/src/pages/" + page.component + ".tsx");
-              }}
-              disableDelete={page.component == "Home"}
-              isPrivate={page.authRequired}
-              fallbackUrl={page.fallbackPath}
-            />
-          )
-        })}
-      </div>
-
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
-        <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
-        <div className="flex items-center">Components</div>
-      </div>
-      <div className="ml-1">
-        {fileTree ? renderSection(fileTree, 'components') : null}
+      <div className="components-list">
+        <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
+          <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
+          <div className="flex items-center">Components</div>
+        </div>
+        <div className="ml-1">
+          {fileTree ? renderSection(fileTree, 'components') : null}
+        </div>
       </div>
 
       <FileWizard

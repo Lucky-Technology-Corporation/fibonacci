@@ -48,7 +48,7 @@ export default function Dashboard() {
       target: '.user-tab',
       title: 'Users',
       placement: 'right' as Placement,
-      content: <div className="text-left text-sm">Manage your users here. The frontend keeps track of users automatically and passes user objects to the backend under the <span className="font-mono">request.user</span> object.</div>,
+      content: <div className="text-left text-sm">Manage your users here.</div>,
     },
     {
       target: '.auth-method',
@@ -84,19 +84,19 @@ export default function Dashboard() {
       target: '.auth-toggle',
       title: 'Require Authentication',
       placement: 'left' as Placement,
-      content: <div className="text-left text-sm">Toggle this to require users to be logged in to access this endpoint. This guarantees that the request.user object will be populated with a user object.</div>,
+      content: <div className="text-left text-sm">Toggle this to require users to be logged in to access this endpoint. This guarantees that the <span className="font-mono">request.user</span> won't be null (unauthenticated requests will be denied with a 401).</div>,
     },
-    {
-      target: '.db-toggle',
-      title: 'Import Database',
-      placement: 'left' as Placement,
-      content: <div className="text-left text-sm">Toggle this to quickly import the db variable. You can use db to query your database.<br/><br/>For example: <span className="font-mono">{`db.collections("messages").find({"sender": "John"}))`}</span>.</div>,
-    },
+    // {
+    //   target: '.db-toggle',
+    //   title: 'Import Database',
+    //   placement: 'left' as Placement,
+    //   content: <div className="text-left text-sm">Toggle this to quickly import the db variable. You can use db to query your database.<br/><br/>For example: <span className="font-mono">{`db.collections("messages").find({"sender": "John"}))`}</span>.</div>,
+    // },
     {
       target: '.tester-button',
       title: 'Tests',
       placement: 'left' as Placement,
-      content: <div className="text-left text-sm">Opens a window where you can test your endpoints. You\'ll be able to simulate requests with different parameters, users, etc and see the response.</div>,
+      content: <div className="text-left text-sm">Opens a window where simulate requests with different parameters, users, etc.</div>,
     },
     {
       target: '.autocheck-button',
@@ -120,12 +120,22 @@ export default function Dashboard() {
       target: '.restart-button',
       title: 'Restart',
       placement: 'left' as Placement,
-      content: <div className="text-left text-sm">Restart your backend server here. Your server will automatically restart when you save a file, but you can also restart it manually here.</div>,
+      content: <div className="text-left text-sm">Manually restart your backend server here (your server also automatically restarts when you save a file).</div>,
     },
     {
       target: '.frontend-tab',
       title: 'Frontend',
       content: <div className="text-left text-sm">Build your user-facing website here.</div>,
+    },
+    {
+      target: '.pages-list',
+      title: 'Pages',
+      content: <div className="text-left text-sm">A page contains the react code for a specific URL (like yourdomain.com/about)</div>,
+    },
+    {
+      target: '.components-list',
+      title: 'Components',
+      content: <div className="text-left text-sm">A component contains code which can be reused in pages or other components.</div>,
     },
     {
       target: '.database-tab',
@@ -146,6 +156,8 @@ export default function Dashboard() {
         setSelectedTab(Page.Auth)
       } else if(index == 2 && action == ACTIONS.NEXT){
         setSelectedTab(Page.Apis)
+      } else if(index == 12 && action == ACTIONS.NEXT){
+        setSelectedTab(Page.Hosting)
       }
 
       setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1) )
@@ -195,8 +207,8 @@ export default function Dashboard() {
             stepIndex={stepIndex}
             run={runState}
             continuous={true}
-            debug={true}
             spotlightClicks={true}
+            hideCloseButton={true}
             styles={{
               options: {
                 primaryColor: '#7980ff',

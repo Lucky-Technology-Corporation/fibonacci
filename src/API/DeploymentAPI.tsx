@@ -1,13 +1,16 @@
 import axios from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
+import useEndpointApi from "../API/EndpointAPI";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function useApi() {
+export default function useDeploymentApi() {
   const authHeader = useAuthHeader();
-  const { activeProject, environment, setTestDeployStatus, setProdDeployStatus } = useContext(SwizzleContext);
+  const { getFermatJwt } = useEndpointApi();
+
+  const { activeProject, environment, setTestDeployStatus, setProdDeployStatus, testDomain } = useContext(SwizzleContext);
 
   const listProjectBuilds = async (page, pageSize) => {
     if (activeProject == "") return;
@@ -36,8 +39,34 @@ export default function useApi() {
     return response.data.deployment_status;
   };
 
+  const updatePackage = async (packages: string[], action: "install" | "remove", location: "frontend" | "backend") => {
+    try {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/npm/${action}?path=${location}`, 
+      {
+        "packages": packages,
+      },
+      {
+        headers: {
+          Authorization: await getFermatJwt(),
+        },
+      });
+      console.log("updatePackage", packages, action, location, response.data)
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  };
+
   return {
     listProjectBuilds,
     getProjectDeploymentStatus,
+    updatePackage,
   };
 }

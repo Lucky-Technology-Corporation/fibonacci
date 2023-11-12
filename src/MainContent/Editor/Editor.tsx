@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
+import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
 
 export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page }) {
   const iframeRef = useRef(null);
@@ -117,14 +118,22 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% + 56px)",
+          height: "calc(100% - 144px)",
           marginLeft: "-48px",
           marginRight: "-48px",
           // marginTop: "-68px",
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>
-      
+      <LogWebsocketViewer
+        location={"backend"} 
+        style={{
+          height: "200px",
+          width: "calc(100% - 24px)",
+          bottom: "0px",
+          position: "absolute"
+        }}
+      />
     </div>
     </>
   );

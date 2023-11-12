@@ -205,7 +205,7 @@ export default function RightSidebar({
                 highlightColor="#ff64644f"
                 className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
               />
-              <div className="h-4" />
+              {/* <div className="h-4" />
 
               <IconTextButton
                 onClick={() => {
@@ -217,7 +217,7 @@ export default function RightSidebar({
                 highlightState={isDBChecked}
                 highlightColor={"#4696f969"}
                 className="db-toggle"
-              />
+              /> */}
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />

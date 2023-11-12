@@ -196,8 +196,8 @@ export default function ObjectTableView() {
     <div>
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
-          <div className={`font-bold text-base`}>Storage</div>
-          <div className={`text-sm mt-0.5`}>Drag and drop files to upload them</div>
+          <div className={`font-bold text-base`}>Files</div>
+          <div className={`text-sm mt-0.5`}>Drag and drop to upload</div>
         </div>
         <div className={`flex h-10 mt-1 mr-[-16px] text-sm`}>
           <Button text={"Upload"} onClick={uploadFileHandler} />

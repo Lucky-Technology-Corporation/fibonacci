@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
-import useApi from "../API/DeploymentAPI";
+import useDeploymentApi from "../API/DeploymentAPI";
 import useEndpointApi from "../API/EndpointAPI";
 import Dropdown from "../Utilities/Dropdown";
 import FullPageModal from "../Utilities/FullPageModal";
@@ -10,7 +10,7 @@ import { SwizzleContext } from "../Utilities/GlobalContext";
 export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isModalOpen: any, setIsModalOpen: Dispatch<SetStateAction<boolean>> }){
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
-  const deploymentApi = useApi();
+  const deploymentApi = useDeploymentApi();
   const POLLING_INTERVAL = 5000;
   const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();

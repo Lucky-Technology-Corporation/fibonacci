@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import Switch from "react-switch";
-import useApi from "../API/DeploymentAPI";
+import useDeploymentApi from "../API/DeploymentAPI";
 import DeployButton from "../RightSidebar/DeployButton";
 import UserDropdown from "../UserDropdown";
 import { endpointToFilename, filenameToEndpoint } from "../Utilities/EndpointParser";
@@ -44,7 +44,7 @@ export default function LeftSidebar({
     useContext(SwizzleContext);
 
 
-  const { getProjectDeploymentStatus } = useApi()
+  const { getProjectDeploymentStatus } = useDeploymentApi()
   
   useEffect(() => {
     openActiveEndpoint();
@@ -162,7 +162,7 @@ export default function LeftSidebar({
   }
 
   return (
-    <div className="min-w-[240px] border-r border-gray-700 bg-[#191A23] overflow-scroll">
+    <div className="min-w-[240px] border-r border-gray-700 bg-[#1e1e1e] !overflow-scroll">
       <div className="flex flex-col items-center pt-4 h-screen">
         <div className="flex">
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
@@ -279,6 +279,7 @@ export default function LeftSidebar({
             if(selectedTab == Page.Db){ setSelectedTab(null) }
             else { setSelectedTab(Page.Db); }
           }}
+          className="database-tab"
         />
         <CollectionList
           active={selectedTab == Page.Db}
@@ -288,12 +289,13 @@ export default function LeftSidebar({
 
         <SectionTitle
           icon="/files.svg"
-          text="Storage"
+          text="Files"
           active={selectedTab == Page.Storage}
           onClick={() => {
             if(selectedTab == Page.Storage){ setSelectedTab(null) }
             else { setSelectedTab(Page.Storage); }
           }}
+          className="storage-tab"
         />
 
 

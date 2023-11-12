@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import Select from "react-select";
+import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -39,6 +40,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   const requiredReactPackages = ["react", "react-dom", "react-scripts", "axios", "typescript", "react-router-dom", "react-auth-kit"]
 
   const { npmSearch, getPackageJson, restartFrontend, restartBackend } = useEndpointApi();
+  const { updatePackage } = useDeploymentApi()
 
   const { setPostMessage, domain, shouldRefreshList } = useContext(SwizzleContext);
 
@@ -89,28 +91,24 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   useEffect(() => {
     if (selectedOption == null) return;
-    addPackageToProject(selectedOption.value, location);
-    toast.success(`Added ${selectedOption.value} to project`);
+    toast.promise(addPackageToProject(selectedOption.value, location), {
+      loading: "Installing " + selectedOption.value,
+      success: "Installed " + selectedOption.value,
+      error: "Failed to install " + selectedOption.value,
+    });
   }, [selectedOption]);
 
   const addPackageToProject = async (message, folder) => {
     if (installedPackages.includes(message)) {
+      toast.error(message + " is already installed");
       return;
     }
-
-    const messageBody = { type: "addPackage", packageName: message, directory: folder };
-    setPostMessage(messageBody);
+    await updatePackage([message], "install", folder);
     setInstalledPackages([...installedPackages, message]);
-    if(folder == "frontend"){
-      await restartFrontend()
-    } else{
-      await restartBackend()
-    }
   };
 
-  const removePackageFromProject = (message) => {
-    const messageBody = { type: "removePackage", packageName: message, directory: location };
-    setPostMessage(messageBody);
+  const removePackageFromProject = async (message) => {
+    await updatePackage([message], "remove", location as "frontend" | "backend");
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };
 
@@ -240,8 +238,11 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
                               toast.error(packageName + " is required for this project and cannot be removed")
                               return
                             }
-                            removePackageFromProject(packageName);
-                            toast.success(`Removed ${packageName} from project`);
+                            toast.promise(removePackageFromProject(packageName), {
+                              loading: "Removing " + packageName,
+                              success: "Removed " + packageName,
+                              error: "Failed to remove " + packageName,
+                            });
                           }}
                         />
                       </td>

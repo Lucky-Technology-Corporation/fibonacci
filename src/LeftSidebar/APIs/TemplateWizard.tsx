@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
 import toast from "react-hot-toast";
+import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import useTemplateApi from "../../API/TemplatesAPI";
 import Checkbox from "../../Utilities/Checkbox";
@@ -44,6 +45,7 @@ export default function TemplateWizard({
 
   const api = useTemplateApi();
   const endpointApi = useEndpointApi()
+  const deploymentApi = useDeploymentApi()
 
   useEffect(() => {
     if (template) {
@@ -121,25 +123,13 @@ export default function TemplateWizard({
     const payload = await constructPayload();
 
     //Add necessary npm packages
-    const packageList = (template.packages || "").trim().replace(",", " ")
-    const messageBody = { type: "addPackage", packageName: packageList, directory: "backend" };
-    setPostMessage(messageBody);
-
-
-    const frontendPackageList = (template.frontend_packages || "").trim().replace(",", " ")
-    setTimeout(() => {
-      const messageBody = { type: "addPackage", packageName: frontendPackageList, directory: "frontend" };
-      setPostMessage(messageBody);
-    }, 150)
-
+    await deploymentApi.updatePackage((template.packages || "").trim().split(","), "install", "backend")
+    await deploymentApi.updatePackage((template.frontend_packages || "").trim().split(","), "install", "frontend")
 
     //Create files
     await api.createFromTemplate(payload);
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
-
-    await endpointApi.restartFrontend()
-    await endpointApi.restartBackend()
   }
 
   const handleOnSelectTemplate = (result: { id: any; name: string }) => {
