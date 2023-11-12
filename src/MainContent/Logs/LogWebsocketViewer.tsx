@@ -1,80 +1,101 @@
+import debounce from "lodash.debounce";
 import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Page } from "../../Utilities/Page";
 
 type LogWebsocketViewerProps = {
     location: "frontend" | "backend";
-    style: CSSProperties
+    style: CSSProperties;
+    selectedTab: Page;
 };
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const [log, setLog] = useState('');
     const [ws, setWs] = useState(null);
     const endpointApi = useEndpointApi();
-    const {testDomain, activeProject} = useContext(SwizzleContext);
+    const {testDomain, activeProject, activeEndpoint} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const messageBuffer = useRef([]);
 
+    //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
-        async function connect() {
-            if(!activeProject || !testDomain) return;
+        if(!activeProject || !testDomain || !activeEndpoint) return;
+        reconnectWebsocket();
+    }, [activeEndpoint, props.selectedTab, testDomain])
 
-            var fermatJwt = await endpointApi.getFermatJwt();
-            fermatJwt = fermatJwt.replace("Bearer ", "");
-
-            const path = props.location == "frontend" ? "frontend/app.log" : "backend/server.log";
-            const webSocket = new WebSocket(`wss://${testDomain.replace("https://", "fermat.")}/tail_logs?path=${path}&jwt=${fermatJwt}`);
-            webSocket.onopen = () => {
-                console.log("Websocket connected")
-            };
-            webSocket.onmessage = (event) => {
-                var newLog = event.data
-                console.log("newLog", newLog)
-                messageBuffer.current.push(event.data);
-            };
-
-            webSocket.onclose = () => {
-                // Try to reconnect after a few seconds
-                console.error("Websocket closed")
-                setTimeout(connect, 3000);
-            };
-
-            webSocket.onerror = (err) => {
-                console.error(
-                    "Socket encountered error: ",
-                    err,
-                    "Closing socket"
-                );
-                webSocket.close();
-            }
-
-            setWs(webSocket);
-        }
-
-        if (ws) {
-            ws.close();
-        }
-        connect();
-
-        const intervalId = setInterval(() => {
-            if (messageBuffer.current.length > 0) {
-                var newLogs = messageBuffer.current.join('\n')
-                
-                const regex = /\x1B\[\d+m/g;
-                newLogs = newLogs.replace(regex, '');
-
-                setLog(prevLog => prevLog + '\n' + newLogs);
-                messageBuffer.current = [];
-            }
-        }, 1000);    
-
+    //Close websocket on unmount
+    useEffect(() => {
         return () => {
-            clearInterval(intervalId);
             if (ws) {
                 ws.close();
             }
         };
-    }, [activeProject, testDomain]);
+    }, []);
+
+    //Update log when new message is received
+    const throttledUpdateLog = debounce((newMessage) => {
+        var line = newMessage
+        if (
+            (line.includes("0.0.0.0:9229") ||
+            line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+            line.includes("ExperimentalWarning: Custom ESM Loaders") ||
+            line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
+        ){ return }
+        
+        const regex = /\x1B\[\d+m/g;
+        line = line.replace(regex, '');
+
+        try{
+            const parsed = JSON.parse(line);
+            if(parsed.text){
+                const date = new Date(parsed.timestamp).toTimeString()
+                line = `[${date}] ${parsed.text}`;
+            }
+        } catch (e) {
+            // console.log("This is not a user log")
+        }
+
+        setLog(prevLog => prevLog + '\n' + line);
+    }, 250);
+    
+
+    //Reconnect websocket
+    const reconnectWebsocket = async () => {
+        if (ws) {
+            ws.close();
+        }
+
+        if(!activeProject || !testDomain || !(props.selectedTab == Page.Apis || props.selectedTab == Page.Hosting)) return;
+
+        var fermatJwt = await endpointApi.getFermatJwt();
+        fermatJwt = fermatJwt.replace("Bearer ", "");
+
+        const path = props.location == "frontend" ? "frontend/app.log" : "backend/server.log";
+        const webSocket = new WebSocket(`wss://${testDomain.replace("https://", "fermat.")}/tail_logs?path=${path}&jwt=${fermatJwt}`);
+        
+
+        webSocket.onmessage = (event) => {
+            var newLog = event.data
+            console.log("socket", "message: " + newLog)
+            throttledUpdateLog(newLog);
+        };
+
+        webSocket.onclose = () => {
+            setTimeout(reconnectWebsocket, 3000);
+        };
+
+        webSocket.onerror = (err) => {
+            console.error(
+                "Socket encountered error: ",
+                err,
+                "Closing socket"
+            );
+            webSocket.close();
+        }
+
+        setWs(webSocket);
+    }
 
     useEffect(() => {
         setTimeout(() => {

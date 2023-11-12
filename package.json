@@ -30,6 +30,8 @@
     "http-status-codes": "^2.2.0",
     "install": "^0.13.0",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
+    "lodash.throttle": "^4.1.1",
     "lottie-react": "^2.4.0",
     "monaco-editor": "^0.38.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
@@ -51,7 +53,7 @@
     "react-select": "^5.7.4",
     "react-switch": "^7.0.0",
     "react-tooltip": "^5.22.0",
-    "react-use-websocket": "^4.3.1",
+    "react-use-websocket": "^4.5.0",
     "styled-components": "^6.0.7",
     "swr": "^2.2.0",
     "uuid": "^9.0.0"

@@ -81,6 +81,10 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   }, [query]);
 
   const handleInputChange = (inputValue) => {
+    if(inputValue == ""){
+      setItems([])
+      setSelectedOption(null)
+    }
     setQuery(inputValue);
   };
 

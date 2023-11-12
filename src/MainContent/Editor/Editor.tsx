@@ -127,6 +127,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
       ></iframe>
       <LogWebsocketViewer
         location={"backend"} 
+        selectedTab={selectedTab}
         style={{
           height: "200px",
           width: "calc(100% - 24px)",

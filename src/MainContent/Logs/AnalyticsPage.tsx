@@ -182,7 +182,6 @@ export default function AnalyticsPage() {
         {/* <div className="mx-4 mt-2">
           Read <a href="https://docs.swizzle.co" target="_blank" rel="nofollow">the docs</a> to learn more.
         </div> */}
-
       </div>
 
       <div className="no-focus-ring pt-2">
