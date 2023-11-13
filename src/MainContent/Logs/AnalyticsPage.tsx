@@ -4,6 +4,7 @@ import { useTour } from "@reactour/tour";
 import { Card, DateRangePickerValue, LineChart } from "@tremor/react";
 import { useContext, useEffect, useState } from "react";
 import useMonitoringApi from "../../API/MonitoringAPI";
+import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
 import Dot from "../../Utilities/Dot";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -146,6 +147,13 @@ export default function AnalyticsPage() {
               {prodDomain ? prodDomain : "Provisioning..."}
             </div>          
           </div>
+          <Button
+            className="ml-auto mt-0 h-10 mr-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            onClick={() => {
+              window.open("https://docs.swizzle.co/custom-domains", "_blank");
+            }}
+            text="Custom Domain"
+          />
         </div>
 
       </div>

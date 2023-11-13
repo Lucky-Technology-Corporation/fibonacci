@@ -46,7 +46,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         var fermatJwt = await endpointApi.getFermatJwt();
         fermatJwt = fermatJwt.replace("Bearer ", "");
 
-        const path = props.location == "frontend" ? "frontend/app.log" : "backend/server.log";
+        const path = props.selectedTab == Page.Hosting ? "frontend/app.log" : "backend/server.log";
         const webSocket = new WebSocket(`wss://${testDomain.replace("https://", "fermat.")}/tail_logs?path=${path}&jwt=${fermatJwt}`);
         
 
