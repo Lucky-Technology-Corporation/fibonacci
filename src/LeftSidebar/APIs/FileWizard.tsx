@@ -105,7 +105,7 @@ export default function APIWizard({
     
     setTimeout(() => {
       setShouldRefreshList(!shouldRefreshList);
-    }, 250);
+    }, 400); //trying to fix the not-showing-up issue
 
     setIsVisible(false);
   };
