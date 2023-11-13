@@ -20,6 +20,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
         if(!activeProject || !testDomain || !activeEndpoint) return;
+        if(props.selectedTab != Page.Apis && props.selectedTab != Page.Hosting) return;
         reconnectWebsocket();
     }, [activeEndpoint, props.selectedTab, testDomain])
 
@@ -110,7 +111,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             }
         };
         
-        setInterval(processQueue, 250);
+        setInterval(processQueue, 100);
         
 
         webSocket.onclose = () => {
