@@ -1,4 +1,3 @@
-import debounce from "lodash.debounce";
 import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -33,35 +32,38 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         };
     }, []);
 
-    //Update log when new message is received
-    const throttledUpdateLog = debounce((newMessage) => {
-        var line = newMessage
-        if (
-            (line.includes("0.0.0.0:9229") ||
-            line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
-            line.includes("ExperimentalWarning: Custom ESM Loaders") ||
-            line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
-        ){ return }
+    // //Update log when new message is received
+    // const throttledUpdateLog = throttle((newMessage) => {
+    //     var line = newMessage
+    //     if (
+    //         (line.includes("0.0.0.0:9229") ||
+    //         line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+    //         line.includes("ExperimentalWarning: Custom ESM Loaders") ||
+    //         line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
+    //     ){ return }
         
-        const regex = /\x1B\[\d+m/g;
-        line = line.replace(regex, '');
+    //     const regex = /\x1B\[\d+m/g;
+    //     line = line.replace(regex, '');
 
-        try{
-            const parsed = JSON.parse(line);
-            if(parsed.text){
-                const date = new Date(parsed.timestamp).toTimeString()
-                line = `[${date}] ${parsed.text}`;
-            }
-        } catch (e) {
-            // console.log("This is not a user log")
-        }
+    //     try{
+    //         const parsed = JSON.parse(line);
+    //         if(parsed.text){
+    //             const date = new Date(parsed.timestamp).toTimeString()
+    //             line = `[${date}] ${parsed.text}`;
+    //         }
+    //     } catch (e) {
+    //         // console.log("This is not a user log")
+    //     }
+    //     console.log("socket", "throttle: " + new Date().getUTCMilliseconds() + ": " + line)
 
-        setLog(prevLog => prevLog + '\n' + line);
-    }, 250);
+    //     setLog(prevLog => prevLog + '\n' + line);
+    // }, 250);
     
 
     //Reconnect websocket
     const reconnectWebsocket = async () => {
+        let messageQueue = [];
+
         if (ws) {
             ws.close();
         }
@@ -77,9 +79,39 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         webSocket.onmessage = (event) => {
             var newLog = event.data
-            console.log("socket", "message: " + newLog)
-            throttledUpdateLog(newLog);
+            console.log("socket", "message: " + new Date().getUTCMilliseconds() + ": " + newLog)
+            messageQueue.push(newLog);
         };
+
+        const processQueue = () => {
+            if (messageQueue.length > 0) {
+                const message = messageQueue.shift();
+                
+                // var line = message
+                // if (
+                //     (line.includes("0.0.0.0:9229") ||
+                //     line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+                //     line.includes("ExperimentalWarning: Custom ESM Loaders") ||
+                //     line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
+                // ){ return }
+                
+                // const regex = /\x1B\[\d+m/g;
+                // line = line.replace(regex, '');
+
+                // try{
+                //     const parsed = JSON.parse(line);
+                //     if(parsed.text){
+                //         const date = new Date(parsed.timestamp).toTimeString()
+                //         line = `[${date}] ${parsed.text}`;
+                //     }
+                // } catch (e) {}
+
+                setLog(prevLog => prevLog + '\n' + message);
+            }
+        };
+        
+        setInterval(processQueue, 250);
+        
 
         webSocket.onclose = () => {
             setTimeout(reconnectWebsocket, 3000);

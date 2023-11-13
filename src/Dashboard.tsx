@@ -209,6 +209,7 @@ export default function Dashboard() {
             continuous={true}
             spotlightClicks={true}
             hideCloseButton={true}
+            // debug={true}
             styles={{
               options: {
                 primaryColor: '#7980ff',
