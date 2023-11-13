@@ -91,7 +91,7 @@ export default function AnalyticsPage() {
       <div className="space-between mb-6 bg-[#32333b63] mx-10 rounded py-2 pb-4">
         <div className="mx-4 font-bold text-md mb-2">{activeProjectName} URLs</div>
         <div className="flex">
-          <div className="mx-4 space-y-1">
+          <div className={`mx-4 space-y-1 ${environment == "test" ? "" : "opacity-70"}`}>
             <div className="flex">
               <Dot className="ml-0" color={testDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
               Test API
@@ -119,7 +119,7 @@ export default function AnalyticsPage() {
             </div>          
           </div>
 
-          <div className="ml-10 space-y-1">
+          <div className={`ml-10 space-y-1 ${environment == "test" ? "opacity-70" : ""}`}>
             <div className="flex">
               <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
               Production API
