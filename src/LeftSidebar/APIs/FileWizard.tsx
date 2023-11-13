@@ -122,7 +122,8 @@ export default function APIWizard({
       return camelCaseSegment
         .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('_');
+        .join('_')
+        .replace("-", "")
     });
     
     return capitalizedSegments.join('_') + '.tsx';  

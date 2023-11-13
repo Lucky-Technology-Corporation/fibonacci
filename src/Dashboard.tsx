@@ -145,7 +145,8 @@ export default function Dashboard() {
   ]
 
   const [stepIndex, setStepIndex] = useState(0)
-  const [runState, setRunState] = useState(true)
+  const [runState, setRunState] = useState(false)
+  
   
   const handleJoyrideCallback = (data: any) => {
     const { action, index, status, type } = data
@@ -189,6 +190,11 @@ export default function Dashboard() {
       }
     };
     fetchProjects();
+
+    if(!localStorage.getItem("hasCompletedTour")){
+      setRunState(true)
+      localStorage.setItem("hasCompletedTour", "true")
+    }
   }, []);
 
   if (isAuthenticated()) {
