@@ -162,20 +162,20 @@ export default function LeftSidebar({
   }
 
   return (
-    <div className="min-w-[240px] border-r border-gray-700 bg-[#1e1e1e] !overflow-scroll">
+    <div className="leftSidebar pt-1 min-w-[240px] border-r border-gray-700 bg-[#1e1e1e] !overflow-scroll">
       <div className="flex flex-col items-center pt-4 h-screen">
         <div className="flex">
           <img src="/logo_offwhite.png" className="w-4 h-4 m-auto mr-1.5" />
           <h1 className="font-bold text-md">Swizzle</h1>
         </div>
-        <div className="flex mt-2 env-toggle">
+        <div className="flex mt-2">
           {environment == "test" ? (
             <div className="text-sm font-bold m-auto text-[#f39c12]">Test View</div>
           ) : (
             <div className="text-sm font-bold m-auto">Production View</div>
           )}
           <Switch
-            className="ml-1 scale-75"
+            className="ml-1 scale-75 env-toggle"
             onChange={() => {
               toast.promise(changeEnvironment(environment == "test" ? "prod" : "test"), {
                 loading: "Switching environment...",
@@ -328,14 +328,9 @@ export default function LeftSidebar({
           <div>&nbsp;</div>
         </div>
 
-        {/* <SectionTitle
-          icon="brain.svg"
-          text="Models"
-          active={selectedTab == Page.Storage}
-          onClick={() => {
-            setSelectedTab(Page.Storage);
-          }}
-        /> */}
+        {/* <div className={`h-[500px] flex-row w-full`}>
+          <div className="h-[500px]"></div>
+        </div> */}
 
         <UserDropdown />
       </div>

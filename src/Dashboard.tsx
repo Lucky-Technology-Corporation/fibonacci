@@ -1,9 +1,9 @@
+import { Position, TourProvider } from '@reactour/tour';
 import Lottie from "lottie-react";
 import { initIntercomWindow } from 'next-intercom';
 import { useContext, useEffect, useState } from "react";
 import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
-import Joyride, { ACTIONS, EVENTS, Placement, STATUS } from 'react-joyride';
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
@@ -30,140 +30,129 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   //Initialization code...
-  const { isFree, projects, setProjects, activeProject, testDomain, setMousePosition } = useContext(SwizzleContext);
+  const { isFree, projects, setProjects, activeProject, testDomain, ideReady } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
   const auth = useAuthUser()
 
 
   const onboardingSteps = [
     {
-      target: '.env-toggle',
+      selector: '.env-toggle',
       title: 'Environment',
-      placement: 'right' as Placement,
+      position: 'right' as Position,
       content: <div className="text-left text-sm">
         Your project has two environments: <span className="text-[#f39c12] font-bold">test</span> and <span className="font-bold">production</span>. Use test environment to develop and the production environment to serve your users.<br/><br/>All resources (database, storage, code, etc) are DIFFERENT between the two environments.
         </div>,
     },
     {
-      target: '.user-tab',
+      selector: '.user-tab',
       title: 'Users',
-      placement: 'right' as Placement,
+      position: 'right' as Position,
       content: <div className="text-left text-sm">Manage your users here.</div>,
     },
     {
-      target: '.auth-method',
+      selector: '.auth-method',
       title: 'Authentication',
-      placement: 'right' as Placement,
+      position: 'right' as Position,
       content: <div className="text-left text-sm">This is where you can drop in authentication methods like Email/Password, Google, etc.</div>,
     },
     {
-      target: '.backend-tab',
+      selector: '.backend-tab',
       title: 'Backend',
-      placement: 'right' as Placement,
+      position: 'right' as Position,
       content: <div className="text-left text-sm">This where you add your backend code.</div>,
     },
     {
-      target: '.endpoints-list',
+      selector: '.endpoints-list',
       title: 'Endpoints',
-      placement: 'right' as Placement,
+      position: 'right' as Position,
       content: <div className="text-left text-sm">These are publicly accessible functions that the frontend can call.</div>,
     },
     {
-      target: '.helpers-list',
+      selector: '.helpers-list',
       title: 'Helpers',
-      placement: 'right' as Placement,
+      position: 'right' as Position,
       content: <div className="text-left text-sm">These are private functions that can be called by other endpoints or helpers. You can use helpers to organize your code and avoid repetition.</div>,
     },
     {
-      target: '.magic-bar',
+      selector: '.magic-bar',
       title: 'Magic Bar',
-      placement: 'bottom' as Placement,
+      position: 'bottom' as Position,
       content: <div className="text-left text-sm">Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.</div>,
     },
     {
-      target: '.auth-toggle',
+      selector: '.auth-toggle',
       title: 'Require Authentication',
-      placement: 'left' as Placement,
+      position: 'left' as Position,
       content: <div className="text-left text-sm">Toggle this to require users to be logged in to access this endpoint. This guarantees that the <span className="font-mono">request.user</span> won't be null (unauthenticated requests will be denied with a 401).</div>,
     },
-    // {
-    //   target: '.db-toggle',
-    //   title: 'Import Database',
-    //   placement: 'left' as Placement,
-    //   content: <div className="text-left text-sm">Toggle this to quickly import the db variable. You can use db to query your database.<br/><br/>For example: <span className="font-mono">{`db.collections("messages").find({"sender": "John"}))`}</span>.</div>,
-    // },
     {
-      target: '.tester-button',
+      selector: '.tester-button',
       title: 'Tests',
-      placement: 'left' as Placement,
+      position: 'left' as Position,
       content: <div className="text-left text-sm">Opens a window where simulate requests with different parameters, users, etc.</div>,
     },
     {
-      target: '.autocheck-button',
+      selector: '.autocheck-button',
       title: 'Autocheck',
-      placement: 'left' as Placement,
+      position: 'left' as Position,
       content: <div className="text-left text-sm">Runs your code through an AI engine to check for bugs, security issues, and more.</div>,
     },
     {
-      target: '.secrets-button',
+      selector: '.secrets-button',
       title: 'Secrets',
-      placement: 'left' as Placement,
+      position: 'left' as Position,
       content: <div className="text-left text-sm">Add your API keys and other secrets here. You can access them in your code with the secrets variable (<span className="font-mono">process.env.SECRET_NAME</span>). You can have different secret values in test and production.</div>,
     },
     {
-      target: '.packages-button',
+      selector: '.packages-button',
       title: 'Packages',
-      placement: 'left' as Placement,
+      position: 'left' as Position,
       content: <div className="text-left text-sm">Add NPM packages to your backend here.</div>,
     },
     {
-      target: '.restart-button',
+      selector: '.restart-button',
       title: 'Restart',
-      placement: 'left' as Placement,
+      position: 'left' as Position,
       content: <div className="text-left text-sm">Manually restart your backend server here (your server also automatically restarts when you save a file).</div>,
     },
     {
-      target: '.frontend-tab',
+      selector: '.frontend-tab',
       title: 'Frontend',
       content: <div className="text-left text-sm">Build your user-facing website here.</div>,
     },
     {
-      target: '.pages-list',
+      selector: '.pages-list',
       title: 'Pages',
       content: <div className="text-left text-sm">A page contains the react code for a specific URL (like yourdomain.com/about)</div>,
     },
     {
-      target: '.components-list',
+      selector: '.components-list',
       title: 'Components',
       content: <div className="text-left text-sm">A component contains code which can be reused in pages or other components.</div>,
     },
     {
-      target: '.database-tab',
+      selector: '.database-tab',
       title: 'Database',
       content: <div className="text-left text-sm">This is your database. A collection contains a list of documents (JSON objects). You can quickly add, edit, and delete documents from your backend with a MongoDB query</div>,
     },
   ]
 
-  const [stepIndex, setStepIndex] = useState(0)
-  const [runState, setRunState] = useState(false)
-  
-  
-  const handleJoyrideCallback = (data: any) => {
-    const { action, index, status, type } = data
-    console.log(data)
-    if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
-      
-      if(index == 0 && action == ACTIONS.NEXT){
-        setSelectedTab(Page.Auth)
-      } else if(index == 2 && action == ACTIONS.NEXT){
-        setSelectedTab(Page.Apis)
-      } else if(index == 12 && action == ACTIONS.NEXT){
-        setSelectedTab(Page.Hosting)
-      }
+  const [currentStep, setCurrentStep] = useState(0)
 
-      setStepIndex(index + (action === ACTIONS.PREV ? -1 : 1) )
-    } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
-      setRunState(false)
+  const handleStepChange = (step: number) => {
+    prepareNextStep(step)
+    setCurrentStep(step)
+  }
+  
+  const prepareNextStep = (nextStep: number) => {
+    console.log("prepareNextStep", nextStep)
+    if(nextStep == 1){
+      setSelectedTab(Page.Auth)
+    } else if(nextStep == 3){
+      setSelectedTab(Page.Apis)
+    } else if(nextStep == 13){
+      setSelectedTab(Page.Hosting)
     }
   }
 
@@ -190,16 +179,32 @@ export default function Dashboard() {
       }
     };
     fetchProjects();
-
-    if(!localStorage.getItem("hasCompletedTour")){
-      setRunState(true)
-      localStorage.setItem("hasCompletedTour", "true")
-    }
   }, []);
 
   if (isAuthenticated()) {
     if (projects) {
       return (
+        <TourProvider steps={onboardingSteps} styles={{
+          popover: (base) => ({
+            ...base,
+            backgroundColor: "#32333b",
+          }),
+          arrow: (base, {disabled}) => ({
+            ...base,
+            color: disabled ? "#777" : "#ddd",
+            margin: "2px"
+          }),
+          badge: (base) => ({
+            display: "none"
+          }),
+          dot: (base) => ({
+            ...base,
+            display: "none"
+          }),
+        }}
+        currentStep={currentStep}
+        setCurrentStep={handleStepChange}
+        >
         <div
           className="page-wrapper"
           style={{
@@ -207,21 +212,7 @@ export default function Dashboard() {
             transition: "transform 0.5s",
           }}
         >
-          <Joyride
-            callback={handleJoyrideCallback}
-            steps={onboardingSteps}
-            stepIndex={stepIndex}
-            run={runState}
-            continuous={true}
-            spotlightClicks={true}
-            hideCloseButton={true}
-            // debug={true}
-            styles={{
-              options: {
-                primaryColor: '#7980ff',
-              }
-            }}
-          />
+
           <div>
             <Toaster />
           </div>
@@ -254,7 +245,9 @@ export default function Dashboard() {
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)} />
           </div>
+
         </div>
+        </TourProvider>
       );
     } else {
       return (

@@ -1,5 +1,6 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTour } from "@reactour/tour";
 import { Card, DateRangePickerValue, LineChart } from "@tremor/react";
 import { useContext, useEffect, useState } from "react";
 import useMonitoringApi from "../../API/MonitoringAPI";
@@ -51,8 +52,15 @@ export default function AnalyticsPage() {
     localStorage.setItem("hintHidden", "true")
   }
 
+  const { setIsOpen } = useTour()
+
   useEffect(() => {
     setIsHintHidden(localStorage.getItem("hintHidden") == "true")
+    if(!localStorage.getItem("didStartTour")){
+      setIsOpen(true)
+      localStorage.setItem("didStartTour", "true")
+    }
+
   }, [])
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
@@ -153,7 +161,7 @@ export default function AnalyticsPage() {
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
         <div className="mx-4">
-          You can help shape the future of Swizzle by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord.</a>
+          <a href="#" onClick={() => { setIsOpen(true)}}>Start the guided tour</a>. You can help shape the future of Swizzle by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord.</a>
         </div>
         <div className="mx-4 mt-2">
           Setup the accounts in
