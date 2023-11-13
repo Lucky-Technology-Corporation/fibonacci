@@ -88,26 +88,26 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             if (messageQueue.length > 0) {
                 const message = messageQueue.shift();
                 
-                // var line = message
-                // if (
-                //     (line.includes("0.0.0.0:9229") ||
-                //     line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
-                //     line.includes("ExperimentalWarning: Custom ESM Loaders") ||
-                //     line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
-                // ){ return }
+                var line = message
+                if (
+                    (line.includes("0.0.0.0:9229") ||
+                    line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+                    line.includes("ExperimentalWarning: Custom ESM Loaders") ||
+                    line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
+                ){ return }
                 
-                // const regex = /\x1B\[\d+m/g;
-                // line = line.replace(regex, '');
+                const regex = /\x1B\[\d+m/g;
+                line = line.replace(regex, '');
 
-                // try{
-                //     const parsed = JSON.parse(line);
-                //     if(parsed.text){
-                //         const date = new Date(parsed.timestamp).toTimeString()
-                //         line = `[${date}] ${parsed.text}`;
-                //     }
-                // } catch (e) {}
+                try{
+                    const parsed = JSON.parse(line);
+                    if(parsed.text){
+                        const date = new Date(parsed.timestamp).toLocaleTimeString()
+                        line = `[${date}] ${parsed.text}`;
+                    }
+                } catch (e) {}
 
-                setLog(prevLog => prevLog + '\n' + message);
+                setLog(prevLog => prevLog + '\n' + line);
             }
         };
         
