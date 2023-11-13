@@ -99,10 +99,10 @@ export default function DeployButton({}: {}) {
 
   return (
     <>
-      <div className="relative w-10 my-auto mr-2 min-w-10 flex-shrink-0">
+      <div className="relative w-10 my-auto mr-2 min-w-10 flex-shrink-0 deploy-button">
         <div
           id="deploy-progress-bar"
-          className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded my-1"
+          className="absolute inset-0 bg-orange-400 bg-opacity-30 rounded"
           style={{
             width: `${deployProgress}%`,
             transition: "width 0.2s ease-out",

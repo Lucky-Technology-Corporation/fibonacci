@@ -141,6 +141,11 @@ export default function Dashboard() {
       title: 'Files',
       content: <div className="text-left text-sm">This is where you can manage large files like images and video. Your backend can read and write to this.</div>,
     },
+    {
+      selector: '.deploy-button',
+      title: 'Deploy',
+      content: <div className="text-left text-sm">Deploy your project to Production here.<br/><br/>The production environment is scalable and always ready to accept new requests.</div>,
+    }
   ]
 
   const [currentStep, setCurrentStep] = useState(0)
