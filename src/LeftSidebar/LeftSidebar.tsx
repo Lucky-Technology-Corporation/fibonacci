@@ -219,6 +219,7 @@ export default function LeftSidebar({
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
         
+        <div className="auth-method w-full">
         <SectionTitle
           icon="/auth.svg"
           text="Users"
@@ -229,7 +230,8 @@ export default function LeftSidebar({
           }}
           className="user-tab"
         />
-        <AuthSettings active={selectedTab == Page.Auth} className="auth-method" />
+        <AuthSettings active={selectedTab == Page.Auth} className="" />
+        </div>
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
@@ -295,7 +297,7 @@ export default function LeftSidebar({
             if(selectedTab == Page.Storage){ setSelectedTab(null) }
             else { setSelectedTab(Page.Storage); }
           }}
-          className="storage-tab"
+          className="files-tab"
         />
 
 

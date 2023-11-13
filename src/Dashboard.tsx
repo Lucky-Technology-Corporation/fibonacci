@@ -1,4 +1,4 @@
-import { Position, TourProvider } from '@reactour/tour';
+import { Position, TourProvider, useTour } from '@reactour/tour';
 import Lottie from "lottie-react";
 import { initIntercomWindow } from 'next-intercom';
 import { useContext, useEffect, useState } from "react";
@@ -54,7 +54,7 @@ export default function Dashboard() {
       selector: '.auth-method',
       title: 'Authentication',
       position: 'right' as Position,
-      content: <div className="text-left text-sm">This is where you can drop in authentication methods like Email/Password, Google, etc.</div>,
+      content: <div className="text-left text-sm">Click the + New button to drop in authentication methods like Email/Password, Google, etc.</div>,
     },
     {
       selector: '.backend-tab',
@@ -66,65 +66,65 @@ export default function Dashboard() {
       selector: '.endpoints-list',
       title: 'Endpoints',
       position: 'right' as Position,
-      content: <div className="text-left text-sm">These are publicly accessible functions that the frontend can call.</div>,
+      content: <div className="text-left text-sm">Endpoints are publicly accessible functions that the frontend can call.</div>,
     },
     {
       selector: '.helpers-list',
       title: 'Helpers',
       position: 'right' as Position,
-      content: <div className="text-left text-sm">These are private functions that can be called by other endpoints or helpers. You can use helpers to organize your code and avoid repetition.</div>,
+      content: <div className="text-left text-sm">Helpers are private functions that can be called by other endpoints or helpers.<br/><br/>You can use helpers to organize your code and avoid repetition.</div>,
     },
     {
       selector: '.magic-bar',
       title: 'Magic Bar',
       position: 'bottom' as Position,
-      content: <div className="text-left text-sm">Ask for anything you need here. You can use the Magic Bar to generate code with AI, quickly import components, search for documentation, and more.</div>,
+      content: <div className="text-left text-sm">Ask for <b>anything you need</b> here.<br/><br/>You can generate code with AI, import helpers/components, search for documentation, and more.</div>,
     },
     {
       selector: '.auth-toggle',
       title: 'Require Authentication',
       position: 'left' as Position,
-      content: <div className="text-left text-sm">Toggle this to require users to be logged in to access this endpoint. This guarantees that the <span className="font-mono">request.user</span> won't be null (unauthenticated requests will be denied with a 401).</div>,
+      content: <div className="text-left text-sm"><b>Require authentication</b><br/><br/>Require users to be logged in. This guarantees that the <span className="font-mono">request.user</span> won't be null (unauthenticated requests will be denied with a 401).</div>,
     },
     {
       selector: '.tester-button',
       title: 'Tests',
       position: 'left' as Position,
-      content: <div className="text-left text-sm">Opens a window where simulate requests with different parameters, users, etc.</div>,
+      content: <div className="text-left text-sm"><b>Tests</b><br/><br/>Simulate endpoint requests with different parameters or users.</div>,
     },
     {
       selector: '.autocheck-button',
       title: 'Autocheck',
       position: 'left' as Position,
-      content: <div className="text-left text-sm">Runs your code through an AI engine to check for bugs, security issues, and more.</div>,
+      content: <div className="text-left text-sm"><b>AI Autocheck</b><br/><br/>Run your code through an AI to check for bugs, security issues, and more.</div>,
     },
     {
       selector: '.secrets-button',
       title: 'Secrets',
       position: 'left' as Position,
-      content: <div className="text-left text-sm">Add your API keys and other secrets here. You can access them in your code with the secrets variable (<span className="font-mono">process.env.SECRET_NAME</span>). You can have different secret values in test and production.</div>,
+      content: <div className="text-left text-sm"><b>Secrets</b><br/><br/>Add API keys and other secrets here. You can access them in your code with the secrets variable (<span className="font-mono">process.env.SECRET_NAME</span>). You can have different secret values in test and production.</div>,
     },
     {
       selector: '.packages-button',
       title: 'Packages',
       position: 'left' as Position,
-      content: <div className="text-left text-sm">Add NPM packages to your backend here.</div>,
+      content: <div className="text-left text-sm"><b>Packages</b><br/><br/>Add NPM packages to your backend here.</div>,
     },
     {
       selector: '.restart-button',
       title: 'Restart',
       position: 'left' as Position,
-      content: <div className="text-left text-sm">Manually restart your backend server here (your server also automatically restarts when you save a file).</div>,
+      content: <div className="text-left text-sm"><b>Restart</b><br/><br/>Manually restart your backend server here (your server also automatically restarts when you save a file).</div>,
     },
     {
       selector: '.frontend-tab',
       title: 'Frontend',
-      content: <div className="text-left text-sm">Build your user-facing website here.</div>,
+      content: <div className="text-left text-sm">Build your user-facing website here with ReactJS.</div>,
     },
     {
       selector: '.pages-list',
       title: 'Pages',
-      content: <div className="text-left text-sm">A page contains the react code for a specific URL (like yourdomain.com/about)</div>,
+      content: <div className="text-left text-sm">A page contains the code for a specific URL (like yourdomain.com/about)</div>,
     },
     {
       selector: '.components-list',
@@ -134,11 +134,17 @@ export default function Dashboard() {
     {
       selector: '.database-tab',
       title: 'Database',
-      content: <div className="text-left text-sm">This is your database. A collection contains a list of documents (JSON objects). You can quickly add, edit, and delete documents from your backend with a MongoDB query</div>,
+      content: <div className="text-left text-sm">This is your database. A collection is a list of documents (JSON). You can quickly add, edit, and delete documents from your backend with a MongoDB query</div>,
+    },
+    {
+      selector: '.files-tab',
+      title: 'Files',
+      content: <div className="text-left text-sm">This is where you can manage large files like images and video. Your backend can read and write to this.</div>,
     },
   ]
 
   const [currentStep, setCurrentStep] = useState(0)
+  const { setIsOpen } = useTour()
 
   const handleStepChange = (step: number) => {
     prepareNextStep(step)

@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
     localStorage.setItem("hintHidden", "true")
   }
 
-  const { setIsOpen } = useTour()
+  const { setIsOpen, setCurrentStep } = useTour()
 
   useEffect(() => {
     setIsHintHidden(localStorage.getItem("hintHidden") == "true")
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
         <div className="mx-4">
-          <a href="#" onClick={() => { setIsOpen(true)}}>Start the guided tour</a>. You can help shape the future of Swizzle by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord.</a>
+          <a href="#" onClick={() => { setCurrentStep(0); setIsOpen(true)}}>Start the guided tour</a>. You can help shape the future of Swizzle by <a href="https://discord.gg/CXCkzcqq" target="_blank" rel="nofollower">joining our Discord.</a>
         </div>
         <div className="mx-4 mt-2">
           Setup the accounts in

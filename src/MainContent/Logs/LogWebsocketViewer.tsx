@@ -33,34 +33,6 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         };
     }, []);
 
-    // //Update log when new message is received
-    // const throttledUpdateLog = throttle((newMessage) => {
-    //     var line = newMessage
-    //     if (
-    //         (line.includes("0.0.0.0:9229") ||
-    //         line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
-    //         line.includes("ExperimentalWarning: Custom ESM Loaders") ||
-    //         line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
-    //     ){ return }
-        
-    //     const regex = /\x1B\[\d+m/g;
-    //     line = line.replace(regex, '');
-
-    //     try{
-    //         const parsed = JSON.parse(line);
-    //         if(parsed.text){
-    //             const date = new Date(parsed.timestamp).toTimeString()
-    //             line = `[${date}] ${parsed.text}`;
-    //         }
-    //     } catch (e) {
-    //         // console.log("This is not a user log")
-    //     }
-    //     console.log("socket", "throttle: " + new Date().getUTCMilliseconds() + ": " + line)
-
-    //     setLog(prevLog => prevLog + '\n' + line);
-    // }, 250);
-    
-
     //Reconnect websocket
     const reconnectWebsocket = async () => {
         let messageQueue = [];
