@@ -11,7 +11,7 @@ type LogWebsocketViewerProps = {
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const [log, setLog] = useState('');
-    const [ws, setWs] = useState(null);
+    const [ws, setWs] = useState<WebSocket>(null);
     const endpointApi = useEndpointApi();
     const {testDomain, activeProject, activeEndpoint} = useContext(SwizzleContext);
     const divRef = useRef(null);
@@ -19,6 +19,8 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
+        if(ws){ ws.close() }
+        setLog("");
         if(!activeProject || !testDomain || !activeEndpoint) return;
         if(props.selectedTab != Page.Apis && props.selectedTab != Page.Hosting) return;
         reconnectWebsocket();
@@ -115,7 +117,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         
 
         webSocket.onclose = () => {
-            setTimeout(reconnectWebsocket, 3000);
+            console.log("socket", "close")
         };
 
         webSocket.onerror = (err) => {
