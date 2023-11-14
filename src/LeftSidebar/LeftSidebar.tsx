@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
 import Switch from "react-switch";
+import { Tooltip } from "react-tooltip";
 import useDeploymentApi from "../API/DeploymentAPI";
 import DeployButton from "../RightSidebar/DeployButton";
 import UserDropdown from "../UserDropdown";
@@ -236,36 +237,42 @@ export default function LeftSidebar({
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
         
-        <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
-          <SectionTitle
-            icon="/cloud.svg"
-            text="Backend"
-            active={selectedTab == Page.Apis}
-            onClick={() => {
-              if(selectedTab == Page.Apis){ setSelectedTab(null) }
-              else { setSelectedTab(Page.Apis); }
-            }}
-            className="backend-tab"
-          />
-        </div>
+        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
+          <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
+            <SectionTitle
+              icon="/cloud.svg"
+              text="Backend"
+              active={selectedTab == Page.Apis}
+              onClick={() => {
+                if(selectedTab == Page.Apis){ setSelectedTab(null) }
+                else { setSelectedTab(Page.Apis); }
+              }}
+              className="backend-tab"
+            />
+          </div>
+        </a>
         <EndpointList active={selectedTab == Page.Apis} />
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
 
-        <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
-          <SectionTitle
-            icon="/world.svg"
-            text="Frontend"
-            active={selectedTab == Page.Hosting}
-            onClick={() => {
-              if(selectedTab == Page.Hosting){ setSelectedTab(null) }
-              else { setSelectedTab(Page.Hosting); }
-            }}
-            className="frontend-tab"
-        />
-        </div>
+        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
+          <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
+            <SectionTitle
+              icon="/world.svg"
+              text="Frontend"
+              active={selectedTab == Page.Hosting}
+              onClick={() => {
+                if(selectedTab == Page.Hosting){ setSelectedTab(null) }
+                else { setSelectedTab(Page.Hosting); }
+              }}
+              className="frontend-tab"
+            />
+          </div>
+        </a>
         <FilesList active={selectedTab == Page.Hosting} />
 
 
