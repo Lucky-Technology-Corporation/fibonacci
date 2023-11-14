@@ -1,14 +1,10 @@
-import GjsEditor, { Canvas } from "@grapesjs/react";
+import GjsEditor from "@grapesjs/react";
 import grapesjs, { Editor as GrapeEditor } from "grapesjs";
 import { useCallback } from "react";
 
 export default function GrapesEditor() {
   const onEditor = useCallback((editor: GrapeEditor) => {
     console.log("Grape! Editor loaded", { editor });
-    editor.addComponents(`<div>
-      <img src="https://path/image" />
-      <span title="foo">Hello world!!!</span>
-    </div>`);
   }, []);
 
   return (
@@ -26,8 +22,6 @@ export default function GrapesEditor() {
         },
       ]}
       onEditor={onEditor}
-    >
-      <Canvas />
-    </GjsEditor>
+    />
   );
 }
