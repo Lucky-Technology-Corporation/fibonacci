@@ -127,6 +127,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 "Closing socket"
             );
             webSocket.close();
+            setTimeout(reconnectWebsocket, 3000);
         }
 
         setWs(webSocket);
