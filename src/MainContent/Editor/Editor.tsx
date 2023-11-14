@@ -1,3 +1,5 @@
+import GjsEditor from '@grapesjs/react';
+import grapesjs, { Editor as GrapeEditor } from 'grapesjs';
 import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -90,6 +92,11 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     getUrl();
   }, [activeProject, testDomain]);
 
+  const onEditor = (editor: GrapeEditor) => {
+    console.log('Grape! Editor loaded', { editor });
+  };
+
+
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
   ) : (
@@ -108,8 +115,34 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         margin: "6px",
         marginRight: "0px",
         marginLeft: "16px",
-        borderRadius: "12px",
+        borderRadius: selectedTab == Page.Apis ? "8px" : "",
         pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}>
+
+      {selectedTab == Page.Hosting && (
+        <div style={{lineHeight: "0.75rem", height: "100%", marginRight: "1rem"}}>
+        <GjsEditor
+          // Pass the core GrapesJS library to the wrapper (required).
+          // You can also pass the CDN url (eg. "https://unpkg.com/grapesjs")
+          grapesjs={grapesjs}
+          // Load the GrapesJS CSS file asynchronously from URL.
+          // This is an optional prop, you can always import the CSS directly in your JS if you wish.
+          grapesjsCss="https://unpkg.com/grapesjs/dist/css/grapes.min.css"
+          // GrapesJS init options
+          options={{
+            height: '100%',
+            storageManager: false,
+          }}
+          plugins={[
+            {
+              id: 'gjs-blocks-basic',
+              src: 'https://unpkg.com/grapesjs-blocks-basic',
+            },
+          ]}
+          onEditor={onEditor}
+        />
+        </div>
+      )}
+
       <iframe
         className="theia-iframe"
         ref={iframeRef}
@@ -125,16 +158,19 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>
-      <LogWebsocketViewer
-        location={"backend"} 
-        selectedTab={selectedTab}
-        style={{
-          height: "200px",
-          width: "calc(100% - 24px)",
-          bottom: "0px",
-          position: "absolute"
-        }}
-      />
+      
+      {selectedTab != Page.Hosting && (
+        <LogWebsocketViewer
+          location={"backend"} 
+          selectedTab={selectedTab}
+          style={{
+            height: "200px",
+            width: "calc(100% - 24px)",
+            bottom: "0px",
+            position: "absolute"
+          }}
+        />
+      )}
     </div>
     </>
   );
