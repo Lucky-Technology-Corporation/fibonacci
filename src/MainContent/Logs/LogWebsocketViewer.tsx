@@ -72,10 +72,25 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 line = line.replace(regex, '');
 
                 try{
-                    const parsed = JSON.parse(line);
-                    if(parsed.text){
-                        const date = new Date(parsed.timestamp).toLocaleTimeString()
-                        line = `[${date}] ${parsed.text}`;
+                    var lines = [line]
+                    if(line.includes("\n")){
+                        lines = line.split("\n");
+                    }
+                    
+                    line = ""
+
+                    for(var i = 0; i < lines.length; i++){
+                        var currentLine = lines[i];
+
+                        try{
+                            const parsed = JSON.parse(currentLine);
+                            if(parsed.text){
+                                const date = new Date(parsed.timestamp).toLocaleTimeString()
+                                currentLine = `[${date}] ${parsed.text}\n`;
+                            }
+                        } catch(e){ }
+
+                        line = line + currentLine;
                     }
                 } catch (e) {}
 

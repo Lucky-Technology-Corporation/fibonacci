@@ -161,6 +161,45 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     },
   ]
 
+  const frontendDocOptions = [
+    {
+      "type": "externalDoc",
+      "image": "auth",
+      "link": "",
+      "title": "Sign In",
+      "import": "useSignIn",
+      "importFrom": "react-auth-kit",
+      "description": "<span class='font-mono cursor-pointer text-xs'>const signIn = useSignIn()</span><span class='hidden'>to authenticate login signin sign in a user</span>"
+    },
+    {
+      "type": "externalDoc",
+      "image": "auth",
+      "link": "",
+      "title": "Sign Out",
+      "import": "useSignOut",
+      "importFrom": "react-auth-kit",
+      "description": "<span class='font-mono cursor-pointer text-xs'>const signOut = useSignOut()</span><span class='hidden'>to logout signout log out sign out a user</span>"
+    },
+    {
+      "type": "externalDoc",
+      "image": "auth",
+      "link": "",
+      "title": "Check Auth Status",
+      "import": "useIsAuthenticated",
+      "importFrom": "react-auth-kit",
+      "description": "<span class='font-mono cursor-pointer text-xs'>const isAuthenticated = useIsAuthenticated()</span><span class='hidden'>to check if a user is logged in signed in authenticated</span>"
+    },
+    {
+      "type": "externalDoc",
+      "image": "auth",
+      "link": "",
+      "title": "Get User Data",
+      "import": "useAuthUser",
+      "importFrom": "react-auth-kit",
+      "description": "<span class='font-mono cursor-pointer text-xs'>const auth = useAuthUser()</span><span class='hidden'>to get a uid userId id user data info</span>"
+    },
+  ]
+
   const [suggestions, setSuggestions] = useState(docOptions);
   const onSuggestionsFetchRequested = ({ value }) => {
     const ai = {
@@ -174,11 +213,14 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
       setSuggestions([ai, ...docs])
     } else if(selectedTab == Page.Hosting){
+      const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
+      console.log("docs", docs)
       const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value)).map((endpoint) => {
         const parsedEndpoint = new ParsedActiveEndpoint(endpoint)
         return {type: "endpoint", ...parsedEndpoint}
       })
-      setSuggestions([ai, ...filteredList])
+
+      setSuggestions([ai, ...filteredList, ...docs])
     }
   };
 
@@ -189,7 +231,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const getSuggestionValue = suggestion => suggestion.title;
 
   const renderSuggestion = (suggestion, { query, isHighlighted }) => {
-    if(suggestion.type == "doc"){
+    if(suggestion.type == "doc" || suggestion.type == "externalDoc"){
       return(
         <div className={`w-full p-2 pl-3 hover:bg-[#393939] ${isHighlighted && "bg-[#393939]" } cursor-pointer`}>
           <div className="font-bold text-sm flex">
@@ -247,7 +289,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       runQuery(suggestion.title)
     } else{
       if(suggestion.type == "endpoint"){
-        setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n'})
+        setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n', importStatement: 'import api from "../Api";\n'})
         copyText(`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`)
       } else if(suggestion.type == "doc"){
         const copyable = suggestion.description.split("text-xs'>")[1].split("</span>")[0]
@@ -262,6 +304,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         };
         setPostMessage(message);
         setCurrentFileProperties({...currentFileProperties, importStatement: newImportStatement})
+      } else if(suggestion.type == "externalDoc"){
+        const copyable = suggestion.description.split("text-xs'>")[1].split("</span>")[0]
+        copyText(copyable)
+
+        var newImportStatement: any = `import { ${suggestion.import} } from '${suggestion.importFrom}';\n'`;
+        setPostMessage({type: "upsertImport", content: newImportStatement, importStatement: newImportStatement})
       }
     }
     setPrompt("")
