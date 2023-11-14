@@ -105,6 +105,33 @@ export default function useEndpointApi() {
     }
   };
 
+  const writeFile = async (path: string, content: string) => {
+    try {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      const response = await axios.post(
+        `${testDomain.replace("https://", "https://fermat.")}/code/write_file`,
+        {
+          path: path,
+          content: content,
+        },
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  };
+
   const deleteFile = async (fileName: string, location: string) => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
@@ -321,6 +348,7 @@ export default function useEndpointApi() {
     refreshFermatJwt,
     deleteFile,
     restartFrontend,
-    restartBackend
+    restartBackend,
+    writeFile
   };
 }

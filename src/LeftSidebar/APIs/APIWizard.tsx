@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import Dropdown from "../../Utilities/Dropdown";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -17,6 +18,7 @@ export default function APIWizard({
   setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
   endpoints: any[];
 }) {
+  const filesystemApi = useFilesystemApi()
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
   const [validUrl, setValidUrl] = useState<boolean>(true)
@@ -27,7 +29,7 @@ export default function APIWizard({
     { id: "post", name: "POST" },
   ];
 
-  const createHandler = () => {
+  const createHandler = async () => {
     var cleanInputValue = inputValue;
     if (inputValue == "") {
       toast.error("Please enter a value");
@@ -60,6 +62,8 @@ export default function APIWizard({
       return
     }
 
+    await filesystemApi.createNewFile("/backend/user-dependencies/" + fileName, newEndpointName)
+
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {
         return [...endpoints, newEndpointName];
@@ -74,13 +78,7 @@ export default function APIWizard({
       return endpoints;
     });
 
-    setPostMessage({
-      type: "newFile",
-      fileName: "/backend/user-dependencies/" + fileName,
-      endpointName: newEndpointName,
-    });
     setIsVisible(false);
-
   };
 
   useEffect(() => {

@@ -282,7 +282,7 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
-        {/* <div className={searchFilter != "" ? ("app.ts".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        <div className={searchFilter != "" ? ("app.tsx".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
         <FileItem
           key={"App.tsx"}
           path={("App.tsx")}
@@ -292,7 +292,7 @@ export default function FilesList({ active }: { active: boolean }) {
           }}
           disableDelete={true}
         />
-        </div> */}
+        </div>
       </div>
 
       <div className="pages-list">

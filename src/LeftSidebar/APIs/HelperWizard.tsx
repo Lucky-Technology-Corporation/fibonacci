@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function HelperWizard({
@@ -15,10 +16,11 @@ export default function HelperWizard({
   setFullHelpers: React.Dispatch<React.SetStateAction<any[]>>;
   helpers: any[];
 }) {
+  const filesystemApi = useFilesystemApi()
   const [inputValue, setInputValue] = useState("");
   const { setPostMessage, setActiveHelper } = useContext(SwizzleContext);
 
-  const createHandler = () => {
+  const createHandler = async () => {
     if (inputValue == "") {
       toast.error("Please enter a value");
       return;
@@ -32,7 +34,7 @@ export default function HelperWizard({
     const newHelperName = cleanInputValue;
 
     if(helpers.includes(newHelperName)){
-      toast.error("That endpoint already exists")
+      toast.error("That helper already exists")
       return
     }
 
@@ -57,11 +59,9 @@ export default function HelperWizard({
       toast.error("That helper already exists");
       return;
     }
-    setPostMessage({
-      type: "newFile",
-      fileName: "/backend/helpers/" + fileName,
-      helperName: newHelperName,
-    });
+    
+    await filesystemApi.createNewFile("/backend/helpers/" + fileName)
+
     setIsVisible(false);
     setTimeout(() => {
       setActiveHelper(newHelperName);

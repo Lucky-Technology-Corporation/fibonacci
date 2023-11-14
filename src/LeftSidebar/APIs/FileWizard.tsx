@@ -1,5 +1,6 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import Checkbox from "../../Utilities/Checkbox";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
@@ -14,6 +15,8 @@ export default function APIWizard({
   files: string[];
   fileType: string
 }) {
+  const filesystemApi = useFilesystemApi()
+  
   const [inputValue, setInputValue] = useState("");
   const [fallbackInputValue, setFallbackInputValue] = useState("");
 
@@ -22,7 +25,7 @@ export default function APIWizard({
 
   const [overrideRender, setOverrideRender] = useState<ReactNode | null>(null);
 
-  const createHandler = () => {
+  const createHandler = async () => {
     if (inputValue == "") {
       toast.error("Please enter a filename");
       return;
@@ -98,9 +101,10 @@ export default function APIWizard({
       if(authRequired){
         unauthenticatedFallback = fallbackInputValue
       }
-      setPostMessage({ type: "newFile", fileName: "/frontend/src/pages/" + parsedFileName, routePath: routePath, fallbackPath: unauthenticatedFallback});  
+
+      await filesystemApi.createNewFile("/frontend/src/pages/" + parsedFileName, undefined, routePath, unauthenticatedFallback)
     } else if(fileType == "file"){
-      setPostMessage({ type: "newFile", fileName: "/frontend/src/components/" + newFileName});  
+      await filesystemApi.createNewFile("/frontend/src/components/" + newFileName)
     }
     
     setTimeout(() => {
