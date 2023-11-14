@@ -80,7 +80,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     line = ""
 
                     for(var i = 0; i < lines.length; i++){
-                        var currentLine = lines[i];
+                        var currentLine = lines[i] + "\n";
 
                         try{
                             const parsed = JSON.parse(currentLine);
@@ -90,7 +90,20 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                             }
                         } catch(e){ }
 
-                        line = line + currentLine;
+                        if(currentLine.startsWith("[0] ")){
+                            currentLine = currentLine.substring(4);
+                        } else if(currentLine.startsWith("[1] ")){
+                            currentLine = currentLine.substring(4);
+                        }
+
+                        currentLine = currentLine.replace(/\n+$/, "");
+                        if(currentLine.trim() != ""){
+                            line = line + currentLine + "\n";
+                        }
+                    }
+
+                    if(line.endsWith("\n")){
+                        line = line.substring(0, line.length - 1);
                     }
                 } catch (e) {}
 
