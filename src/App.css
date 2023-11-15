@@ -1,3 +1,22 @@
+/* Grape */
+.gjs-one-bg{
+  background-color: #1e1e1e !important;
+}
+.gjs-four-color{
+  color: #fff !important;
+}
+
+.gjs-four-color-h:hover{
+  color: #7980ff !important;
+}
+
+.gjs-field select{
+  background-color: #85869833 !important;
+}
+.gjs-pn-btn.gjs-pn-active{
+  background-color: #85869833 !important;
+}
+
 /* Checkbox */
 .cbx {
   margin: auto;

@@ -63,7 +63,6 @@ export default function LeftSidebar({
     }
   }, [selectedTab]);
 
-
   const openActiveFile = () => {
     if (currentFileProperties && currentFileProperties.fileUri) {
       const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
@@ -71,6 +70,7 @@ export default function LeftSidebar({
         return
       };
     }
+    console.log("opening", activeFile)
     setPostMessage({
       type: "openFile",
       fileName: `/${activeFile}`,

@@ -54,7 +54,6 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         webSocket.onmessage = (event) => {
             var newLog = event.data
-            console.log("socket", "message: " + new Date().getUTCMilliseconds() + ": " + newLog)
             messageQueue.push(newLog);
         };
 
@@ -108,7 +107,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                         line = line.substring(0, line.length - 1);
                     }
                 } catch (e) {}
-
+                console.log("add to line", line)
                 setLog(prevLog => prevLog + '\n' + line);
             }
         };
@@ -135,13 +134,15 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     useEffect(() => {
         setTimeout(() => {
-            divRef.current.scrollTop = divRef.current.scrollHeight;
+            if(divRef.current && divRef.current.scrollHeight){
+                divRef.current.scrollTop = divRef.current.scrollHeight;
+            }
         }, 50);
     }, [log])
 
     return (
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4">
-            <span className="font-mono text-sm">{log}</span>
+            <span className="font-mono whitespace-pre-line text-sm">{log}</span>
         </div>
     );
 }
