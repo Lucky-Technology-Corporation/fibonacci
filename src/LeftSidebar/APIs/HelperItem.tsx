@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function HelperItem({
@@ -19,13 +20,19 @@ export default function HelperItem({
 
   const {setPostMessage, setShouldRefreshList, shouldRefreshList} = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
+  const { removeFile } = useFilesystemApi()
 
   const runDeleteProcess = async (fileName: string) => {
     try{
+      //close file
       setPostMessage({
         type: "removeFile",
         fileName: "/backend/helpers/" + fileName + ".ts",
       });
+      //clean up codegen
+      //TODO: clean up all imports in all other files here. this is not implemented right now though.
+      // await removeFile("/backend/helpers/" + fileName + ".ts")
+      //delete file
       await deleteFile(fileName + ".ts", "helpers")
       removeFromList()
     } catch(e){

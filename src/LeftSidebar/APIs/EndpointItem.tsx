@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method, methodToColor } from "../../Utilities/Method";
@@ -21,6 +22,8 @@ export default function EndpointItem({
   removeFromList?: () => void
 }) {
   const { deleteFile } = useEndpointApi()
+  const { removeFile } = useFilesystemApi()
+
   const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
 
   const runDeleteProcess = async (method: string, path: string) => {
@@ -32,12 +35,14 @@ export default function EndpointItem({
         newEndpointName = "get."
       }
       
-
+      //close file
       setPostMessage({
         type: "removeFile",
         fileName: "/backend/user-dependencies/" + fileName,
-        endpointName: newEndpointName,
       });
+      //clean up codegen
+      await removeFile("/backend/user-dependencies/" + fileName, newEndpointName)
+      //delete file
       await deleteFile(fileName, "backend")
       removeFromList()
     } catch(e){

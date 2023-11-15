@@ -9,7 +9,7 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useEndpointApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt } =
+  const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList } =
     useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
@@ -204,6 +204,33 @@ export default function useEndpointApi() {
     }
   }
 
+  const promptAiEditor = async (userQuery: string) => {
+    try {
+
+      var body = {
+        prompt: userQuery,
+        fermat_domain: testDomain.replace("https://", "https://fermat."),
+        fermat_jwt: await getFermatJwt(),
+        path: openUri.replace("/swizzle/code/", ""),
+        conversation_id: ""
+      };
+
+      sessionStorage.setItem(("ai" + activeProject + "_" + openUri.replace("/swizzle/code/", "") + "_file"), userQuery)
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/edit?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
   const askQuestion = async (userQuery: string, aiCommand: string) => {
     try {
       const fileName = endpointToFilename(activeEndpoint);
@@ -257,13 +284,19 @@ export default function useEndpointApi() {
 
   const getAutocheckResponse = async () => {
     try {
-      const fileName = endpointToFilename(activeEndpoint);
-      const fileContents = await getFile("backend/user-dependencies/" + fileName);
+      const fileName = openUri.replace("/swizzle/code/", "");
+      const fileContents = await getFile(fileName);
+      
+      console.log("autochecking", fileName)
+      if(fileName.includes("frontend/")){
+        const neededEndpoints = checkIfAllEndpointsExist(fileContents)
+      }
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/autocheck?env=${environment}`,
         {
           file_contents: fileContents,
+          path: fileName,
         },
         {
           withCredentials: true
@@ -325,17 +358,52 @@ export default function useEndpointApi() {
     }
   };
 
-  const createAPI = async (apiName: string) => {
-    return true;
-  };
+  const checkIfAllEndpointsExist = (data: string) => {
+    const regex = /api\.(get|post)\((.*?)\)/g;
+    const matches = []
+    let match;
 
-  const updateEndpoint = async (endpointName: string, code: string) => {
-    return true;
-  };
+    while ((match = regex.exec(data)) !== null) {
+      matches.push(match[2]);
+    }
+    var neededEndpoints = []
+    for(var urlInQuotes of matches){
+      const url = urlInQuotes.replace(/^['"]|['"]$/g, '');
+      console.log("Checking " + url + " against " + fullEndpointList)
+      const doesMatch = doesUrlMatch(url, fullEndpointList)
+      if(!doesMatch){
+        console.warn("Endpoint " + url + " does not exist")
+        console.log("Do you want me to create " + url + " for you?")
+        //OFFER TO CREATE THIS ENDPOINT IN THE BACKEND
+        neededEndpoints.push(url)
+      }
+    }
+    return neededEndpoints
+  }
+
+  function doesUrlMatch(url, patterns) {
+    // Normalize and split the URL to be checked
+    const urlParts = url.split('/').filter(part => part);
+
+    // Iterate through each pattern
+    return patterns.some(pattern => {
+        // Normalize and split the pattern
+        const patternParts = pattern.split('/').filter(part => part);
+
+        // Check if the parts match, considering path parameters
+        if (urlParts.length !== patternParts.length) {
+            return false; // Different lengths, can't match
+        }
+
+        return patternParts.every((part, index) => {
+            // Compare each part, path parameters are always a match
+            return part.startsWith(':') || part === urlParts[index];
+        });
+    });
+  }
 
   return {
-    createAPI,
-    updateEndpoint,
+    checkIfAllEndpointsExist,
     getFiles,
     npmSearch,
     getPackageJson,
@@ -349,6 +417,7 @@ export default function useEndpointApi() {
     deleteFile,
     restartFrontend,
     restartBackend,
-    writeFile
+    writeFile,
+    promptAiEditor
   };
 }

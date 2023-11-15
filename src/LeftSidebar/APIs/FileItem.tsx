@@ -4,6 +4,7 @@ import { useContext } from "react";
 import toast from "react-hot-toast";
 import { Tooltip } from 'react-tooltip';
 import useEndpointApi from "../../API/EndpointAPI";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function FileItem({
@@ -28,6 +29,7 @@ export default function FileItem({
 
   const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
+  const { removeFile } = useFilesystemApi()
 
   const runDeleteProcess = async (fileName: string) => {
     try{
@@ -37,14 +39,14 @@ export default function FileItem({
         fileNameParsed = fileNameParsed + ".tsx"
       }
 
-      var postBody = {
+      //close file
+      setPostMessage({
         type: "removeFile",
         fileName: fileNameParsed,
-      }
-      if(fullPath.includes("/frontend/src/pages")){ 
-        postBody["routePath"] = formatPath(path)
-      }
-      setPostMessage(postBody);
+      })
+      //clean up codegen
+      await removeFile("/backend/user-dependencies/" + fileName, undefined, formatPath(path))
+      //delete file
       await deleteFile(fullPath.replace("/home/swizzle/code/frontend/src/", ""), "frontend")
       setShouldRefreshList(!shouldRefreshList)
     } catch(e){

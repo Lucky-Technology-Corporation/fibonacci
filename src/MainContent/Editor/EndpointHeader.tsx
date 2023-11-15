@@ -7,7 +7,6 @@ import useEndpointApi from "../../API/EndpointAPI";
 import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
 import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
-import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 import { modifySwizzleImport } from "../../Utilities/EndpointParser";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -25,7 +24,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
 
-  const { askQuestion } = useEndpointApi();
+  const { promptAiEditor, checkIfAllEndpointsExist } = useEndpointApi();
 
   useEffect(() => {
     console.log(selectedTab)
@@ -40,23 +39,23 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
 
   const runQuery = async (promptQuery: string) => {
-    return toast.promise(askQuestion(promptQuery, AICommand), {
-      loading: "Looking through your project...",
+    return toast.promise(promptAiEditor(promptQuery), {
+      loading: "Thinking...",
       success: (data) => {
-        if (data == null) {
-          return "Something went wrong";
-        }
-        if (data.recommendation_text != undefined && data.recommendation_text != "") {
-          setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
-        }
-        if (data.recommendation_code != undefined && data.recommendation_code != "") {
-          setPostMessage({ type: "replaceText", code: data.recommendation_code });
-        }
+        setPostMessage({
+          type: "replaceText",
+          content: data,
+        })
+
+        checkIfAllEndpointsExist(data)
+
         return "Done";
       },
-      error: "Error generating code",
+      error: "Error writing code",
     });
   };
+
+
 
   const toggleSearch = () => {
     const command = isSearching ? "closeSearchView" : "openSearchView";
@@ -233,7 +232,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const renderSuggestion = (suggestion, { query, isHighlighted }) => {
     if(suggestion.type == "doc" || suggestion.type == "externalDoc"){
       return(
-        <div className={`w-full p-2 pl-3 hover:bg-[#393939] ${isHighlighted && "bg-[#393939]" } cursor-pointer`}>
+        <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
           <div className="font-bold text-sm flex">
           <img 
               src={`/${suggestion.image}.svg`}
@@ -247,8 +246,9 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       )
     } else if(suggestion.type == "ai"){
       return(
-        <div className={`w-full p-2 pl-3 hover:bg-[#393939] ${isHighlighted && "bg-[#393939]" } cursor-pointer`}>
-          <div className="font-normal text-sm">
+        <>
+        <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
+          <div className="font-semibold text-sm">
             <FontAwesomeIcon 
               icon={faWandMagicSparkles}
               className="mr-1 w-4 h-4"
@@ -259,18 +259,19 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {suggestion.description}
           </div> */}
         </div>
+        </>
       )
     } else if(suggestion.type == "endpoint"){
       return(
-        <div className={`w-full p-2 pl-3 hover:bg-[#393939] ${isHighlighted && "bg-[#393939]" } cursor-pointer`}>
-          <div className="font-mono text-xs flex">
+        <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
+          <div className="font-mono text-sm flex">
             <img 
               src={"/cloud.svg"}
               className="mr-2 w-4 h-4 my-auto"
             />
             <span className={`${methodToColor(suggestion.method)} font-semibold mr-1`}>{suggestion.method}</span> {suggestion.fullPath}
           </div>
-          <div className="text-xs mt-0.5 font-mono font-normal">
+          <div className="text-sm mt-0.5 font-mono font-normal">
             {`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`}
           </div>
         </div>
@@ -289,7 +290,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       runQuery(suggestion.title)
     } else{
       if(suggestion.type == "endpoint"){
-        setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n', importStatement: 'import api from "../Api";\n'})
+        setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n', importStatement: 'import api from "../Api";'})
         copyText(`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`)
       } else if(suggestion.type == "doc"){
         const copyable = suggestion.description.split("text-xs'>")[1].split("</span>")[0]
@@ -308,8 +309,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         const copyable = suggestion.description.split("text-xs'>")[1].split("</span>")[0]
         copyText(copyable)
 
-        var newImportStatement: any = `import { ${suggestion.import} } from '${suggestion.importFrom}';\n'`;
-        setPostMessage({type: "upsertImport", content: newImportStatement, importStatement: newImportStatement})
+        var newImportStatement: any = `import { ${suggestion.import} } from '${suggestion.importFrom}';`;
+        setPostMessage({type: "upsertImport", content: newImportStatement + "\n", importStatement: newImportStatement})
       }
     }
     setPrompt("")
@@ -361,7 +362,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                       return
                     }
                   },
-                  placeholder: `${selectedTab == Page.Apis ? "Connect users, files, and more" : "Connect endpoints, components, and more"}...`,
+                  placeholder: `${selectedTab == Page.Apis ? "Write code with AI" : "Write code with AI"}...`,
                   value: prompt,
                   onChange: onPromptChange,
                   className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2",

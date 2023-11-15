@@ -41,7 +41,7 @@ export default function LeftSidebar({
   isModalOpen, 
   setIsModalOpen,
 }: LeftSidebarProps) {
-  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject, ideReady } =
+  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject, ideReady, setOpenUri } =
     useContext(SwizzleContext);
 
 
@@ -116,6 +116,9 @@ export default function LeftSidebar({
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.startsWith("file:///")) {
       return;
     }
+    
+    setOpenUri(currentFileProperties.fileUri.replace("file://", ""))
+
     if (currentFileProperties.fileUri.includes("backend")) {
       if(selectedTab != Page.Apis){
         setSelectedTab(Page.Apis)
@@ -233,31 +236,11 @@ export default function LeftSidebar({
         />
         <AuthSettings active={selectedTab == Page.Auth} className="" />
         </div>
+        
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
         
-        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
-          <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
-            <SectionTitle
-              icon="/cloud.svg"
-              text="Backend"
-              active={selectedTab == Page.Apis}
-              onClick={() => {
-                if(selectedTab == Page.Apis){ setSelectedTab(null) }
-                else { setSelectedTab(Page.Apis); }
-              }}
-              className="backend-tab"
-            />
-          </div>
-        </a>
-        <EndpointList active={selectedTab == Page.Apis} />
-
-        <div className="py-1 w-full">
-          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
-        </div>
-
         <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
         <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
           <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
@@ -279,6 +262,28 @@ export default function LeftSidebar({
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
+
+        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
+          <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
+            <SectionTitle
+              icon="/cloud.svg"
+              text="Backend"
+              active={selectedTab == Page.Apis}
+              onClick={() => {
+                if(selectedTab == Page.Apis){ setSelectedTab(null) }
+                else { setSelectedTab(Page.Apis); }
+              }}
+              className="backend-tab"
+            />
+          </div>
+        </a>
+        <EndpointList active={selectedTab == Page.Apis} />
+
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
+
 
         <SectionTitle
           icon="/database.svg"

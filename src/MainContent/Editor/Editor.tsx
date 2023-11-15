@@ -108,7 +108,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         margin: "6px",
         marginRight: "0px",
         marginLeft: "16px",
-        borderRadius: "12px",
+        borderRadius: "8px",
         pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}>
       <iframe
         className="theia-iframe"

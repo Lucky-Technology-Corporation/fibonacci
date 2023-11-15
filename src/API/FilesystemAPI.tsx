@@ -181,10 +181,9 @@ export default function useFilesystemApi(){
 
   const removeFile = async (
     relativeFilePath: string,
-    endpointName: string,
-    routePath: string,
+    endpointName?: string,
+    routePath?: string,
   ): Promise<void> => {
-    console.log("removeFile");
     if (endpointName != undefined && endpointName !== "") {
       //remove from server.ts if it's an endpoint
       console.log("remove endpoint");
@@ -204,7 +203,7 @@ export default function useFilesystemApi(){
           )}");`,
           ``,
         );
-        await endpointApi.writeFile("backend/server.ts", content)
+        await endpointApi.writeFile("backend/server.ts", newContent)
     }
     } else if (routePath != undefined && routePath !== "") {
       //remove from RouteList.ts if it's a route

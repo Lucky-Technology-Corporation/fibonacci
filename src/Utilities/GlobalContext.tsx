@@ -49,6 +49,8 @@ export interface SwizzleContextType {
   setHasPaymentMethod;
   fullEndpointList;
   setFullEndpointList;
+  openUri;
+  setOpenUri;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -68,6 +70,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [postMessage, setPostMessage] = useState(null);
   const [activeEndpoint, setActiveEndpoint] = useState("backend/user-dependencies/get..ts");
   const [activeFile, setActiveFile] = useState("frontend/src/pages/SwizzleHomePage.tsx");
+  const [openUri, setOpenUri] = useState(null);
   const [activeHelper, setActiveHelper] = useState(null);
   const [ideReady, setIdeReady] = useState(false);
   const [testDeployStatus, setTestDeployStatus] = useState("DEPLOYMENT_IN_PROGRESS");
@@ -129,7 +132,9 @@ export const GlobalContextProvider = ({ children }) => {
         hasPaymentMethod,
         setHasPaymentMethod,
         fullEndpointList, 
-        setFullEndpointList
+        setFullEndpointList,
+        openUri,
+        setOpenUri
       }}
     >
       {children}
