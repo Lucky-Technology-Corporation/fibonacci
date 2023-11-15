@@ -1,12 +1,16 @@
-import { createContext, useState } from "react";
+import { Dispatch, SetStateAction, createContext, useState } from "react";
+import { ProjectDeploymentStatus } from "../API/DeploymentAPI";
+import { ProjectResponse } from "../API/DatabaseAPI";
+
+export type ProjectEnvironment = "test" | "prod";
 
 export interface SwizzleContextType {
-  projects;
-  setProjects;
-  activeProject;
-  setActiveProject;
-  activeProjectName;
-  setActiveProjectName;
+  projects: ProjectResponse[] | null;
+  setProjects: Dispatch<SetStateAction<ProjectResponse[] | null>>;
+  activeProject: string;
+  setActiveProject: Dispatch<SetStateAction<string>>;
+  activeProjectName: string;
+  setActiveProjectName: Dispatch<SetStateAction<string>>;
   isFree;
   setIsFree;
   domain: string;
@@ -22,17 +26,17 @@ export interface SwizzleContextType {
   postMessage;
   setPostMessage;
   activeEndpoint: string;
-  setActiveEndpoint;
-  environment;
-  setEnvironment;
+  setActiveEndpoint: Dispatch<SetStateAction<string>>;
+  environment: ProjectEnvironment;
+  setEnvironment: Dispatch<SetStateAction<ProjectEnvironment>>;
   ideReady;
   setIdeReady;
   activeFile;
   setActiveFile;
-  testDeployStatus;
-  setTestDeployStatus;
-  prodDeployStatus;
-  setProdDeployStatus;
+  testDeployStatus: ProjectDeploymentStatus;
+  setTestDeployStatus: Dispatch<SetStateAction<ProjectDeploymentStatus>>;
+  prodDeployStatus: ProjectDeploymentStatus;
+  setProdDeployStatus: Dispatch<SetStateAction<ProjectDeploymentStatus>>;
   fermatJwt;
   setFermatJwt;
   figmaToken;
@@ -56,8 +60,8 @@ export interface SwizzleContextType {
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
 
 export const GlobalContextProvider = ({ children }) => {
-  const [environment, setEnvironment] = useState("test"); // ["test", "prod"]
-  const [projects, setProjects] = useState(null);
+  const [environment, setEnvironment] = useState<ProjectEnvironment>("test");
+  const [projects, setProjects] = useState<ProjectResponse[]>(null);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(null);
   const [activeProject, setActiveProject] = useState("");
   const [activeProjectName, setActiveProjectName] = useState("");
@@ -73,8 +77,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [openUri, setOpenUri] = useState(null);
   const [activeHelper, setActiveHelper] = useState(null);
   const [ideReady, setIdeReady] = useState(false);
-  const [testDeployStatus, setTestDeployStatus] = useState("DEPLOYMENT_IN_PROGRESS");
-  const [prodDeployStatus, setProdDeployStatus] = useState("DEPLOYMENT_IN_PROGRESS");
+  const [testDeployStatus, setTestDeployStatus] = useState<ProjectDeploymentStatus>("DEPLOYMENT_IN_PROGRESS");
+  const [prodDeployStatus, setProdDeployStatus] = useState<ProjectDeploymentStatus>("DEPLOYMENT_IN_PROGRESS");
   const [fermatJwt, setFermatJwt] = useState("");
   const [figmaToken, setFigmaToken] = useState("");
   const [shouldRefreshList, setShouldRefreshList] = useState(false);
@@ -131,10 +135,10 @@ export const GlobalContextProvider = ({ children }) => {
         setShouldOverlay,
         hasPaymentMethod,
         setHasPaymentMethod,
-        fullEndpointList, 
+        fullEndpointList,
         setFullEndpointList,
         openUri,
-        setOpenUri
+        setOpenUri,
       }}
     >
       {children}

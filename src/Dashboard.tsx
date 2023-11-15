@@ -1,6 +1,6 @@
-import { Position, TourProvider, useTour } from '@reactour/tour';
+import { Position, TourProvider, useTour } from "@reactour/tour";
 import Lottie from "lottie-react";
-import { initIntercomWindow } from 'next-intercom';
+import { initIntercomWindow } from "next-intercom";
 import { useContext, useEffect, useState } from "react";
 import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
@@ -32,158 +32,248 @@ export default function Dashboard() {
   //Initialization code...
   const { isFree, projects, setProjects, activeProject, testDomain, ideReady } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
-  const auth = useAuthUser()
-
+  const auth = useAuthUser();
 
   const onboardingSteps = [
     {
-      selector: '.env-toggle',
-      title: 'Environment',
-      position: 'right' as Position,
-      content: <div className="text-left text-sm">
-        Your project has two environments: <span className="text-[#f39c12] font-bold">test</span> and <span className="font-bold">production</span>. Use test environment to develop and the production environment to serve your users.<br/><br/>All resources (database, storage, code, etc) are DIFFERENT between the two environments.
-        </div>,
+      selector: ".env-toggle",
+      title: "Environment",
+      position: "right" as Position,
+      content: (
+        <div className="text-left text-sm">
+          Your project has two environments: <span className="text-[#f39c12] font-bold">test</span> and{" "}
+          <span className="font-bold">production</span>. Use test environment to develop and the production environment
+          to serve your users.
+          <br />
+          <br />
+          All resources (database, storage, code, etc) are DIFFERENT between the two environments.
+        </div>
+      ),
     },
     {
-      selector: '.user-tab',
-      title: 'Users',
-      position: 'right' as Position,
+      selector: ".user-tab",
+      title: "Users",
+      position: "right" as Position,
       content: <div className="text-left text-sm">Manage your users here.</div>,
     },
     {
-      selector: '.auth-method',
-      title: 'Authentication',
-      position: 'right' as Position,
-      content: <div className="text-left text-sm">Click the + New button to drop in authentication methods like Email/Password, Google, etc.</div>,
+      selector: ".auth-method",
+      title: "Authentication",
+      position: "right" as Position,
+      content: (
+        <div className="text-left text-sm">
+          Click the + New button to drop in authentication methods like Email/Password, Google, etc.
+        </div>
+      ),
     },
     {
-      selector: '.backend-tab',
-      title: 'Backend',
-      position: 'right' as Position,
+      selector: ".backend-tab",
+      title: "Backend",
+      position: "right" as Position,
       content: <div className="text-left text-sm">This where you add your backend code.</div>,
     },
     {
-      selector: '.endpoints-list',
-      title: 'Endpoints',
-      position: 'right' as Position,
-      content: <div className="text-left text-sm">Endpoints are publicly accessible functions that the frontend can call.</div>,
+      selector: ".endpoints-list",
+      title: "Endpoints",
+      position: "right" as Position,
+      content: (
+        <div className="text-left text-sm">Endpoints are publicly accessible functions that the frontend can call.</div>
+      ),
     },
     {
-      selector: '.helpers-list',
-      title: 'Helpers',
-      position: 'right' as Position,
-      content: <div className="text-left text-sm">Helpers are private functions that can be called by other endpoints or helpers.<br/><br/>You can use helpers to organize your code and avoid repetition.</div>,
+      selector: ".helpers-list",
+      title: "Helpers",
+      position: "right" as Position,
+      content: (
+        <div className="text-left text-sm">
+          Helpers are private functions that can be called by other endpoints or helpers.
+          <br />
+          <br />
+          You can use helpers to organize your code and avoid repetition.
+        </div>
+      ),
     },
     {
-      selector: '.magic-bar',
-      title: 'Magic Bar',
-      position: 'bottom' as Position,
-      content: <div className="text-left text-sm">Ask for <b>anything you need</b> here.<br/><br/>You can generate code with AI, import helpers/components, search for documentation, and more.</div>,
+      selector: ".magic-bar",
+      title: "Magic Bar",
+      position: "bottom" as Position,
+      content: (
+        <div className="text-left text-sm">
+          Ask for <b>anything you need</b> here.
+          <br />
+          <br />
+          You can generate code with AI, import helpers/components, search for documentation, and more.
+        </div>
+      ),
     },
     {
-      selector: '.auth-toggle',
-      title: 'Require Authentication',
-      position: 'left' as Position,
-      content: <div className="text-left text-sm"><b>Require authentication</b><br/><br/>Require users to be logged in. This guarantees that the <span className="font-mono">request.user</span> won't be null (unauthenticated requests will be denied with a 401).</div>,
+      selector: ".auth-toggle",
+      title: "Require Authentication",
+      position: "left" as Position,
+      content: (
+        <div className="text-left text-sm">
+          <b>Require authentication</b>
+          <br />
+          <br />
+          Require users to be logged in. This guarantees that the <span className="font-mono">request.user</span> won't
+          be null (unauthenticated requests will be denied with a 401).
+        </div>
+      ),
     },
     {
-      selector: '.tester-button',
-      title: 'Tests',
-      position: 'left' as Position,
-      content: <div className="text-left text-sm"><b>Tests</b><br/><br/>Simulate endpoint requests with different parameters or users.</div>,
+      selector: ".tester-button",
+      title: "Tests",
+      position: "left" as Position,
+      content: (
+        <div className="text-left text-sm">
+          <b>Tests</b>
+          <br />
+          <br />
+          Simulate endpoint requests with different parameters or users.
+        </div>
+      ),
     },
     {
-      selector: '.autocheck-button',
-      title: 'Autocheck',
-      position: 'left' as Position,
-      content: <div className="text-left text-sm"><b>AI Autocheck</b><br/><br/>Run your code through an AI to check for bugs, security issues, and more.</div>,
+      selector: ".autocheck-button",
+      title: "Autocheck",
+      position: "left" as Position,
+      content: (
+        <div className="text-left text-sm">
+          <b>AI Autocheck</b>
+          <br />
+          <br />
+          Run your code through an AI to check for bugs, security issues, and more.
+        </div>
+      ),
     },
     {
-      selector: '.secrets-button',
-      title: 'Secrets',
-      position: 'left' as Position,
-      content: <div className="text-left text-sm"><b>Secrets</b><br/><br/>Add API keys and other secrets here. You can access them in your code with the secrets variable (<span className="font-mono">process.env.SECRET_NAME</span>). You can have different secret values in test and production.</div>,
+      selector: ".secrets-button",
+      title: "Secrets",
+      position: "left" as Position,
+      content: (
+        <div className="text-left text-sm">
+          <b>Secrets</b>
+          <br />
+          <br />
+          Add API keys and other secrets here. You can access them in your code with the secrets variable (
+          <span className="font-mono">process.env.SECRET_NAME</span>). You can have different secret values in test and
+          production.
+        </div>
+      ),
     },
     {
-      selector: '.packages-button',
-      title: 'Packages',
-      position: 'left' as Position,
-      content: <div className="text-left text-sm"><b>Packages</b><br/><br/>Add NPM packages to your backend here.</div>,
+      selector: ".packages-button",
+      title: "Packages",
+      position: "left" as Position,
+      content: (
+        <div className="text-left text-sm">
+          <b>Packages</b>
+          <br />
+          <br />
+          Add NPM packages to your backend here.
+        </div>
+      ),
     },
     {
-      selector: '.restart-button',
-      title: 'Restart',
-      position: 'left' as Position,
-      content: <div className="text-left text-sm"><b>Restart</b><br/><br/>Manually restart your backend server here (your server also automatically restarts when you save a file).</div>,
+      selector: ".restart-button",
+      title: "Restart",
+      position: "left" as Position,
+      content: (
+        <div className="text-left text-sm">
+          <b>Restart</b>
+          <br />
+          <br />
+          Manually restart your backend server here (your server also automatically restarts when you save a file).
+        </div>
+      ),
     },
     {
-      selector: '.frontend-tab',
-      title: 'Frontend',
+      selector: ".frontend-tab",
+      title: "Frontend",
       content: <div className="text-left text-sm">Build your user-facing website here with ReactJS.</div>,
     },
     {
-      selector: '.pages-list',
-      title: 'Pages',
-      content: <div className="text-left text-sm">A page contains the code for a specific URL (like yourdomain.com/about)</div>,
+      selector: ".pages-list",
+      title: "Pages",
+      content: (
+        <div className="text-left text-sm">A page contains the code for a specific URL (like yourdomain.com/about)</div>
+      ),
     },
     {
-      selector: '.components-list',
-      title: 'Components',
-      content: <div className="text-left text-sm">A component contains code which can be reused in pages or other components.</div>,
+      selector: ".components-list",
+      title: "Components",
+      content: (
+        <div className="text-left text-sm">
+          A component contains code which can be reused in pages or other components.
+        </div>
+      ),
     },
     {
-      selector: '.database-tab',
-      title: 'Database',
-      content: <div className="text-left text-sm">This is your database. A collection is a list of documents (JSON). You can quickly add, edit, and delete documents from your backend with a MongoDB query</div>,
+      selector: ".database-tab",
+      title: "Database",
+      content: (
+        <div className="text-left text-sm">
+          This is your database. A collection is a list of documents (JSON). You can quickly add, edit, and delete
+          documents from your backend with a MongoDB query
+        </div>
+      ),
     },
     {
-      selector: '.files-tab',
-      title: 'Files',
-      content: <div className="text-left text-sm">This is where you can manage large files like images and video. Your backend can read and write to this.</div>,
+      selector: ".files-tab",
+      title: "Files",
+      content: (
+        <div className="text-left text-sm">
+          This is where you can manage large files like images and video. Your backend can read and write to this.
+        </div>
+      ),
     },
     {
-      selector: '.deploy-button',
-      title: 'Deploy',
-      content: <div className="text-left text-sm">Deploy your project to Production here.<br/><br/>The production environment is scalable and always ready to accept new requests.</div>,
-    }
-  ]
+      selector: ".deploy-button",
+      title: "Deploy",
+      content: (
+        <div className="text-left text-sm">
+          Deploy your project to Production here.
+          <br />
+          <br />
+          The production environment is scalable and always ready to accept new requests.
+        </div>
+      ),
+    },
+  ];
 
-  const [currentStep, setCurrentStep] = useState(0)
-  const { setIsOpen } = useTour()
+  const [currentStep, setCurrentStep] = useState(0);
+  const { setIsOpen } = useTour();
 
   const handleStepChange = (step: number) => {
-    prepareNextStep(step)
-    setCurrentStep(step)
-  }
-  
+    prepareNextStep(step);
+    setCurrentStep(step);
+  };
+
   const prepareNextStep = (nextStep: number) => {
-    console.log("prepareNextStep", nextStep)
-    if(nextStep == 1){
-      setSelectedTab(Page.Auth)
-    } else if(nextStep == 3){
-      setSelectedTab(Page.Apis)
-    } else if(nextStep == 13){
-      setSelectedTab(Page.Hosting)
+    console.log("prepareNextStep", nextStep);
+    if (nextStep == 1) {
+      setSelectedTab(Page.Auth);
+    } else if (nextStep == 3) {
+      setSelectedTab(Page.Apis);
+    } else if (nextStep == 13) {
+      setSelectedTab(Page.Hosting);
     }
-  }
+  };
 
   useEffect(() => {
-    initIntercomWindow({ appId: 'cxvvsphp', name: (auth() || {"user": "unknown"}).user, projectId: activeProject, testDomain: testDomain })
-  }, [auth, activeProject, testDomain])
+    initIntercomWindow({
+      appId: "cxvvsphp",
+      name: (auth() || { user: "unknown" }).user,
+      projectId: activeProject,
+      testDomain: testDomain,
+    });
+  }, [auth, activeProject, testDomain]);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const data = await getProjects();
-
-        if (!data || data.length === 0) {
-          setProjects([]);
-          return;
-        }
-
-        // Initialize the project list to an empty array.
         setProjects(data);
-        return;
       } catch (e) {
         toast.error("Error fetching projects");
         console.error(e);
@@ -195,69 +285,71 @@ export default function Dashboard() {
   if (isAuthenticated()) {
     if (projects) {
       return (
-        <TourProvider steps={onboardingSteps} styles={{
-          popover: (base) => ({
-            ...base,
-            backgroundColor: "#32333b",
-          }),
-          arrow: (base, {disabled}) => ({
-            ...base,
-            color: disabled ? "#777" : "#ddd",
-            margin: "2px"
-          }),
-          badge: (base) => ({
-            display: "none"
-          }),
-          dot: (base) => ({
-            ...base,
-            display: "none"
-          }),
-        }}
-        currentStep={currentStep}
-        setCurrentStep={handleStepChange}
-        >
-        <div
-          className="page-wrapper"
-          style={{
-            transform: isFree ? "rotate(1.5deg)" : "rotate(0deg)",
-            transition: "transform 0.5s",
+        <TourProvider
+          steps={onboardingSteps}
+          styles={{
+            popover: (base) => ({
+              ...base,
+              backgroundColor: "#32333b",
+            }),
+            arrow: (base, { disabled }) => ({
+              ...base,
+              color: disabled ? "#777" : "#ddd",
+              margin: "2px",
+            }),
+            badge: (base) => ({
+              display: "none",
+            }),
+            dot: (base) => ({
+              ...base,
+              display: "none",
+            }),
           }}
+          currentStep={currentStep}
+          setCurrentStep={handleStepChange}
         >
+          <div
+            className="page-wrapper"
+            style={{
+              transform: isFree ? "rotate(1.5deg)" : "rotate(0deg)",
+              transition: "transform 0.5s",
+            }}
+          >
+            <div>
+              <Toaster />
+            </div>
+            <div className="grid grid-cols-[auto,1fr,auto] gap-0">
+              <LeftSidebar
+                selectedTab={selectedTab}
+                setSelectedTab={setSelectedTab}
+                activeCollection={activeCollection}
+                setActiveCollection={setActiveCollection}
+                activeLogsPage={activeLogsPage}
+                setActiveLogsPage={setActiveLogsPage}
+                currentFileProperties={currentFileProperties}
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+              />
 
-          <div>
-            <Toaster />
+              <CenterContent
+                selectedTab={selectedTab}
+                currentFileProperties={currentFileProperties}
+                setCurrentFileProperties={setCurrentFileProperties}
+                activeCollection={activeCollection}
+                activeLogsPage={activeLogsPage}
+                isModalOpen={isModalOpen}
+                setIsModalOpen={setIsModalOpen}
+              />
+
+              <RightSidebar
+                selectedTab={selectedTab}
+                currentFileProperties={currentFileProperties}
+                setCurrentFileProperties={setCurrentFileProperties}
+              />
+
+              <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            </div>
           </div>
-          <div className="grid grid-cols-[auto,1fr,auto] gap-0">
-            <LeftSidebar
-              selectedTab={selectedTab}
-              setSelectedTab={setSelectedTab}
-              activeCollection={activeCollection}
-              setActiveCollection={setActiveCollection}
-              activeLogsPage={activeLogsPage}
-              setActiveLogsPage={setActiveLogsPage}
-              currentFileProperties={currentFileProperties}
-              isModalOpen={isModalOpen}
-              setIsModalOpen={setIsModalOpen}
-            />
-
-            <CenterContent
-              selectedTab={selectedTab}
-              currentFileProperties={currentFileProperties}
-              setCurrentFileProperties={setCurrentFileProperties}
-              activeCollection={activeCollection}
-              activeLogsPage={activeLogsPage}
-              isModalOpen={isModalOpen}
-              setIsModalOpen={setIsModalOpen}
-            />
-
-            <RightSidebar selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties}/>
-
-            <InProgressDeploymentModal 
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)} />
-          </div>
-
-        </div>
         </TourProvider>
       );
     } else {
