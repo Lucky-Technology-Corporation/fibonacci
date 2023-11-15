@@ -22,7 +22,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [response, setResponse] = useState<ReactNode | undefined>(null);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
-
+  const [isUndoVisible, setIsUndoVisible] = useState<boolean>(false);
+  const [oldCode, setOldCode] = useState<string>("");
 
   const { promptAiEditor, checkIfAllEndpointsExist } = useEndpointApi();
 
@@ -44,10 +45,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       success: (data) => {
         setPostMessage({
           type: "replaceText",
-          content: data,
+          content: data.new_code,
         })
 
-        checkIfAllEndpointsExist(data)
+        setupUndo(data.old_code)
+
+        checkIfAllEndpointsExist(data.new_code)
 
         return "Done";
       },
@@ -56,6 +59,18 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   };
 
 
+  const setupUndo = (oldCode: string) => {
+    setIsUndoVisible(true)
+    setOldCode(oldCode)
+  }
+
+  const undoLastChange = () => {
+    setPostMessage({
+      type: "replaceText",
+      content: oldCode,
+    })
+    setIsUndoVisible(false)
+  }
 
   const toggleSearch = () => {
     const command = isSearching ? "closeSearchView" : "openSearchView";
@@ -204,7 +219,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     const ai = {
       "type": "ai",
       "image": "wand",
-      "title": `Prompt AI: \"${value}\"`,
+      "title": value,
       "description": "Ask GPT (full project access)",
     }
 
@@ -255,9 +270,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             />
             {suggestion.title}
           </div>
-          {/* <div className="text-xs font-normal mt-0.5">
-            {suggestion.description}
-          </div> */}
+          <div className="text-xs font-normal mt-1">
+            Prompt AI
+          </div>
+        </div>
+        <div className="">
+          <div style={{height: "1px"}} className="w-full mt-2 bg-gray-500" />
+          <div className="mt-4 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
         </div>
         </>
       )
@@ -343,6 +362,18 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               }}
             />
             <div className="w-[1px] h-[36px] bg-[#525363] mx-4"></div>
+
+            {isUndoVisible && (
+              <div className="mr-2">
+                <Button
+                className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  text={"Undo"}
+                  onClick={() => {
+                    undoLastChange()
+                  }}
+                />
+              </div>
+            )}
 
             <div className="grow">
               <Autosuggest
