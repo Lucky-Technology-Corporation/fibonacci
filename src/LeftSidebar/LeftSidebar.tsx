@@ -210,7 +210,7 @@ export default function LeftSidebar({
 
         <SectionTitle
           icon="/monitor.svg"
-          text="Monitoring"
+          text="Project"
           active={selectedTab == Page.Logs}
           onClick={() => {
             if(selectedTab == Page.Logs){ setSelectedTab(null) }
@@ -236,7 +236,7 @@ export default function LeftSidebar({
         />
         <AuthSettings active={selectedTab == Page.Auth} className="" />
         </div>
-        
+
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>

@@ -11,12 +11,10 @@ import APIWizard from "./APIWizard";
 import EndpointItem from "./EndpointItem";
 import HelperItem from "./HelperItem";
 import HelperWizard from "./HelperWizard";
-import TemplateWizard from "./TemplateWizard";
 // import HelperWizard from "./HelperWizard";
 
 export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const [isTemplateWizardVisible, setIsTemplateWizardVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
   const { getFiles } = useEndpointApi();
@@ -29,7 +27,6 @@ export default function EndpointList({ active }: { active: boolean }) {
   const methods: any = [
     { id: "endpoint", name: "+ Endpoint" },
     { id: "helper", name: "+ Helper" },
-    { id: "template", name: "+ Template" },
   ];
 
   const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
@@ -123,8 +120,6 @@ export default function EndpointList({ active }: { active: boolean }) {
               setIsVisible(true);
             } else if(item == "helper"){
               setIsHelperWizardVisible(true)
-            } else if(item == "template"){
-              setIsTemplateWizardVisible(true)
             }
           }}
           children={methods}
@@ -199,11 +194,6 @@ export default function EndpointList({ active }: { active: boolean }) {
         setHelpers={setHelperList}
         setFullHelpers={setFullHelperList}
         helpers={fullHelperList}
-      />
-      <TemplateWizard
-        isVisible={isTemplateWizardVisible}
-        setIsVisible={setIsTemplateWizardVisible}
-        type="dropin"
       />
     </div>
   );

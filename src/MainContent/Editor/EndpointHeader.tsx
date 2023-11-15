@@ -234,7 +234,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         return {type: "endpoint", ...parsedEndpoint}
       })
 
-      setSuggestions([ai, ...filteredList, ...docs])
+      setSuggestions([ai, ...docs, ...filteredList])
     }
   };
 
@@ -274,10 +274,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             Prompt AI
           </div>
         </div>
-        <div className="">
-          <div style={{height: "1px"}} className="w-full mt-2 bg-gray-500" />
-          <div className="mt-4 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
-        </div>
+        {suggestions.some(s => s.type == "doc" || s.type == "externalDoc") &&
+          <div className="">
+            <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
+            <div className="mt-2 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
+          </div>
+        }
         </>
       )
     } else if(suggestion.type == "endpoint"){
@@ -290,7 +292,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             />
             <span className={`${methodToColor(suggestion.method)} font-semibold mr-1`}>{suggestion.method}</span> {suggestion.fullPath}
           </div>
-          <div className="text-sm mt-0.5 font-mono font-normal">
+          <div className="text-xs mt-0.5 font-mono font-normal">
             {`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`}
           </div>
         </div>

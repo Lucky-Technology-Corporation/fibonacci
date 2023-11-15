@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import LogsItem from "./LogsItem";
 
 export default function Logslist({
@@ -24,6 +24,13 @@ export default function Logslist({
         name="Logs"
         onClick={() => {
           setActivePage("logs");
+        }}
+      />
+      <LogsItem
+        active={activePage == "templates"}
+        name="Templates"
+        onClick={() => {
+          setActivePage("templates");
         }}
       />
     </div>
