@@ -83,8 +83,9 @@ export default function useDeploymentApi() {
   };
 
   const restoreProject = async (projectId: string) => {
-    const response = await axios.get<GetProjectDeploymentStatusResponse>(
+    const response = await axios.post<GetProjectDeploymentStatusResponse>(
       `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}/restore`,
+      {},
       {
         withCredentials: true,
       },
