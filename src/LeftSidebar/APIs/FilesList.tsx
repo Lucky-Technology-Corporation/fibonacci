@@ -311,7 +311,6 @@ export default function FilesList({ active }: { active: boolean }) {
                 onClick={() => {
                   setActiveFile("frontend/src/pages/" + page.component + ".tsx");
                 }}
-                disableDelete={page.component == "Home"}
                 isPrivate={page.authRequired}
                 fallbackUrl={page.fallbackPath}
               />

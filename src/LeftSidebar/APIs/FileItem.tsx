@@ -68,9 +68,6 @@ export default function FileItem({
       if(!p.startsWith("/")){
         p = "/" + p
       }
-      if(p == "/home"){
-        p = "/"
-      }
       return p
     } else{
       return path
