@@ -2,8 +2,20 @@ import axios from "axios";
 import { useContext } from "react";
 import { useAuthHeader, useSignOut } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { ProjectDeploymentStatus } from "./DeploymentAPI";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+export type ProjectResponse = {
+  id: string;
+  name: string;
+  test_deployment_status: ProjectDeploymentStatus;
+  prod_deployment_status: ProjectDeploymentStatus;
+  test_public_storage_bucket?: string;
+  prod_public_storage_bucket?: string;
+  test_swizzle_domain?: string;
+  prod_swizzle_domain?: string;
+};
 
 export default function useDatabaseApi() {
   const authHeader = useAuthHeader();
@@ -185,7 +197,7 @@ export default function useDatabaseApi() {
       console.error(e);
       return e.response.data;
     }
-  }
+  };
 
   const runQuery = async (
     query: string,
@@ -234,13 +246,13 @@ export default function useDatabaseApi() {
         withCredentials: true,
       },
     );
-    
-    return true  
+
+    return true;
   };
 
-  const getProjects = async () => {
+  const getProjects = async (): Promise<ProjectResponse[] | null> => {
     try {
-      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects`, {
+      const response = await axios.get<ProjectResponse[]>(`${NEXT_PUBLIC_BASE_URL}/projects`, {
         withCredentials: true,
       });
       return response.data;
@@ -264,6 +276,6 @@ export default function useDatabaseApi() {
     createDocument,
     deleteCollection,
     runQuery,
-    runMongoQuery
+    runMongoQuery,
   };
 }

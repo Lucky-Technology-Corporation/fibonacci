@@ -7,7 +7,13 @@ import Dropdown from "../Utilities/Dropdown";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isModalOpen: any, setIsModalOpen: Dispatch<SetStateAction<boolean>> }){
+export default function ProjectSelector({
+  isModalOpen,
+  setIsModalOpen,
+}: {
+  isModalOpen: any;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+}) {
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
   const deploymentApi = useDeploymentApi();
@@ -16,7 +22,6 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   const { createProject } = useDatabaseApi();
   const {
     projects,
-    setProjects,
     activeProject,
     setActiveProject,
     activeProjectName,
@@ -31,20 +36,19 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
     environment,
     setTestDeployStatus,
     setProdDeployStatus,
-    setFermatJwt,
   } = useContext(SwizzleContext);
 
   const startPolling = async (projectId) => {
-    if (pollingRef.current) return; 
+    if (pollingRef.current) return;
     pollingRef.current = setInterval(async () => {
       const deploymentStatus = await checkDeploymentStatus(projectId);
       if (deploymentStatus === "DEPLOYMENT_SUCCESS") {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
-        setIsCreatingProject(false)
-        await setCurrentProject(projectId)
-        location.reload()
+        setIsCreatingProject(false);
+        await setCurrentProject(projectId);
+        location.reload();
       } else if (deploymentStatus === "DEPLOYMENT_FAILURE") {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
@@ -59,7 +63,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   };
 
   const createNewProject = (projectName: string) => {
-    if(projectName.includes("_") || projectName.includes("-")) {
+    if (projectName.includes("_") || projectName.includes("-")) {
       toast.error("Project name cannot contain underscores or dashes");
       return;
     }
@@ -80,57 +84,68 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
   const setCurrentProject = async (id: string) => {
     var project = projects.filter((p) => p.id == id)[0];
     if (project == null) {
-      project = projects[0]
-    };
+      project = projects[0];
+    }
 
     const deploymentStatus = await checkDeploymentStatus(project.id);
-    if (deploymentStatus !== "DEPLOYMENT_SUCCESS") {
-      if (deploymentStatus == "DEPLOYMENT_FAILURE"){
+    switch (deploymentStatus) {
+      case "DEPLOYMENT_FAILURE":
         toast.error("Deployment failed");
-        return
-      }
-      setIsModalOpen(true);
-      setIsCreatingProject(true);
-      startPolling(project.id);
-      sessionStorage.setItem("activeProject", project.id);
-      sessionStorage.setItem("activeProjectName", project.name);
-      setActiveProjectName(project.name);
-      setTestDomain(undefined)
-      setProdDomain(undefined)
-      setTestDeployStatus(project.test_deployment_status);
-      setProdDeployStatus(project.prod_deployment_status);
-      return false
-    } else {
-      setActiveProjectName(project.name);
-      setActiveProject(project.id);
-  
-      // Update the context values only if the deployment was successful
-      setTestDeployStatus(project.test_deployment_status);
-      setProdDeployStatus(project.prod_deployment_status);
-  
-      await refreshFermatJwt(project.id);
-  
-      sessionStorage.setItem("activeProject", project.id);
-      sessionStorage.setItem("activeProjectName", project.name);
-  
-      setTestDomain(project.test_swizzle_domain);
-      setProdDomain(project.prod_swizzle_domain);
-  
-      if (environment == "test") {
-        setDomain(project.test_swizzle_domain);
-      } else {
-        setDomain(project.prod_swizzle_domain);
-      }
-  
-      setIsModalOpen(false);
-      setIsCreatingProject(false);
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current); 
-        pollingRef.current = null;
-      }
-      return true
+        return;
+      case "DEPLOYMENT_SUCCESS":
+        setActiveProjectName(project.name);
+        setActiveProject(project.id);
+
+        // Update the context values only if the deployment was successful
+        setTestDeployStatus(project.test_deployment_status);
+        setProdDeployStatus(project.prod_deployment_status);
+
+        await refreshFermatJwt(project.id);
+
+        sessionStorage.setItem("activeProject", project.id);
+        sessionStorage.setItem("activeProjectName", project.name);
+
+        setTestDomain(project.test_swizzle_domain);
+        setProdDomain(project.prod_swizzle_domain);
+
+        if (environment == "test") {
+          setDomain(project.test_swizzle_domain);
+        } else {
+          setDomain(project.prod_swizzle_domain);
+        }
+
+        setIsModalOpen(false);
+        setIsCreatingProject(false);
+        if (pollingRef.current) {
+          clearInterval(pollingRef.current);
+          pollingRef.current = null;
+        }
+        return true;
+      // @ts-expect-error
+      case "DEPLOYMENT_SUSPENDED":
+        try {
+          // For the fall-through case
+          project.test_deployment_status = await deploymentApi.restoreProject(project.id);
+        } catch (e) {
+          console.error(e);
+          toast.error("Failed to restore project from suspended state");
+          return;
+        }
+      // FALLS THROUGH
+      default:
+        setIsModalOpen(true);
+        setIsCreatingProject(true);
+        startPolling(project.id);
+        sessionStorage.setItem("activeProject", project.id);
+        sessionStorage.setItem("activeProjectName", project.name);
+        setActiveProjectName(project.name);
+        setTestDomain(undefined);
+        setProdDomain(undefined);
+        setTestDeployStatus(project.test_deployment_status);
+        setProdDeployStatus(project.prod_deployment_status);
+        return false;
     }
-  };  
+  };
 
   useEffect(() => {
     if (environment == "test") {
@@ -140,7 +155,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
     }
   }, [environment]);
 
-  useEffect(() => { 
+  useEffect(() => {
     return () => {
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
@@ -157,7 +172,6 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
       return null;
     }
   };
-  
 
   useEffect(() => {
     if (projects && activeProject == "" && projects.length > 0) {
@@ -201,7 +215,6 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
           className="fixed"
         />
       </div>
-      
 
       <FullPageModal
         isVisible={isVisible}
@@ -210,7 +223,7 @@ export default function ProjectSelector({ isModalOpen, setIsModalOpen }: { isMod
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
           title: "🥋 New project",
-          description: (<></>),
+          description: <></>,
           placeholder: "My awesome project",
           confirmText: "Create",
           confirmHandler: createNewProject,
