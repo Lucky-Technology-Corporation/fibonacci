@@ -2,6 +2,8 @@ import { Dispatch, SetStateAction, createContext, useState } from "react";
 import { ProjectDeploymentStatus } from "../API/DeploymentAPI";
 import { ProjectResponse } from "../API/DatabaseAPI";
 
+export type ProjectEnvironment = "test" | "prod";
+
 export interface SwizzleContextType {
   projects: ProjectResponse[] | null;
   setProjects: Dispatch<SetStateAction<ProjectResponse[] | null>>;
@@ -24,9 +26,9 @@ export interface SwizzleContextType {
   postMessage;
   setPostMessage;
   activeEndpoint: string;
-  setActiveEndpoint;
-  environment;
-  setEnvironment;
+  setActiveEndpoint: Dispatch<SetStateAction<string>>;
+  environment: ProjectEnvironment;
+  setEnvironment: Dispatch<SetStateAction<ProjectEnvironment>>;
   ideReady;
   setIdeReady;
   activeFile;
@@ -56,7 +58,7 @@ export interface SwizzleContextType {
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
 
 export const GlobalContextProvider = ({ children }) => {
-  const [environment, setEnvironment] = useState("test"); // ["test", "prod"]
+  const [environment, setEnvironment] = useState<ProjectEnvironment>("test");
   const [projects, setProjects] = useState<ProjectResponse[]>(null);
   const [hasPaymentMethod, setHasPaymentMethod] = useState(null);
   const [activeProject, setActiveProject] = useState("");
