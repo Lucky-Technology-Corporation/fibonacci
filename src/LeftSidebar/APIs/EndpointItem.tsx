@@ -49,7 +49,7 @@ export default function EndpointItem({
       throw "Error deleting endpoint"
     }
   }
-
+  
   return (
     <>
       <div

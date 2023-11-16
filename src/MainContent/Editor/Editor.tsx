@@ -118,7 +118,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% - 144px)",
+          height: "calc(100% - 200px)",
           marginLeft: "-48px",
           marginRight: "-48px",
           // marginTop: "-68px",
@@ -133,7 +133,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           width: "calc(100% - 24px)",
           bottom: "0px",
           position: "absolute",
-          zIndex: -1
+          // zIndex: -1
         }}
       />
     </div>

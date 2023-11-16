@@ -28,7 +28,7 @@ export default function APIWizard({
   const methods: any = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
-    { id: "schedule", name: "Scheduled Job" }
+    // { id: "schedule", name: "Scheduled Job" }
   ];
 
   const createHandler = async () => {
@@ -136,7 +136,7 @@ export default function APIWizard({
                       setSelectedMethod(item);
                     }}
                     children={methods}
-                    direction="left"
+                    direction="center"
                     title={selectedMethod.toUpperCase()}
                   />
                   <input

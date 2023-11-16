@@ -6,7 +6,7 @@ import FloatingModal from "../Utilities/FloatingModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
-// import ScheduleEditor from "./ScheduleEditor";
+import ScheduleEditor from "./ScheduleEditor";
 import PackageInfo from "./Sections/PackageInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import TestWindow from "./TestWindow";
@@ -197,7 +197,7 @@ export default function RightSidebar({
               />
             )}
             
-            {/* <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} /> */}
+            <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} />
 
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
