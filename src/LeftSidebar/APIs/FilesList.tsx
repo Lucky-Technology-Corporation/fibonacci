@@ -305,6 +305,17 @@ export default function FilesList({ active }: { active: boolean }) {
           disableDelete={true}
         />
         </div>
+        <div className={searchFilter != "" ? ("tailwind.config.js".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+        <FileItem
+          key={"tailwind.config.js"}
+          path={("tailwind.config.js")}
+          active={"frontend/tailwind.config.js" == activeFile}
+          onClick={() => {
+            setActiveFile("frontend/tailwind.config.js");
+          }}
+          disableDelete={true}
+        />
+        </div>
       </div>
 
       <div className="pages-list">
