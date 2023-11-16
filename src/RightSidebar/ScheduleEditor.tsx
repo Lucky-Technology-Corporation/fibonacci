@@ -1,8 +1,8 @@
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
-import { Cron } from 'react-js-cron';
-import 'react-js-cron/dist/styles.css';
+// import { Cron } from 'react-js-cron';
+// import 'react-js-cron/dist/styles.css';
 import Button from "../Utilities/Button";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
@@ -13,7 +13,7 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
 
   const handleSave = () => {
     //Setup cron for activeEndpoint
-    
+
     if(value == ""){
       setIsScheduleChecked(false)
     } else{
@@ -54,11 +54,11 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
       </div>
 
       <div className="px-4 pb-2 text-sm mt-2">
-        <Cron 
+        {/* <Cron 
           value={value} 
           setValue={setValue} 
           clearButtonAction={"empty"}
-        />
+        /> */}
       </div>
     </div>
   );

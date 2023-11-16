@@ -210,7 +210,6 @@ export default function useFilesystemApi(){
     }
     } else if (routePath != undefined && routePath !== "") {
       //remove from RouteList.ts if it's a route
-      console.log("remove route");
       const lastIndex = relativeFilePath.lastIndexOf("/");
       var fileName = relativeFilePath.substring(lastIndex + 1);
 
@@ -218,9 +217,8 @@ export default function useFilesystemApi(){
 
       if (routeListTsx) {
         var content = routeListTsx
-        console.log("searching for " + routePath.replace("/", "\/"))
+
         const routeToRemoveRegex = new RegExp(
-            // `<\\w+Route[^>]*path="${routePath}"[^>]*element={<[^>]+>}[^>]*\\/?>\\s*`,
             `<SwizzleRoute path="${routePath.replace("/", "\/")}".*>`,
             "g",
         );
@@ -237,7 +235,6 @@ export default function useFilesystemApi(){
           .replace(/^(.)/, (match, p1) => p1.toUpperCase())
           .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
 
-        console.log("searching for " + componentName)
         const importToRemoveRegex = new RegExp(
           `import ${componentName}\\s+from.*\n`,
           "g",
