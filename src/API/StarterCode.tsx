@@ -14,6 +14,22 @@ export default router;`
     return fileContent;
 }
 
+export function starterJob(endpoint: string){
+    const fileContent = 
+`import express, { Response } from "express";
+import { AuthenticatedRequest, jobAuthentication } from "swizzle-js";
+const router = express.Router();
+
+router.get('${endpoint}', jobAuthentication, async (request: AuthenticatedRequest, response: Response) => {
+
+    return response.status(200) //Return 200 to indicate success
+});
+
+export default router;`
+
+    return fileContent;
+}
+
 export function starterHTML(){
     const fileContent = `<!DOCTYPE html>
 <html lang="en">

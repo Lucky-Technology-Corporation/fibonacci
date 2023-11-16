@@ -49,6 +49,7 @@
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.11.0",
     "react-joyride": "^2.7.0",
+    "react-js-cron": "^5.0.1",
     "react-loading-icons": "^1.1.0",
     "react-monaco-editor": "^0.53.0",
     "react-search-autocomplete": "^8.5.2",
