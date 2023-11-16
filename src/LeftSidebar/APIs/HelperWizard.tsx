@@ -95,7 +95,7 @@ export default function HelperWizard({
                   New Helper
                 </h3>
                 <div className="mt-1">
-                  <p className="text-sm text-[#D9D9D9]">Name your function</p>
+                  <p className="text-sm text-[#D9D9D9]">Name your new file</p>
                 </div>
                 <div className="mt-3 mb-2 flex">
                   <input

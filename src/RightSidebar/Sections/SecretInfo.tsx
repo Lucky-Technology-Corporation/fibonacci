@@ -144,7 +144,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         title={""}
         titleClass="text-md font-bold"
         isLarge={false}
-        overrideLeftMargin={-300}
+        overrideLeftMargin={-200}
         overrideTopMargin={-4}
         content={
           <div className="overflow-scroll max-h-[70vh]">

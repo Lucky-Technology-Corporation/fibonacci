@@ -1,13 +1,12 @@
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
-import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import { replaceCodeBlocks } from "../Utilities/DataCaster";
-import { modifySwizzleImport } from "../Utilities/EndpointParser";
 import FloatingModal from "../Utilities/FloatingModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
+import ScheduleEditor from "./ScheduleEditor";
 import PackageInfo from "./Sections/PackageInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import TestWindow from "./TestWindow";
@@ -24,30 +23,27 @@ export default function RightSidebar({
 }) {
   const programmaticDbUpdateRef = useRef(false);
   const programmaticAuthUpdateRef = useRef(false);
-  const programmaticStorageUpdateRef = useRef(false);
 
   const [isHelper, setIsHelper] = useState(false);
+  const [isCron, setIsCron] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [isDBChecked, setIsDBChecked] = useState(false);
-  const [isNotificationsChecked, setIsNotificationsChecked] = useState(false);
-  const [isStorageChecked, setIsStorageChecked] = useState(false);
+  const [isScheduleChecked, setIsScheduleChecked] = useState(false);
+  const [isSchedulerVisible, setIsSchedulerVisible] = useState(false);
 
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [endpointString, setEndpointString] = useState<string>("");
-  const { ideReady, setPostMessage, activeEndpoint } = useContext(SwizzleContext);
+  const { ideReady, setPostMessage } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
 
-
-  useEffect(() => {
-    const parsedActiveEndpoint = new ParsedActiveEndpoint(activeEndpoint)
-    setEndpointString(`const response = await api.${parsedActiveEndpoint.method.toLowerCase()}("${parsedActiveEndpoint.fullPath}")`)
-  }, [activeEndpoint])
-
   const toggleAuth = (isRequired: boolean) => {
+    if(isScheduleChecked){
+      toast.error("You cannot enable authentication and scheduling at the same time.")
+      return
+    }
+
     setIsAuthChecked(isRequired);
 
     var newImportStatement = currentFileProperties.importStatement
@@ -78,22 +74,6 @@ export default function RightSidebar({
     }, 100)
   }
 
-  const toggleDb = (isRequired: boolean) => {
-    setIsDBChecked(isRequired)
-
-    var newImportStatement = currentFileProperties.importStatement;
-    newImportStatement = modifySwizzleImport(newImportStatement, 'db', isRequired ? 'add' : 'remove');
-    const message = {
-      findText: currentFileProperties.importStatement,
-      replaceText: newImportStatement,
-      type: "findAndReplace",
-    };
-    console.log(message)
-    setPostMessage(message);
-    setCurrentFileProperties({...currentFileProperties, hasGetDb: isRequired, importStatement: newImportStatement})
-  }
-
-
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
 
@@ -103,22 +83,26 @@ export default function RightSidebar({
       setIsHelper(false);
     }
 
+    if(currentFileProperties.fileUri.includes("backend/user-dependencies/get.cron")){
+      setIsCron(true)
+    } else{
+      setIsCron(false)
+    }
+
     programmaticAuthUpdateRef.current = true;
     programmaticDbUpdateRef.current = true;
     const importStatement = currentFileProperties.importStatement;
     if(importStatement == undefined) {
       setIsAuthChecked(false);
-      setIsDBChecked(false);
       return;
     };
-    setIsDBChecked(importStatement.includes("db"));
     setIsAuthChecked(currentFileProperties.hasPassportAuth);
 
   }, [currentFileProperties]);
 
   return (
     <div
-      className={`w-[72px] text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
+      className={`w-[180px] text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
       ${ideReady ? "" : "opacity-50 pointer-events-none"}
       `}
     >
@@ -131,7 +115,6 @@ export default function RightSidebar({
               }}
               icon={<img src="/preview.svg" className="w-4 h-4 m-auto" />}
               text="Preview"
-              textHidden={true}
             />
             <WebPreview isVisible={isPreviewVisible} setIsVisible={setIsPreviewVisible} />
 
@@ -156,7 +139,6 @@ export default function RightSidebar({
               }}
               icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
               text="Autocheck"
-              textHidden={true}
             />
             <FloatingModal
               content={autocheckResponse}
@@ -174,7 +156,6 @@ export default function RightSidebar({
               }}
               icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
               text="Packages"
-              textHidden={true}
             />
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
             <div className="h-4" />
@@ -186,57 +167,41 @@ export default function RightSidebar({
                 });
               }}
               icon={<img src="/restart.svg" className="w-4 h-4 m-auto" />}
-              text="Restart Frontend"
-              textHidden={true}
+              text="Restart"
             />
           </>
         )}
         {selectedTab == Page.Apis && (
           <>
-
+            {isCron ? (
+              <IconTextButton
+                onClick={() => {
+                  setIsSchedulerVisible(true); 
+                }}
+                icon={<img src="/clock.svg" className={`w-4 h-4 m-auto`} />}
+                text={"Schedule"}
+                highlightState={isScheduleChecked}
+                highlightColor="#4696f969"
+                className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
+              />
+            ) : (
               <IconTextButton
                 onClick={() => {
                   toggleAuth(!isAuthChecked);
                 }}
                 icon={<img src="/auth.svg" className={`w-4 h-4 m-auto`} />}
-                text={"Require Authentication"}
-                textHidden={true}
+                text={"Authentication"}
                 highlightState={isAuthChecked}
                 highlightColor="#ff64644f"
                 className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
               />
-              {/* <div className="h-4" />
+            )}
+            
+            <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} />
 
-              <IconTextButton
-                onClick={() => {
-                  toggleDb(!isDBChecked);
-                }}
-                icon={<img src="/database.svg" className="w-4 h-4 m-auto" />}
-                text="Import Database"
-                textHidden={true}
-                highlightState={isDBChecked}
-                highlightColor={"#4696f969"}
-                className="db-toggle"
-              /> */}
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-
-            {/* {(currentFileProperties.fileUri && currentFileProperties.fileUri.includes("/backend/helpers/")) && (
-              <>
-                <IconTextButton
-                  onClick={() => {
-                    copyText(`import ${currentFileProperties.fileUri.split("/backend/helpers/")[1].replace(".ts", "")} from "../helpers/${currentFileProperties.fileUri.split("/backend/helpers/")[1]}"`)
-                    setTimeout(() => {toast("Paste at the very top of any API file to use this helper")}, 250)
-                  }}
-                  icon={<img src="/copy.svg" className="w-4 h-4 m-auto" />}
-                  text="Copy Import"
-                  textHidden={true}
-                />
-                <div className="h-4" />
-              </>
-            )} */}
-
 
             <IconTextButton
               onClick={() => {
@@ -244,15 +209,13 @@ export default function RightSidebar({
               }}
               icon={<img src="/beaker.svg" className="w-4 h-4 m-auto" />}
               text="Test"
-              textHidden={true}
-              className={`tester-button ${isHelper && "pointer-events-none opacity-30"}`}
+              className={`tester-button ${isHelper && "pointer-events-none opacity-30 w-full"}`}
             />
             <TestWindow
               shouldShowTestWindow={shouldShowTestWindow}
               setShouldShowTestWindow={setShouldShowTestWindow}
             />
             <div className="h-4" />
-
             <IconTextButton
               onClick={() => {
                 toast.promise(getAutocheckResponse(), {
@@ -270,7 +233,6 @@ export default function RightSidebar({
               }}
               icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
               text="Autocheck"
-              textHidden={true}
               className="autocheck-button"
             />
             <FloatingModal
@@ -288,7 +250,6 @@ export default function RightSidebar({
               }}
               icon={<img src="/lock.svg" className="w-4 h-4 m-auto" />}
               text="Secrets"
-              textHidden={true}
               className="secrets-button"
             />
             <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
@@ -299,7 +260,6 @@ export default function RightSidebar({
               }}
               icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
               text="Packages"
-              textHidden={true}
               className="packages-button"
             />
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
@@ -312,8 +272,7 @@ export default function RightSidebar({
                 });
               }}
               icon={<img src="/restart.svg" className="w-4 h-4 m-auto" />}
-              text="Restart Backend"
-              textHidden={true}
+              text="Restart"
               className="restart-button"
             />
           </>

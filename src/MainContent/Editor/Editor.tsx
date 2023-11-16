@@ -132,7 +132,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           height: "200px",
           width: "calc(100% - 24px)",
           bottom: "0px",
-          position: "absolute"
+          position: "absolute",
+          zIndex: -1
         }}
       />
     </div>

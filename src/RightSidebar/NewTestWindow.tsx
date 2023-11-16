@@ -143,7 +143,7 @@ export default function NewTestWindow({
 
   return (
     <div
-      className={`z-50 absolute w-[500px] mr-[450px] bg-[#1e1e1e] border border-[#525363] rounded-lg shadow-lg pt-2`}
+      className={`z-50 absolute w-[500px] mr-[350px] bg-[#252629] border border-[#525363] rounded-lg shadow-lg pt-2`}
       style={{
         transition: "opacity 0.1s",
         marginTop: "-8px",
@@ -265,6 +265,9 @@ export default function NewTestWindow({
               />
             </div>
           </div>
+        </div>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
+          Authentication
         </div>
         <div className="mt-1 mb-2">
           <Checkbox id="userid" label="Simulate user" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />

@@ -77,3 +77,19 @@ export function enumeratePathParams(parts: string[]): (string | [string, number]
   });
   return result;
 }
+
+export function endpointSort(aIn, bIn){
+  const isASwizzle = aIn.startsWith('get/cron');
+  const isBSwizzle = bIn.startsWith('get/cron');
+
+  var a = aIn.replace(/^(get|post)/, '');
+  var b = bIn.replace(/^(get|post)/, '');
+
+  if (isASwizzle && !isBSwizzle) {
+      return 1; // a goes after b
+  } else if (!isASwizzle && isBSwizzle) {
+      return -1; // a goes before b
+  } else {
+      return a.localeCompare(b); // normal alphabetical sort
+  }        
+}
