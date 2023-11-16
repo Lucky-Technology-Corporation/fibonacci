@@ -54,7 +54,6 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         webSocket.onmessage = (event) => {
             var newLog = event.data
-            console.log("socket", "message: " + new Date().getUTCMilliseconds() + ": " + newLog)
             messageQueue.push(newLog);
         };
 

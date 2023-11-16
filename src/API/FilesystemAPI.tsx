@@ -93,11 +93,11 @@ export default function useFilesystemApi(){
         fileName = relativeFilePath.substring(lastIndex + 1);
 
         const basePath = relativeFilePath.split("frontend/src/")[1];
-
+        
         const componentName = basePath
           .replace(".tsx", "")
           .replace(".ts", "")
-          .slice(basePath.lastIndexOf("/") + 1)
+          .slice(basePath.lastIndexOf("/") + 1) //removes the /pages or /components part
           .replace(/\./g, "_")
           .replace(/^(.)/, (match, p1) => p1.toUpperCase())
           .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
@@ -213,13 +213,12 @@ export default function useFilesystemApi(){
       console.log("remove route");
       const lastIndex = relativeFilePath.lastIndexOf("/");
       var fileName = relativeFilePath.substring(lastIndex + 1);
-      console.log(fileName)
 
       const routeListTsx = await endpointApi.getFile("frontend/src/RouteList.tsx")
 
       if (routeListTsx) {
         var content = routeListTsx
-
+        console.log("searching for " + routePath.replace("/", "\/"))
         const routeToRemoveRegex = new RegExp(
             // `<\\w+Route[^>]*path="${routePath}"[^>]*element={<[^>]+>}[^>]*\\/?>\\s*`,
             `<SwizzleRoute path="${routePath.replace("/", "\/")}".*>`,
@@ -227,8 +226,20 @@ export default function useFilesystemApi(){
         );
         content = content.replace(routeToRemoveRegex, "");
 
+        if(routePath.startsWith("/")){
+          routePath = routePath.substring(1)
+        }
+        const componentName = routePath
+          .replace(/\//g, "_")
+          .replace(".tsx", "")
+          .replace(".ts", "")
+          .replace(/\./g, "_")
+          .replace(/^(.)/, (match, p1) => p1.toUpperCase())
+          .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
+
+        console.log("searching for " + componentName)
         const importToRemoveRegex = new RegExp(
-          `import ${fileName.replace(".tsx", "")}.*\n`,
+          `import ${componentName}\\s+from.*\n`,
           "g",
         );
         content = content.replace(importToRemoveRegex, "");
