@@ -74,6 +74,19 @@ export default function TemplatesPage() {
 
       <div className="px-4 pl-3 pt-1 flex flex-row flex-wrap no-focus-ring">
         {getTemplates()}
+        <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0" style={{ width: 'calc(33.333% - 1rem)' }}>
+          <div className="font-semibold text-lg flex">
+            <img src={"/request_template.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
+            <div className="my-auto mr-auto">Something else</div>
+            <Button
+              text="Request"
+              onClick={() => {
+                window.open("mailto:team@swizzle.co?subject=New Template Request", "_blank")
+              }}
+            />
+          </div>
+          <div className="mt-2">Request a new template from the Swizzle team</div>
+        </Card>
       </div>
       
       <TemplateInputTaker 

@@ -141,6 +141,8 @@ export default function LogRow({
                   \nIt looks like you're looking at ${environment == "test" ? "test logs. If this is working in production, you may have removed something since your last deploy." : "production logs. Double check that you've deployed all of your changes."} 
                   \n${message.url.includes(".") ? "If you're trying to access a static file, make sure it's uploaded and publicly accessible." : "If you're trying to access a static file, make sure you're including the extension."} Files are located by default under the ${domain}/swizzle/storage path, unless you've written a custom endpoint.
                   `)
+              } else if(message.responseCode == 401){
+                explainError(`A 401 error means that whoever requested this endpoint is not sending their login information. This is not neccessarily an error - if you are expecting a response, make sure the client is sending the header "Authorization: Bearer <jwt>".`)
               } else{
                 toast.promise(fixRequest(), {
                   loading: "Looking at your code...",

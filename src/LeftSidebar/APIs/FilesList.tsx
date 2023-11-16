@@ -10,7 +10,7 @@ import FileWizard from "./FileWizard";
 
 export default function FilesList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const { getFiles, getFile } = useEndpointApi();
+  const { getFiles, getFile, writeFile } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fileTree, setFileTree] = useState(null);
   const [pages, setPages] = useState<any[]>([]);
@@ -38,10 +38,23 @@ export default function FilesList({ active }: { active: boolean }) {
       });
   }, [testDomain, shouldRefreshList]);
 
+  //This is here to fix badly formatted RouteList files from before the fix was implemented.
+  const temporaryFixOldRouteList = async (data) => {
+    var cleanData = data
+    if(typeof data !== "string") return data
+    const regex = /pageComponent={<(\w+) \/>}/g;
+    const updatedData = cleanData.replace(regex, 'pageComponent={$1}');
+    if(updatedData == cleanData) return cleanData
+    await writeFile("frontend/src/RouteList.tsx", updatedData)
+    return updatedData
+  }
+
   useEffect(() => {
     getFile("frontend/src/RouteList.tsx")
-      .then((data) => {
-        createPageArrayFromFile(data)
+      .then(async (data) => {
+        var cleanData = data
+        cleanData = await temporaryFixOldRouteList(data)
+        createPageArrayFromFile(cleanData)
       })
       .catch((e) => {
         toast.error("Error fetching pages")
@@ -75,7 +88,7 @@ export default function FilesList({ active }: { active: boolean }) {
 
         var componentName = match[3]
         if(componentName == "SwizzlePrivateRoute"){
-          const pageComponentRegex = /pageComponent={<(\w+)/
+          const pageComponentRegex = /pageComponent={(\w+)/
           const pageComponent = match[2].match(pageComponentRegex);
           componentName = pageComponent[1]
 
@@ -90,7 +103,6 @@ export default function FilesList({ active }: { active: boolean }) {
         routes.push({ path: match[1], component: componentName, authRequired: authRequired, fallbackPath: fallbackPath });
       }
     }
-    console.log(routes)
     setPages(routes)
   }
 

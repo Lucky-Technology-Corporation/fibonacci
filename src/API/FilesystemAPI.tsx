@@ -115,7 +115,8 @@ export default function useFilesystemApi(){
           )}';`;
           var newRouteDefinition = `<SwizzleRoute path="${routePath}" element={<${componentName} />} />`;
           if (fallbackPath != undefined && fallbackPath !== "") {
-            newRouteDefinition = `<SwizzleRoute path="${routePath}" element={<SwizzlePrivateRoute unauthenticatedFallback="${fallbackPath}" pageComponent={<${componentName} />} /> } />`
+            if(!fallbackPath.startsWith("/")){ fallbackPath = "/" + fallbackPath }
+            newRouteDefinition = `<SwizzleRoute path="${routePath}" element={<SwizzlePrivateRoute unauthenticatedFallback="${fallbackPath}" pageComponent={${componentName}} /> } />`
           }
 
           const RouteListTsx = await endpointApi.getFile("frontend/src/RouteList.tsx")
