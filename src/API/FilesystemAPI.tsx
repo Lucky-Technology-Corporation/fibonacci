@@ -1,5 +1,5 @@
 import useEndpointApi from "./EndpointAPI";
-import { starterComponent, starterEndpoint, starterHelper } from "./StarterCode";
+import { starterComponent, starterEndpoint, starterHelper, starterJob } from "./StarterCode";
 
 export default function useFilesystemApi(){
 
@@ -21,7 +21,10 @@ export default function useFilesystemApi(){
         const method = endpointName.split("/")[0];
         const endpoint = endpointName.substring(endpointName.indexOf("/"));
 
-        const fileContent = starterEndpoint(method, endpoint);
+        var fileContent = starterEndpoint(method, endpoint);
+        if(endpointName.includes("get/cron")){
+          fileContent = starterJob(endpoint);
+        }
 
         await endpointApi.writeFile(relativeFilePath, fileContent)
 
@@ -149,7 +152,7 @@ export default function useFilesystemApi(){
         fileName = relativeFilePath.split("backend/helpers/")[1];
         var fileContent = starterHelper(fileName.replace(".ts", ""))
         await endpointApi.writeFile(relativeFilePath, fileContent)
-      }
+      } 
     } catch (error) {
       console.log(error);
     }

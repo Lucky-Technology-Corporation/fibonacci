@@ -1,3 +1,39 @@
+/* Crontab */
+.ant-select-selector{
+  background-color: #333336 !important;
+  color: white !important;
+  border: 1px solid #525363 !important;
+  border-radius: 4px !important;
+}
+.ant-select-selection-item{
+  color: white !important;
+}
+.ant-select-arrow{
+  color: white !important;
+}
+.ant-select-open{
+  color: white !important;
+}
+.react-js-cron-select{
+  background-color: #333336;
+  color: white;
+}
+.react-js-cron-select-dropdown{
+  background-color: #333336;
+  color: white;
+}
+.ant-select-item-option-content{
+  color: white;
+}
+.ant-select-item-option-selected{
+  background-color: #6e6e6e !important;
+  color: white;
+}
+.ant-select-clear{
+  color: white !important;
+  background-color: black !important;
+}
+
 /* Checkbox */
 .cbx {
   margin: auto;

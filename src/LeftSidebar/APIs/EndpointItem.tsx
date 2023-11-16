@@ -1,4 +1,4 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import toast from "react-hot-toast";
@@ -59,7 +59,14 @@ export default function EndpointItem({
         onClick={onClick}
       >
         <div className="flex">
-        <div className="max-w-[240px] break-all pr-2 font-normal"><span className={`${methodToColor(method)} font-semibold`}>{method}</span> {path}</div>
+        <div className="max-w-[240px] break-all pr-2 font-normal">
+          {path.startsWith("/cron") ? (
+            <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
+          ) : (
+            <span className={`${methodToColor(method)} font-semibold mr-1 `}>{method}</span> 
+          )}
+          {path.startsWith("/cron/") ? path.replace("/cron/", "") : path}
+        </div>
         <FontAwesomeIcon
           className="mr-2 ml-auto mt-0.5 opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
           icon={faTrash}

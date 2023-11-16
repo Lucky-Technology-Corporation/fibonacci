@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useFilesystemApi from "../../API/FilesystemAPI";
+import { endpointSort } from "../../Utilities/ActiveEndpointHelper";
 import Dropdown from "../../Utilities/Dropdown";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -27,6 +28,7 @@ export default function APIWizard({
   const methods: any = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
+    { id: "schedule", name: "Scheduled Job" }
   ];
 
   const createHandler = async () => {
@@ -41,20 +43,37 @@ export default function APIWizard({
       cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1)
     }
 
+    if(!cleanInputValue.startsWith("/")){
+      cleanInputValue = "/" + cleanInputValue
+    }
+
+    if(cleanInputValue.startsWith("/cron")){
+      toast.error("/cron is reserved for scheduled jobs")
+      return
+    }
+    
+
     const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
-    if(!regex.test(inputValue)){
+    if(!regex.test(cleanInputValue)){
       toast.error("Invalid path.")
       return
     }
 
-    if (inputValue.endsWith(".ts")) {
-      cleanInputValue = inputValue.slice(0, -3);
+    if (cleanInputValue.endsWith(".ts")) {
+      cleanInputValue = cleanInputValue.slice(0, -3);
     }
-    if(inputValue.startsWith("/")){
+
+    if(cleanInputValue.startsWith("/")){
       cleanInputValue = cleanInputValue.substring(1)
     }
+
+    var methodToUse = selectedMethod
+    if(selectedMethod == "schedule"){
+      methodToUse = "get"
+      cleanInputValue = "cron/" + cleanInputValue
+    }
   
-    const newEndpointName = selectedMethod + "/" + cleanInputValue.replace(/\/+$/, "");
+    const newEndpointName = methodToUse + "/" + cleanInputValue.replace(/\/+$/, "");
     const fileName = endpointToFilename(newEndpointName);
 
     if(endpoints.includes(newEndpointName)){
@@ -66,14 +85,14 @@ export default function APIWizard({
 
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {
-        return [...endpoints, newEndpointName];
+        return [...endpoints, newEndpointName].sort(endpointSort);
       }
       return endpoints;
     });
 
     setEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {
-        return [...endpoints, newEndpointName];
+        return [...endpoints, newEndpointName].sort(endpointSort);
       }
       return endpoints;
     });
@@ -124,7 +143,7 @@ export default function APIWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
-                      const regex = /^(\/|(\/(:)?[a-zA-Z0-9-_]+)+)$/
+                      const regex = /^\/?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/
                       if(!regex.test(e.target.value)){
                         setValidUrl(false)
                       } else{
@@ -133,7 +152,7 @@ export default function APIWizard({
                       setInputValue(e.target.value);
                     }}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                    placeholder={"/path/:variable"}
+                    placeholder={selectedMethod == "schedule" ? "jobName" : "/path/:variable"}
                     onKeyDown={(event: any) => {
                       if (event.key == "Enter") {
                         createHandler();
