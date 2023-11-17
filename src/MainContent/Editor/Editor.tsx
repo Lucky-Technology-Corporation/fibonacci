@@ -118,7 +118,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% - 200px)",
+          height: "calc(100% - 140px)",
           marginLeft: "-48px",
           marginRight: "-48px",
           // marginTop: "-68px",

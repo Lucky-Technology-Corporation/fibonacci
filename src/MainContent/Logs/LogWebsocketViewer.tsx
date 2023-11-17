@@ -151,29 +151,27 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     return (
         <>        
-        <div className="flex mt-2 z-50 absolute right-0 mt-4">
-          {currentLocation == "backend" ? (
-            <div className="text-sm font-bold m-auto">Backend Logs</div>
-          ) : (
-            <div className="text-sm font-bold m-auto">Frontend Logs</div>
-          )}
-          <Switch
-            className="ml-1 scale-75 env-toggle"
-            onChange={() => {
-              ws.close();
-              setLog("");
-              setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
-            }}
-            checked={currentLocation == "backend"}
-            uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}
-            checkedIcon={<img src="/cloud.svg" className="w-4 ml-2.5 pt-1" />}
-            offColor="#333336"
-            onColor="#333336"
-            // onHandleColor="#d2d3e0"
-            // offHandleColor="#d2d3e0"
-          />
-        </div>
-        <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4">
+        <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
+            <div className="flex mt-1 z-50 fixed right-0 mr-[180px] mt-0">
+            {currentLocation == "backend" ? (
+                <div className="text-sm font-bold m-auto">Backend Logs</div>
+            ) : (
+                <div className="text-sm font-bold m-auto">Frontend Logs</div>
+            )}
+            <Switch
+                className="ml-1 scale-75 env-toggle"
+                onChange={() => {
+                ws.close();
+                setLog("");
+                setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
+                }}
+                checked={currentLocation == "backend"}
+                uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}
+                checkedIcon={<img src="/cloud.svg" className="w-4 ml-2.5 pt-1" />}
+                offColor="#333336"
+                onColor="#333336"
+            />
+            </div>
             <span className="font-mono text-sm">{log}</span>
         </div>
         </>
