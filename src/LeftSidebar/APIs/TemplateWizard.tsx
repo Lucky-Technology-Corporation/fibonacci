@@ -210,10 +210,10 @@ export default function TemplateWizard({
               {step == 0 ? (
                 <>
                   <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    Import a template
+                    Add authentication
                   </h3>
                   <div className="mt-1">
-                    <p className="text-sm text-[#D9D9D9]">Quickly import code</p>
+                    <p className="text-sm text-[#D9D9D9]">Choose an auth method</p>
                   </div>
                   <div className="mt-4">
                     <div className="w-full mb-2 fixed">

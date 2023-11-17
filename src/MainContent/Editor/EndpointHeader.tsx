@@ -48,6 +48,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           content: data.new_code,
         })
 
+        //TODO: Update currentFileProperties here
+
         setupUndo(data.old_code)
 
         checkIfAllEndpointsExist(data.new_code)
@@ -71,6 +73,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     })
     setIsUndoVisible(false)
   }
+
+  useEffect(() => {
+    setOldCode("")
+    setIsUndoVisible(false)
+  }, [currentFileProperties])
 
   const toggleSearch = () => {
     const command = isSearching ? "closeSearchView" : "openSearchView";
