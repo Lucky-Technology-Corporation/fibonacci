@@ -16,15 +16,24 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const endpointApi = useEndpointApi();
     const {testDomain, activeProject, activeEndpoint} = useContext(SwizzleContext);
     const divRef = useRef(null);
-    const messageBuffer = useRef([]);
-    const [currentLocation, setCurrentLocation] = useState(props.selectedTab == Page.Hosting ? "frontend" : "backend");
+    const [currentLocation, setCurrentLocation] = useState<string>();
 
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
+        
+        //Don't reconnect if we're already on the right tab
+        if(ws && ws.OPEN && currentLocation == "backend" && props.selectedTab == Page.Apis){ return } 
+        else if(ws && ws.OPEN && currentLocation == "frontend" && props.selectedTab == Page.Hosting){ return }
+
+        //Close and reset
         if(ws){ ws.close() }
         setLog("");
+
+        //Don't connect if we don't have the right data
         if(!activeProject || !testDomain || !activeEndpoint) return;
         if(props.selectedTab != Page.Apis && props.selectedTab != Page.Hosting) return;
+
+        //Set our location
         setCurrentLocation(props.selectedTab == Page.Hosting ? "frontend" : "backend");
     }, [activeEndpoint, props.selectedTab, testDomain])
 
@@ -90,34 +99,39 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     line = ""
 
                     for(var i = 0; i < lines.length; i++){
-                        var currentLine = lines[i] + "\n";
+                        var currentLine = lines[i];
 
                         try{
                             const parsed = JSON.parse(currentLine);
                             if(parsed.text){
                                 const date = new Date(parsed.timestamp).toLocaleTimeString()
-                                currentLine = `[${date}] ${parsed.text}\n`;
+                                currentLine = `[${date}] ${parsed.text}`;
                             }
                         } catch(e){ }
-
+                        
                         if(currentLine.startsWith("[0] ")){
                             currentLine = currentLine.substring(4);
                         } else if(currentLine.startsWith("[1] ")){
                             currentLine = currentLine.substring(4);
                         }
 
-                        currentLine = currentLine.replace(/\n+$/, "");
-                        if(currentLine.trim() != ""){
+                        currentLine = currentLine.replace(/\n+$/, ""); //remove trailing newlines
+
+                        if(currentLine.replace(/\s/g, '') !== ""){ //replace all whitespace
                             line = line + currentLine + "\n";
                         }
                     }
-
+                    
                     if(line.endsWith("\n")){
                         line = line.substring(0, line.length - 1);
                     }
                 } catch (e) {}
 
-                setLog(prevLog => prevLog + '\n' + line);
+                const filteredLine = line.split('\n')
+                .filter(line => line.trim() !== '') // Remove lines that are empty or contain only whitespace
+                .join('\n');
+
+                setLog(prevLog => prevLog + '\n' + filteredLine);
             }
         };
         
@@ -161,9 +175,9 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             <Switch
                 className="ml-1 scale-75 env-toggle"
                 onChange={() => {
-                ws.close();
-                setLog("");
-                setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
+                    if(ws){ ws.close(); }
+                    setLog("");
+                    setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
                 }}
                 checked={currentLocation == "backend"}
                 uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}

@@ -10,11 +10,11 @@ export default function FloatingModal({ content, closeModal }: { content: ReactN
       <div
         className={`${
           content == undefined ? "hidden pointer-events-none" : ""
-        } w-1/2 overflow-scroll max-h-[90%] m-auto fixed top-[32px] border-[#525363] border bg-[#181922] rounded-md`}
+        } w-1/2 overflow-scroll max-h-[90%] m-auto fixed top-[32px] border-[#525363] border bg-[#1e1e1e] rounded-md`}
         style={{ left: "25%" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute left-3 top-4 text-lg">🔮</div>
+        <div className="absolute left-4 top-4 text-lg flex"><img src="/wand.svg" className="w-4 h-4 mr-2 my-auto" />AI Response</div>
         <Button
           className="absolute right-6 top-4 text-md cursor-pointer font-bold"
           text="Close"

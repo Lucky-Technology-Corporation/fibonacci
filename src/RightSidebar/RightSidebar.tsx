@@ -190,7 +190,7 @@ export default function RightSidebar({
                   toggleAuth(!isAuthChecked);
                 }}
                 icon={<img src="/auth.svg" className={`w-4 h-4 m-auto`} />}
-                text={"Authentication"}
+                text={isAuthChecked ? "Auth Required" : "Auth Optional"}
                 highlightState={isAuthChecked}
                 highlightColor="#ff64644f"
                 className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
