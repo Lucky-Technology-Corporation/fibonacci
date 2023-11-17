@@ -1,4 +1,4 @@
-import { faFile, faFolderClosed, faFolderOpen, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronRight, faFile, faFolderClosed, faFolderOpen, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -16,6 +16,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [pages, setPages] = useState<any[]>([]);
   const [expandedDirs, setExpandedDirs] = useState({});
   const [fileType, setFileType] = useState<string>("file");
+  const [showServerFiles, setShowServerFiles] = useState<boolean>(false);
 
   const { testDomain, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
@@ -271,50 +272,58 @@ export default function FilesList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="ml-1">
+      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex opacity-70 cursor-pointer" onClick={() => {setShowServerFiles(!showServerFiles)}}>
+        <img src="/react.svg" className="w-3 h-3 my-auto mr-1" />
+        <div className="flex items-center">Required Files</div>
+        <div className="ml-2">
+          {showServerFiles ? <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faChevronRight} className="w-3 h-3 my-auto" />}
+        </div>
+      </div>
+
+      <div className={`ml-1 ${showServerFiles ? "" : "hidden"}`}>
         <div className={searchFilter != "" ? ("index.html".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
-        <FileItem
-          key={"index.html"}
-          path={("index.html")}
-          active={"frontend/public/index.html" == activeFile}
-          onClick={() => {
-            setActiveFile("frontend/public/index.html");
-          }}
-          disableDelete={true}
-        />
+          <FileItem
+            key={"index.html"}
+            path={("index.html")}
+            active={"frontend/public/index.html" == activeFile}
+            onClick={() => {
+              setActiveFile("frontend/public/index.html");
+            }}
+            disableDelete={true}
+          />
         </div>
         <div className={searchFilter != "" ? ("app.css".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
-        <FileItem
-          key={"App.css"}
-          path={("App.css")}
-          active={"frontend/src/App.css" == activeFile}
-          onClick={() => {
-            setActiveFile("frontend/src/App.css");
-          }}
-          disableDelete={true}
-        />
+          <FileItem
+            key={"App.css"}
+            path={("App.css")}
+            active={"frontend/src/App.css" == activeFile}
+            onClick={() => {
+              setActiveFile("frontend/src/App.css");
+            }}
+            disableDelete={true}
+          />
         </div>
         <div className={searchFilter != "" ? ("app.tsx".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
-        <FileItem
-          key={"App.tsx"}
-          path={("App.tsx")}
-          active={"frontend/src/App.tsx" == activeFile}
-          onClick={() => {
-            setActiveFile("frontend/src/App.tsx");
-          }}
-          disableDelete={true}
-        />
+          <FileItem
+            key={"App.tsx"}
+            path={("App.tsx")}
+            active={"frontend/src/App.tsx" == activeFile}
+            onClick={() => {
+              setActiveFile("frontend/src/App.tsx");
+            }}
+            disableDelete={true}
+          />
         </div>
         <div className={searchFilter != "" ? ("tailwind.config.js".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
-        <FileItem
-          key={"tailwind.config.js"}
-          path={("tailwind.config.js")}
-          active={"frontend/tailwind.config.js" == activeFile}
-          onClick={() => {
-            setActiveFile("frontend/tailwind.config.js");
-          }}
-          disableDelete={true}
-        />
+          <FileItem
+            key={"tailwind.config.js"}
+            path={("tailwind.config.js")}
+            active={"frontend/tailwind.config.js" == activeFile}
+            onClick={() => {
+              setActiveFile("frontend/tailwind.config.js");
+            }}
+            disableDelete={true}
+          />
         </div>
       </div>
 

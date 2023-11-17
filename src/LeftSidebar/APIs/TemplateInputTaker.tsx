@@ -106,9 +106,13 @@ export default function TemplateInputTaker({
     const payload = await constructPayload();
 
     //Add necessary npm packages
-    await deploymentApi.updatePackage((template.packages || "").replace(/\s+/g, "").split(","), "install", "backend")
-    await deploymentApi.updatePackage((template.frontend_packages || "").replace(/\s+/g, "").split(","), "install", "frontend")
-
+    if(template.packages !== ""){
+      await deploymentApi.updatePackage((template.packages || "").replace(/\s+/g, "").split(","), "install", "backend")
+    }
+    if(template.frontend_packages !== ""){
+      await deploymentApi.updatePackage((template.frontend_packages || "").replace(/\s+/g, "").split(","), "install", "frontend")
+    }
+    
     //Create files
     await api.createFromTemplate(payload);
     setShouldRefreshList(!shouldRefreshList);
@@ -192,6 +196,8 @@ export default function TemplateInputTaker({
                         toast.promise(createTemplateWithInputs(), {
                           loading: "Creating template...",
                           success: () => {
+                            setInputState({});
+                            setIsCreating(false)
                             return "Created template!";
                           },
                           error: "Didn't create template",
@@ -207,6 +213,7 @@ export default function TemplateInputTaker({
                       onClick={() => {
                         setIsVisible(false);
                       }}
+                      disabled={isCreating}
                       className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Cancel

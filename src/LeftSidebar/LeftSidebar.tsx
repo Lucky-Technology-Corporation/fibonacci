@@ -242,7 +242,7 @@ export default function LeftSidebar({
         </div>
         
         <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="left">
           <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
             <SectionTitle
               icon="/world.svg"
@@ -264,7 +264,7 @@ export default function LeftSidebar({
         </div>
 
         <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is still loading..."} data-tooltip-place="left">
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="left">
           <div className={!ideReady ? "w-full opacity-50 pointer-events-none" : "w-full"}>
             <SectionTitle
               icon="/cloud.svg"

@@ -18,7 +18,7 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
-  const { getFiles } = useEndpointApi();
+  const { getFiles, getFile, writeFile } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
 
   const [endpoints, setEndpoints] = useState<any[]>([]);
@@ -32,6 +32,33 @@ export default function EndpointList({ active }: { active: boolean }) {
 
   const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
     useContext(SwizzleContext);
+
+
+  const temporaryFixOldTsConfigs = async () => {
+    try{
+      var needsUpdate = false
+      const parsed = await getFile("backend/tsconfig.json")
+      if(parsed.compilerOptions.module !== "NodeNext"){
+        parsed.compilerOptions.module = "NodeNext"
+        needsUpdate = true
+      }
+      if(parsed.compilerOptions.moduleResolution !== "NodeNext"){
+        parsed.compilerOptions.moduleResolution = "NodeNext"
+        needsUpdate = true
+      }
+      if(needsUpdate == false){ return }
+      const updatedData = JSON.stringify(parsed, null, 2)
+      await writeFile("backend/tsconfig.json", updatedData)
+    } catch(e){
+      console.error(e)
+    }
+  }
+
+  useEffect(() => {
+    if(testDomain){
+      temporaryFixOldTsConfigs()
+    }
+  }, [testDomain])
 
   useEffect(() => {
     getFiles("endpoints")

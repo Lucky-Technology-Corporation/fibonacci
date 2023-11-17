@@ -166,7 +166,7 @@ export default function APIWizard({
                 </div>
                 <div className="my-2">
                   {fileType == "file" 
-                    ? "Include a path to create the component in a specific folder. If the folder does not exist, it will be created." 
+                    ? "Create a new resusable component" 
                     : <div className="mt-1"><Checkbox
                         id="requireAuth"
                         label="Require Authentication"
@@ -180,7 +180,7 @@ export default function APIWizard({
                 ) : (
                   <>
                     <div className="mt-1">
-                    {fileType == "file" ? "Component Path" : "Page URL (e.g. /about)"}
+                    {fileType == "file" ? "Component Name" : "Page URL"}
                     </div>
                     <div className="mt-1 mb-2 flex">
                       <input
@@ -191,7 +191,7 @@ export default function APIWizard({
                           setInputValue(sanitizedValue.trim());
                         }}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-                        placeholder={`/path/to/name`}
+                        placeholder={fileType == "file" ? "MyComponent" : `/about`}
                         onKeyDown={(event: any) => {
                           if (event.key == "Enter") {
                             createHandler();

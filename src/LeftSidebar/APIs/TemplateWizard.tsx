@@ -339,6 +339,9 @@ export default function TemplateWizard({
                           loading: "Creating template...",
                           success: () => {
                             setStep(0);
+                            setIsCreating(false)
+                            setInputState({});
+                            setFilterValue("");
                             return "Created template!";
                           },
                           error: "Didn't create template",
@@ -357,6 +360,7 @@ export default function TemplateWizard({
                           setStep(0);
                         }, 200);
                       }}
+                      disabled={isCreating}
                       className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Cancel
