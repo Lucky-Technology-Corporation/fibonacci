@@ -63,7 +63,7 @@ export default function ProjectSelector({
   };
 
   const createNewProject = (projectName: string) => {
-    return
+    // return
     if (projectName.includes("_") || projectName.includes("-")) {
       toast.error("Project name cannot contain underscores or dashes");
       return;
@@ -223,7 +223,7 @@ export default function ProjectSelector({
         regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/}
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
-          title: "Sorry!",
+          title: "[DEV]",
           description: "New projects are temporarily disabled as we work to catch up with demand. Please check back later.",
           placeholder: "My awesome project",
           confirmText: "Create",

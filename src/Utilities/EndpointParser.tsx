@@ -30,3 +30,22 @@ export function modifySwizzleImport(importStatement: string, newImport: string, 
   const newImports = `{ ${imports.join(', ')} }`;
   return `import ${newImports} from 'swizzle-js';`;
 }
+
+export function formatPath(fullPath: string, path: string) {
+  if((fullPath || "").includes("frontend/src/pages")){
+    var p = path
+    var p = p.replace(".ts", "").replace(/\./g, "/").toLowerCase()
+    if(!p.startsWith("/")){
+      p = "/" + p
+    }
+    return p
+  } else{
+    return path
+  }
+}
+
+export function capitalizeAfterLastSlash(str: string) {
+  return str.replace(/\/([^/]*)$/, (match, lastSegment) =>
+    match.replace(lastSegment.charAt(0), lastSegment.charAt(0).toUpperCase())
+  );
+}

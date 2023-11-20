@@ -1,7 +1,7 @@
 export function starterEndpoint(method: string, endpoint: string){
     const fileContent = 
 `import express, { Response } from "express";
-import { AuthenticatedRequest, optionalAuthentication } from "swizzle-js";
+import { AuthenticatedRequest, optionalAuthentication, db } from "swizzle-js";
 const router = express.Router();
 
 router.${method}('${endpoint}', optionalAuthentication, async (request: AuthenticatedRequest, response: Response) => {
@@ -17,7 +17,7 @@ export default router;`
 export function starterJob(endpoint: string){
     const fileContent = 
 `import express, { Response } from "express";
-import { AuthenticatedRequest, jobAuthentication } from "swizzle-js";
+import { AuthenticatedRequest, jobAuthentication, db } from "swizzle-js";
 const router = express.Router();
 
 router.get('${endpoint}', jobAuthentication, async (request: AuthenticatedRequest, response: Response) => {

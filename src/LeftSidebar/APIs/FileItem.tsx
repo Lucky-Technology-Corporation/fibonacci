@@ -1,11 +1,9 @@
-import { faLock, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
-import toast from "react-hot-toast";
-import { Tooltip } from 'react-tooltip';
-import useEndpointApi from "../../API/EndpointAPI";
-import useFilesystemApi from "../../API/FilesystemAPI";
-import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { useState } from "react";
+import { Tooltip } from "react-tooltip";
+import { formatPath } from "../../Utilities/EndpointParser";
+import FileContextMenu from "./FileContextMenu";
 
 export default function FileItem({
   active = false,
@@ -15,7 +13,8 @@ export default function FileItem({
   removeFromList,
   fullPath,
   isPrivate = false,
-  fallbackUrl = ""
+  fallbackUrl = "",
+  editFile,
 }: {
   active?: boolean;
   path: string;
@@ -25,54 +24,9 @@ export default function FileItem({
   fullPath?: string
   isPrivate?: boolean
   fallbackUrl?: string
+  editFile?: () => void
 }) {
-
-  const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
-  const { deleteFile } = useEndpointApi()
-  const { removeFile } = useFilesystemApi()
-
-  const runDeleteProcess = async (fileName: string) => {
-    try{
-      var fileNameParsed = fullPath.replace("/home/swizzle/code", "")
-      fileNameParsed = capitalizeAfterLastSlash(fileNameParsed)
-      if(!fileNameParsed.endsWith(".tsx")){ 
-        fileNameParsed = fileNameParsed + ".tsx"
-      }
-
-      //close file
-      setPostMessage({
-        type: "removeFile",
-        fileName: fileNameParsed,
-      })
-      //clean up codegen
-      await removeFile("/backend/user-dependencies/" + fileName, undefined, formatPath(path))
-      //delete file
-      await deleteFile(fullPath.replace("/home/swizzle/code/frontend/src/", ""), "frontend")
-      setShouldRefreshList(!shouldRefreshList)
-    } catch(e){
-      throw "Error deleting endpoint"
-    }
-  }
-
-  function capitalizeAfterLastSlash(str) {
-    return str.replace(/\/([^/]*)$/, (match, lastSegment) =>
-      match.replace(lastSegment.charAt(0), lastSegment.charAt(0).toUpperCase())
-    );
-  }
-
-  
-  const formatPath = (path: string) => {
-    if((fullPath || "").includes("frontend/src/pages")){
-      var p = path
-      var p = p.replace(".ts", "").replace(/\./g, "/").toLowerCase()
-      if(!p.startsWith("/")){
-        p = "/" + p
-      }
-      return p
-    } else{
-      return path
-    }
-  }
+  const [showContextMenu, setShowContextMenu] = useState(false);
 
   return (
     <>
@@ -82,35 +36,36 @@ export default function FileItem({
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
       >
-        <div className="flex">
-          <div className="font-normal">{formatPath(path)}</div>
+        <div className="flex relative">
+          <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>{formatPath(fullPath, path)}</div>
           {isPrivate ? (
             <>
             <Tooltip id="my-tooltip" className="fixed z-50" />
-            <a className="ml-auto mr-2 opacity-50 text-white hover:text-white hover:opacity-70" data-tooltip-id="my-tooltip" data-tooltip-content={`Unauthenticated redirect: ${fallbackUrl}`}>
+            <a className="ml-1 text-blue-200 opacity-70" data-tooltip-id="my-tooltip" data-tooltip-content={`Unauthenticated redirect: ${fallbackUrl}`}>
               <FontAwesomeIcon
-                className={``}
+                className={`h-2 mb-0.5 ml-0.5`}
                 icon={faLock}
               />  
             </a>
             </>
-          ) : <div className="ml-auto"></div>}
-          {(!disableDelete && !fullPath.includes("/pages/SwizzleHomePage.ts")) && (
-            <FontAwesomeIcon
-              className={`mr-2 opacity-50 hover:opacity-100 rounded transition-all cursor-pointer mt-0.5`}
-              icon={faTrash}
-              onClick={() => {
-                const c = confirm("Are you sure you want to delete this endpoint?");
-                if(c){
-                  toast.promise(runDeleteProcess(path), {
-                    loading: "Deleting component",
-                    success: "Component deleted",
-                    error: "Error deleting component"
-                  })
-                }
-              }}
-            />
-          )}
+          ) : <div className=""></div>}
+
+          <FontAwesomeIcon
+            icon={faEllipsisV}
+            className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
+            onClick={(e) =>{ e.preventDefault(); setShowContextMenu(!showContextMenu)}}
+          />
+          
+          <FileContextMenu
+            showContextMenu={showContextMenu}
+            setShowContextMenu={setShowContextMenu}
+            path={path}
+            disableDelete={disableDelete}
+            fullPath={fullPath}
+            isPrivate={isPrivate}
+            editFile={editFile}
+          />
+
         </div>
       </div>
     </>

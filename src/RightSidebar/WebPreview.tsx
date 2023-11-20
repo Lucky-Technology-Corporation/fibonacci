@@ -1,11 +1,11 @@
 import { Resizable } from 're-resizable';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Draggable from 'react-draggable';
 import { SwizzleContext } from '../Utilities/GlobalContext';
 
 export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolean, setIsVisible: (isVisible: boolean) => void}){
 
-    const { testDomain, setShouldOverlay } = useContext(SwizzleContext)
+    const { testDomain, setShouldOverlay, activeFile } = useContext(SwizzleContext)
 
     const handleResizeStart = (e) => {
         e.stopPropagation();
@@ -16,6 +16,17 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
         e.stopPropagation();
         setShouldOverlay(false)
     }
+
+    const [url, setUrl] = useState<string>("")
+    const [path, setPath] = useState<string>("")
+
+    useEffect(() => {
+      if(activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
+        const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].toLowerCase()
+        setPath(path)
+        setUrl(testDomain + "/" + path)
+      }
+    }, [isVisible, activeFile])
 
     if(!isVisible){
         return <></>
@@ -47,6 +58,7 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
             handleClasses={{
               bottomRight: 'resizable-handle',
             }}
+            style={{ zIndex: 1000 }}
           >
             <div className='w-full h-full rounded-sm' style={{ border: '1px solid #525363', overflow: 'hidden', position: 'relative', zIndex: 1000 }}>
               <div className="handle py-1" style={{ cursor: 'move', backgroundColor: '#525363', userSelect: 'none' }}>
@@ -55,16 +67,18 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
                 </div>
               </div>
               <img src="/popout.svg" className='absolute top-1 left-5 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={()=> {
-                  window.open(testDomain, '_blank')
+                  window.open(url, '_blank')
               }} />
+              <div className='text-gray-200 absolute top-0 left-10 '>/{path}</div>
               <img src="/close.svg" className='absolute top-1 right-1 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={(e) =>{ setIsVisible(false)}} />
               <div style={{ width: "100%", height: "calc(100% - 19px)", backgroundColor: "#ffffff" }}>
                 <iframe 
-                  src={testDomain} 
+                  src={url} 
                   title="Preview" 
                   width="100%" 
                   height="100%" 
                   frameBorder="0"
+                  z-index="1000"
                 />
               </div>
             </div>

@@ -1,21 +1,28 @@
 import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import Checkbox from "../../Utilities/Checkbox";
+import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function APIWizard({
   isVisible,
   setIsVisible,
   files,
-  fileType
+  fileType,
+  pathIfEditing = "",
+  fallbackPathIfEditing = "",
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   files: string[];
-  fileType: string
+  fileType: string;
+  pathIfEditing?: string
+  fallbackPathIfEditing?: string
 }) {
   const filesystemApi = useFilesystemApi()
+  const endpointApi = useEndpointApi()
   
   const [inputValue, setInputValue] = useState("");
   const [fallbackInputValue, setFallbackInputValue] = useState("");
@@ -78,9 +85,17 @@ export default function APIWizard({
 
 
     const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".tsx", "")) : "components/" + convertPath(newFileName.replace(".tsx", ""))
-    if(files.includes(testPath)){
-      toast.error("That endpoint already exists")
+    const isSameAsEditingPath = fileType == "page" ? "pages/" + convertPath(pathIfEditing.replace(".tsx", "")) : "components/" + convertPath(pathIfEditing.replace(".tsx", ""))
+    if(files.includes(testPath) && testPath != isSameAsEditingPath){
+      toast.error("That file already exists")
       return
+    }
+
+    var fileContent;
+    if(pathIfEditing && pathIfEditing != ""){
+      const subfolder = fileType == "page" ? "pages" : "components"
+      fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + convertPath(pathIfEditing))
+      await runDeleteProcess(pathIfEditing)
     }
 
     if(fileType == "page"){
@@ -102,9 +117,9 @@ export default function APIWizard({
         unauthenticatedFallback = fallbackInputValue
       }
 
-      await filesystemApi.createNewFile("/frontend/src/pages/" + parsedFileName, undefined, routePath, unauthenticatedFallback)
+      await filesystemApi.createNewFile("/frontend/src/pages/" + parsedFileName, undefined, routePath, unauthenticatedFallback, fileContent)
     } else if(fileType == "file"){
-      await filesystemApi.createNewFile("/frontend/src/components/" + newFileName)
+      await filesystemApi.createNewFile("/frontend/src/components/" + newFileName, undefined, undefined, undefined, fileContent)
     }
     
     setTimeout(() => {
@@ -113,6 +128,29 @@ export default function APIWizard({
 
     setIsVisible(false);
   };
+
+  const runDeleteProcess = async (fileName: string) => {
+    try{
+      const subfolder = fileType == "page" ? "pages" : "components"
+      const fileNameParsed = "/frontend/src/" + subfolder + "/" + convertPath(pathIfEditing)
+
+      //close file
+      setPostMessage({
+        type: "removeFile",
+        fileName: fileNameParsed,
+      })
+
+      //clean up codegen
+      if(fileNameParsed.includes("frontend/src/pages/")){
+        await filesystemApi.removeFile("/frontend/src/pages/" + fileName, undefined, formatPath(pathIfEditing, pathIfEditing))
+      }
+
+      //delete file
+      await endpointApi.deleteFile(subfolder + "/" + convertPath(pathIfEditing), "frontend")
+    } catch(e){
+      throw "Error deleting endpoint"
+    }
+  }
 
   const convertPath = (path) => {
     const segments = path.split('/').filter(Boolean);
@@ -136,9 +174,15 @@ export default function APIWizard({
 
   useEffect(() => {
     if (isVisible) {
-      setInputValue("");
-      setFallbackInputValue("");
-      setAuthRequired(false);
+      if(pathIfEditing){
+        setInputValue(pathIfEditing)
+        setFallbackInputValue(fallbackPathIfEditing)
+        setAuthRequired(fallbackPathIfEditing != "");
+      } else{
+        setInputValue("");
+        setFallbackInputValue("");  
+        setAuthRequired(false);
+      }
     }
   }, [isVisible]);
 
@@ -161,12 +205,12 @@ export default function APIWizard({
               <>
                 <div className="flex justify-between">
                   <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    {fileType == "file" ? "New Component" : "New Page"}
+                  {pathIfEditing == "" ? "New" : "Edit"}{fileType == "file" ? " Component" : " Page"}
                   </h3>
                 </div>
                 <div className="my-2">
                   {fileType == "file" 
-                    ? "Create a new resusable component" 
+                    ? `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} resusable component` 
                     : <div className="mt-1"><Checkbox
                         id="requireAuth"
                         label="Require Authentication"
@@ -201,7 +245,7 @@ export default function APIWizard({
                     </div>
                     {authRequired && (
                       <>
-                      <div className="mt-1">Unauthenticated fallback path (e.g. /login)</div>
+                      <div className="mt-1">Unauthenticated fallback (where non-logged in users are redirected)</div>
                       <div className="mt-1 mb-2 flex">
                         <input
                           type="text"

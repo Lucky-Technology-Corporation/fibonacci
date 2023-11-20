@@ -11,6 +11,7 @@ export default function useFilesystemApi(){
     endpointName?: string,
     routePath?: string,
     fallbackPath?: string,
+    starterCode?: string,
   ): Promise<void> => {
     try {
       var fileName = "";
@@ -24,6 +25,9 @@ export default function useFilesystemApi(){
         var fileContent = starterEndpoint(method, endpoint);
         if(endpointName.includes("get/cron")){
           fileContent = starterJob(endpoint);
+        }
+        if(starterCode != undefined && starterCode !== ""){
+          fileContent = starterCode
         }
 
         await endpointApi.writeFile(relativeFilePath, fileContent)
@@ -104,6 +108,9 @@ export default function useFilesystemApi(){
 
         const hasAuth = fallbackPath != undefined && fallbackPath !== "";
         var fileContent = starterComponent(componentName, hasAuth, basePath);
+        if(starterCode != undefined && starterCode !== ""){
+          fileContent = starterCode
+        }
 
         await endpointApi.writeFile(relativeFilePath, fileContent)
 
@@ -152,6 +159,9 @@ export default function useFilesystemApi(){
       } else if (relativeFilePath.includes("helpers/")) {
         fileName = relativeFilePath.split("backend/helpers/")[1];
         var fileContent = starterHelper(fileName.replace(".ts", ""))
+        if(starterCode != undefined && starterCode !== ""){
+          fileContent = starterCode
+        }
         await endpointApi.writeFile(relativeFilePath, fileContent)
       } 
     } catch (error) {
@@ -208,7 +218,7 @@ export default function useFilesystemApi(){
           ``,
         );
         await endpointApi.writeFile("backend/server.ts", newContent)
-    }
+      }
     } else if (routePath != undefined && routePath !== "") {
       //remove from RouteList.ts if it's a route
       const lastIndex = relativeFilePath.lastIndexOf("/");
@@ -246,10 +256,80 @@ export default function useFilesystemApi(){
       }
     }
   }
+  
+  // const addAuthToPage = async (page: string, fallbackPath: string) => {
+  //   var path = page
+  //   const routeListTsx = await endpointApi.getFile("frontend/src/RouteList.tsx")
+
+  //   if (routeListTsx) {
+  //     var content = routeListTsx
+
+  //     //Find old route to remove
+  //     const routeToRemoveRegex = new RegExp(
+  //         `<SwizzleRoute path="${page.replace("/", "\/")}".*>`,
+  //         "g",
+  //     );
+
+  //     //Build new route
+  //     if(path.startsWith("/")){
+  //       path = path.substring(1)
+  //     }
+  //     const componentName = path
+  //       .replace(/\//g, "_")
+  //       .replace(".tsx", "")
+  //       .replace(".ts", "")
+  //       .replace(/\./g, "_")
+  //       .replace(/^(.)/, (match, p1) => p1.toUpperCase())
+  //       .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
+
+  //     const newRoute = `<SwizzleRoute path="${page}" element={<SwizzlePrivateRoute unauthenticatedFallback="${fallbackPath}" pageComponent={${componentName}} /> } />`
+
+  //     //Swap them
+  //     content = content.replace(routeToRemoveRegex, newRoute);
+
+  //     await endpointApi.writeFile("frontend/src/RouteList.tsx", content)
+  //   }
+  // }
+
+  const removeAuthFromPage = async (page: string) => {
+    var path = page
+    const routeListTsx = await endpointApi.getFile("frontend/src/RouteList.tsx")
+
+    if (routeListTsx) {
+      var content = routeListTsx
+
+      //Find old route to remove
+      const routeToRemoveRegex = new RegExp(
+          `<SwizzleRoute path="${page.replace("/", "\/")}".*>`,
+          "g",
+      );
+
+      //Build new route
+      if(path.startsWith("/")){
+        path = path.substring(1)
+      }
+      const componentName = path
+        .replace(/\//g, "_")
+        .replace(".tsx", "")
+        .replace(".ts", "")
+        .replace(/\./g, "_")
+        .replace(/^(.)/, (match, p1) => p1.toUpperCase())
+        .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
+
+      const newRoute = `<SwizzleRoute path="${page}" element={<${componentName} />} />`;
+
+      //Swap them
+      content = content.replace(routeToRemoveRegex, newRoute);
+
+      await endpointApi.writeFile("frontend/src/RouteList.tsx", content)
+    }
+  }
+
 
   return {
     createNewFile,
     removeFile,
+    removeAuthFromPage
   }
 
 }

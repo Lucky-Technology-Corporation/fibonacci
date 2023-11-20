@@ -78,15 +78,8 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         const processQueue = () => {
             if (messageQueue.length > 0) {
                 const message = messageQueue.shift();
-                
                 var line = message
-                if (
-                    (line.includes("0.0.0.0:9229") ||
-                    line.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
-                    line.includes("ExperimentalWarning: Custom ESM Loaders") ||
-                    line.includes("(Use `node --trace-warnings ...")) && !line.includes("\n")
-                ){ return }
-                
+
                 const regex = /\x1B\[\d+m/g;
                 line = line.replace(regex, '');
 
@@ -100,6 +93,18 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
                     for(var i = 0; i < lines.length; i++){
                         var currentLine = lines[i];
+
+                        if (
+                            (currentLine.includes("0.0.0.0:9229") ||
+                            currentLine.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+                            currentLine.includes("ExperimentalWarning: Custom ESM Loaders") ||
+                            currentLine.includes("(Use `node --trace-warnings ...")) ||
+                            currentLine.includes("[nodemon] to restart at any time, enter `rs`") ||
+                            currentLine.includes("[nodemon] watching path(s): **/*") ||
+                            currentLine.includes("[nodemon] watching extensions: ts") ||
+                            currentLine.includes("[nodemon] 3.0.1") ||
+                            currentLine.includes("npm WARN exec The following package was not found and will be installed")
+                        ){ continue }        
 
                         try{
                             const parsed = JSON.parse(currentLine);
@@ -121,7 +126,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                             line = line + currentLine + "\n";
                         }
                     }
-                    
+                    if(line == ""){ return }
                     if(line.endsWith("\n")){
                         line = line.substring(0, line.length - 1);
                     }

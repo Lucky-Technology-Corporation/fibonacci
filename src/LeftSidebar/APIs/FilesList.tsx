@@ -17,6 +17,8 @@ export default function FilesList({ active }: { active: boolean }) {
   const [expandedDirs, setExpandedDirs] = useState({});
   const [fileType, setFileType] = useState<string>("file");
   const [showServerFiles, setShowServerFiles] = useState<boolean>(false);
+  const [fileToEdit, setFileToEdit] = useState<string>("");
+  const [fileToEditFallback, setFileToEditFallback] = useState<string>("");
 
   const { testDomain, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
@@ -155,6 +157,21 @@ export default function FilesList({ active }: { active: boolean }) {
     }
   }, [searchFilter])
 
+  const editFileHandler = (path: string, fallbackPath: string, type: string) => {
+    setFileType(type)
+    setFileToEditFallback(fallbackPath)
+    setFileToEdit(path.replace(".tsx", "").replace(".ts", ""))
+    console.log("path", path)
+    console.log("fallback", fallbackPath)
+  }
+
+  useEffect(() => {
+    if(fileToEdit != ""){
+      console.log(fileType)
+      setIsVisible(true)
+    }
+  }, [fileToEdit])
+
   const renderFiles = (node, parentPath = '', searchActive = false) => {
     if (!node) return null;
     if (Array.isArray(node)) {
@@ -213,6 +230,7 @@ export default function FilesList({ active }: { active: boolean }) {
                 setShouldRefreshList(!shouldRefreshList)
               }, 250)
             }}
+            editFile={() => {editFileHandler(node.name, "", "file")}}
           />
         );
       } 
@@ -345,6 +363,8 @@ export default function FilesList({ active }: { active: boolean }) {
                 }}
                 isPrivate={page.authRequired}
                 fallbackUrl={page.fallbackPath}
+                editFile={() => {editFileHandler(page.path, page.fallbackPath, "page")}}
+
               />
             )
           })}
@@ -361,11 +381,14 @@ export default function FilesList({ active }: { active: boolean }) {
       </div>
 
       <FileWizard
+        pathIfEditing={fileToEdit}
+        fallbackPathIfEditing={fileToEditFallback}
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         files={getFilePathArray()}
         fileType={fileType}
       />
+
     </div>
   );
 }
