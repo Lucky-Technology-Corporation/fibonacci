@@ -95,6 +95,16 @@ export default function APIWizard({
     if(pathIfEditing && pathIfEditing != ""){
       const subfolder = fileType == "page" ? "pages" : "components"
       fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + convertPath(pathIfEditing))
+      const functionDeclaration = "function " + convertPath(pathIfEditing.replace(".tsx", "")).replace(".tsx", "") + "("
+      const newFunctionDeclaration = "function " + convertPath(newFileName.replace(".tsx", "")).replace(".tsx", "") + "("
+      const constFunctionDeclaration = "const " + convertPath(pathIfEditing.replace(".tsx", "")).replace(".tsx", "") + " ="
+      const newConstFunctionDeclaration = "const " + convertPath(newFileName.replace(".tsx", "")).replace(".tsx", "") + " ="
+      const exportDeclaration = "export default " + convertPath(pathIfEditing.replace(".tsx", "")).replace(".tsx", "") + ""
+      const newExportDeclaration = "export default " + convertPath(newFileName.replace(".tsx", "")).replace(".tsx", "") + ""
+      // console.log("REPLACING", functionDeclaration, newFunctionDeclaration, constFunctionDeclaration, newConstFunctionDeclaration, exportDeclaration, newExportDeclaration)
+      fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration)
+      fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration)
+      fileContent = fileContent.replace(exportDeclaration, newExportDeclaration)
       await runDeleteProcess(pathIfEditing)
     }
 
@@ -183,6 +193,10 @@ export default function APIWizard({
         setFallbackInputValue("");  
         setAuthRequired(false);
       }
+    } else{
+      setInputValue("");
+      setFallbackInputValue("");  
+      setAuthRequired(false);
     }
   }, [isVisible]);
 
