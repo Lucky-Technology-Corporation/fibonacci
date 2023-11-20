@@ -60,13 +60,15 @@ export default function InProgressDeploymentModal({
                 </h3>
                 <div className="mt-2">
                     <ul className="text-sm text-[#D9D9D9]">
+                    <li className="mt-2 ml-8">If you've seen this screen for more than 5 minutes, please contact us at <a href="mailto:team@swizzle.co" target="_blank" rel="noreferrer">team@swizzle.co</a> (or via the chat widget in the bottom right). With the surge in demand, some projects require a manual restart from our team.</li>
+                        {/* {currentStep >= 1 && <li className="mt-2 ml-8">Creating test environment...</li>}
                         {currentStep >= 1 && <li className="mt-2 ml-8">Creating test environment...</li>}
                         {currentStep >= 2 && <li className="mt-2 ml-8">Provisioning SSL certificates...</li>}
                         {currentStep >= 3 && <li className="mt-2 ml-8">Cloning server code...</li>}
                         {currentStep >= 4 && <li className="mt-2 ml-8">Creating production resources...</li>}
                         {currentStep >= 5 && <li className="mt-2 ml-8">Setting up IDE...</li>}
                         {currentStep >= 6 && <li className="mt-2 ml-8">Finishing up...</li>}
-                        {currentStep >= 7 && <li className="mt-2 ml-8">This can take up to 5 minutes. Please be patient.</li>}
+                        {currentStep >= 7 && <li className="mt-2 ml-8">This can take up to 5 minutes. Please be patient.</li>} */}
                     </ul>
                 </div>
 
