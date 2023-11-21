@@ -76,7 +76,7 @@ export default function TemplatesPage() {
         {getTemplates()}
         <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0" style={{ width: 'calc(33.333% - 1rem)' }}>
           <div className="font-semibold text-lg flex">
-            <img src={"/request_template.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
+            <img src={"/email.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
             <div className="my-auto mr-auto">Something else</div>
             <Button
               text="Request"
