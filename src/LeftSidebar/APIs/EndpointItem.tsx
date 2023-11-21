@@ -13,13 +13,15 @@ export default function EndpointItem({
   path,
   method,
   onClick,
-  removeFromList
+  removeFromList,
+  editFile
 }: {
   active?: boolean;
   path: string;
   method: Method;
   onClick?: () => void;
   removeFromList?: () => void
+  editFile?: () => void
 }) {
   const { deleteFile } = useEndpointApi()
   const { removeFile } = useFilesystemApi()
@@ -79,6 +81,7 @@ export default function EndpointItem({
           setShowContextMenu={setShowContextMenu}
           path={path}
           // isPrivate={false}
+          editFile={editFile}
           runDeleteProcess={() => { runDeleteProcess(method, path) } }
         />
       </div>

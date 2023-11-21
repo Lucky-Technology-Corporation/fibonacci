@@ -12,6 +12,7 @@ export default function useFilesystemApi(){
     routePath?: string,
     fallbackPath?: string,
     starterCode?: string,
+    isAuthRequired: boolean = false
   ): Promise<void> => {
     try {
       var fileName = "";
@@ -22,7 +23,7 @@ export default function useFilesystemApi(){
         const method = endpointName.split("/")[0];
         const endpoint = endpointName.substring(endpointName.indexOf("/"));
 
-        var fileContent = starterEndpoint(method, endpoint);
+        var fileContent = starterEndpoint(method, endpoint, isAuthRequired);
         if(endpointName.includes("get/cron")){
           fileContent = starterJob(endpoint);
         }
@@ -231,7 +232,7 @@ export default function useFilesystemApi(){
         var content = routeListTsx
 
         const routeToRemoveRegex = new RegExp(
-            `<SwizzleRoute path="${routePath.replace("/", "\/")}".*>`,
+            `<SwizzleRoute path="${routePath.replace("/", "\/")}".*>\n`,
             "g",
         );
         content = content.replace(routeToRemoveRegex, "");

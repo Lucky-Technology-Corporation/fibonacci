@@ -159,15 +159,26 @@ export default function FilesList({ active }: { active: boolean }) {
   const editFileHandler = (path: string, fallbackPath: string, type: string) => {
     setFileType(type)
     setFileToEditFallback(fallbackPath)
-    setFileToEdit(path.replace(".tsx", "").replace(".ts", "").toLowerCase())
+    var name = path.replace(".tsx", "").replace(".ts", "")
+    if(type == "page"){
+      name = name.toLowerCase()
+    }
+    setFileToEdit(name)
   }
 
   useEffect(() => {
     if(fileToEdit != ""){
-      console.log(fileType)
       setIsVisible(true)
     }
   }, [fileToEdit])
+
+  useEffect(() => {
+    if(!isVisible){
+      setTimeout(() => {
+        setFileToEdit("")
+      }, 200)
+    }
+  }, [isVisible])
 
   const renderFiles = (node, parentPath = '', searchActive = false) => {
     if (!node) return null;

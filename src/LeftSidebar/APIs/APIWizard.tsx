@@ -1,7 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import { endpointSort } from "../../Utilities/ActiveEndpointHelper";
+import Checkbox from "../../Utilities/Checkbox";
 import Dropdown from "../../Utilities/Dropdown";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -11,25 +13,41 @@ export default function APIWizard({
   setIsVisible,
   setEndpoints,
   setFullEndpoints,
-  endpoints
+  endpoints,
+  endpointPathIfEditing = "",
+  currentFileProperties
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   setEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
   setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
   endpoints: any[];
+  endpointPathIfEditing?: string
+  currentFileProperties?: any
 }) {
   const filesystemApi = useFilesystemApi()
+  const endpointApi = useEndpointApi()
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
   const [validUrl, setValidUrl] = useState<boolean>(true)
-  const { setPostMessage, setActiveEndpoint } = useContext(SwizzleContext);
+  const { setPostMessage, setActiveEndpoint, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
+  const [authRequired, setAuthRequired] = useState<boolean>(false);
 
   const methods: any = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
     // { id: "schedule", name: "Scheduled Job" }
   ];
+
+  useEffect(() => {
+    console.log("currentFileProperties", currentFileProperties)
+    console.log("endpointPathIfEditing", endpointPathIfEditing)
+
+    if(endpointPathIfEditing != "" && currentFileProperties){
+      console.log("set to ", currentFileProperties.hasPassportAuth)
+      setAuthRequired(currentFileProperties.hasPassportAuth)
+    }
+  }, [currentFileProperties, endpointPathIfEditing])
 
   const createHandler = async () => {
     var cleanInputValue = inputValue;
@@ -76,12 +94,45 @@ export default function APIWizard({
     const newEndpointName = methodToUse + "/" + cleanInputValue.replace(/\/+$/, "");
     const fileName = endpointToFilename(newEndpointName);
 
-    if(endpoints.includes(newEndpointName)){
+    console.log("endpointPathIfEditing", endpointPathIfEditing)
+    console.log("newEndpointName", newEndpointName)
+    console.log("cleanInputValue", cleanInputValue)
+    console.log("endpoints", endpoints)
+
+    if(endpoints.includes(newEndpointName) && newEndpointName != endpointPathIfEditing){ //stop if the endpoint already exists AND we're not editing it  
       toast.error("That endpoint already exists")
       return
     }
 
-    await filesystemApi.createNewFile("/backend/user-dependencies/" + fileName, newEndpointName)
+
+
+    if(endpointPathIfEditing && endpointPathIfEditing != ""){ //check if the endpoint path was changed
+      if(endpointPathIfEditing != newEndpointName){ //Path was changed!
+        const fileContent = await generateNewFileContent(endpointPathIfEditing, newEndpointName, authRequired)
+        await filesystemApi.createNewFile("/backend/user-dependencies/" + fileName, newEndpointName, undefined, undefined, fileContent, authRequired)
+
+        //close file
+        setPostMessage({
+          type: "removeFile",
+          fileName: "/backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing),
+        });
+        //clean up codegen
+        await filesystemApi.removeFile("/backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing), endpointPathIfEditing)
+        //delete file
+        await endpointApi.deleteFile(endpointToFilename(endpointPathIfEditing), "backend")
+      } else{ //Path was not changed, but auth might be
+        const fileContent = await generateNewFileContent(endpointPathIfEditing, newEndpointName, authRequired)
+        await endpointApi.writeFile("/backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing), fileContent)
+      }
+      
+      setTimeout(() => {
+        setShouldRefreshList(!shouldRefreshList);
+      }, 400);
+      setIsVisible(false);
+      return
+    }
+
+    await filesystemApi.createNewFile("/backend/user-dependencies/" + fileName, newEndpointName, undefined, undefined, undefined, authRequired)
 
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {
@@ -100,9 +151,36 @@ export default function APIWizard({
     setIsVisible(false);
   };
 
+  const generateNewFileContent = async (oldEndpoint: string, newEndpoint: string, isAuthed: boolean) => {
+    var fileContent = await endpointApi.getFile("backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing))
+    if(isAuthed){
+      fileContent = fileContent.replace(/optionalAuthentication/g, "requiredAuthentication")
+    } else{
+      fileContent = fileContent.replace(/requiredAuthentication/g, "optionalAuthentication")
+    }
+
+    const oldExpressExpression = "router." + oldEndpoint.split("/")[0] + "('/" + oldEndpoint.split("/")[1] + "'"
+    const newExpressExpression = "router." + newEndpoint.split("/")[0] + "('/" + newEndpoint.split("/")[1] + "'"
+    console.log("oldExpressExpression", oldExpressExpression)
+    console.log("newExpressExpression", newExpressExpression)
+    fileContent = fileContent.replace(oldExpressExpression, newExpressExpression)
+
+    return fileContent
+  }
+
   useEffect(() => {
     if (isVisible) {
+      if(endpointPathIfEditing){
+        setSelectedMethod(endpointPathIfEditing.split("/")[0])
+        setInputValue("/" + endpointPathIfEditing.split("/")[1])
+        // setAuthRequired(false); //CHANGE THIS TO THE ACTUAL AUTH STATE
+      } else{
+        setInputValue("");
+        setAuthRequired(false);
+      }
+    } else{
       setInputValue("");
+      setAuthRequired(false);
     }
   }, [isVisible]);
 
@@ -124,11 +202,15 @@ export default function APIWizard({
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               <>
                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                  New API
+                {endpointPathIfEditing == "" ? "New" : "Edit"} endpoint
                 </h3>
-                <div className="mt-1">
-                  <p className="text-sm text-[#D9D9D9]">Name your endpoint</p>
-                </div>
+                <div className="mt-2"><Checkbox
+                  id="requireAuth"
+                  label="Require Authentication"
+                  isChecked={authRequired}
+                  setIsChecked={setAuthRequired}
+                /></div>
+
                 <div className="mt-3 mb-2 flex">
                   <Dropdown
                     className="mr-2 fixed"
@@ -143,6 +225,7 @@ export default function APIWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
+                      if(endpointPathIfEditing == "/"){ return }
                       const regex = /^\/?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/
                       if(!regex.test(e.target.value)){
                         setValidUrl(false)
@@ -151,6 +234,7 @@ export default function APIWizard({
                       }
                       setInputValue(e.target.value);
                     }}
+                    disabled={endpointPathIfEditing == "/"}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
                     placeholder={selectedMethod == "schedule" ? "jobName" : "/path/:variable"}
                     onKeyDown={(event: any) => {

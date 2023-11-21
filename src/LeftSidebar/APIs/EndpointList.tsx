@@ -14,7 +14,7 @@ import HelperItem from "./HelperItem";
 import HelperWizard from "./HelperWizard";
 // import HelperWizard from "./HelperWizard";
 
-export default function EndpointList({ active }: { active: boolean }) {
+export default function EndpointList({ active, currentFileProperties }: { active: boolean, currentFileProperties: any }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
@@ -25,6 +25,8 @@ export default function EndpointList({ active }: { active: boolean }) {
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
 
+  const [endpointToEdit, setEndpointToEdit] = useState<string>("");
+
   const methods: any = [
     { id: "endpoint", name: "+ Endpoint" },
     { id: "helper", name: "+ Helper" },
@@ -32,6 +34,25 @@ export default function EndpointList({ active }: { active: boolean }) {
 
   const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
     useContext(SwizzleContext);
+
+
+  const editFileHandler = (path: string) => {
+    setEndpointToEdit(path)
+  }
+  
+  useEffect(() => {
+    if(endpointToEdit != ""){
+      setIsVisible(true)
+    }
+  }, [endpointToEdit])
+
+  useEffect(() => {
+    if(!isVisible){
+      setTimeout(() => {
+        setEndpointToEdit("")
+      }, 250)
+    }
+  }, [isVisible])
 
 
   const temporaryFixOldTsConfigs = async () => {
@@ -180,6 +201,7 @@ export default function EndpointList({ active }: { active: boolean }) {
                   return prev.filter((e) => e != endpoint);
                 })
               }}
+              editFile={() => { editFileHandler(endpoint) }}
             />
           ))}
         </div>
@@ -210,13 +232,17 @@ export default function EndpointList({ active }: { active: boolean }) {
           })}
         </div>
       </div>
+      
       <APIWizard
         isVisible={isVisible}
         setIsVisible={setIsVisible}
         setEndpoints={setEndpoints}
         setFullEndpoints={setFullEndpointList}
         endpoints={fullEndpointList}
+        endpointPathIfEditing={endpointToEdit}
+        currentFileProperties={currentFileProperties}
       />
+
       <HelperWizard
         isVisible={isHelperWizardVisible}
         setIsVisible={setIsHelperWizardVisible}

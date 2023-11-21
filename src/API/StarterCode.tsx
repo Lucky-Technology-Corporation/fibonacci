@@ -1,10 +1,10 @@
-export function starterEndpoint(method: string, endpoint: string){
+export function starterEndpoint(method: string, endpoint: string, isAuthRequired: boolean){
     const fileContent = 
 `import express, { Response } from "express";
-import { AuthenticatedRequest, optionalAuthentication, db } from "swizzle-js";
+import { AuthenticatedRequest, ${isAuthRequired ? "requiredAuthentication" : "optionalAuthentication"}, db } from "swizzle-js";
 const router = express.Router();
 
-router.${method}('${endpoint}', optionalAuthentication, async (request: AuthenticatedRequest, response: Response) => {
+router.${method}('${endpoint}', ${isAuthRequired ? "requiredAuthentication" : "optionalAuthentication"}, async (request: AuthenticatedRequest, response: Response) => {
     //Your code goes here
     return response.json({ message: "It works!" });
 });

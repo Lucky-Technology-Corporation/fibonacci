@@ -6,7 +6,7 @@ import Checkbox from "../../Utilities/Checkbox";
 import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function APIWizard({
+export default function FileWizard({
   isVisible,
   setIsVisible,
   files,
@@ -50,7 +50,6 @@ export default function APIWizard({
     }
 
     const newFileName = cleanupInputValue(inputValue);
-    console.log("newFileName", newFileName)
     const hasConflicts = checkForConflicts(newFileName);
     if(hasConflicts){ return }
 
@@ -61,17 +60,20 @@ export default function APIWizard({
     }
 
     if(fileType == "page"){
-      var filePath = newFileName.replace(".tsx", "")
-      if(!filePath.startsWith("/")){
-        filePath = "/" + filePath.toLowerCase()
+      var routePath = inputValue.toLowerCase()
+      if(!inputValue.startsWith("/")){
+        routePath = "/" + routePath
       }
 
       var unauthenticatedFallback = null
       if(authRequired){
-        unauthenticatedFallback = fallbackInputValue
+        unauthenticatedFallback = fallbackInputValue.toLowerCase()
+        if(!fallbackInputValue.startsWith("/")){
+          unauthenticatedFallback = "/" + unauthenticatedFallback
+        }
       }
 
-      await filesystemApi.createNewFile("/frontend/src/pages/" + newFileName, undefined, filePath, unauthenticatedFallback, fileContent)
+      await filesystemApi.createNewFile("/frontend/src/pages/" + newFileName, undefined, routePath, unauthenticatedFallback, fileContent)
     } else if(fileType == "file"){
       await filesystemApi.createNewFile("/frontend/src/components/" + newFileName, undefined, undefined, undefined, fileContent)
     }
@@ -235,10 +237,10 @@ export default function APIWizard({
                   overrideRender
                 ) : (
                   <>
-                    <div className="mt-1">
+                    <div className={`mt-1  ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>
                     {fileType == "file" ? "Component Name" : "Page URL"}
                     </div>
-                    <div className="mt-1 mb-2 flex">
+                    <div className={`mt-1 mb-2 flex ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>
                       <input
                         type="text"
                         value={inputValue}
@@ -259,7 +261,7 @@ export default function APIWizard({
                     </div>
                     {authRequired && (
                       <>
-                      <div className="mt-1">Unauthenticated fallback (where non-logged in users are redirected)</div>
+                      <div className="mt-1">Fallback URL (where users are redirected if not logged in)</div>
                       <div className="mt-1 mb-2 flex">
                         <input
                           type="text"

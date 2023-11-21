@@ -64,6 +64,7 @@ export default function HelperItem({
             setShowContextMenu={setShowContextMenu}
             path={path}
             runDeleteProcess={() => { runDeleteProcess(path) } }
+            editFile={() => {}}
           />
 
         </div>

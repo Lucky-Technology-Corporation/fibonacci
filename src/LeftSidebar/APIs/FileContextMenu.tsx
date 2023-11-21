@@ -101,9 +101,9 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
             {(!disableDelete && fullPath && !fullPath.includes("/pages/SwizzleHomePage.ts")) && (
                 <div className="font-sans text-sm hover:bg-gray-800">
                     <div
-                        className="p-2 hover:text-red-500 cursor-pointer"
+                        className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
                         onClick={() => {
-                            const c = confirm("Are you sure you want to delete this endpoint?");
+                            const c = confirm("Are you sure you want to delete this file?");
                             if(c){
                                 toast.promise(runDeleteProcess(path), {
                                     loading: "Deleting...",

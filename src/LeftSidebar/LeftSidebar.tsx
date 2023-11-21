@@ -278,7 +278,7 @@ export default function LeftSidebar({
             />
           </div>
         </a>
-        <EndpointList active={selectedTab == Page.Apis} />
+        <EndpointList active={selectedTab == Page.Apis} currentFileProperties={currentFileProperties} />
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
