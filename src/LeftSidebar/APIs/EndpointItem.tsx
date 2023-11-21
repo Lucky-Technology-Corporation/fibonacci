@@ -1,12 +1,12 @@
-import { faClock, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
-import toast from "react-hot-toast";
+import { useContext, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method, methodToColor } from "../../Utilities/Method";
+import EndpointContextMenu from "./EndpointContextMenu";
 
 export default function EndpointItem({
   active = false,
@@ -25,6 +25,7 @@ export default function EndpointItem({
   const { removeFile } = useFilesystemApi()
 
   const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
+  const [showContextMenu, setShowContextMenu] = useState(false);
 
   const runDeleteProcess = async (method: string, path: string) => {
     try{
@@ -57,8 +58,9 @@ export default function EndpointItem({
           active ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
+        onContextMenu={(e) => { e.preventDefault(); onClick(); setShowContextMenu(true);}}
       >
-        <div className="flex">
+        <div className="flex relative">
         <div className="max-w-[240px] break-all pr-2 font-normal">
           {path.startsWith("/cron") ? (
             <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
@@ -68,18 +70,16 @@ export default function EndpointItem({
           {path.startsWith("/cron/") ? path.replace("/cron/", "") : path}
         </div>
         <FontAwesomeIcon
-          className="mr-2 ml-auto mt-0.5 opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
-          icon={faTrash}
-          onClick={() => {
-            const c = confirm("Are you sure you want to delete this endpoint?");
-            if(c){
-              toast.promise(runDeleteProcess(method, path), {
-                loading: "Deleting endpoint",
-                success: "Endpoint deleted",
-                error: "Error deleting endpoint"
-              })
-            }
-          }}
+          icon={faEllipsisV}
+          className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
+          onClick={(e) =>{ onClick(); setShowContextMenu(!showContextMenu)}}          
+        />
+        <EndpointContextMenu
+          showContextMenu={showContextMenu}
+          setShowContextMenu={setShowContextMenu}
+          path={path}
+          // isPrivate={false}
+          runDeleteProcess={() => { runDeleteProcess(method, path) } }
         />
       </div>
       </div>

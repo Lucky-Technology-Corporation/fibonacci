@@ -51,22 +51,22 @@ export function starterCSS(){
     return fileContent;
 }
 
-export function starterComponent(fileName: string, hasAuth: boolean, path: string){
+export function starterComponent(fileName: string, hasAuth: boolean, path: string, isNamed: boolean = true){
     const levels = path.split('/').length - 1;
     const apiImport = '../'.repeat(levels) + 'Api';
     
     return `import React from 'react';
 import api from '${apiImport}'; //Use this to make API calls (e.g. await api.get("/endpoint"))
 
-const ${fileName} = () => {
+${isNamed ? `const ${fileName} = () => {` : `export default () => {`}
     return (
         <div>
             {/* Your content here */}
         </div>
     );
-};
+};${isNamed ? `
 
-export default ${fileName};`
+export default ${fileName};` : ``}`
 }
 
 export function starterHelper(fileName: string){

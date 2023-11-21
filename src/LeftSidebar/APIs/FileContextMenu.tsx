@@ -59,9 +59,9 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
     <>
         <div ref={modalRef} className="bg-[#333336] p-1 rounded-md border border-[#525363] absolute top-1 right-0 font-normal z-50 mt-2 mr-2" style={{display: showContextMenu ? "block" : "none"}}>
           {!disableDelete && (
-            <div className="font-sans text-sm">
+            <div className="font-sans text-sm hover:bg-gray-800">
                 <div
-                    className="p-2 text-gray-300 hover:text-gray-100 hover:font-bold cursor-pointer"
+                    className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
                     onClick={() => {
                       editFile()
                     }}
@@ -75,9 +75,9 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
             </div>
           )}
             {(fullPath && fullPath.includes("/pages/")) && isPrivate && (
-                <div className="font-sans text-sm">
+                <div className="font-sans text-sm hover:bg-gray-800">
                     <div
-                    className="p-2 text-gray-300 hover:text-gray-100 hover:font-bold cursor-pointer"
+                    className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
                     onClick={() => {
                         if(isPrivate){
                             console.log(path)
@@ -99,9 +99,9 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
                 </div>
             )}
             {(!disableDelete && fullPath && !fullPath.includes("/pages/SwizzleHomePage.ts")) && (
-                <div className="font-sans text-sm">
+                <div className="font-sans text-sm hover:bg-gray-800">
                     <div
-                        className="p-2 text-red-400 hover:text-red-500 hover:font-bold cursor-pointer"
+                        className="p-2 hover:text-red-500 cursor-pointer"
                         onClick={() => {
                             const c = confirm("Are you sure you want to delete this endpoint?");
                             if(c){
@@ -122,9 +122,9 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
                     </div>
                 </div>
             )}
-            <div className="font-sans text-sm">
+            <div className="font-sans text-sm hover:bg-gray-800">
                 <div
-                    className="p-2 text-gray-300 hover:text-gray-100 hover:font-bold cursor-pointer"
+                    className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
                     onClick={() => { setShowContextMenu(false) }}
                 >
                     Cancel

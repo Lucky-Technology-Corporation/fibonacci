@@ -102,7 +102,6 @@ export default function FilesList({ active }: { active: boolean }) {
             fallbackPath = fallback[1]
           }
         }
-        
         routes.push({ path: match[1], component: componentName, authRequired: authRequired, fallbackPath: fallbackPath });
       }
     }
@@ -160,9 +159,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const editFileHandler = (path: string, fallbackPath: string, type: string) => {
     setFileType(type)
     setFileToEditFallback(fallbackPath)
-    setFileToEdit(path.replace(".tsx", "").replace(".ts", ""))
-    console.log("path", path)
-    console.log("fallback", fallbackPath)
+    setFileToEdit(path.replace(".tsx", "").replace(".ts", "").toLowerCase())
   }
 
   useEffect(() => {

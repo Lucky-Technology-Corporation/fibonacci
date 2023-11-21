@@ -35,6 +35,7 @@ export default function FileItem({
           active ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
+        onContextMenu={(e) => { e.preventDefault(); onClick(); setShowContextMenu(true);}}
       >
         <div className="flex relative">
           <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>{formatPath(fullPath, path)}</div>

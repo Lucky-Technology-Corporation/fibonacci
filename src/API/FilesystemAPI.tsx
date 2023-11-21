@@ -97,7 +97,8 @@ export default function useFilesystemApi(){
         fileName = relativeFilePath.substring(lastIndex + 1);
 
         const basePath = relativeFilePath.split("frontend/src/")[1];
-        
+        const isPage = routePath != undefined && routePath !== "";
+
         const componentName = basePath
           .replace(".tsx", "")
           .replace(".ts", "")
@@ -114,7 +115,7 @@ export default function useFilesystemApi(){
 
         await endpointApi.writeFile(relativeFilePath, fileContent)
 
-        if (routePath != undefined && routePath !== "") {
+        if (isPage) {
           //Add route to RouteList.ts
           const importStatement = `import ${componentName} from './${basePath.replace(
             ".tsx",

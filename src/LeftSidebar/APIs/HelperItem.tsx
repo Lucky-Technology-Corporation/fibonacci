@@ -1,10 +1,10 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
-import toast from "react-hot-toast";
+import { useContext, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import EndpointContextMenu from "./EndpointContextMenu";
 
 export default function HelperItem({
   active = false,
@@ -18,6 +18,7 @@ export default function HelperItem({
   removeFromList?: () => void
 }) {
 
+  const [showContextMenu, setShowContextMenu] = useState(false);
   const {setPostMessage, setShouldRefreshList, shouldRefreshList} = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
   const { removeFile } = useFilesystemApi()
@@ -47,23 +48,24 @@ export default function HelperItem({
           active ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
+        onContextMenu={(e) => { e.preventDefault(); onClick(); setShowContextMenu(true);}}
       >
-        <div className="flex">
+        <div className="flex relative">
           <div className="font-normal">{path}</div>
+
           <FontAwesomeIcon
-            className="mr-2 ml-auto opacity-50 hover:opacity-100 rounded transition-all cursor-pointer"
-            icon={faTrash}
-            onClick={() => {
-              const c = confirm("Are you sure you want to delete this helper?");
-              if(c){
-                toast.promise(runDeleteProcess(path), {
-                  loading: "Deleting helper",
-                  success: "Helper deleted",
-                  error: "Error deleting helper"
-                })
-              }
-            }}
+            icon={faEllipsisV}
+            className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
+            onClick={(e) =>{ e.preventDefault(); setShowContextMenu(!showContextMenu)}}
           />
+
+          <EndpointContextMenu
+            showContextMenu={showContextMenu}
+            setShowContextMenu={setShowContextMenu}
+            path={path}
+            runDeleteProcess={() => { runDeleteProcess(path) } }
+          />
+
         </div>
       </div>
     </>

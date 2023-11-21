@@ -49,6 +49,41 @@ export default function APIWizard({
       return
     }
 
+    const newFileName = cleanupInputValue(inputValue);
+    console.log("newFileName", newFileName)
+    const hasConflicts = checkForConflicts(newFileName);
+    if(hasConflicts){ return }
+
+    var fileContent;
+    if(pathIfEditing && pathIfEditing != ""){
+      fileContent = await generateNewFileContent(pathIfEditing, newFileName)
+      await runDeleteProcess(pathIfEditing)
+    }
+
+    if(fileType == "page"){
+      var filePath = newFileName.replace(".tsx", "")
+      if(!filePath.startsWith("/")){
+        filePath = "/" + filePath.toLowerCase()
+      }
+
+      var unauthenticatedFallback = null
+      if(authRequired){
+        unauthenticatedFallback = fallbackInputValue
+      }
+
+      await filesystemApi.createNewFile("/frontend/src/pages/" + newFileName, undefined, filePath, unauthenticatedFallback, fileContent)
+    } else if(fileType == "file"){
+      await filesystemApi.createNewFile("/frontend/src/components/" + newFileName, undefined, undefined, undefined, fileContent)
+    }
+    
+    setTimeout(() => {
+      setShouldRefreshList(!shouldRefreshList);
+    }, 400); //trying to fix the not-showing-up issue
+
+    setIsVisible(false);
+  };
+
+  const cleanupInputValue = (inputValue: string) => {
     var newFileName = inputValue;
 
     if(newFileName.endsWith("/")){
@@ -62,86 +97,47 @@ export default function APIWizard({
     if(newFileName.startsWith("/")){
       newFileName = newFileName.substring(1)
     }
+    return pathToFile(newFileName)
+  }
 
-    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleHomePage.tsx"){
+  const checkForConflicts = (newFileName: string) => {
+    const restrictedNames = ["SwizzleHomePage.tsx", "SwizzleRoute.tsx", "SwizzlePrivateRoute.tsx", "SwizzleRoutes.tsx"]
+    if(fileType == "page" && restrictedNames.includes(newFileName)){
       toast.error("SwizzleHomePage is a reserved endpoint")
-      return
+      return true
     }
 
-    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleRoute.tsx"){
-      toast.error("SwizzleRoute is a reserved endpoint")
-      return
-    }
-
-    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzlePrivateRoute.tsx"){
-      toast.error("SwizzlePrivateRoute is a reserved endpoint")
-      return
-    }
-
-    if(fileType == "page" && convertPath(newFileName.replace(".tsx", "")) == "SwizzleRoutes.tsx"){
-      toast.error("SwizzleRoutes is a reserved endpoint")
-      return
-    }
-
-
-    const testPath = fileType == "page" ? "pages/" + convertPath(newFileName.replace(".tsx", "")) : "components/" + convertPath(newFileName.replace(".tsx", ""))
-    const isSameAsEditingPath = fileType == "page" ? "pages/" + convertPath(pathIfEditing.replace(".tsx", "")) : "components/" + convertPath(pathIfEditing.replace(".tsx", ""))
+    const testPath = fileType == "page" ? "pages/" + newFileName : "components/" + newFileName
+    const isSameAsEditingPath = fileType == "page" ? "pages/" + newFileName : "components/" + newFileName
     if(files.includes(testPath) && testPath != isSameAsEditingPath){
       toast.error("That file already exists")
-      return
+      return true
     }
 
-    var fileContent;
-    if(pathIfEditing && pathIfEditing != ""){
-      const subfolder = fileType == "page" ? "pages" : "components"
-      fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + convertPath(pathIfEditing))
-      const functionDeclaration = "function " + convertPath(pathIfEditing.replace(".tsx", "")).replace(".tsx", "") + "("
-      const newFunctionDeclaration = "function " + convertPath(newFileName.replace(".tsx", "")).replace(".tsx", "") + "("
-      const constFunctionDeclaration = "const " + convertPath(pathIfEditing.replace(".tsx", "")).replace(".tsx", "") + " ="
-      const newConstFunctionDeclaration = "const " + convertPath(newFileName.replace(".tsx", "")).replace(".tsx", "") + " ="
-      const exportDeclaration = "export default " + convertPath(pathIfEditing.replace(".tsx", "")).replace(".tsx", "") + ""
-      const newExportDeclaration = "export default " + convertPath(newFileName.replace(".tsx", "")).replace(".tsx", "") + ""
-      fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration)
-      fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration)
-      fileContent = fileContent.replace(exportDeclaration, newExportDeclaration)
-      await runDeleteProcess(pathIfEditing)
-    }
+    return false
+  }
 
-    if(fileType == "page"){
-      if(newFileName.endsWith(".tsx")){
-        newFileName = newFileName.substring(0, newFileName.length - 4)
-      }
-      if(newFileName.startsWith("/")){
-        if(newFileName == "/"){
-          newFileName = "Home"
-        } else{
-          newFileName = newFileName.substring(1)
-        }
-      }
-      
-      const routePath = "/" + newFileName
-      var parsedFileName = convertPath(newFileName);
-      var unauthenticatedFallback = null
-      if(authRequired){
-        unauthenticatedFallback = fallbackInputValue
-      }
-
-      await filesystemApi.createNewFile("/frontend/src/pages/" + parsedFileName, undefined, routePath, unauthenticatedFallback, fileContent)
-    } else if(fileType == "file"){
-      await filesystemApi.createNewFile("/frontend/src/components/" + newFileName, undefined, undefined, undefined, fileContent)
-    }
-    
-    setTimeout(() => {
-      setShouldRefreshList(!shouldRefreshList);
-    }, 400); //trying to fix the not-showing-up issue
-
-    setIsVisible(false);
-  };
+  const generateNewFileContent = async (oldPath: string, newPath: string) => {
+    const subfolder = fileType == "page" ? "pages" : "components"
+    var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath))
+    const oldComponentName = pathToFile(oldPath).replace(".tsx", "")
+    const newComponentName = pathToFile(newPath).replace(".tsx", "")
+    const functionDeclaration = "function " + oldComponentName + "("
+    const newFunctionDeclaration = "function " + newComponentName + "("
+    const constFunctionDeclaration = "const " + oldComponentName + " ="
+    const newConstFunctionDeclaration = "const " + newComponentName + " ="
+    const exportDeclaration = "export default " + oldComponentName + ""
+    const newExportDeclaration = "export default " + newComponentName + ""
+    fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration)
+    fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration)
+    fileContent = fileContent.replace(exportDeclaration, newExportDeclaration)
+    return fileContent
+  }
 
   const runDeleteProcess = async (fileName: string) => {
     try{
       const subfolder = fileType == "page" ? "pages" : "components"
-      const fileNameParsed = "/frontend/src/" + subfolder + "/" + convertPath(pathIfEditing)
+      const fileNameParsed = "/frontend/src/" + subfolder + "/" + pathToFile(pathIfEditing)
 
       //close file
       setPostMessage({
@@ -155,13 +151,16 @@ export default function APIWizard({
       }
 
       //delete file
-      await endpointApi.deleteFile(subfolder + "/" + convertPath(pathIfEditing), "frontend")
+      await endpointApi.deleteFile(subfolder + "/" + pathToFile(pathIfEditing), "frontend")
     } catch(e){
       throw "Error deleting endpoint"
     }
   }
 
-  const convertPath = (path) => {
+  const pathToFile = (pathIn) => {
+    var path = pathIn
+    if(path.endsWith(".tsx")){ path = pathIn.substring(0, pathIn.length - 4) }
+
     const segments = path.split('/').filter(Boolean);
 
     // Capitalize the first letter of each segment and letters after underscores, also handle dashes
@@ -244,9 +243,11 @@ export default function APIWizard({
                         type="text"
                         value={inputValue}
                         onChange={(e) => {
+                          if(fileType == "page" && pathIfEditing == "/"){ return }
                           const sanitizedValue = e.target.value;
                           setInputValue(sanitizedValue.trim());
                         }}
+                        disabled={fileType == "page" && pathIfEditing == "/"}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                         placeholder={fileType == "file" ? "MyComponent" : `/about`}
                         onKeyDown={(event: any) => {
