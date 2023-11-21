@@ -109,6 +109,20 @@ export default function RightSidebar({
       <div className="flex flex-col items-center pt-4 h-full px-4">
         {selectedTab == Page.Hosting && (
           <>
+            <IconTextButton
+              onClick={() => {
+                setPostMessage({
+                  type: "saveFile",
+                })
+              }}
+              icon={<img src="/save.svg" className="w-4 h-4 m-auto" />}
+              text="Save"
+            />
+
+            <div className="h-3" />
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div className="h-3" />
+
           <IconTextButton
               onClick={() => {
                 setIsPreviewVisible(true);
@@ -173,6 +187,19 @@ export default function RightSidebar({
         )}
         {selectedTab == Page.Apis && (
           <>
+            <IconTextButton
+              onClick={() => {
+                setPostMessage({
+                  type: "saveFile",
+                })
+              }}
+              icon={<img src="/save.svg" className="w-4 h-4 m-auto" />}
+              text="Save"
+            />
+
+            <div className="h-3" />
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div className="h-3" />
             {isCron ? (
               <IconTextButton
                 onClick={() => {
