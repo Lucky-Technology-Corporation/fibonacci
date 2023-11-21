@@ -63,7 +63,7 @@ export default function ProjectSelector({
   };
 
   const createNewProject = (projectName: string) => {
-    // return
+    return
     if (projectName.includes("_") || projectName.includes("-")) {
       toast.error("Project name cannot contain underscores or dashes");
       return;
