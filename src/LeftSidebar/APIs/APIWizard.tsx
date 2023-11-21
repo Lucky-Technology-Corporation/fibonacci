@@ -159,8 +159,8 @@ export default function APIWizard({
       fileContent = fileContent.replace(/requiredAuthentication/g, "optionalAuthentication")
     }
 
-    const oldExpressExpression = "router." + oldEndpoint.split("/")[0] + "('/" + oldEndpoint.split("/")[1] + "'"
-    const newExpressExpression = "router." + newEndpoint.split("/")[0] + "('/" + newEndpoint.split("/")[1] + "'"
+    const oldExpressExpression = "router." + oldEndpoint.split("/")[0] + "('/" + oldEndpoint.split("/").slice(1).join("/") + "'"
+    const newExpressExpression = "router." + newEndpoint.split("/")[0] + "('/" + newEndpoint.split("/").slice(1).join("/") + "'"
     console.log("oldExpressExpression", oldExpressExpression)
     console.log("newExpressExpression", newExpressExpression)
     fileContent = fileContent.replace(oldExpressExpression, newExpressExpression)
@@ -172,7 +172,7 @@ export default function APIWizard({
     if (isVisible) {
       if(endpointPathIfEditing){
         setSelectedMethod(endpointPathIfEditing.split("/")[0])
-        setInputValue("/" + endpointPathIfEditing.split("/")[1])
+        setInputValue("/" + endpointPathIfEditing.split("/").slice(1).join("/"))
         // setAuthRequired(false); //CHANGE THIS TO THE ACTUAL AUTH STATE
       } else{
         setInputValue("");
