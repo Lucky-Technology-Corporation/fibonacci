@@ -234,14 +234,9 @@ export default function useDatabaseApi() {
   };
 
   const createProject = async (name: string) => {
-    var shouldDeployProd = false;
-    if (NEXT_PUBLIC_BASE_URL == "https://euler-i733tg4iuq-uc.a.run.app/api/v1" || name.includes("prod")) {
-      shouldDeployProd = true;
-    }
-
     await axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
-      { name, deploy_production: shouldDeployProd },
+      { name, deploy_production: true },
       {
         withCredentials: true,
       },
