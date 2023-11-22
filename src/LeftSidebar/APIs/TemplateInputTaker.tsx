@@ -77,7 +77,7 @@ export default function TemplateInputTaker({
         secret_type = "prod";
       }
 
-      const name = secret_type ? key.split("_")[0] : key;
+      const name = (secret_type != "") ? key.split("_").slice(0, -1).join("_") : key;
 
       inputs.push({
         name,

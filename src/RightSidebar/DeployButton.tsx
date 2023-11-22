@@ -50,8 +50,8 @@ export default function DeployButton({}: {}) {
     }
 
     toast.promise(deploy(), {
-      loading: "Deploying...",
-      success: "Deployed!",
+      loading: "Sending...",
+      success: "Project is building and will be deployed in a few minutes",
       error: "Error deploying",
     });
 

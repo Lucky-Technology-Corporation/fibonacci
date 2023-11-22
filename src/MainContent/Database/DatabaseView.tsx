@@ -9,6 +9,7 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
+import TailwindModal from "../../Utilities/TailwindModal";
 import SearchBar from "../Shared/SearchBar";
 import DatabaseEditorHint from "./DatabaseEditorHint";
 import DatabaseRow from "./DatabaseRow";
@@ -27,6 +28,8 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
   const [jsonToEdit, setJsonToEdit] = useState(null);
   const [keyForRowBeingEdited, setKeyForRowBeingEdited] = useState<string[]>([]);
+
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   const [rowDetailData, setRowDetailData] = useState<any>({});
   const [clickPosition, setClickPosition] = useState<{
@@ -140,20 +143,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     }
   };
 
-  const deleteCollectionHandler = () => {
-    const c = confirm("Are you sure you want to delete this collection? This cannot be undone.");
-    if (c) {
-      toast.promise(deleteCollection(activeCollection), {
-        loading: "Deleting collection...",
-        success: () => {
-          window.location.reload(); //TODO: Replace this with something better
-          return "Collection deleted";
-        },
-        error: "Failed to delete collection",
-      });
-    }
-  };
-
   //This refreshes the data when the active collection changes. In the future, we should use a context provider
   useEffect(() => {
     setCurrentPage(0);
@@ -263,6 +252,23 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
   return (
     <div>
+      <TailwindModal
+        open={showDeleteModal}
+        setOpen={setShowDeleteModal}
+        title="Delete collection"
+        subtitle="Are you sure you want to delete this collection?"
+        confirmButtonText="Delete"
+        confirmButtonAction={() => { 
+          toast.promise(deleteCollection(activeCollection), {
+            loading: "Deleting collection...",
+            success: () => {
+              window.location.reload(); //TODO: Replace this with something better
+              return "Collection deleted";
+            },
+            error: "Failed to delete collection",
+          });
+        }}
+      />
       <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>{activeCollection}</div>
@@ -379,7 +385,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
           {!didSearch ? (
-            <Button text="Delete this collection" onClick={deleteCollectionHandler} />
+            <Button text="Delete this collection" onClick={() => {setShowDeleteModal(true)}} />
           ) : (
             <Button
               text="Reset search"

@@ -200,7 +200,8 @@ export default function RightSidebar({
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-            {isCron ? (
+            {isCron && (
+              <>
               <IconTextButton
                 onClick={() => {
                   setIsSchedulerVisible(true); 
@@ -211,24 +212,12 @@ export default function RightSidebar({
                 highlightColor="#4696f969"
                 className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
               />
-            ) : (
-              <IconTextButton
-                onClick={() => {
-                  toggleAuth(!isAuthChecked);
-                }}
-                icon={<img src="/auth.svg" className={`w-4 h-4 m-auto`} />}
-                text={isAuthChecked ? "Auth Required" : "Auth Optional"}
-                highlightState={isAuthChecked}
-                highlightColor="#ff64644f"
-                className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
-              />
+              <div className="h-3" />
+              <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+              <div className="h-3" />
+              <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} />
+              </>
             )}
-            
-            <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} />
-
-            <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
-            <div className="h-3" />
 
             <IconTextButton
               onClick={() => {

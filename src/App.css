@@ -225,3 +225,18 @@ body {
   max-height: 80vh; /* or any other height */
   overflow-y: auto; /* or 'scroll' if you always want to display the scrollbar */
 }
+
+
+.spin-rotate {
+    animation: spin-rotate 0.5s ease-in-out infinite;
+}
+
+@keyframes spin-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -55,7 +55,7 @@ export default function useDeploymentApi() {
     return response.data.deployment_status;
   };
 
-  const updatePackage = async (packages: string[], action: "install" | "remove", location: "frontend" | "backend") => {
+  const updatePackage = async (packages: string[], action: "install" | "remove", location: "frontend" | "backend", extraArgument?: string) => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
         return [];
@@ -63,11 +63,20 @@ export default function useDeploymentApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
+      
+      var body = {
+        packages: packages,
+      }
+      if(action == "install"){
+        body["save"] = true
+      }
+      if(extraArgument){
+        body["extra_argument"] = extraArgument
+      }
+
       const response = await axios.post(
         `${testDomain.replace("https://", "https://fermat.")}/npm/${action}?path=${location}`,
-        {
-          packages: packages,
-        },
+        body,
         {
           headers: {
             Authorization: await getFermatJwt(),
@@ -78,7 +87,7 @@ export default function useDeploymentApi() {
       return response.data;
     } catch (e) {
       console.error(e);
-      return [];
+      return null;
     }
   };
 

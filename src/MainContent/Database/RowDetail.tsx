@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import { castValues } from "../../Utilities/DataCaster";
+import TailwindModal from "../../Utilities/TailwindModal";
 
 export default function RowDetail({
   collection,
@@ -24,6 +25,8 @@ export default function RowDetail({
   openNewDocumentWithData?: (data: any) => void;
   deleteFunction?: (data: any) => Promise<any>;
 }) {
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { deleteDocument, updateDocument } = useDatabaseApi();
 
   const copyJSON = () => {
@@ -49,29 +52,26 @@ export default function RowDetail({
     clickPosition = { x: 0, y: 0 };
     setIsHintWindowVisible(false);
     if (deleteAction == "delete") {
-      const c = confirm("Are you sure you want to delete this document? This cannot be undone.");
-      if (c) {
-        if (deleteFunction != null) {
-          toast.promise(deleteFunction(data), {
-            loading: "Deleting...",
-            success: () => {
-              addHiddenRow(data._id);
-              setTotalDocs((totalDocs) => totalDocs - 1);
-              return "Deleted";
-            },
-            error: "Failed to delete",
-          });
-        } else {
-          toast.promise(deleteDocument(collection, data._id), {
-            loading: "Deleting...",
-            success: () => {
-              addHiddenRow(data._id);
-              setTotalDocs((totalDocs) => totalDocs - 1);
-              return "Deleted";
-            },
-            error: "Failed to delete",
-          });
-        }
+      if (deleteFunction != null) {
+        toast.promise(deleteFunction(data), {
+          loading: "Deleting...",
+          success: () => {
+            addHiddenRow(data._id);
+            setTotalDocs((totalDocs) => totalDocs - 1);
+            return "Deleted";
+          },
+          error: "Failed to delete",
+        });
+      } else {
+        toast.promise(deleteDocument(collection, data._id), {
+          loading: "Deleting...",
+          success: () => {
+            addHiddenRow(data._id);
+            setTotalDocs((totalDocs) => totalDocs - 1);
+            return "Deleted";
+          },
+          error: "Failed to delete",
+        });
       }
     } else if (deleteAction == "deactivate") {
       if (data._deactivated) {
@@ -89,19 +89,16 @@ export default function RowDetail({
           },
         });
       } else {
-        const c = confirm("Are you sure you want to deactivate this user? They will not be able to sign in anymore.");
-        if (c) {
-          var newData = { ...data };
-          newData._deactivated = true;
-          toast.promise(updateDocument(collection, data._id, newData), {
-            loading: "Deactivating user...",
-            success: () => {
-              addHiddenRow(data._id);
-              return "User deactivated";
-            },
-            error: "Failed to deactivate this user",
-          });
-        }
+        var newData = { ...data };
+        newData._deactivated = true;
+        toast.promise(updateDocument(collection, data._id, newData), {
+          loading: "Deactivating user...",
+          success: () => {
+            addHiddenRow(data._id);
+            return "User deactivated";
+          },
+          error: "Failed to deactivate this user",
+        });
       }
     }
   };
@@ -168,13 +165,24 @@ export default function RowDetail({
               </tr>
             </>
           )}
-          <tr onClick={runDeleteDocument}>
+          <tr onClick={() => {setShowDeleteModal(true)}}>
             <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
               <div className="">{getAction()}</div>
             </td>
           </tr>
         </tbody>
       </table>
+
+      <TailwindModal
+        open={showDeleteModal}
+        setOpen={setShowDeleteModal}
+        title="Are you sure?"
+        subtitle={deleteAction == "deactivate" ? (data._deactivated ? "Are you sure you want to reactivate this user?" : "Are you sure you want to deactivate this user?") : "Are you sure you want to delete this document?"}
+        confirmButtonText="Confirm"
+        confirmButtonAction={() => { 
+          runDeleteDocument()
+        }}
+      />
     </div>
   );
 }

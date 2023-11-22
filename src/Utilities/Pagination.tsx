@@ -1,6 +1,6 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight, faArrowsRotate } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRef } from "react";
 
 interface PaginationProps {
   currentPage: number;
@@ -30,6 +30,18 @@ const Pagination = ({
   const btnStyles =
     "inline-flex items-center justify-center gap-x-1.5 rounded-md px-3 h-7 text-sm font-semibold shadow-sm bg-[#85869833] hover:bg-[#85869855] ring-1 ring-inset ring-[#525363] mx-2";
 
+  const refreshSpinner = useRef(null)
+  const spin = () => {
+    const spinner = refreshSpinner.current
+    console.log("spinner", spinner)
+    if (spinner) {
+      spinner.classList.add("spin-rotate");
+      setTimeout(() => {
+        spinner.classList.remove("spin-rotate");
+      }, 500);
+    }
+  }
+
   return totalDocs ? (
     <div className="flex items-center">
       {currentPage >= 1 && (
@@ -43,8 +55,8 @@ const Pagination = ({
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
       )}
-      <button className={btnStyles} onClick={handleRefresh}>
-        <FontAwesomeIcon icon={faArrowsRotate} />
+      <button className={btnStyles} onClick={() => { spin(); handleRefresh() }}>
+      <FontAwesomeIcon icon={faArrowsRotate} ref={refreshSpinner} />
       </button>
     </div>
   ) : (
@@ -54,14 +66,14 @@ const Pagination = ({
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
       )}
-      <span className="mx-2">{`${startDocument} – ${endDocument}`}</span>
+      <span className="mx-2">{`${startDocument} - ${endDocument}`}</span>
       {!isLastPage && (
         <button className={btnStyles} onClick={() => handlePageChange(currentPage + 1)}>
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
       )}
-      <button className={btnStyles} onClick={handleRefresh}>
-        <FontAwesomeIcon icon={faArrowsRotate} />
+      <button className={btnStyles} onClick={() => { spin(); handleRefresh() }}>
+        <FontAwesomeIcon icon={faArrowsRotate} ref={refreshSpinner} />
       </button>
     </div>
   );

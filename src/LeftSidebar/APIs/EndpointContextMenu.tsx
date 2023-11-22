@@ -1,10 +1,12 @@
 import { faLock, faLockOpen, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import TailwindModal from "../../Utilities/TailwindModal";
 
 export default function EndpointContextMenu({showContextMenu, setShowContextMenu, path, isPrivate, runDeleteProcess, editFile}: {showContextMenu: boolean, setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>, path: string, isPrivate?: boolean, runDeleteProcess: () => void, editFile: () => void }){
 
-  
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    
     const modalRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
       function handleClickOutside(event: MouseEvent) {
@@ -62,11 +64,7 @@ export default function EndpointContextMenu({showContextMenu, setShowContextMenu
                 <div
                     className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
                     onClick={() => {
-                        const c = confirm("Are you sure you want to delete this endpoint?");
-                        if(c){
-                            runDeleteProcess()
-                            setShowContextMenu(false)
-                        }
+                        setShowDeleteModal(true)
                     }}
                 >
                     <FontAwesomeIcon
@@ -86,6 +84,17 @@ export default function EndpointContextMenu({showContextMenu, setShowContextMenu
                 </div>
             </div>
         </div>
+        <TailwindModal
+          open={showDeleteModal}
+          setOpen={setShowDeleteModal}
+          title="Delete endpoint"
+          subtitle="Are you sure you want to delete this endpoint?"
+          confirmButtonText="Delete"
+          confirmButtonAction={() => { 
+            runDeleteProcess()
+            setShowContextMenu(false)
+          }}
+        />
     </>
     )
 }

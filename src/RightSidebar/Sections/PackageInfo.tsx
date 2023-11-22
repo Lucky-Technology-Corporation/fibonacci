@@ -7,9 +7,12 @@ import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import TailwindModal from "../../Utilities/TailwindModal";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
 
 export default function PackageInfo({ isVisible, setIsVisible, location }: { isVisible: boolean; setIsVisible: any, location: string }) {
+  const [open, setOpen] = useState(false)
+  const [savedMessage, setSavedMessage] = useState("")
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
   const [installedPackages, setInstalledPackages] = useState<string[]>([]);
@@ -107,9 +110,23 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       toast.error(message + " is already installed");
       return;
     }
-    await updatePackage([message], "install", folder);
+    const response = await updatePackage([message], "install", folder);
+    if(response == null){ 
+      setSavedMessage(message)
+      setOpen(true)
+      return
+    }
     setInstalledPackages([...installedPackages, message]);
   };
+
+  const forceAddPackageToProject = async () => {
+    const response = await updatePackage([savedMessage], "install", location as any, "--legacy-peer-deps");
+    if(response.length == 0){ 
+      toast.error("Failed to install " + savedMessage)
+      return
+    }
+    setInstalledPackages([...installedPackages, savedMessage]);
+  }
 
   const removePackageFromProject = async (message) => {
     await updatePackage([message], "remove", location as "frontend" | "backend");
@@ -197,6 +214,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   };
 
   return (
+    <>
     <ToastWindow
       isHintWindowVisible={isVisible}
       showHintWindowIfOpen={() => setIsVisible(true)}
@@ -260,5 +278,14 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       }
       position={"bottom-left"}
     />
+      <TailwindModal
+        title="Dependency Warning"
+        subtitle="There is a dependency issue with this package. If you proceed, it may cause issues with your project. It's recommended to find a different package, but you can continue anyway if you need to."
+        confirmButtonText="Continue Anyway"
+        confirmButtonAction={() => { forceAddPackageToProject() }}
+        open={open}
+        setOpen={setOpen}
+      />
+    </>
   );
 }

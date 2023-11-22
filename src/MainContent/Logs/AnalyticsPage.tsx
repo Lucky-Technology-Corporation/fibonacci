@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTour } from "@reactour/tour";
 import { Card, DateRangePickerValue, LineChart } from "@tremor/react";
 import { useContext, useEffect, useState } from "react";
+import useDeploymentApi from "../../API/DeploymentAPI";
 import useMonitoringApi from "../../API/MonitoringAPI";
 import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
@@ -11,6 +12,7 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function AnalyticsPage() {
   const api = useMonitoringApi();
+  const deploymentApi = useDeploymentApi()
   const { activeProject, environment, activeProjectName, testDomain, prodDomain, testDeployStatus, prodDeployStatus } =
     useContext(SwizzleContext);
 
@@ -20,6 +22,7 @@ export default function AnalyticsPage() {
   });
 
   const [isHintHidden, setIsHintHidden] = useState<boolean>(false)
+  const [prodDeployed, setProdDeployed] = useState<boolean>(false)
 
   const [data, setData] = useState<any[]>([]);
   const fetchAndProcessData = async () => {
@@ -46,6 +49,7 @@ export default function AnalyticsPage() {
       return;
     }
     fetchAndProcessData();
+    checkProdStatus()
   }, [dateRange, activeProject, environment]);
 
   const closeHint = () => {
@@ -61,7 +65,6 @@ export default function AnalyticsPage() {
       setIsOpen(true)
       localStorage.setItem("didStartTour", "true")
     }
-
   }, [])
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
@@ -72,6 +75,33 @@ export default function AnalyticsPage() {
       </Card>
     );
   };
+
+  
+  const checkProdStatus = async () => {
+    if(prodDeployStatus != "DEPLOYMENT_SUCCESS"){
+      setProdDeployed(false)
+      return
+    }
+    const isProdDeployed = await hasProdDeployed()
+    if(isProdDeployed){
+      setProdDeployed(true)
+    } else {
+      setProdDeployed(false)
+    }
+  }
+  
+  const hasProdDeployed = async () => {
+    const response = await deploymentApi.listProjectBuilds(0, 20);
+    if (response && Array.isArray(response.builds)) {
+      if(response.builds.length == 0){
+        return false
+      }
+      return true
+    } else {
+      return false;
+    }
+  }
+
 
   return (
     <div className="">
@@ -122,7 +152,7 @@ export default function AnalyticsPage() {
 
           <div className={`ml-10 space-y-1 ${environment == "test" ? "opacity-70" : ""}`}>
             <div className="flex">
-              <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+              <Dot className="ml-0" color={prodDeployed ? "green" : "yellow"} />
               Production API
             </div>
             <div
@@ -135,7 +165,7 @@ export default function AnalyticsPage() {
             </div>
             <div className="h-1"></div>
             <div className="flex">
-              <Dot className="ml-0" color={prodDeployStatus == "DEPLOYMENT_SUCCESS" ? "green" : "yellow"} />
+              <Dot className="ml-0" color={prodDeployed ? "green" : "yellow"} />
               Production Frontend
             </div>
             <div

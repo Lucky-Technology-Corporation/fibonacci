@@ -1,13 +1,15 @@
 import { faLock, faLockOpen, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import { capitalizeAfterLastSlash, formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import TailwindModal from "../../Utilities/TailwindModal";
 
 export default function FileContextMenu({showContextMenu, setShowContextMenu, path, disableDelete, fullPath, isPrivate, editFile}: {showContextMenu: boolean, setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>, path: string, disableDelete: boolean, fullPath: string, isPrivate: boolean, editFile: () => void }){
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     const modalRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
@@ -103,15 +105,7 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
                     <div
                         className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
                         onClick={() => {
-                            const c = confirm("Are you sure you want to delete this file?");
-                            if(c){
-                                toast.promise(runDeleteProcess(path), {
-                                    loading: "Deleting...",
-                                    success: "Deleted",
-                                    error: "Error deleting"
-                                })
-                                setShowContextMenu(false)
-                            }
+                          setShowDeleteModal(true)
                         }}
                     >
                         <FontAwesomeIcon
@@ -131,6 +125,21 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
                 </div>
             </div>
         </div>
+        <TailwindModal
+          open={showDeleteModal}
+          setOpen={setShowDeleteModal}
+          title="Delete endpoint"
+          subtitle="Are you sure you want to delete this endpoint?"
+          confirmButtonText="Delete"
+          confirmButtonAction={() => { 
+            toast.promise(runDeleteProcess(path), {
+              loading: "Deleting...",
+              success: "Deleted",
+              error: "Error deleting"
+            })
+            setShowContextMenu(false)
+          }}
+        />
     </>
     )
 }
