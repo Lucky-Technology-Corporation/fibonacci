@@ -17,6 +17,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const {testDomain, activeProject, activeEndpoint} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const [currentLocation, setCurrentLocation] = useState<string>();
+    const [socketDomain, setSocketDomain] = useState<string>();
 
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
@@ -35,7 +36,16 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         //Set our location
         setCurrentLocation(props.selectedTab == Page.Hosting ? "frontend" : "backend");
-    }, [activeEndpoint, props.selectedTab, testDomain])
+    }, [activeEndpoint, props.selectedTab])
+
+    useEffect(() => {
+        if(socketDomain != testDomain){
+            if(props.selectedTab == Page.Hosting || props.selectedTab == Page.Apis){
+                reconnectWebsocket()
+            }
+            setSocketDomain(testDomain)
+        }
+    }, [testDomain])
 
     useEffect(() => {
         console.log("location", currentLocation)
@@ -173,9 +183,9 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
             <div className="flex mt-1 z-50 fixed right-0 mr-[180px] mt-0">
             {currentLocation == "backend" ? (
-                <div className="text-sm font-bold m-auto">Backend Logs</div>
+                <div className="text-sm font-bold m-auto p-1 bg-black bg-opacity-50">Backend Logs</div>
             ) : (
-                <div className="text-sm font-bold m-auto">Frontend Logs</div>
+                <div className="text-sm font-bold m-auto p-1 bg-black bg-opacity-50">Frontend Logs</div>
             )}
             <Switch
                 className="ml-1 scale-75 env-toggle"

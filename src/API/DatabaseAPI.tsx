@@ -234,14 +234,14 @@ export default function useDatabaseApi() {
   };
 
   const createProject = async (name: string) => {
-    var shouldDeployProd = true;
-    if (NEXT_PUBLIC_BASE_URL == "https://api.swizzle-internal.com/api/v1" || name.includes("dev")) {
-      shouldDeployProd = false;
-    }
+    // var shouldDeployProd = true;
+    // if (NEXT_PUBLIC_BASE_URL == "https://api.swizzle-internal.com/api/v1" || name.includes("dev")) {
+    //   shouldDeployProd = false;
+    // }
 
     await axios.post(
       `${NEXT_PUBLIC_BASE_URL}/projects`,
-      { name, deploy_production: shouldDeployProd },
+      { name, deploy_production: true },
       {
         withCredentials: true,
       },

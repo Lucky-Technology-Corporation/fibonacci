@@ -224,7 +224,7 @@ export default function ProjectSelector({
         errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
           title: "New project",
-          description: "New projects are temporarily disabled as we work to catch up with demand. Please check back later.",
+          description: "Let's get started! What would you like to name your project?",
           placeholder: "My awesome project",
           confirmText: "Create",
           confirmHandler: createNewProject,
