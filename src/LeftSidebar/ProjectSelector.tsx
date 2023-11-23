@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
 import useDeploymentApi from "../API/DeploymentAPI";
 import useEndpointApi from "../API/EndpointAPI";
+import useSettingsApi from "../API/SettingsAPI";
 import Dropdown from "../Utilities/Dropdown";
 import FullPageModal from "../Utilities/FullPageModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
@@ -17,6 +18,7 @@ export default function ProjectSelector({
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
   const deploymentApi = useDeploymentApi();
+  const { addEmailToWaitlist } = useSettingsApi()
   const POLLING_INTERVAL = 5000;
   const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();
@@ -36,6 +38,7 @@ export default function ProjectSelector({
     environment,
     setTestDeployStatus,
     setProdDeployStatus,
+    setIdeReady,
   } = useContext(SwizzleContext);
 
   const startPolling = async (projectId) => {
@@ -62,6 +65,31 @@ export default function ProjectSelector({
     }, POLLING_INTERVAL);
   };
 
+  const [didSave, setDidSave] = useState(false);
+
+  const saveEmail = async (email: string) => {
+    if (email == "") {
+      toast.error("Please enter an email");
+      return;
+    }
+
+    try {
+      if(didSave){ 
+        toast("😎")
+        return 
+      }
+      setDidSave(true)
+      await addEmailToWaitlist(email);
+      toast.success("We'll let you know when we're ready for you!");
+      setTimeout(() => {
+        setIsVisible(true)
+      }, 250)
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to add email to waitlist");
+    }
+  }
+
   const createNewProject = (projectName: string) => {
 
     if (projectName.includes("_") || projectName.includes("-")) {
@@ -87,6 +115,7 @@ export default function ProjectSelector({
     if (project == null) {
       project = projects[0];
     }
+    setIdeReady(false)
     console.log("SET TO ", project)
     const deploymentStatus = await checkDeploymentStatus(project.id);
     switch (deploymentStatus) {
@@ -220,16 +249,23 @@ export default function ProjectSelector({
       <FullPageModal
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/}
-        errorMessage="Names must start a letter and not contain special characters."
+        // regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/}
+        // errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
-          title: "New project",
-          description: "Let's get started! What would you like to name your project?",
-          placeholder: "My awesome project",
-          confirmText: "Create",
-          confirmHandler: createNewProject,
-          shouldShowInput: true,
-          shouldHideCancel: projects.length == 0,
+          title: didSave ? "Thanks!" : "Yikes!",
+          description: didSave ? "Your ETA is 5-7 days" : "Our infrastructure is at capacity. We'll send you an email when we're ready for you to create a project.",
+          placeholder: "your.name@gmail.com",
+          confirmText: didSave ? "Cool" : "Notify me",
+          confirmHandler: saveEmail,
+          shouldShowInput: didSave ? false : true,
+          shouldHideCancel: true,
+          // title: "New project",
+          // description: "Let's get started! What would you like to name your project?",
+          // placeholder: "My awesome project",
+          // confirmText: "Create",
+          // confirmHandler: createNewProject,
+          // shouldShowInput: true,
+          // shouldHideCancel: projects.length == 0,
         }}
       />
     </>

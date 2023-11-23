@@ -36,6 +36,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
       setTimeout(() => {
+        console.log("SET IDE READY")
         setIdeReady(true);
       }, 200)
     }

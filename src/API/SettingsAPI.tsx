@@ -9,6 +9,24 @@ export default function useSettingsApi() {
   const authHeader = useAuthHeader();
   const { environment, activeProject } = useContext(SwizzleContext);
 
+  const addEmailToWaitlist = async (email: string) => {
+    try {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/login/email`,
+        {
+          email: email,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  }
+
   const updateBilling = async (should_override: boolean = false) => {
     var override_to_payment_method_update = should_override ? "true" : "false";
     try {
@@ -147,7 +165,8 @@ export default function useSettingsApi() {
     updateBilling,
     updatePaymentMethod,
     hasAddedPaymentMethod,
-    deleteProject
+    deleteProject,
+    addEmailToWaitlist
   };
 }
 

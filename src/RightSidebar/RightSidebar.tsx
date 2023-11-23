@@ -100,6 +100,18 @@ export default function RightSidebar({
 
   }, [currentFileProperties]);
 
+  const refreshSpinner = useRef(null)
+  const spin = () => {
+    const spinner = refreshSpinner.current
+    console.log("spinner", spinner)
+    if (spinner) {
+      spinner.classList.add("spin-rotate");
+      setTimeout(() => {
+        spinner.classList.remove("spin-rotate");
+      }, 500);
+    }
+  }
+
   return (
     <div
       className={`w-[180px] text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
@@ -174,13 +186,15 @@ export default function RightSidebar({
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
             <div className="h-4" />
             <IconTextButton
-              onClick={() => {toast.promise(restartFrontend(), {
+              onClick={() => {
+                spin()
+                toast.promise(restartFrontend(), {
                   loading: "Restarting frontend...",
                   success: "Restarted!",
                   error: "Error restarting frontend",
                 });
               }}
-              icon={<img src="/restart.svg" className="w-4 h-4 m-auto" />}
+              icon={<img src="/restart.svg" className="w-4 h-4 m-auto" ref={refreshSpinner} />}
               text="Restart"
             />
           </>
@@ -281,13 +295,15 @@ export default function RightSidebar({
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
             <div className="h-4" />
             <IconTextButton
-              onClick={() => {toast.promise(restartBackend(), {
+              onClick={() => {
+                spin()
+                toast.promise(restartBackend(), {
                   loading: "Restarting backend...",
                   success: "Restarted!",
                   error: "Error restarting backend",
                 });
               }}
-              icon={<img src="/restart.svg" className="w-4 h-4 m-auto" />}
+              icon={<img src="/restart.svg" className="w-4 h-4 m-auto" ref={refreshSpinner} />}
               text="Restart"
               className="restart-button"
             />

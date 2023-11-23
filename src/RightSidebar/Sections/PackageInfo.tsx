@@ -115,6 +115,12 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       setSavedMessage(message)
       setOpen(true)
       return
+    } else{
+      if(location == "frontend"){
+        restartFrontend()
+      } else {
+        restartBackend()
+      }
     }
     setInstalledPackages([...installedPackages, message]);
   };
@@ -130,6 +136,11 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   const removePackageFromProject = async (message) => {
     await updatePackage([message], "remove", location as "frontend" | "backend");
+    if(location == "frontend"){
+      restartFrontend()
+    } else {
+      restartBackend()
+    }
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };
 

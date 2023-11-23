@@ -144,7 +144,7 @@ export default function LeftSidebar({
   }, [currentFileProperties]);
 
   // useEffect(() => {
-  //   if(currentFileProperties == undefined || currentFileProperties.fileUri == undefined){
+  //   if(ideReady){
   //     if(selectedTab == Page.Hosting){
   //       console.log("Setting active file to frontend/src/pages/SwizzleHomePage.tsx")
   //       setActiveFile("frontend/src/pages/SwizzleHomePage.tsx")
