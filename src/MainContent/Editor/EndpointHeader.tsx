@@ -1,4 +1,4 @@
-import { faBug, faSearch, faWandMagicSparkles, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBug, faSearch, faUndo, faWandMagicSparkles, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
@@ -51,8 +51,14 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         //TODO: Update currentFileProperties here
 
         setupUndo(data.old_code)
+        setPostMessage({
+          type: "saveFile"
+        })
 
-        checkIfAllEndpointsExist(data.new_code)
+        //TODO: finish this function later to add backend endpoints if needed
+        if(selectedTab == Page.Hosting){
+          checkIfAllEndpointsExist(data.new_code)
+        }
 
         return "Done";
       },
@@ -373,15 +379,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             <div className="w-[1px] h-[36px] bg-[#525363] mx-4"></div>
 
             {isUndoVisible && (
-              <div className="mr-2">
-                <Button
-                className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-                  text={"Undo"}
-                  onClick={() => {
-                    undoLastChange()
-                  }}
-                />
-              </div>
+              <Button
+                className={`text-sm mr-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis ? "" : "hidden"}`}
+                children={<FontAwesomeIcon icon={faUndo} />}
+                onClick={() => {
+                  undoLastChange()
+                }}
+              />
             )}
 
             <div className="grow">

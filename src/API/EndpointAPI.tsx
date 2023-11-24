@@ -2,7 +2,6 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
-import { endpointToFilename } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -231,36 +230,36 @@ export default function useEndpointApi() {
     }
   };
 
-  const askQuestion = async (userQuery: string, aiCommand: string) => {
-    try {
-      const fileName = endpointToFilename(activeEndpoint);
+  // const askQuestion = async (userQuery: string, aiCommand: string) => {
+  //   try {
+  //     const fileName = endpointToFilename(activeEndpoint);
       
-      var currentFile = "backend/user-dependencies/" + fileName
-      if(fileName.includes("!helper!")){
-        currentFile = "backend/helpers/" + fileName.replace("!helper!", "")
-      }
+  //     var currentFile = "backend/user-dependencies/" + fileName
+  //     if(fileName.includes("!helper!")){
+  //       currentFile = "backend/helpers/" + fileName.replace("!helper!", "")
+  //     }
 
-      var body = (body = {
-        question_type: aiCommand,
-        user_query: userQuery,
-        fermat_domain: testDomain.replace("https://", "https://fermat."),
-        fermat_jwt: await getFermatJwt(),
-        current_file: currentFile,
-      });
+  //     var body = (body = {
+  //       question_type: aiCommand,
+  //       user_query: userQuery,
+  //       fermat_domain: testDomain.replace("https://", "https://fermat."),
+  //       fermat_jwt: await getFermatJwt(),
+  //       current_file: currentFile,
+  //     });
 
-      const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
-        body,
-        {
-          withCredentials: true,
-        },
-      );
-      return response.data;
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-  };
+  //     const response = await axios.post(
+  //       `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
+  //       body,
+  //       {
+  //         withCredentials: true,
+  //       },
+  //     );
+  //     return response.data;
+  //   } catch (e) {
+  //     console.error(e);
+  //     return null;
+  //   }
+  // };
 
   const getCodeFromFigma = async (figmaUrl: string, language: string) => {
     const figmaFileId = figmaUrl.split("file/")[1].split("/")[0];
@@ -408,7 +407,7 @@ export default function useEndpointApi() {
     npmSearch,
     getPackageJson,
     getFile,
-    askQuestion,
+    // askQuestion,
     getAutocheckResponse,
     deploy,
     getFermatJwt,

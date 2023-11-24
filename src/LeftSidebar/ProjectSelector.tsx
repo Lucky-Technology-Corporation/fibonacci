@@ -252,20 +252,20 @@ export default function ProjectSelector({
         // regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/}
         // errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
-          title: didSave ? "Thanks!" : "Yikes!",
-          description: didSave ? "Your ETA is 5-7 days" : "Our infrastructure is at capacity. We'll send you an email when we're ready for you to create a project.",
-          placeholder: "your.name@gmail.com",
-          confirmText: didSave ? "Cool" : "Notify me",
-          confirmHandler: saveEmail,
-          shouldShowInput: didSave ? false : true,
-          shouldHideCancel: true,
-          // title: "New project",
-          // description: "Let's get started! What would you like to name your project?",
-          // placeholder: "My awesome project",
-          // confirmText: "Create",
-          // confirmHandler: createNewProject,
-          // shouldShowInput: true,
-          // shouldHideCancel: projects.length == 0,
+          // title: didSave ? "Thanks!" : "Yikes!",
+          // description: didSave ? "Your ETA is 5-7 days" : "Our infrastructure is at capacity. We'll send you an email when we're ready for you to create a project.",
+          // placeholder: "your.name@gmail.com",
+          // confirmText: didSave ? "Cool" : "Notify me",
+          // confirmHandler: saveEmail,
+          // shouldShowInput: didSave ? false : true,
+          // shouldHideCancel: true,
+          title: "New project",
+          description: "Let's get started! What would you like to name your project?",
+          placeholder: "My awesome project",
+          confirmText: "Create",
+          confirmHandler: createNewProject,
+          shouldShowInput: true,
+          shouldHideCancel: projects.length == 0,
         }}
       />
     </>
