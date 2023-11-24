@@ -27,6 +27,7 @@ export default function NewTestWindow({
   );
   const [emptyRow, setEmptyRow] = useState({ key: "", value: "" });
 
+  const [isSaving, setIsSaving] = useState(false);
   const [pathParams, setPathParameters] = useState(testDoc.pathParams);
   const [isUserIdChecked, setIsUserIdChecked] = useState(!!testDoc.userId);
   const [isBodyChecked, setIsBodyChecked] = useState(!!testDoc.body);
@@ -67,6 +68,10 @@ export default function NewTestWindow({
     };
   }, []);
 
+  useEffect(() => {
+    setIsSaving(false); 
+  }, [testDoc])
+
   const saveTest = async () => {
     if (testName == "") {
       toast.error("Please enter a test name");
@@ -102,7 +107,7 @@ export default function NewTestWindow({
       toast.error("Please enter all path parameters");
       return;
     }
-
+    setIsSaving(true);
     try {
       if (testDoc._id) {
         await updateTest(activeCollection, testDoc._id, documentToCreate);
@@ -131,6 +136,7 @@ export default function NewTestWindow({
     }
 
     hideNewTestWindow();
+    setIsSaving(false); 
   };
 
   const prevLength = useRef(queryParams.length);
@@ -305,8 +311,8 @@ export default function NewTestWindow({
         />
         <Button
           text="Save"
-          onClick={saveTest}
-          className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
+          onClick={() => { if(!isSaving){ saveTest() } }}
+          className={`${isSaving ? "opacity-50" : ""} mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
         />
       </div>
     </div>
