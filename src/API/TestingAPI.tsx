@@ -31,6 +31,7 @@ export default function useTestApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
         {
+          headers: { "swizzle-test": "true" },
           withCredentials: true,
         },
       );
@@ -73,7 +74,7 @@ export default function useTestApi() {
       // console.debug(
       //   `Exec test with URL = ${url}, method = ${method}, params = ${params}, body = ${body}, token = ${token}`,
       // );
-      const headers = token ? { Authorization: token } : undefined;
+      const headers = token ? { Authorization: token, "swizzle-test": "true" } : { "swizzle-test": "true" };
       const response = await axios.request({
         url,
         method,
