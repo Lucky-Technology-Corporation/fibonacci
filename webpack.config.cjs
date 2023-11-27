@@ -52,6 +52,10 @@ module.exports = {
     },
     resolve: {
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+        fallback: {
+            crypto: require.resolve('crypto-browserify'),
+            stream: require.resolve('stream-browserify')
+        }
     },
     plugins: [
         new Dotenv({

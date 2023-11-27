@@ -68,6 +68,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     }, []);
 
     const greyOutUnimportantLines = (inputLine: string): ReactNode => {
+        if(inputLine == undefined){ return <></> }
         return inputLine.split("\n").map((line, index) => {
             if(line.trimStart().startsWith("at ")){
                 return <span className="text-gray-500">{line}<br/></span>
@@ -94,14 +95,14 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const parseOutFilenamesAndCreateElement = (line: string) => {
         var cleanLine = line
         if(currentLocation == "backend"){
-            if(line.includes("user-dependencies/")){
+            if(line.includes("user-dependencies/") && !line.includes("\n") && !line.includes("Internal watch failed: ENOSPC")){
                 const fileName = line.split("user-dependencies/")[1].split("(")[0]
                 const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
                 const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
                 const lineNumber = lineNumbers[0]
                 const columnNumber = lineNumbers[1]
                 return <span className="font-mono text-sm"><span className="text-red-500">{niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
-            } else if(line.includes("helpers/")){
+            } else if(line.includes("helpers/") && !line.includes("\n") && !line.includes("Internal watch failed: ENOSPC")){
                 const fileName = line.split("helpers/")[1].split("(")[0]
                 const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
                 const lineNumber = lineNumbers[0]

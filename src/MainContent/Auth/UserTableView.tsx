@@ -3,12 +3,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
+import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import RowDetail from "../Database/RowDetail";
 import SearchBar from "../Shared/SearchBar";
 import UserRow from "./UserRow";
+import UserWizard from "./UserWizard";
 
 export default function UserTableView() {
   const { getDocuments, runQuery } = useDatabaseApi();
@@ -51,6 +53,7 @@ export default function UserTableView() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const [filterName, setFilterName] = useState<string>("userId");
+  const [isCreatingUser, setIsCreatingUser] = useState<boolean>(false);
 
   const fetchData = (page: number) => {
     getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
@@ -193,7 +196,7 @@ export default function UserTableView() {
 
   return (
     <div>
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      <div className={`flex-1 pr-2 ml-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Users</div>
           <div className={`text-sm mt-0.5`}>
@@ -207,6 +210,13 @@ export default function UserTableView() {
             </a>{" "}
             about creating users.
           </div>
+        </div>
+        <div>
+          <Button
+            className="text-sm px-5 py-2 mt-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
+            onClick={() => {setIsCreatingUser(true)}}
+            text="Create User"
+          />
         </div>
       </div>
       <div className={`flex pr-2 h-8`}>
@@ -293,6 +303,11 @@ export default function UserTableView() {
           )}
         </div>
       </div>
+      <UserWizard
+        isVisible={isCreatingUser}
+        setIsVisible={setIsCreatingUser}
+        handleRefresh={handleRefresh}
+      />
     </div>
   );
 }

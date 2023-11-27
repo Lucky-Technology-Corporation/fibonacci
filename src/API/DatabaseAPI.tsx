@@ -88,6 +88,23 @@ export default function useDatabaseApi() {
     }
   };
 
+  const createUser = async (email: string, password: string, fullName: string) => {
+    try {
+      if (activeProject == "") return;
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/user?env=${environment}`,
+        { email, password, fullName },
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      throw e
+    }
+  }
+
   const createDocument = async (activeCollection: string, data: any) => {
     var newDocument = data;
     delete newDocument._id;
@@ -277,5 +294,6 @@ export default function useDatabaseApi() {
     deleteCollection,
     runQuery,
     runMongoQuery,
+    createUser
   };
 }
