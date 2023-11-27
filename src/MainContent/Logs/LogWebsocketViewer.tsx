@@ -75,8 +75,16 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 return <span className="text-gray-500">{line}<br/></span>
             } else if(line.replace(/\s/g, '') == "}"){
                 return <span className="text-gray-500">{line}<br/></span>
+            } else if(line.replace(/\s/g, '') == "^"){
+                return <></>
             } else if(line.replace(/\s/g, '') == "Serverrunning!"){
                 return <span className="text-green-500">{line}<br/></span>
+            } else if(line.trimStart().startsWith("/swizzle/code/node_modules/ts-node/src/index.ts:")){
+                return <></>
+            } else if(line.trimStart().startsWith("return new TSError(diagnosticText, diagnosticCodes, diagnostics);")){
+                return <></>
+            } else if(line.trimEnd().endsWith("Unable to compile TypeScript:")){
+                return <></>
             } else {
                 return <span key={index}>{line}<br/></span>
             }
@@ -186,7 +194,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 } catch (e) {}
 
                 const filteredLine = line.split('\n')
-                .filter(line => line.trim() !== '') // Remove lines that are empty or contain only whitespace
+                .filter(line => line.replace(/^\s+/, '') !== '') // Remove lines that are empty or contain only whitespace
                 .join('\n')
 
                 const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine);
