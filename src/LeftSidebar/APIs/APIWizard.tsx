@@ -69,7 +69,11 @@ export default function APIWizard({
       toast.error("/cron is reserved for scheduled jobs")
       return
     }
-    
+
+    if(cleanInputValue.endsWith("/d") || cleanInputValue.includes("/d/")){
+      toast.error("/d cannot be used in endpoints")
+      return
+    }
 
     const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
     if(!regex.test(cleanInputValue)){
@@ -159,8 +163,12 @@ export default function APIWizard({
       fileContent = fileContent.replace(/requiredAuthentication/g, "optionalAuthentication")
     }
 
-    const oldExpressExpression = "router." + oldEndpoint.split("/")[0] + "('/" + oldEndpoint.split("/").slice(1).join("/") + "'"
-    const newExpressExpression = "router." + newEndpoint.split("/")[0] + "('/" + newEndpoint.split("/").slice(1).join("/") + "'"
+    const oldExpressRegex = /router\.(get|post)\(['"].*?['"],/g
+    const matches = fileContent.match(oldExpressRegex)
+    const oldExpressExpression = matches[0]
+    console.log("replacing", oldExpressExpression)
+
+    const newExpressExpression = "router." + newEndpoint.split("/")[0] + "('/" + newEndpoint.split("/").slice(1).join("/") + "',"
     console.log("oldExpressExpression", oldExpressExpression)
     console.log("newExpressExpression", newExpressExpression)
     fileContent = fileContent.replace(oldExpressExpression, newExpressExpression)
