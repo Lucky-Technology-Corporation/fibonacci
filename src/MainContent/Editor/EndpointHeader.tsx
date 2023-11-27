@@ -7,6 +7,7 @@ import useEndpointApi from "../../API/EndpointAPI";
 import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
 import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
+import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 import { modifySwizzleImport } from "../../Utilities/EndpointParser";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -39,22 +40,30 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }, [activeEndpoint]);
 
 
-  const runQuery = async (promptQuery: string) => {
-    return toast.promise(promptAiEditor(promptQuery), {
+  const runQuery = async (promptQuery: string, queryType: string) => {
+    return toast.promise(promptAiEditor(promptQuery, queryType), {
       loading: "Thinking...",
       success: (data) => {
-        setPostMessage({
-          type: "replaceText",
-          content: data.new_code,
-        })
-    
-        //TODO: Update currentFileProperties here
+        if(queryType == "edit"){
+          //Replace the text
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          })
+      
+          //TODO: Update currentFileProperties here
+          //Update auth-required and imports
 
-        setupUndo(data.old_code)
+          //Add undo button
+          setupUndo(data.old_code)
 
-        //TODO: finish this function later to add backend endpoints if needed
-        if(selectedTab == Page.Hosting){
-          checkIfAllEndpointsExist(data.new_code)
+          //TODO: finish this function later to add backend endpoints if needed
+          if(selectedTab == Page.Hosting){
+            checkIfAllEndpointsExist(data.new_code)
+          }
+
+        } else if(queryType == "snippet"){
+          setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
         }
 
         return "Done";
@@ -183,6 +192,46 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       "import": "removeUserFromFile",
       "description": "Use <span class='font-mono cursor-pointer text-xs'>let success = await removeUserFromFile(unsignedUrl, uid)</span><span class='hidden'>to remove a user's access to an unsigned URL in storage</span>"
     },
+    {
+      "type": "doc",
+      "image": "database",
+      "link": "https://docs.swizzle.co/database",
+      "title": "Search the database",
+      "import": "db",
+      "description": "Use <span class='font-mono cursor-pointer text-xs'>let results = await db.collection('myCollectionName').find({ myKey: 'myValue' }).toArray();</span><span class='hidden'>to search find documents a document item in a collection database</span>"
+    },
+    {
+      "type": "doc",
+      "image": "database",
+      "link": "https://docs.swizzle.co/database",
+      "title": "Update the database",
+      "import": "db",
+      "description": "Use <span class='font-mono cursor-pointer text-xs'>let result = await db.collection('myCollectionName').updateOne({ myKeyToSearch: 'myValueToSearch' }, { $set: { myKeyToUpdate: 'myNewValue' } });</span><span class='hidden'>to updated change upsert modify values documents items in the database</span>"
+    },
+    {
+      "type": "doc",
+      "image": "database",
+      "link": "https://docs.swizzle.co/database",
+      "title": "Add to database",
+      "import": "db",
+      "description": "Use <span class='font-mono cursor-pointer text-xs'>let result = await db.collection('myCollectionName').insertOne(jsonDocument);</span><span class='hidden'>to add insert items documents into database</span>"
+    },
+    {
+      "type": "doc",
+      "image": "database",
+      "link": "https://docs.swizzle.co/database",
+      "title": "Count in database",
+      "import": "db",
+      "description": "Use <span class='font-mono cursor-pointer text-xs'>let result = await db.collection('myCollectionName').countDocuments({ myKeyToSearch: 'myValueToSearch' })</span><span class='hidden'>to count number of items documents in database</span>"
+    },
+    {
+      "type": "doc",
+      "image": "database",
+      "link": "https://docs.swizzle.co/database",
+      "title": "Delete from database",
+      "import": "db",
+      "description": "Use <span class='font-mono cursor-pointer text-xs'>let result = await db.collection('myCollectionName').deleteOne({ myKeyToSearch: 'myValueToSearch' })</span><span class='hidden'>to delete remove item from the database</span>"
+    },
   ]
 
   const frontendDocOptions = [
@@ -226,16 +275,26 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   const [suggestions, setSuggestions] = useState(docOptions);
   const onSuggestionsFetchRequested = ({ value }) => {
-    const ai = {
-      "type": "ai",
-      "image": "wand",
-      "title": value,
-      "description": "Ask GPT (full project access)",
-    }
+    const ai_options = [
+      {
+        "type": "ai",
+        "image": "wand",
+        "title": value,
+        "description": "Generate code snippet",
+        "ai_type": 0
+      },
+      {
+        "type": "ai",
+        "image": "wand",
+        "title": value,
+        "description": "Edit this file",
+        "ai_type": 1
+      }
+    ]
 
     if(selectedTab == Page.Apis){
       const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
-      setSuggestions([ai, ...docs])
+      setSuggestions([...ai_options, ...docs])
     } else if(selectedTab == Page.Hosting){
       const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
       console.log("docs", docs)
@@ -244,7 +303,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         return {type: "endpoint", ...parsedEndpoint}
       })
 
-      setSuggestions([ai, ...docs, ...filteredList])
+      setSuggestions([...ai_options, ...docs, ...filteredList])
     }
   };
 
@@ -281,10 +340,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {suggestion.title}
           </div>
           <div className="text-xs font-normal mt-1">
-            Prompt AI
+            {suggestion.description}
           </div>
         </div>
-        {suggestions.some(s => s.type == "doc" || s.type == "externalDoc") &&
+        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc") && suggestion.ai_type == 1) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
             <div className="mt-2 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
@@ -318,7 +377,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
     console.log("selected", suggestion)
     if(suggestion.type == "ai"){
-      runQuery(suggestion.title)
+      if(suggestion.ai_type == 0){
+        runQuery(suggestion.title, "snippet")
+      } else if(suggestion.ai_type == 1){
+        runQuery(suggestion.title, "edit")
+      }
     } else{
       if(suggestion.type == "endpoint"){
         setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n', importStatement: 'import api from "../Api";'})

@@ -203,7 +203,7 @@ export default function useEndpointApi() {
     }
   }
 
-  const promptAiEditor = async (userQuery: string) => {
+  const promptAiEditor = async (userQuery: string, queryType: string) => {
     try {
 
       var body = {
@@ -211,7 +211,8 @@ export default function useEndpointApi() {
         fermat_domain: testDomain.replace("https://", "https://fermat."),
         fermat_jwt: await getFermatJwt(),
         path: openUri.replace("/swizzle/code/", ""),
-        conversation_id: ""
+        conversation_id: "",
+        query_type: queryType
       };
 
       sessionStorage.setItem(("ai" + activeProject + "_" + openUri.replace("/swizzle/code/", "") + "_file"), userQuery)
