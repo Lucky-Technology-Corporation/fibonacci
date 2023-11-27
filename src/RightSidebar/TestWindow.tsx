@@ -2,6 +2,7 @@ import { faFlask, faPencil, faPlay, faTrash } from "@fortawesome/free-solid-svg-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import LoadingIcons from "react-loading-icons";
 import useTestApi from "../API/TestingAPI";
 import Button from "../Utilities/Button";
@@ -233,12 +234,14 @@ export default function TestWindow({
                   className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
                   children={<FontAwesomeIcon style={{ color: "#D9D9D9" }} icon={faTrash} />}
                   onClick={() => {
+                    setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
                     api
                       .deleteTest(activeCollection, testDoc._id)
                       .then(() => {
-                        setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
+                        console.log("Deleted test")
                       })
                       .catch((error) => {
+                        toast.error("Error deleting test")
                         console.error("Error deleting test:", error);
                       });
                   }}

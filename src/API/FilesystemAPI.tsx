@@ -202,11 +202,17 @@ export default function useFilesystemApi(){
   ): Promise<void> => {
     if (endpointName != undefined && endpointName !== "") {
       //remove from server.ts if it's an endpoint
-      console.log("remove endpoint");
+      
       const lastIndex = relativeFilePath.lastIndexOf("/");
       var fileName = relativeFilePath.substring(lastIndex + 1);
 
-    
+      console.log("remove endpoint");
+      console.log(fileName.replace(
+        /\.ts$/,
+        ".js",
+      ))
+
+
       const serverTs = await endpointApi.getFile("backend/server.ts")
 
       if (serverTs) {

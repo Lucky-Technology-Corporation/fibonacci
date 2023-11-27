@@ -189,8 +189,8 @@ export default function RightSidebar({
               onClick={() => {
                 spin()
                 toast.promise(restartFrontend(), {
-                  loading: "Restarting frontend...",
-                  success: "Restarted!",
+                  loading: "Sending restart command...",
+                  success: "Restarting!",
                   error: "Error restarting frontend",
                 });
               }}

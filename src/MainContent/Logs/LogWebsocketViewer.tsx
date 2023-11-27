@@ -1,6 +1,8 @@
-import { CSSProperties, useContext, useEffect, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import Switch from "react-switch";
 import useEndpointApi from "../../API/EndpointAPI";
+import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
+import { filenameToEndpoint } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 
@@ -11,13 +13,15 @@ type LogWebsocketViewerProps = {
 };
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
-    const [log, setLog] = useState('');
+    const [log, setLog] = useState([]);
     const [ws, setWs] = useState<WebSocket>(null);
     const endpointApi = useEndpointApi();
-    const {testDomain, activeProject, activeEndpoint} = useContext(SwizzleContext);
+    const {testDomain, activeProject, activeEndpoint, setPostMessage} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const [currentLocation, setCurrentLocation] = useState<string>();
     const [socketDomain, setSocketDomain] = useState<string>();
+    
+    const [didTryToReconnect, setDidTryToReconnect] = useState(false);
 
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
@@ -28,7 +32,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         //Close and reset
         if(ws){ ws.close() }
-        setLog("");
+        setLog([]);
 
         //Don't connect if we don't have the right data
         if(!activeProject || !testDomain || !activeEndpoint) return;
@@ -62,6 +66,45 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             }
         };
     }, []);
+
+    const greyOutUnimportantLines = (inputLine: string): ReactNode => {
+        return inputLine.split("\n").map((line, index) => {
+            if(line.trimStart().startsWith("at ")){
+                return <span className="text-gray-500">{line}<br/></span>
+            } else if(line.trimStart().startsWith("diagnosticCodes: [")){
+                return <span className="text-gray-500">{line}<br/></span>
+            } else if(line.replace(/\s/g, '') == "}"){
+                return <span className="text-gray-500">{line}<br/></span>
+            } else if(line.replace(/\s/g, '') == "Serverrunning!"){
+                return <span className="text-green-500">{line}<br/></span>
+            } else {
+                return <span key={index}>{line}<br/></span>
+            }
+        })
+    }
+
+    const parseOutFilenamesAndCreateElement = (line: string) => {
+        var cleanLine = line
+        if(currentLocation == "backend"){
+            if(line.includes("user-dependencies/")){
+                const fileName = line.split("user-dependencies/")[1].split("(")[0]
+                const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
+                const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
+                const lineNumber = lineNumbers[0]
+                const columnNumber = lineNumbers[1]
+                return <span className="font-mono text-sm"><span className="text-red-500">{niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
+            } else if(line.includes("helpers/")){
+                const fileName = line.split("helpers/")[1].split("(")[0]
+                const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
+                const lineNumber = lineNumbers[0]
+                const columnNumber = lineNumbers[1]
+                return <span className="font-mono text-sm"><span className="text-red-500">{fileName} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/helpers/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
+            }
+        }
+
+        return <span className="font-mono text-sm">{greyOutUnimportantLines(cleanLine)}</span>
+    }
+
 
     //Reconnect websocket
     const reconnectWebsocket = async () => {
@@ -134,7 +177,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
                         if(currentLine.replace(/\s/g, '') !== ""){ //replace all whitespace
                             line = line + currentLine + "\n";
-                        }
+                        }                        
                     }
                     if(line == ""){ return }
                     if(line.endsWith("\n")){
@@ -144,9 +187,11 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
                 const filteredLine = line.split('\n')
                 .filter(line => line.trim() !== '') // Remove lines that are empty or contain only whitespace
-                .join('\n');
+                .join('\n')
 
-                setLog(prevLog => prevLog + '\n' + filteredLine);
+                const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine);
+
+                setLog(prevLog => [...prevLog, lineJsxElement]);
             }
         };
         
@@ -164,7 +209,15 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 "Closing socket"
             );
             webSocket.close();
-            setTimeout(reconnectWebsocket, 3000);
+            setTimeout(() => {
+                if(didTryToReconnect){ 
+                    console.log("Not retrying")
+                    return 
+                }
+                console.log("Trying to reconnect...")
+                reconnectWebsocket();
+                setDidTryToReconnect(true);
+            }, 1000);
         }
 
         setWs(webSocket);
@@ -181,27 +234,31 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 mr-[180px] mt-0">
-            {currentLocation == "backend" ? (
-                <div className="text-sm font-bold m-auto p-1 bg-black bg-opacity-70">Backend Logs</div>
-            ) : (
-                <div className="text-sm font-bold m-auto p-1 bg-black bg-opacity-70">Frontend Logs</div>
-            )}
-            <Switch
-                className="ml-1 scale-75 env-toggle"
-                onChange={() => {
-                    if(ws){ ws.close(); }
-                    setLog("");
-                    setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
-                }}
-                checked={currentLocation == "backend"}
-                uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}
-                checkedIcon={<img src="/cloud.svg" className="w-4 ml-2.5 pt-1" />}
-                offColor="#333336"
-                onColor="#333336"
-            />
+            <div className="flex mt-1 z-40 fixed right-0 mr-[188px] rounded mt-0 p-1 bg-black bg-opacity-70">
+                {currentLocation == "backend" ? (
+                    <div className="text-sm font-bold m-auto ml-1">Backend Logs</div>
+                ) : (
+                    <div className="text-sm font-bold m-auto ml-1">Frontend Logs</div>
+                )}
+                <Switch
+                    className="ml-1 scale-75 env-toggle"
+                    onChange={() => {
+                        if(ws){ ws.close(); }
+                        setLog([]);
+                        setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
+                    }}
+                    checked={currentLocation == "backend"}
+                    uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}
+                    checkedIcon={<img src="/cloud.svg" className="w-4 ml-2.5 pt-1" />}
+                    offColor="#333336"
+                    onColor="#333336"
+                />
             </div>
-            <span className="font-mono text-sm">{log}</span>
+            <span className="font-mono text-sm">{log.map((entry, index) => {
+                return (
+                    <div key={index}>{entry}</div>
+                )
+            })}</span>
         </div>
         </>
     );

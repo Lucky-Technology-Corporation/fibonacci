@@ -47,13 +47,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           type: "replaceText",
           content: data.new_code,
         })
-
+    
         //TODO: Update currentFileProperties here
 
         setupUndo(data.old_code)
-        setPostMessage({
-          type: "saveFile"
-        })
 
         //TODO: finish this function later to add backend endpoints if needed
         if(selectedTab == Page.Hosting){
