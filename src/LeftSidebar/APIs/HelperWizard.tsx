@@ -18,7 +18,7 @@ export default function HelperWizard({
 }) {
   const filesystemApi = useFilesystemApi()
   const [inputValue, setInputValue] = useState("");
-  const { setPostMessage, setActiveHelper } = useContext(SwizzleContext);
+  const { setPostMessage, setActiveHelper, setActiveEndpoint } = useContext(SwizzleContext);
 
   const createHandler = async () => {
     if (inputValue == "") {
@@ -61,6 +61,7 @@ export default function HelperWizard({
     }
     
     await filesystemApi.createNewFile("/backend/helpers/" + fileName)
+    setActiveEndpoint("!helper!" + newHelperName)
 
     setIsVisible(false);
     setTimeout(() => {

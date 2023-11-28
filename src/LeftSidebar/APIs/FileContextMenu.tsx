@@ -128,8 +128,8 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
         <TailwindModal
           open={showDeleteModal}
           setOpen={setShowDeleteModal}
-          title="Delete endpoint"
-          subtitle="Are you sure you want to delete this endpoint?"
+          title="Delete"
+          subtitle="Are you sure you want to delete this?"
           confirmButtonText="Delete"
           confirmButtonAction={() => { 
             toast.promise(runDeleteProcess(path), {

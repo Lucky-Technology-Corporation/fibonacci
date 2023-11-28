@@ -137,6 +137,7 @@ export default function APIWizard({
     }
 
     await filesystemApi.createNewFile("/backend/user-dependencies/" + fileName, newEndpointName, undefined, undefined, undefined, authRequired)
+    setActiveEndpoint(newEndpointName)
 
     setFullEndpoints((endpoints: any[]) => {
       if (!endpoints.includes(newEndpointName)) {

@@ -28,7 +28,7 @@ export default function FileWizard({
   const [fallbackInputValue, setFallbackInputValue] = useState("");
 
   const [authRequired, setAuthRequired] = useState(false);
-  const { setPostMessage, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
+  const { setPostMessage, shouldRefreshList, setShouldRefreshList, setActiveFile } = useContext(SwizzleContext);
 
   const [overrideRender, setOverrideRender] = useState<ReactNode | null>(null);
 
@@ -74,15 +74,18 @@ export default function FileWizard({
       }
 
       await filesystemApi.createNewFile("/frontend/src/pages/" + newFileName, undefined, routePath, unauthenticatedFallback, fileContent)
+      setActiveFile("frontend/src/pages/" + newFileName);
     } else if(fileType == "file"){
       await filesystemApi.createNewFile("/frontend/src/components/" + newFileName, undefined, undefined, undefined, fileContent)
+      setActiveFile("frontend/src/components/" + newFileName);
     }
     
     setTimeout(() => {
       setShouldRefreshList(!shouldRefreshList);
-    }, 400); //trying to fix the not-showing-up issue
+    }, 300); //trying to fix the not-showing-up issue
 
     setIsVisible(false);
+    
   };
 
   const cleanupInputValue = (inputValue: string) => {
