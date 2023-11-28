@@ -227,7 +227,7 @@ export default function FileWizard({
                 </div>
                 <div className="my-2">
                   {fileType == "file" 
-                    ? `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} resusable component` 
+                    ? `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} reusable component` 
                     : <div className="mt-1"><Checkbox
                         id="requireAuth"
                         label="Require Authentication"

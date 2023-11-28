@@ -178,6 +178,7 @@ export default function APIWizard({
   }
 
   useEffect(() => {
+    console.log("toggle isVisible")
     if (isVisible) {
       if(endpointPathIfEditing){
         setSelectedMethod(endpointPathIfEditing.split("/")[0])
