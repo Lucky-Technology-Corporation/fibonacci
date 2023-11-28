@@ -2,13 +2,14 @@ import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import useTestApi from "../API/TestingAPI";
-import { ParsedActiveEndpoint, enumeratePathParams } from "../Utilities/ActiveEndpointHelper";
-import Button from "../Utilities/Button";
-import Checkbox from "../Utilities/Checkbox";
-import { methodToColor } from "../Utilities/Method";
-import InputJsonForm from "./Sections/BodyInfo";
-import UserIdInfo from "./Sections/UserIdInfo";
+import useTestApi from "../../API/TestingAPI";
+import { ParsedActiveEndpoint, enumeratePathParams } from "../../Utilities/ActiveEndpointHelper";
+import Button from "../../Utilities/Button";
+import Checkbox from "../../Utilities/Checkbox";
+import { methodToColor } from "../../Utilities/Method";
+import InputJsonForm from "../Sections/BodyInfo";
+import UserIdInfo from "../Sections/UserIdInfo";
+import GroupedInput from "./GroupedInput";
 import { TestType } from "./TestWindow";
 
 export default function NewTestWindow({
@@ -20,39 +21,23 @@ export default function NewTestWindow({
   setTests?: (newTests: any) => void;
   hideNewTestWindow: () => void;
 }) {
-  const lastEditedRef = useRef(null);
   const [testName, setTestName] = useState(testDoc.testName);
   const [queryParams, setQueryParameters] = useState(
     Object.entries(testDoc.queryParams).map((param, index) => ({ id: index, key: param[0], value: param[1] })),
   );
-  const [emptyRow, setEmptyRow] = useState({ key: "", value: "" });
+  const [headerList, setHeaderList] = useState(
+    Object.entries(testDoc.headers).map((param, index) => ({ id: index, key: param[0], value: param[1] })),
+  );
 
   const [isSaving, setIsSaving] = useState(false);
   const [pathParams, setPathParameters] = useState(testDoc.pathParams);
   const [isUserIdChecked, setIsUserIdChecked] = useState(!!testDoc.userId);
-  const [isBodyChecked, setIsBodyChecked] = useState(!!testDoc.body);
 
   const [userId, setUserId] = useState(testDoc.userId || "");
-  const [bodyRaw, setBodyRaw] = useState(!!testDoc.body ? JSON.stringify(testDoc.body) : "");
+  const [bodyRaw, setBodyRaw] = useState(!!testDoc.body ? JSON.stringify(testDoc.body) : "{}");
   const activeCollection = "_swizzle_usertests";
   const myRef = useRef<HTMLDivElement>(null);
   const { createTest, updateTest } = useTestApi();
-
-  const handleInputChange = (id: number, newKey: string, newValue: string) => {
-    const updatedQueryParams = [...queryParams];
-    const index = updatedQueryParams.findIndex((q) => q.id === id);
-
-    if (index > -1) {
-      updatedQueryParams[index] = { id, key: newKey, value: newValue };
-
-      // Remove the row if both key and value are empty
-      if (newKey === "" && newValue === "") {
-        updatedQueryParams.splice(index, 1);
-      }
-
-      setQueryParameters(updatedQueryParams);
-    }
-  };
 
   const parsedActiveEndpoint = new ParsedActiveEndpoint(testDoc.endpoint);
 
@@ -93,13 +78,19 @@ export default function NewTestWindow({
       .filter(({ key, value }) => key !== "")
       .forEach(({ key, value }) => (transformedQueryParams[key] = value));
 
+    const transformedHeaders = {};
+    headerList
+      .filter(({ key, value }) => key !== "")
+      .forEach(({ key, value }) => (transformedHeaders[key] = value));
+
+        
     const documentToCreate: TestType = {
       testName,
       pathParams,
       queryParams: transformedQueryParams,
-      headers: {},
+      headers: transformedHeaders,
       userId: isUserIdChecked ? userId : undefined,
-      body: isBodyChecked ? bodyObject : undefined,
+      body: bodyObject ? bodyObject : undefined,
       endpoint: testDoc.endpoint,
     };
 
@@ -139,13 +130,6 @@ export default function NewTestWindow({
     setIsSaving(false); 
   };
 
-  const prevLength = useRef(queryParams.length);
-  useEffect(() => {
-    if (queryParams.length > prevLength.current && lastEditedRef.current) {
-      lastEditedRef.current.focus();
-    }
-    prevLength.current = queryParams.length;
-  }, [queryParams]);
 
   return (
     <div
@@ -216,62 +200,9 @@ export default function NewTestWindow({
           Query String
         </div>
         <div className="flex w-full mb-2">
-          <div key="grouped-rows" className="w-full">
-            {queryParams.map(({ id, key, value }) => (
-              <div className="flex w-full" key={id}>
-                <div className="p-1 mx-1 ml-0 my-1">{id == 0 ? "?" : "&"}</div>
-                <input
-                  placeholder="Key"
-                  value={key}
-                  onChange={(e) => handleInputChange(id, e.target.value, value)}
-                  className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
-                />
-                <div className="p-1 mx-1 my-1">=</div>
-                <input
-                  placeholder="Value"
-                  value={value}
-                  onChange={(e) => handleInputChange(id, key, e.target.value)}
-                  className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
-                  ref={id == queryParams.length - 1 ? lastEditedRef : null}
-                />
-              </div>
-            ))}
-
-            {/* Empty set of boxes */}
-            <div className="flex w-full" key="empty-row">
-              <div className="p-1 mx-1 ml-0 my-1">{queryParams.length == 0 ? "?" : "&"}</div>
-              <input
-                placeholder="New Key"
-                value={emptyRow.key}
-                onChange={(e) => setEmptyRow({ ...emptyRow, key: e.target.value })}
-                onBlur={() => {
-                  if (emptyRow.key == "") {
-                    return;
-                  }
-                  setQueryParameters([
-                    ...queryParams,
-                    { id: queryParams.length, key: emptyRow.key, value: emptyRow.value },
-                  ]);
-                  setEmptyRow({ key: "", value: "" });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key == "Tab") {
-                    e.preventDefault();
-                    (e.target as HTMLInputElement).blur();
-                  }
-                }}
-                className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] my-1"
-              />
-              <div className="p-1 mx-1 my-1">=</div>
-              <input
-                placeholder="New Value"
-                value={emptyRow.value}
-                disabled={true}
-                className="text-s p-1 flex-grow bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2 my-1"
-              />
-            </div>
-          </div>
+          <GroupedInput valueList={queryParams} setValueList={setQueryParameters} isQuery={true} />
         </div>
+        
         <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
           Authentication
         </div>
@@ -288,8 +219,17 @@ export default function NewTestWindow({
           />
         </div>
 
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
+          Headers
+        </div>
+        <div className="mt-1 mb-2">
+            <GroupedInput valueList={headerList} setValueList={setHeaderList} isQuery={false} />
+        </div>
+
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
+          Body
+        </div>
         <div className={`mb-2 ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
-          <Checkbox id="body" label="Body" isChecked={isBodyChecked} setIsChecked={setIsBodyChecked} />
           <InputJsonForm
             className="text-s flex-grow bg-transparent"
             placeholder="{ }"
@@ -297,7 +237,7 @@ export default function NewTestWindow({
             onChange={(e) => {
               setBodyRaw(e.target.value);
             }}
-            show={isBodyChecked}
+            show={true}
           />
         </div>
 

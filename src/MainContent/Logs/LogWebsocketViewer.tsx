@@ -170,7 +170,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
                         try{
                             const parsed = JSON.parse(currentLine);
-                            if(parsed.text){
+                            if(parsed.text !== null && parsed.text !== undefined){
                                 const date = new Date(parsed.timestamp).toLocaleTimeString()
                                 currentLine = `[${date}] ${parsed.text}`;
                             }

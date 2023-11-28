@@ -9,7 +9,7 @@ import { Page } from "../Utilities/Page";
 import ScheduleEditor from "./ScheduleEditor";
 import PackageInfo from "./Sections/PackageInfo";
 import SecretInfo from "./Sections/SecretInfo";
-import TestWindow from "./TestWindow";
+import TestWindow from "./TestWindow/TestWindow";
 import WebPreview from "./WebPreview";
 
 export default function RightSidebar({

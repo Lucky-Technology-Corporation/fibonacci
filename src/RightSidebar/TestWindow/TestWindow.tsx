@@ -4,10 +4,10 @@ import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import LoadingIcons from "react-loading-icons";
-import useTestApi from "../API/TestingAPI";
-import Button from "../Utilities/Button";
-import Dot from "../Utilities/Dot";
-import { SwizzleContext } from "../Utilities/GlobalContext";
+import useTestApi from "../../API/TestingAPI";
+import Button from "../../Utilities/Button";
+import Dot from "../../Utilities/Dot";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import NewTestWindow from "./NewTestWindow";
 
 export type QueryParams = {

@@ -1,7 +1,7 @@
 import axios, { Method } from "axios";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
-import { QueryParams, TestType } from "../RightSidebar/TestWindow";
+import { QueryParams, TestType } from "../RightSidebar/TestWindow/TestWindow";
 import { ParsedActiveEndpoint } from "../Utilities/ActiveEndpointHelper";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useDatabaseApi from "./DatabaseAPI";
@@ -31,7 +31,7 @@ export default function useTestApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/testing/spoofJwt?env=${environment}&user_id=${testDoc.userId}`,
         {
-          headers: { "swizzle-test": "true" },
+          headers: { "swizzle-test": "true", ...testDoc.headers },
           withCredentials: true,
         },
       );
@@ -45,7 +45,7 @@ export default function useTestApi() {
       testDoc.pathParams,
     )}`;
     const body = testDoc.body;
-    return await execTest(url, endpoint.method as Method, testDoc.queryParams, body, jwtToken);
+    return await execTest(url, endpoint.method as Method, testDoc.queryParams, testDoc.headers, body, jwtToken);
   };
 
   const runAllTests = async () => {
@@ -69,12 +69,12 @@ export default function useTestApi() {
     }
   };
 
-  const execTest = async (url: string, method: Method, params: QueryParams, body?: object, token?: string) => {
+  const execTest = async (url: string, method: Method, params: QueryParams, headerInput: QueryParams, body?: object, token?: string) => {
     try {
       // console.debug(
       //   `Exec test with URL = ${url}, method = ${method}, params = ${params}, body = ${body}, token = ${token}`,
       // );
-      const headers = token ? { Authorization: token, "swizzle-test": "true" } : { "swizzle-test": "true" };
+      const headers = token ? { Authorization: token, "swizzle-test": "true", ...headerInput } : { "swizzle-test": "true", ...headerInput };
       const response = await axios.request({
         url,
         method,
