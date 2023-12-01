@@ -23,7 +23,7 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
     useEffect(() => {
       if(activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
         const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].toLowerCase()
-        setPath(path)
+        setPath("/" + path)
         setUrl(testDomain + "/" + path)
       }
     }, [isVisible, activeFile])
@@ -69,7 +69,7 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
               <img src="/popout.svg" className='absolute top-1 left-5 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={()=> {
                   window.open(url, '_blank')
               }} />
-              <div className='text-gray-200 absolute top-0 left-10 '>/{path}</div>
+              {/* <div className='text-gray-200 absolute top-0 left-10 '>{path}</div> */}
               <img src="/close.svg" className='absolute top-1 right-1 h-3 w-3 opacity-70 cursor-pointer hover:opacity-100 z-50' onClick={(e) =>{ setIsVisible(false)}} />
               <div style={{ width: "100%", height: "calc(100% - 19px)", backgroundColor: "#ffffff" }}>
                 <iframe 
