@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, createContext, useState } from "react";
-import { ProjectDeploymentStatus } from "../API/DeploymentAPI";
 import { ProjectResponse } from "../API/DatabaseAPI";
+import { ProjectDeploymentStatus } from "../API/DeploymentAPI";
 
 export type ProjectEnvironment = "test" | "prod";
 
@@ -55,6 +55,8 @@ export interface SwizzleContextType {
   setFullEndpointList;
   openUri;
   setOpenUri;
+  refreshTheia;
+  setRefreshTheia;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -85,6 +87,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [shouldOverlay, setShouldOverlay] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
+  const [refreshTheia, setRefreshTheia] = useState(false);
 
   return (
     <SwizzleContext.Provider
@@ -139,6 +142,8 @@ export const GlobalContextProvider = ({ children }) => {
         setFullEndpointList,
         openUri,
         setOpenUri,
+        refreshTheia,
+        setRefreshTheia,
       }}
     >
       {children}

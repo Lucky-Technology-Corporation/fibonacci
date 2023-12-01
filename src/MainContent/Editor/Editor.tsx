@@ -8,7 +8,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -33,12 +33,17 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     iframeRef.current.contentWindow.postMessage(message, "*");
   };
 
+  useEffect(() => {
+    if(refreshTheia){
+      console.log("refreshTheia", refreshTheia)
+      iframeRef.current.src = iframeRef.current.src;
+      setRefreshTheia(false);
+    }
+  }, [refreshTheia])
+
   const messageHandler = (event) => {
     if (event.data.type === "extensionReady") {
-      setTimeout(() => {
-        console.log("SET IDE READY")
-        setIdeReady(true);
-      }, 200)
+      setIdeReady(true);
     }
     
     if (event.data.type === "fileChanged") {
