@@ -27,7 +27,7 @@ export default function FileWizard({
   const [inputValue, setInputValue] = useState("");
   const [fallbackInputValue, setFallbackInputValue] = useState("");
 
-  const [authRequired, setAuthRequired] = useState(false);
+  const [authRequired, setAuthRequired] = useState<boolean>(false);
   const { setPostMessage, shouldRefreshList, setShouldRefreshList, setActiveFile } = useContext(SwizzleContext);
 
   const [overrideRender, setOverrideRender] = useState<ReactNode | null>(null);
@@ -55,7 +55,7 @@ export default function FileWizard({
 
     var fileContent;
     if(pathIfEditing && pathIfEditing != ""){
-      fileContent = await generateNewFileContent(pathIfEditing, newFileName)
+      fileContent = await generateNewFileContent(pathIfEditing, newFileName, authRequired)
       await runDeleteProcess(pathIfEditing)
     }
 
@@ -122,7 +122,7 @@ export default function FileWizard({
     return false
   }
 
-  const generateNewFileContent = async (oldPath: string, newPath: string) => {
+  const generateNewFileContent = async (oldPath: string, newPath: string, authRequired: boolean) => {
     const subfolder = fileType == "page" ? "pages" : "components"
     var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath))
     const oldComponentName = pathToFile(oldPath).replace(".tsx", "")
@@ -133,9 +133,20 @@ export default function FileWizard({
     const newConstFunctionDeclaration = "const " + newComponentName + " ="
     const exportDeclaration = "export default " + oldComponentName + ""
     const newExportDeclaration = "export default " + newComponentName + ""
+    const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`
+    const authDeclaration = `const auth = useAuthUser();\n`
     fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration)
     fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration)
     fileContent = fileContent.replace(exportDeclaration, newExportDeclaration)
+    
+    if(authRequired){
+      fileContent = fileContent.replace("return (", `${authDeclaration}    return (`)
+      fileContent = fileContent = authImportDeclaration + fileContent
+    } else{
+      fileContent = fileContent.replace(authDeclaration, "")
+      fileContent = fileContent.replace(authImportDeclaration, "")
+    }
+
     return fileContent
   }
 
@@ -170,15 +181,15 @@ export default function FileWizard({
 
     // Capitalize the first letter of each segment and letters after underscores, also handle dashes
     const capitalizedSegments = segments.map(segment => {
-      // Convert dashes to camelCase
-      const camelCaseSegment = segment.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-      
-      // Capitalize first letter and letters after underscores
-      return camelCaseSegment
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('_')
-        .replace("-", "")
+    // Convert dashes to camelCase
+    const camelCaseSegment = segment.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    
+    // Capitalize first letter and letters after underscores
+    return camelCaseSegment
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join('_')
+      .replace("-", "")
     });
     
     return capitalizedSegments.join('_') + '.tsx';  
@@ -229,7 +240,7 @@ export default function FileWizard({
                   {fileType == "file" 
                     ? `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} reusable component` 
                     : <div className="mt-1"><Checkbox
-                        id="requireAuth"
+                        id="requireAuthPage"
                         label="Require Authentication"
                         isChecked={authRequired}
                         setIsChecked={setAuthRequired}
@@ -240,7 +251,7 @@ export default function FileWizard({
                   overrideRender
                 ) : (
                   <>
-                    <div className={`mt-1  ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>
+                    <div className={`mt-1 ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>
                     {fileType == "file" ? "Component Name" : "Page URL"}
                     </div>
                     <div className={`mt-1 mb-2 flex ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>

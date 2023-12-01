@@ -1,4 +1,4 @@
-import { faLock, faLockOpen, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -76,7 +76,8 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
                 </div>
             </div>
           )}
-            {(fullPath && fullPath.includes("/pages/")) && isPrivate && (
+          {/* This is commented out because it doesn't handle removing the useAuthUser codegen */}
+            {/* {(fullPath && fullPath.includes("/pages/")) && isPrivate && (
                 <div className="font-sans text-sm hover:bg-gray-800">
                     <div
                     className="p-2 text-gray-300 hover:text-gray-100 cursor-pointer"
@@ -99,7 +100,7 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
                     {isPrivate ? "Remove auth" : "Add auth"}
                     </div>
                 </div>
-            )}
+            )} */}
             {(!disableDelete && fullPath && !fullPath.includes("/pages/SwizzleHomePage.ts")) && (
                 <div className="font-sans text-sm hover:bg-gray-800">
                     <div

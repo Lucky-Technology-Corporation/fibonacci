@@ -57,8 +57,10 @@ export function starterComponent(fileName: string, hasAuth: boolean, path: strin
     
     return `import React from 'react';
 import api from '${apiImport}'; //Use this to make API calls (e.g. await api.get("/endpoint"))
-
+${hasAuth ? `import { useAuthUser } from 'react-auth-kit';
+` : ``}
 ${isNamed ? `const ${fileName} = () => {` : `export default () => {`}
+${hasAuth ? `    const auth = useAuthUser();` : ``}
     return (
         <div>
             {/* Your content here */}
