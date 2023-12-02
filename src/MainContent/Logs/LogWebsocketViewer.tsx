@@ -86,6 +86,10 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 return <></>
             } else if(line.trimEnd().endsWith("Unable to compile TypeScript:")){
                 return <></>
+            } else if(line.includes("ExperimentalWarning:") && line.includes("(node:")){
+                return <></>
+            } else if(line.includes("--import 'data:text/javascript,import { register } from")){
+                return <></>
             } else {
                 return <span key={index}>{line}<br/></span>
             }
