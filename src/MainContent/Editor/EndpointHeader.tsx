@@ -112,6 +112,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   const docOptions: {title: string, description: string, type: string, image: string, import?: string, link?: string}[] = [
     {
+      "type": "link",
+      "image": "popout",
+      "link": "https://docs.swizzle.co",
+      "title": "Documentation",
+      "description": "Open the docs in a new tab",
+    },
+    {
       "type": "doc",
       "image": "auth",
       "link": "https://docs.swizzle.co/users/create-a-user",
@@ -243,6 +250,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   const frontendDocOptions = [
     {
+      "type": "link",
+      "image": "popout",
+      "link": "https://docs.swizzle.co",
+      "title": "Documentation",
+      "description": "Open the documentation in a new tab",
+    },
+    {
       "type": "externalDoc",
       "image": "auth",
       "link": "",
@@ -328,7 +342,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const getSuggestionValue = suggestion => suggestion.title;
 
   const renderSuggestion = (suggestion, { query, isHighlighted }) => {
-    if(suggestion.type == "doc" || suggestion.type == "externalDoc"){
+    if(suggestion.type == "doc" || suggestion.type == "externalDoc" || suggestion.type == "link"){
       return(
         <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
           <div className="font-bold text-sm flex">
@@ -357,7 +371,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {suggestion.description}
           </div>
         </div>
-        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc") && suggestion.ai_type == 1) &&
+        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && suggestion.ai_type == 1) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
             <div className="mt-2 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
@@ -436,6 +450,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
         var newImportStatement: any = `import { ${suggestion.import} } from '${suggestion.importFrom}';`;
         setPostMessage({type: "upsertImport", content: newImportStatement + "\n", importStatement: newImportStatement})
+      } else if(suggestion.type == "link"){
+        window.open(suggestion.link, '_blank');
       }
     }
     setPrompt("")
@@ -449,6 +465,22 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       headerRef.current = autosuggest.input;
     }
   }
+
+  useEffect(() => {
+    const keyHandler = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault(); // Prevent default browser behavior
+        headerRef.current.focus();
+      }
+    };
+
+    window.addEventListener('keydown', keyHandler);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('keydown', keyHandler);
+    };
+  }, []);
 
   return (
     <>
@@ -504,10 +536,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                       return
                     }
                   },
-                  placeholder: `${selectedTab == Page.Apis ? "Write code with AI" : "Write code with AI"}...`,
+                  placeholder: `Cmd + K: write code, search the docs, and more...`,
                   value: prompt,
                   onChange: onPromptChange,
-                  className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:border-[#68697a] p-2",
+                  className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2",
                   style: {
                     width: "calc(100% - 1rem)",
                   }

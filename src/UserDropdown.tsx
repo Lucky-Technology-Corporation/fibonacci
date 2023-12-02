@@ -24,7 +24,7 @@ export default function UserDropdown() {
 
   return (
     <>
-      <Menu as="div" className="fixed bottom-4 left-6 w-44 inline-block text-left">
+      <Menu as="div" className="mx-auto w-44 mb-4 inline-block text-left">
 
         <div>
           <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#33333c] ring-1 ring-inset ring-[#525363]">
@@ -42,8 +42,25 @@ export default function UserDropdown() {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute left-0 bottom-8 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
+          <Menu.Items className="absolute mx-auto bottom-12 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
+            <Menu.Item>
+                {({ active }) => (
+                  <a
+                    href="#"
+                    className={classNames(
+                      active ? "" : "text-[#D9D9D9] ",
+                      "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
+                    )}
+                    onClick={() => {
+                      window.open("https://docs.swizzle.co/", "_blank");
+                    }}
+                  >
+                    Docs
+                  </a>
+                )}
+              </Menu.Item>
+
               <Menu.Item>
                 {({ active }) => (
                   <a

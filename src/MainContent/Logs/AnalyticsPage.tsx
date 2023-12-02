@@ -199,7 +199,7 @@ export default function AnalyticsPage() {
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
         <div className="mx-4">
-          <a href="#" onClick={() => { setCurrentStep(0); setIsOpen(true)}}>Start the guided tour</a>. Note that AI latency may be slow as we work on optimizations. You can help shape the future of Swizzle by <a href="https://discord.gg/C93FVKxR" target="_blank" rel="nofollower">joining our Discord.</a>
+          If you learn by reading, head over to <a href="https://docs.swizzle.co/" target="_blank" rel="nofollow">the docs</a>. Otherwise, <a href="#" onClick={() => { setCurrentStep(0); setIsOpen(true)}}>start the guided tour</a>.
         </div>
         <div className="mx-4 mt-2">
           Setup the accounts in
@@ -225,9 +225,9 @@ export default function AnalyticsPage() {
           <span className="font-bold mr-1">Storage</span>
           to save big files.
         </div>
-        {/* <div className="mx-4 mt-2">
-          Read <a href="https://docs.swizzle.co" target="_blank" rel="nofollow">the docs</a> to learn more.
-        </div> */}
+        <div className="mx-4 mt-2">
+          Get support through the chat widget or by <a href="https://discord.gg/C93FVKxR" target="_blank" rel="nofollower">joining our Discord.</a>.
+        </div>
       </div>
 
       <div className="no-focus-ring pt-2">
