@@ -15,16 +15,18 @@ import InfoItem from "../../Utilities/Toast/InfoItem";
 export default function LogRow({
   message,
   freshLogs,
-  setModalText,
+  setModalText, 
+  autofixButtonClassName,
 }: {
   message: any;
   freshLogs: () => {};
   setModalText: (text: ReactNode) => void;
+  autofixButtonClassName?: string;
 }) {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [headers, setHeaders] = useState<any>({});
   const { getLogDetails, analyzeError } = useMonitoringApi();
-  const { domain, environment } = useContext(SwizzleContext);
+  const { domain, environment, fullEndpointList } = useContext(SwizzleContext);
 
   useEffect(() => {
     setIsExpanded(false);
@@ -131,18 +133,37 @@ export default function LogRow({
         </td>
         <td className={`text-left pl-4 ${message.responseCode < 400 ? "opacity-50 pointer-events-none" : ""}`}>
           <IconButton
-            icon={<FontAwesomeIcon icon={faWrench} className="py-1" />}
+            icon={<FontAwesomeIcon icon={faWrench} className={`py-1 ${autofixButtonClassName}`} />}
             onClick={(e) => {
               e.stopPropagation()
               if(message.responseCode < 400){
                 toast("This request didn't return an error.")
               } else if(message.responseCode == 404){
-                  explainError(`A 404 error means that the resource you're trying to access doesn't exist. Double check that you have ${message.url.includes("/swizzle/storage") ? "a file publicly accessible with that name" : "an endpoint at " + message.url.split("?")[0]}.
-                  \nIt looks like you're looking at ${environment == "test" ? "test logs. If this is working in production, you may have removed something since your last deploy." : "production logs. Double check that you've deployed all of your changes."} 
-                  \n${message.url.includes(".") ? "If you're trying to access a static file, make sure it's uploaded and publicly accessible." : "If you're trying to access a static file, make sure you're including the extension."} Files are located by default under the ${domain}/swizzle/storage path, unless you've written a custom endpoint.
-                  `)
+                  const endpointPath = message.method.toLowerCase() + message.url.split("?")[0]
+                  var exists = fullEndpointList.includes(endpointPath)
+
+                  const otherMethodPath = (message.method == "GET" ? "post" : "get") + message.url.split("?")[0]
+                  const inverseExists = fullEndpointList.includes(otherMethodPath)
+                  if(message.url.includes("/swizzle/storage")){
+                    explainError(`A 404 error means something doesn't exist. 
+                    It looks like you're trying to access a file in your storage bucket. Make sure:
+                    - The file actually exists in Files.\n
+                    - The file is publicly accessible, or the user requesting the file has permission to access it.\n
+                    - You are including the extension in the URL (e.g. /swizzle/storage/0000000.png)
+                    `)
+                  } else {
+                    explainError(`A 404 error means something doesn't exist.\n 
+                      ${!exists ? `The endpoint ${message.method} ${message.url.split("?")[0]} doesn't exist in your project files. ${inverseExists ? `However, an endpoint named the same under a different method exists (${(message.method == "GET" ? "POST " : "GET ") + message.url.split("?")[0]} exists.) If you meant to use that one, make sure the client calls ${(message.method == "GET" ? "POST" : "GET")}` : ""}` 
+                      : `However, ${message.method} ${message.url.split("?")[0]} does indeed exist in your project files. There could be a few reasons for this:\n
+                        ${environment == "test" && "- The test server was restarting. Try again in a few seconds."}
+                        - You're returning a 404 in your code manually.
+                        - You need to save the file.
+                        - The file didn't exist when this request was made, but does now.
+                        ${environment == "prod" ? "- You haven't deployed your changes to Production." : ""}`
+                    }`)
+                  }
               } else if(message.responseCode == 401){
-                explainError(`A 401 error means that whoever requested this endpoint is not sending their login information. This is not neccessarily an error - if you are expecting a response, make sure the client is sending the header "Authorization: Bearer <jwt>".`)
+                explainError(`A 401 error means "Permission Denied". This is not neccessarily an error - if someone who isn't logged in makes a request to an endpoint that has "Require Authentication" set, the server will respond with a 401.\n\nIf this 401 was not intended, make sure the client was properly authenticated (the user is signed into the frontend).\n\nIf you're calling your backend from a mobile app or frontend not hosted on Swizzle, make sure you are adding the header "Authorization: Bearer <jwt>" and the JWT is correct and not expired.`)
               } else{
                 toast.promise(fixRequest(), {
                   loading: "Looking at your code...",

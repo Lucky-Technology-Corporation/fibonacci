@@ -51,6 +51,25 @@ export default function Dashboard() {
       ),
     },
     {
+      selector: ".logs-tab",
+      title: "Logs",
+      position: "right" as Position,
+      content: <div className="text-left text-sm">Browse logs for past requests here.</div>,
+    },
+    {
+      selector: ".autofix-button",
+      title: "Autofix",
+      position: "right" as Position,
+      content: <div className="text-left text-sm">Click this button on broken requests.
+      <br/><br/>AI will automatically analyze your code & error logs to find the issue for you.</div>,
+    },
+    {
+      selector: ".templates-tab",
+      title: "Templates",
+      position: "right" as Position,
+      content: <div className="text-left text-sm">Add common templates to your project quickly.</div>,
+    },
+    {
       selector: ".user-tab",
       title: "Users",
       position: "right" as Position,
@@ -103,20 +122,6 @@ export default function Dashboard() {
           <br />
           <br />
           You can generate code with AI, import helpers/components, search for documentation, and more.
-        </div>
-      ),
-    },
-    {
-      selector: ".auth-toggle",
-      title: "Require Authentication",
-      position: "left" as Position,
-      content: (
-        <div className="text-left text-sm">
-          <b>Require authentication</b>
-          <br />
-          <br />
-          Require users to be logged in. This guarantees that the <span className="font-mono">request.user</span> won't
-          be null (unauthenticated requests will be denied with a 401).
         </div>
       ),
     },
@@ -251,11 +256,13 @@ export default function Dashboard() {
 
   const prepareNextStep = (nextStep: number) => {
     console.log("prepareNextStep", nextStep);
-    if (nextStep == 1) {
+    if(nextStep == 1){
+      setActiveLogsPage("logs")
+    } else if (nextStep == 4) {
       setSelectedTab(Page.Auth);
-    } else if (nextStep == 3) {
+    } else if (nextStep == 6) {
       setSelectedTab(Page.Apis);
-    } else if (nextStep == 13) {
+    } else if (nextStep == 15) {
       setSelectedTab(Page.Hosting);
     }
   };

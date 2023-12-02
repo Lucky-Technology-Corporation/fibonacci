@@ -54,7 +54,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [didSearch, setDidSearch] = useState<boolean>(false);
 
-  const [filterName, setFilterName] = useState<string>("_exec_mongo_query");
+  const [filterName, setFilterName] = useState<string>(null);
 
   useEffect(() => {
     if (searchQuery == "") {
@@ -75,6 +75,9 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
+        if(filterName == null){
+          setFilterName(data.keys.sort().filter(k => k != "_id")[0])
+        }
       })
       .catch((e) => {
         console.error(e);
@@ -166,6 +169,9 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     if(filterName == "_exec_mongo_query"){
       runMongoQuery(searchQuery, activeCollection)
         .then((data) => {
+          if(data.search_results == null && data.updated_count == 0 && data.count_result == 0){
+            toast.error("No results were matched")
+          }
           if(data.search_results){
             setDidSearch(true);
             setData(data.search_results || []);

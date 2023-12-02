@@ -1,3 +1,5 @@
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useMonitoringApi from "../../API/MonitoringAPI";
@@ -30,15 +32,15 @@ export default function LogsPage() {
       name: "Log Text",
     },
     {
-      id: "endpoint",
+      id: "url",
       name: "Endpoint URL",
     },
     {
-      id: "user",
+      id: "userId",
       name: "User ID",
     },
     {
-      id: "code",
+      id: "responseCode",
       name: "Response Code",
     },
   ];
@@ -177,9 +179,25 @@ export default function LogsPage() {
             </div> */}
       </div>
       <div className={`flex pr-2 h-9 mb-4`}>
+        {filterQuery != null && filterQuery != ""  ?
+          <Button
+            className="ml-4 px-2 py-4 mt-0.5 font-medium rounded-md flex justify-center items-center cursor-pointer"
+            children={<FontAwesomeIcon icon={faXmark} className="w-4 h-4" />}
+            onClick={() => {
+              toast.promise(freshLogs(), {
+                loading: "Refreshing...",
+                success: () => {
+                  return "Refreshed";
+                },
+                error: "Failed to refresh. Try reloading the page",
+              });
+            }}
+          />
+          : <div className="w-2"></div>
+        }
         <Dropdown
           className="fixed"
-          selectorClass="ml-4"
+          selectorClass="ml-2"
           onSelect={(id: string) => {
             setFilterName(id);
           }}
@@ -187,27 +205,16 @@ export default function LogsPage() {
           direction="center"
           title={searchTypes.filter((type) => type.id == filterName)[0].name}
         />
-        {filterQuery != null && filterQuery != "" && (
-          <Button
-            className="px-5 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-            text="Clear"
-            onClick={() => {
-              toast.promise(freshLogs(), {
-                loading: "Loading...",
-                success: () => {
-                  return "Done";
-                },
-                error: "Failed to load. Try reloading the page",
-              });
-            }}
-          />
-        )}
         <input
           type="text"
           className={`text-s, flex-grow p-2 bg-transparent mx-4 border-[#525363] border rounded outline-0 focus:border-[#68697a]`}
           placeholder={"Filter by " + searchTypes.filter((type) => type.id == filterName)[0].name.toLowerCase() + "..."}
           value={searchQuery}
           onChange={(e) => {
+            if(filterName == "responseCode"){
+              setSearchQuery(e.target.value.replace(/[^0-9]/g, ""));
+              return;
+            }
             setSearchQuery(e.target.value);
           }}
           onKeyDown={(event) => {
@@ -237,7 +244,7 @@ export default function LogsPage() {
           </thead>
           <tbody className="overflow-y-scroll">
             {(messages || []).map((message, index) => {
-              return <LogRow key={index} message={message} freshLogs={freshLogs} setModalText={setModalText} />;
+              return <LogRow key={index} message={message} freshLogs={freshLogs} setModalText={setModalText} autofixButtonClassName={index == 0 ? "autofix-button" : ""} />;
             })}
             <tr></tr>
           </tbody>

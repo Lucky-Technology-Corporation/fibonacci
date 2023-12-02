@@ -20,6 +20,7 @@ export default function Logslist({
         }}
       />
       <LogsItem
+        className="logs-tab"
         active={activePage == "logs"}
         name="Logs"
         onClick={() => {
@@ -27,6 +28,7 @@ export default function Logslist({
         }}
       />
       <LogsItem
+        className="templates-tab"
         active={activePage == "templates"}
         name="Templates"
         onClick={() => {
