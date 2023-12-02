@@ -4,11 +4,11 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
 
-export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page }) {
+export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab, focusOnHeader }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page, focusOnHeader: () => void }) {
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -56,6 +56,15 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         importStatement: event.data.swizzleImportStatement
       });
     }
+
+    if(event.data.type === "openAi"){
+      focusOnHeader()
+    }
+
+    if(event.data.type === "selectedText"){
+      setSelectedText(event.data.selectedText)
+    }
+
   };
 
   useEffect(() => {

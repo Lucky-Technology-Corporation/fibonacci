@@ -57,6 +57,8 @@ export interface SwizzleContextType {
   setOpenUri;
   refreshTheia;
   setRefreshTheia;
+  selectedText;
+  setSelectedText;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -88,6 +90,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [refreshTheia, setRefreshTheia] = useState(false);
+  const [selectedText, setSelectedText] = useState("")
 
   return (
     <SwizzleContext.Provider
@@ -144,6 +147,8 @@ export const GlobalContextProvider = ({ children }) => {
         setOpenUri,
         refreshTheia,
         setRefreshTheia,
+        selectedText,
+        setSelectedText
       }}
     >
       {children}

@@ -94,18 +94,29 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     const parseOutFilenamesAndCreateElement = (line: string) => {
         var cleanLine = line
-        console.log("cleanLine", cleanLine)
         if(currentLocation == "backend"){
             if(line.includes("user-dependencies/") && !line.includes("Internal watch failed: ENOSPC")){
-                const fileName = line.split("user-dependencies/")[1].split("(")[0]
-                const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
-                const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
-                const lineNumber = lineNumbers[0]
-                const columnNumber = lineNumbers[1]
-                if(line.split("):")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
-                    return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">{niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
+                if(line.includes("):")){
+                    const fileName = line.split("user-dependencies/")[1].split("(")[0]
+                    const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
+                    const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
+                    const lineNumber = lineNumbers[0]
+                    const columnNumber = lineNumbers[1]
+                    if(line.split("):")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
+                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
+                    }
+                    return <span className="font-mono text-sm"><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
+                } else {
+                    const fileName = line.split("user-dependencies/")[1].split(":")[0]
+                    const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
+                    const lineNumbers = line.split(fileName + ":")[1].split("\n")[0].replace(":", ",").split(",")
+                    const lineNumber = lineNumbers[0]
+                    const columnNumber = lineNumbers[1]
+                    if(line.split(":")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
+                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
+                    }
+                    return <span className="font-mono text-sm"><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
                 }
-                return <span className="font-mono text-sm"><span className="text-red-500">{niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.split("):")[1])}</span>
             } else if(line.includes("helpers/") && !line.includes("\n") && !line.includes("Internal watch failed: ENOSPC")){
                 const fileName = line.split("helpers/")[1].split("(")[0]
                 const lineNumbers = line.split(fileName)[1].split(")")[0].replace("(", "").replace(")", "").replace(/\s+/g, '').split(",")
@@ -149,7 +160,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         webSocket.onmessage = (event) => {
             var newLog = event.data
-            messageQueue.push(newLog);
+            messageQueue.push(...(newLog.split("\n")));
         };
 
         const processQueue = () => {
@@ -159,6 +170,8 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
                 const regex = /\x1B\[\d+m/g;
                 line = line.replace(regex, '');
+
+                console.log("line", line)
 
                 try{
                     var lines = [line]

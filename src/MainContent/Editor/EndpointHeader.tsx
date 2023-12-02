@@ -1,4 +1,4 @@
-import { faBug, faSearch, faUndo, faWandMagicSparkles, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBug, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
@@ -14,8 +14,8 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method, methodToColor } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
 
-export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any}) {
-  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList } = useContext(SwizzleContext);
+export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any}) {
+  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -24,7 +24,9 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
   const [isUndoVisible, setIsUndoVisible] = useState<boolean>(false);
+  const [isWaitingForText, setIsWaitingForText] = useState<boolean>(false);
   const [oldCode, setOldCode] = useState<string>("");
+  const [pendingRequest, setPendingRequest] = useState<string>("");
 
   const { promptAiEditor, checkIfAllEndpointsExist } = useEndpointApi();
 
@@ -64,6 +66,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
         } else if(queryType == "snippet"){
           setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
+        } else if(queryType == "selection"){
+          setPostMessage({
+            type: "replaceSelectedText",
+            content: data.new_code,
+          })
         }
 
         return "Done";
@@ -278,14 +285,21 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     const ai_options = [
       {
         "type": "ai",
-        "image": "wand",
+        "image": "ai_selection",
+        "title": value,
+        "description": "Update selected code",
+        "ai_type": -1
+      },
+      {
+        "type": "ai",
+        "image": "ai_snippet",
         "title": value,
         "description": "Generate code snippet",
         "ai_type": 0
       },
       {
         "type": "ai",
-        "image": "wand",
+        "image": "ai_write",
         "title": value,
         "description": "Edit this file",
         "ai_type": 1
@@ -293,10 +307,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     ]
 
     if(selectedTab == Page.Apis){
-      const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
+      const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
       setSuggestions([...ai_options, ...docs])
     } else if(selectedTab == Page.Hosting){
-      const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
+      const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
       console.log("docs", docs)
       const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value)).map((endpoint) => {
         const parsedEndpoint = new ParsedActiveEndpoint(endpoint)
@@ -318,7 +332,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       return(
         <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
           <div className="font-bold text-sm flex">
-          <img 
+            <img 
               src={`/${suggestion.image}.svg`}
               className="mr-1 w-4 h-4 my-auto"
             />
@@ -332,10 +346,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       return(
         <>
         <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
-          <div className="font-semibold text-sm">
-            <FontAwesomeIcon 
-              icon={faWandMagicSparkles}
-              className="mr-1 w-4 h-4"
+          <div className="font-semibold text-sm flex">
+            <img 
+              src={`/${suggestion.image}.svg`}
+              className="mr-1 w-4 h-4 my-auto"
             />
             {suggestion.title}
           </div>
@@ -374,10 +388,27 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       {children}
     </div>
   );
+
+  const getHighlightedText = () => {
+    setSelectedText(null)
+    setIsWaitingForText(true)
+    setPostMessage({type: "getSelectedText"})
+  }
+
+  useEffect(() => {
+    if(selectedText && isWaitingForText){
+      setIsWaitingForText(false)
+      console.log("selectedText", selectedText)
+      runQuery(pendingRequest, "selection")
+    }
+  }, [selectedText])
+
   const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
-    console.log("selected", suggestion)
     if(suggestion.type == "ai"){
-      if(suggestion.ai_type == 0){
+      if(suggestion.ai_type == -1){
+        setPendingRequest(suggestion.title)
+        getHighlightedText()
+      } else if(suggestion.ai_type == 0){
         runQuery(suggestion.title, "snippet")
       } else if(suggestion.ai_type == 1){
         runQuery(suggestion.title, "edit")
@@ -411,6 +442,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }
   const onPromptChange = (event, { newValue }) => {
     setPrompt(newValue);
+  }
+
+  const storeInputRef = (autosuggest) => {
+    if (autosuggest !== null) {
+      headerRef.current = autosuggest.input;
+    }
   }
 
   return (
@@ -450,6 +487,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
             <div className="grow">
               <Autosuggest
+                ref={storeInputRef}
                 suggestions={suggestions}
                 onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                 onSuggestionsClearRequested={onSuggestionsClearRequested}

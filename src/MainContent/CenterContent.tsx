@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { Page } from "../Utilities/Page";
 import UserTableView from "./Auth/UserTableView";
@@ -30,6 +30,13 @@ export default function CenterContent({
 }: CenterContentProps) {
   const { activeEndpoint, activeFile, activeHelper, shouldOverlay } = useContext(SwizzleContext);
 
+  const headerRef = useRef(null);
+  const focusOnHeader = () => {
+    if (headerRef.current) {
+      headerRef.current.focus();
+    }
+  }
+  
   return (
     <div className="relative m-0 text-sm whitespace-pre-line max-h-[100vh]">
 
@@ -44,8 +51,8 @@ export default function CenterContent({
           <div className="absolute top-0 left-0 w-full h-full z-10"></div>
         )}
         <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
-          <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} />
-          <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} />
+          <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
+          <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} focusOnHeader={focusOnHeader} />
         </div>
         <div
           style={{
