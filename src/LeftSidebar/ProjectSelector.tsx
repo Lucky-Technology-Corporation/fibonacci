@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import { Helmet } from 'react-helmet';
 import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
 import useDeploymentApi from "../API/DeploymentAPI";
@@ -90,6 +91,19 @@ export default function ProjectSelector({
     }
   }
 
+  const gtagReportConversion = () => {
+    const callback = () => {
+      console.log("Conversion reported")
+    };
+
+    // Send a conversion event to Google Analytics
+    (window as any).gtag('event', 'conversion', {
+      send_to: 'AW-1031579973/QuwbCIHgyoAYEMXS8usD',
+      event_callback: callback,
+    });
+  };
+
+
   const createNewProject = (projectName: string) => {
 
     if (projectName.includes("_") || projectName.includes("-")) {
@@ -100,6 +114,7 @@ export default function ProjectSelector({
     toast.promise(createProject(projectName), {
       loading: "Provisioning resources...",
       success: () => {
+        gtagReportConversion()
         window.location.reload();
         return "Kicked off project creation!";
       },
@@ -223,6 +238,21 @@ export default function ProjectSelector({
 
   return (
     <>
+      <Helmet>
+        {/* Add AdWords tracking script to the head */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1031579973"></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              window.dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+
+            gtag('config', 'AW-1031579973');
+          `}
+        </script>
+      </Helmet>
       <div className="mx-2 flex flex-nowrap items-center">
         <Dropdown
           children={projects}
