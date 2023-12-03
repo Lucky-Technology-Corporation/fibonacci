@@ -1,5 +1,6 @@
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { useContext, useState } from 'react';
+import { Helmet } from 'react-helmet';
 import useSettingsApi from '../API/SettingsAPI';
 import Button from './Button';
 import { SwizzleContext } from './GlobalContext';
@@ -8,8 +9,20 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
     const stripe = useStripe();
     const elements = useElements();
     const { updatePaymentMethod } = useSettingsApi()
-    const { setHasPaymentMethod } = useContext(SwizzleContext);
+    const { setHasPaymentMethod, hasPaymentMethod } = useContext(SwizzleContext);
     const [loading, setLoading] = useState<boolean>(false)
+
+    const gtagReportConversion = () => {
+      const callback = () => {
+        console.log("Conversion reported")
+      };
+      // Send a conversion event to Google Analytics
+      (window as any).gtag('event', 'conversion', {
+        send_to: 'AW-1031579973/XmqbCOTcp4EYEMXS8usD',
+        event_callback: callback,
+      });
+    };
+  
 
     const handleSubmit = async (event) => {
       event.preventDefault();
@@ -31,9 +44,12 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
           alert('Something went wrong. Please try again.');
           setLoading(false)
         } else{
-            setHasPaymentMethod(true)
-            if(setIsVisible == undefined) return;
-            setIsVisible(false)
+          if(!hasPaymentMethod){
+            gtagReportConversion()
+          }
+          setHasPaymentMethod(true)
+          if(setIsVisible == undefined) return;
+          setIsVisible(false)
         }
       }
     };
@@ -59,6 +75,22 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
 
     
     return (
+      <>
+        <Helmet>
+        {/* Add AdWords tracking script to the head */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1031579973"></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              window.dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', 'AW-1031579973');
+          `}
+        </script>
+      </Helmet>
+
       <form onSubmit={handleSubmit} className='w-full'>
         <div className='flex flex-col'>
         <div className='border border-gray-600 rounded-md shadow-lg p-2 my-4'>
@@ -78,5 +110,6 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
         </div>
         </div>
       </form>
+      </>
     );
 }
