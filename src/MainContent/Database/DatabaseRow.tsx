@@ -1,8 +1,9 @@
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import { MouseEventHandler, useEffect, useRef, useState } from "react";
+import { MouseEventHandler, useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import { copyText } from "../../Utilities/Copyable";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 
 const formatDateIfISO8601 = (date: string): string => {
@@ -53,12 +54,19 @@ export default function DatabaseRow({
   const [pendingInputValue, setPendingInputValue] = useState("");
   const { updateDocument } = useDatabaseApi();
 
+  const { currentDbQuery } = useContext(SwizzleContext);
+
   useEffect(() => {
     setRowValues(data);
   }, [data]);
 
   const setupEditing = (key: string) => {
     if (shouldBlockEdits.includes(key)) return;
+    console.log(currentDbQuery)
+    if(currentDbQuery && currentDbQuery != "" && !currentDbQuery.includes("find(")){
+      toast.error('You cannot edit documents displayed by an aggregation query. Search for the document to edit or refresh the database to make edits.');
+      return;
+    }
     setEditing(key);
     setShouldShowSaveHint(true);
     setPendingInputValue(rowValues[key]);
@@ -163,11 +171,11 @@ export default function DatabaseRow({
                       ? "cursor-pointer"
                       : ""
                   }`}
-                  onFocus={() => {
-                    if (!shouldBlockEdits.includes(key)) {
-                      setupEditing(key);
-                    }
-                  }}
+                  // onFocus={() => {
+                  //   if (!shouldBlockEdits.includes(key)) {
+                  //     setupEditing(key);
+                  //   }
+                  // }}
                   value={editing === key ? pendingInputValue : value === false ? "false" : value === 0 ? "0" : value || ""}
                   onClick={() => {
                     if (!shouldBlockEdits.includes(key)) {

@@ -71,6 +71,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     if (!activeCollection || activeCollection == "") return;
     getDocuments(activeCollection, page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
+        console.log("resetting all data")
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
@@ -156,15 +157,19 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     if (!activeCollection || activeCollection == "") return;
     if (didSearch) {
       toast("Search results can't be sorted manually yet. Ask the AI to return sorted results if needed.")
-      // runMongoQuery(currentDbQuery, activeCollection)
     } else {
       fetchData(currentPage);
     }
-    // fetchData(currentPage);
   }, [currentPage, sortedByColumn, sortDirection]);
 
   useEffect(() => {
+    console.log("currentDbQuery", currentDbQuery)
     if(!currentDbQuery || currentDbQuery == "") return;
+    if(currentDbQuery == "_reset"){
+      handleRefresh()
+      setCurrentDbQuery("")
+      return
+    }
     toast.promise(runMongoQuery(currentDbQuery, activeCollection), {
       loading: "Running query...",
       success: (data) => {
@@ -173,8 +178,18 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         }
         if(data.search_results){
           setDidSearch(true);
-          setData(data.search_results || []);
-          setTotalDocs(data.search_results.length);
+
+          //check for duplicate ids. this happens on aggregate queries
+          var searchResultsWithUniqueIds = data.search_results
+          if(searchResultsWithUniqueIds.map(doc => doc._id).length != new Set(searchResultsWithUniqueIds.map(doc => doc._id)).size){
+            searchResultsWithUniqueIds = searchResultsWithUniqueIds.map((doc: any) => {
+              doc._id = Math.random().toString(36).substring(7);
+              return doc;
+            })
+          }
+          
+          setData(searchResultsWithUniqueIds || []);
+          setTotalDocs(searchResultsWithUniqueIds.length);
           //get all keys from search_results
           const allKeys = data.search_results.map((doc: any) => Object.keys(doc)).flat() as string[]
           const uniqueKeys = [...new Set(allKeys)]
@@ -192,7 +207,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       },
       error: "Failed to run query",
     });
-    setCurrentDbQuery("")
   }, [currentDbQuery])
 
 

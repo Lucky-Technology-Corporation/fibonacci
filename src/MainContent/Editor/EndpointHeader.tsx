@@ -70,6 +70,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   const runQuery = async (promptQuery: string, queryType: string) => {
     if(queryType == "db"){
+      if(promptQuery == ""){
+        console.log("resetting db query")
+        setCurrentDbQuery("_reset")
+        return
+      }
       return toast.promise(promptDbHelper(promptQuery, activeCollection), {
         loading: "Thinking...",
         success: (data) => {
