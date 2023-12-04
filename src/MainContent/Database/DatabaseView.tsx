@@ -172,6 +172,9 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           setDidSearch(true);
           setData(data.search_results || []);
           setTotalDocs(data.search_results.length);
+          //get all keys from search_results
+          const allKeys = data.search_results.map((doc: any) => Object.keys(doc)).flat()
+          setKeys(allKeys.sort())
         } else{
           handleRefresh()
         }
