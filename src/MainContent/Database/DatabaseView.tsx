@@ -16,7 +16,7 @@ import DocumentJSON from "./DocumentJSON";
 import RowDetail from "./RowDetail";
 
 export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
-  const { getDocuments, deleteCollection, runQuery, updateDocument, runMongoQuery } = useDatabaseApi();
+  const { getDocuments, deleteCollection, updateDocument, runMongoQuery } = useDatabaseApi();
 
   const { activeProject, environment, currentDbQuery, setCurrentDbQuery } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -87,6 +87,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
   const handleRefresh = () => {
     if (!activeCollection || activeCollection == "") return;
+    setDidSearch(false)
     setIsRefreshing(true);
     fetchData(0);
     setIsRefreshing(false);
@@ -154,10 +155,12 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;
     if (didSearch) {
-      runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection, currentPage);
+      toast("Search results can't be sorted manually yet. Ask the AI to return sorted results if needed.")
+      // runMongoQuery(currentDbQuery, activeCollection)
     } else {
       fetchData(currentPage);
     }
+    // fetchData(currentPage);
   }, [currentPage, sortedByColumn, sortDirection]);
 
   useEffect(() => {
