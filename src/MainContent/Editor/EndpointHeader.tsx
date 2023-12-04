@@ -14,8 +14,8 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method, methodToColor } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
 
-export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any}) {
-  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText } = useContext(SwizzleContext);
+export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
+  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -28,7 +28,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [oldCode, setOldCode] = useState<string>("");
   const [pendingRequest, setPendingRequest] = useState<string>("");
 
-  const { promptAiEditor, checkIfAllEndpointsExist } = useEndpointApi();
+  const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
 
   useEffect(() => {
     console.log(selectedTab)
@@ -41,42 +41,79 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     setPath("/" + splitEndpoint[1] || "");
   }, [activeEndpoint]);
 
+  const createConfirmationModal = (operation: string, description: string, collection: string) => {
+    return (
+      <div className="flex flex-col">
+        <div className="text-sm mb-2">{description}</div>
+        <div className="font-bold font-mono text-xs">{operation}</div>
+        <div className="flex mt-4">
+          <Button
+            text="Cancel"
+            className="text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            onClick={() => {
+              setResponse(null);
+            }}
+          />
+          <Button
+            text="Run"
+            className="text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            onClick={() => {
+              setResponse(null);
+              setCurrentDbQuery(operation)
+              //submit to POST collectionId/mongo
+            }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   const runQuery = async (promptQuery: string, queryType: string) => {
-    return toast.promise(promptAiEditor(promptQuery, queryType), {
-      loading: "Thinking...",
-      success: (data) => {
-        if(queryType == "edit"){
-          //Replace the text
-          setPostMessage({
-            type: "replaceText",
-            content: data.new_code,
-          })
-      
-          //TODO: Update currentFileProperties here
-          //Update auth-required and imports
+    if(queryType == "db"){
+      return toast.promise(promptDbHelper(promptQuery, activeCollection), {
+        loading: "Thinking...",
+        success: (data) => {
+          setResponse(createConfirmationModal(data.pending_operation, data.pending_operation_description, data.pending_collection))
+          return "Done";
+        },
+        error: "Failed",
+      });
+    } else {
+      return toast.promise(promptAiEditor(promptQuery, queryType), {
+        loading: "Thinking...",
+        success: (data) => {
+          if(queryType == "edit"){
+            //Replace the text
+            setPostMessage({
+              type: "replaceText",
+              content: data.new_code,
+            })
+        
+            //TODO: Update currentFileProperties here
+            //Update auth-required and imports
 
-          //Add undo button
-          setupUndo(data.old_code)
+            //Add undo button
+            setupUndo(data.old_code)
 
-          //TODO: finish this function later to add backend endpoints if needed
-          if(selectedTab == Page.Hosting){
-            checkIfAllEndpointsExist(data.new_code)
+            //TODO: finish this function later to add backend endpoints if needed
+            if(selectedTab == Page.Hosting){
+              checkIfAllEndpointsExist(data.new_code)
+            }
+
+          } else if(queryType == "snippet"){
+            setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
+          } else if(queryType == "selection"){
+            setPostMessage({
+              type: "replaceSelectedText",
+              content: data.new_code,
+            })
           }
 
-        } else if(queryType == "snippet"){
-          setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
-        } else if(queryType == "selection"){
-          setPostMessage({
-            type: "replaceSelectedText",
-            content: data.new_code,
-          })
-        }
-
-        return "Done";
-      },
-      error: "Error writing code",
-    });
+          return "Done";
+        },
+        error: "Failed",
+      });
+    }
   };
 
 
@@ -293,6 +330,15 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       "description": "<span class='font-mono cursor-pointer text-xs'>const auth = useAuthUser()</span><span class='hidden'>to get a uid userId id user data info</span>"
     },
   ]
+  
+  const dbDocOptions = [
+    {
+      "type": "action",
+      "image": "plus",
+      "title": "Add to database",
+      "description": "Add a new document/item to the database",
+    }
+  ]
 
   const [suggestions, setSuggestions] = useState(docOptions);
   const onSuggestionsFetchRequested = ({ value }) => {
@@ -301,23 +347,33 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         "type": "ai",
         "image": "ai_selection",
         "title": value,
-        "description": "Update selected code",
+        "description": "Ask AI to update selected code",
         "ai_type": -1
       },
       {
         "type": "ai",
         "image": "ai_snippet",
         "title": value,
-        "description": "Generate code snippet",
+        "description": "Ask AI",
         "ai_type": 0
       },
       {
         "type": "ai",
         "image": "ai_write",
         "title": value,
-        "description": "Edit this file",
+        "description": "Ask AI to edit this file",
         "ai_type": 1
       }
+    ]
+
+    const db_ai_options = [
+      {
+        "type": "ai",
+        "image": "ai_snippet",
+        "title": value,
+        "description": "Ask AI",
+        "ai_type": 2,
+      },
     ]
 
     if(selectedTab == Page.Apis){
@@ -325,13 +381,14 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       setSuggestions([...ai_options, ...docs])
     } else if(selectedTab == Page.Hosting){
       const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
-      console.log("docs", docs)
       const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value)).map((endpoint) => {
         const parsedEndpoint = new ParsedActiveEndpoint(endpoint)
         return {type: "endpoint", ...parsedEndpoint}
       })
-
       setSuggestions([...ai_options, ...docs, ...filteredList])
+    } else if(selectedTab == Page.Db){
+      // const docs = dbDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
+      setSuggestions([...db_ai_options])
     }
   };
 
@@ -348,7 +405,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           <div className="font-bold text-sm flex">
             <img 
               src={`/${suggestion.image}.svg`}
-              className="mr-1 w-4 h-4 my-auto"
+              className="mr-2 w-4 h-4 my-auto"
             />
             <div>{suggestion.title}</div>
           </div>
@@ -363,7 +420,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           <div className="font-semibold text-sm flex">
             <img 
               src={`/${suggestion.image}.svg`}
-              className="mr-1 w-4 h-4 my-auto"
+              className="mr-2 w-4 h-4 my-auto"
             />
             {suggestion.title}
           </div>
@@ -391,6 +448,20 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           </div>
           <div className="text-xs mt-0.5 font-mono font-normal">
             {`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`}
+          </div>
+        </div>
+      )
+    } else if(suggestion.type == "action"){
+      return(
+        <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
+          <div className="font-bold text-sm flex">
+            <img 
+              src={`/${suggestion.image}.svg`}
+              className="mr-2 w-4 h-4 my-auto"
+            />
+            <div>{suggestion.title}</div>
+          </div>
+          <div className="text-sm font-normal mt-0.5" dangerouslySetInnerHTML={{__html: suggestion.description}}>
           </div>
         </div>
       )
@@ -426,6 +497,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         runQuery(suggestion.title, "snippet")
       } else if(suggestion.ai_type == 1){
         runQuery(suggestion.title, "edit")
+      } else if(suggestion.ai_type == 2){
+        runQuery(suggestion.title, "db")
       }
     } else{
       if(suggestion.type == "endpoint"){
@@ -487,17 +560,20 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         <div className="flex-col magic-bar">
           <div
             className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
-              ideReady ? "" : "opacity-50 pointer-events-none"
+              (ideReady || (selectedTab != Page.Hosting && selectedTab != Page.Apis)) ? "" : "opacity-50 pointer-events-none"
             }`}
           >
             <div className="ml-4"></div>
+
+            {/* Search shows on frontend and backend tabs */}
             <Button
-              className={`text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+              className={`text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}`}
               children={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
               onClick={() => {
                 toggleSearch()
               }}
             />
+            {/* Debug shows on backend tab */}
             <Button
               className={`text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis ? "" : "hidden"}`}
               children={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
@@ -505,8 +581,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                 toggleDebug()
               }}
             />
-            <div className="w-[1px] h-[36px] bg-[#525363] mx-4"></div>
-
+            <div className={`w-[1px] h-[36px] bg-[#525363] mx-4 ${selectedTab == Page.Db ? "hidden" : ""}`}></div>
+            {/* Undo shows only when isUndoVisible is true */}
             {isUndoVisible && (
               <Button
                 className={`text-sm mr-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
@@ -517,7 +593,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               />
             )}
 
-            <div className="grow">
+            <div className={`grow ${selectedTab == Page.Db ? "mr-32" : ""}`}>
               <Autosuggest
                 ref={storeInputRef}
                 suggestions={suggestions}
@@ -536,10 +612,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                       return
                     }
                   },
-                  placeholder: `Cmd + K: write code, search the docs, and more...`,
+                  placeholder: `${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "Cmd + K: write code, search the docs, and more..." : selectedTab == Page.Db ? "Cmd + K: search and update your database" : ""}`,
                   value: prompt,
                   onChange: onPromptChange,
-                  className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded-md font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2",
+                  className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2",
                   style: {
                     width: "calc(100% - 1rem)",
                   }

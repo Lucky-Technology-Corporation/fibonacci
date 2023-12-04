@@ -194,7 +194,7 @@ export default function ObjectTableView() {
 
   return (
     <div>
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
+      {/* <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
         <div>
           <div className={`font-bold text-base`}>Files</div>
           <div className={`text-sm mt-0.5`}>Drag and drop to upload</div>
@@ -203,7 +203,7 @@ export default function ObjectTableView() {
           <Button text={"Upload"} onClick={uploadFileHandler} />
           <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
         </div>
-      </div>
+      </div> */}
       <div className={`flex pr-2 h-8`}>
         <SearchBar
           keys={keys}
@@ -215,6 +215,11 @@ export default function ObjectTableView() {
           refreshHandler={handleRefresh}
           numberOfResults={data.length}
         />
+        <div className="w-[1px] bg-[#85869833] mx-4 h-10 my-auto"></div>
+        <div>
+          <Button className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"  text={"Upload"} onClick={uploadFileHandler} />
+          <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
+        </div>
       </div>
       <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>
         <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: "auto", minWidth: "100%" }}>

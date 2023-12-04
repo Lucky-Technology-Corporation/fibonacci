@@ -59,6 +59,8 @@ export interface SwizzleContextType {
   setRefreshTheia;
   selectedText;
   setSelectedText;
+  currentDbQuery;
+  setCurrentDbQuery;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -91,6 +93,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [refreshTheia, setRefreshTheia] = useState(false);
   const [selectedText, setSelectedText] = useState("")
+  const [currentDbQuery, setCurrentDbQuery] = useState("")
 
   return (
     <SwizzleContext.Provider
@@ -148,7 +151,9 @@ export const GlobalContextProvider = ({ children }) => {
         refreshTheia,
         setRefreshTheia,
         selectedText,
-        setSelectedText
+        setSelectedText,
+        currentDbQuery,
+        setCurrentDbQuery
       }}
     >
       {children}

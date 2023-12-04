@@ -203,6 +203,28 @@ export default function useEndpointApi() {
     }
   }
 
+  const promptDbHelper = async (userQuery: string, collection: string) => {
+    try {
+      var body = {
+        prompt: userQuery,
+        collection: collection,
+      };
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/db?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
+
   const promptAiEditor = async (userQuery: string, queryType: string) => {
     try {
 
@@ -418,6 +440,7 @@ export default function useEndpointApi() {
     restartFrontend,
     restartBackend,
     writeFile,
-    promptAiEditor
+    promptAiEditor,
+    promptDbHelper
   };
 }

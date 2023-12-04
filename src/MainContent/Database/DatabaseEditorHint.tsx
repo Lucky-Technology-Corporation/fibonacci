@@ -12,7 +12,7 @@ export default function DatabaseEditorHint({ isVisible }: { isVisible: boolean }
   return (
     <>
       <div
-        className={`flex flex-col bg-[#181922] p-1 mt-[-6px] absolute right-0 mr-4 w-50 ${isVisible ? "" : "hidden"}`}
+        className={`flex flex-col bg-[#1e1e1e] border rounded border-[#525363] p-1 mt-[-6px] absolute right-0 mr-4 w-50 ${isVisible ? "" : "hidden"}`}
       >
         <div className="flex mb-2">
           <ReturnKey /> to save

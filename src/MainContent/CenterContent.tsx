@@ -78,7 +78,8 @@ export default function CenterContent({
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Db ? "block" : "none" }}>
-        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+        <div className="m-4 mt-2 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+          <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
           <DatabaseView activeCollection={activeCollection} />
         </div>
       </div>

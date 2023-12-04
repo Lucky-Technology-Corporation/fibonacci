@@ -169,70 +169,78 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         const processQueue = () => {
             if (messageQueue.length > 0) {
-                const message = messageQueue.shift();
-                var line = message
+                // const message = messageQueue.shift();
+                // var line = message
 
                 const regex = /\x1B\[\d+m/g;
-                line = line.replace(regex, '');
+                // line = line.replace(regex, '');
 
-                console.log("line", line)
-
-                try{
-                    var lines = [line]
-                    if(line.includes("\n")){
-                        lines = line.split("\n");
-                    }
-                    
-                    line = ""
-
-                    for(var i = 0; i < lines.length; i++){
-                        var currentLine = lines[i];
-
-                        if (
-                            (currentLine.includes("0.0.0.0:9229") ||
-                            currentLine.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
-                            currentLine.includes("ExperimentalWarning: Custom ESM Loaders") ||
-                            currentLine.includes("(Use `node --trace-warnings ...")) ||
-                            currentLine.includes("[nodemon] to restart at any time, enter `rs`") ||
-                            currentLine.includes("[nodemon] watching path(s): **/*") ||
-                            currentLine.includes("[nodemon] watching extensions: ts") ||
-                            currentLine.includes("[nodemon] 3.0.1") ||
-                            currentLine.includes("npm WARN exec The following package was not found and will be installed")
-                        ){ continue }        
-
-                        try{
-                            const parsed = JSON.parse(currentLine);
-                            if(parsed.text !== null && parsed.text !== undefined){
-                                const date = new Date(parsed.timestamp).toLocaleTimeString()
-                                currentLine = `[${date}] ${parsed.text}`;
-                            }
-                        } catch(e){ }
-                        
-                        if(currentLine.startsWith("[0] ")){
-                            currentLine = currentLine.substring(4);
-                        } else if(currentLine.startsWith("[1] ")){
-                            currentLine = currentLine.substring(4);
+                const allMessages = [];
+                while (messageQueue.length > 0) {
+                    allMessages.push(messageQueue.shift().replace(regex, ''));
+                }
+                var allElements = [];
+                console.log("allMessages", allMessages)
+                allMessages.forEach((lineIn) => {
+                    try{
+                        var lines;
+                        if(lineIn.includes("\n")){
+                            lines = lineIn.split("\n");
+                        } else{
+                            lines = [lineIn];
                         }
+                        
+                        var line = ""
 
-                        currentLine = currentLine.replace(/\n+$/, ""); //remove trailing newlines
+                        for(var i = 0; i < lines.length; i++){
+                            var currentLine = lines[i];
 
-                        if(currentLine.replace(/\s/g, '') !== ""){ //replace all whitespace
-                            line = line + currentLine + "\n";
-                        }                        
-                    }
-                    if(line == ""){ return }
-                    if(line.endsWith("\n")){
-                        line = line.substring(0, line.length - 1);
-                    }
-                } catch (e) {}
+                            if (
+                                (currentLine.includes("0.0.0.0:9229") ||
+                                currentLine.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+                                currentLine.includes("ExperimentalWarning: Custom ESM Loaders") ||
+                                currentLine.includes("(Use `node --trace-warnings ...")) ||
+                                currentLine.includes("[nodemon] to restart at any time, enter `rs`") ||
+                                currentLine.includes("[nodemon] watching path(s): **/*") ||
+                                currentLine.includes("[nodemon] watching extensions: ts") ||
+                                currentLine.includes("[nodemon] 3.0.1") ||
+                                currentLine.includes("npm WARN exec The following package was not found and will be installed")
+                            ){ continue }        
 
-                const filteredLine = line.split('\n')
-                .filter(line => line.replace(/^\s+/, '') !== '') // Remove lines that are empty or contain only whitespace
-                .join('\n')
+                            try{
+                                const parsed = JSON.parse(currentLine);
+                                if(parsed.text !== null && parsed.text !== undefined){
+                                    const date = new Date(parsed.timestamp).toLocaleTimeString()
+                                    currentLine = `[${date}] ${parsed.text}`;
+                                }
+                            } catch(e){ }
+                            
+                            if(currentLine.startsWith("[0] ")){
+                                currentLine = currentLine.substring(4);
+                            } else if(currentLine.startsWith("[1] ")){
+                                currentLine = currentLine.substring(4);
+                            }
 
-                const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine);
+                            currentLine = currentLine.replace(/\n+$/, ""); //remove trailing newlines
 
-                setLog(prevLog => [...prevLog, lineJsxElement]);
+                            if(currentLine.replace(/\s/g, '') !== ""){ //replace all whitespace
+                                line = line + currentLine + "\n";
+                            }                        
+                        }
+                        if(line == ""){ return }
+                        if(line.endsWith("\n")){
+                            line = line.substring(0, line.length - 1);
+                        }
+                    } catch (e) {}
+
+                    const filteredLine = line.split('\n')
+                    .filter(line => line.replace(/^\s+/, '') !== '') // Remove lines that are empty or contain only whitespace
+                    .join('\n')
+
+                    const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine);
+                    allElements.push(lineJsxElement);
+                })
+                setLog(prevLog => [...prevLog, ...allElements]);
             }
         };
         

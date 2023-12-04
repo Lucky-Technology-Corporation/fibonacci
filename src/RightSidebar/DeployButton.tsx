@@ -119,7 +119,7 @@ export default function DeployButton({}: {}) {
         </button> */}
 
         <Button
-          className={`text-sm py-1.5 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+          className={`text-sm py-1.5 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
           children={<FontAwesomeIcon icon={faRocket} className="py-1"/>}
           onClick={() => {
             runDeploy()

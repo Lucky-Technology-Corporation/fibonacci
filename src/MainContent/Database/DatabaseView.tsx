@@ -10,7 +10,6 @@ import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import { getEstimatedColumnWidth } from "../../Utilities/TableWidthEstimate";
 import TailwindModal from "../../Utilities/TailwindModal";
-import SearchBar from "../Shared/SearchBar";
 import DatabaseEditorHint from "./DatabaseEditorHint";
 import DatabaseRow from "./DatabaseRow";
 import DocumentJSON from "./DocumentJSON";
@@ -19,7 +18,7 @@ import RowDetail from "./RowDetail";
 export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
   const { getDocuments, deleteCollection, runQuery, updateDocument, runMongoQuery } = useDatabaseApi();
 
-  const { activeProject, environment } = useContext(SwizzleContext);
+  const { activeProject, environment, currentDbQuery, setCurrentDbQuery } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [shouldShowSaveHint, setShouldShowSaveHint] = useState(false);
   const [isJSONEditorVisible, setIsJSONEditorVisible] = useState(false);
@@ -161,49 +160,34 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     }
   }, [currentPage, sortedByColumn, sortDirection]);
 
-  const runSearch = async () => {
-    if (filterName == "") {
-      toast.error("Please select a filter");
-      return;
-    }
-    if(filterName == "_exec_mongo_query"){
-      runMongoQuery(searchQuery, activeCollection)
-        .then((data) => {
-          if(data.search_results == null && data.updated_count == 0 && data.count_result == 0){
-            toast.error("No results were matched")
-          }
-          if(data.search_results){
-            setDidSearch(true);
-            setData(data.search_results || []);
-            setTotalDocs(data.search_results.length);
-          } else{
-            handleRefresh()
-          }
-          if(data.updated_count){
-            toast.success("Updated " + data.updated_count + " documents")
-          }
-          if(data.count_result){
-            toast.success("Found " + data.count_result + " documents")
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          toast.error("Failed - double check your query and try again")
-      });
-    } else{
-      runQuery(searchQuery, filterName, activeCollection, sortedByColumn, sortDirection)
-        .then((data) => {
+  useEffect(() => {
+    if(!currentDbQuery || currentDbQuery == "") return;
+    toast.promise(runMongoQuery(currentDbQuery, activeCollection), {
+      loading: "Running query...",
+      success: (data) => {
+        if(data.search_results == null && data.updated_count == 0 && data.count_result == 0){
+          toast.error("No results were matched")
+        }
+        if(data.search_results){
           setDidSearch(true);
-          setData(data.documents || []);
-          setKeys(data.keys.sort() || []);
-          setTotalDocs(data.pagination.total_documents);
-        })
-        .catch((e) => {
-          console.error(e);
-          toast.error("Failed to filter")
-        });
-    }
-  };
+          setData(data.search_results || []);
+          setTotalDocs(data.search_results.length);
+        } else{
+          handleRefresh()
+        }
+        if(data.updated_count){
+          toast.success("Updated " + data.updated_count + " documents")
+        }
+        if(data.count_result){
+          toast.success("Found " + data.count_result + " documents")
+        }
+        return "Query complete";
+      },
+      error: "Failed to run query",
+    });
+    setCurrentDbQuery("")
+  }, [currentDbQuery])
+
 
   const showDetailView = (rowData: any, x: number, y: number) => {
     setRowDetailData(rowData);
@@ -275,37 +259,17 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           });
         }}
       />
-      <div className={`flex-1 pr-2 mx-4 mb-4 mt-1 text-lg flex justify-between`}>
-        <div>
-          <div className={`font-bold text-base`}>{activeCollection}</div>
-          <div className={`text-sm mt-0.5`}>
-            Explore your MongoDB instance
-          </div>
-        </div>
-        <div className="text-sm w-20">
-          <DatabaseEditorHint isVisible={shouldShowSaveHint} />
-        </div>
-        <div className={`flex h-10 mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
-          <Button
-            text="+ Add"
-            onClick={() => {
-              createObjectHandler("json");
-            }}
-          />
-        </div>
-      </div>
 
-      <div className={`flex pr-2 h-8`}>
-        <SearchBar
-          keys={keys}
-          filterName={filterName}
-          setFilterName={setFilterName}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          runSearch={runSearch}
-          showMongo={true}
-          numberOfResults={data.length}
-          refreshHandler={handleRefresh}
+      <div className="text-sm w-64 absolute top-4 right-3">
+          <DatabaseEditorHint isVisible={shouldShowSaveHint} />
+      </div>
+      <div className={`absolute top-5 right-10 flex h-10 mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
+        <Button
+          className="text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#333336] hover:bg-[#3b3b40] border-[#525363] border"
+          text="+ Add Entry"
+          onClick={() => {
+            createObjectHandler("json");
+          }}
         />
       </div>
 

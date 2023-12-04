@@ -196,29 +196,6 @@ export default function UserTableView() {
 
   return (
     <div>
-      <div className={`flex-1 pr-2 ml-4 mb-4 mt-1 text-lg flex justify-between`}>
-        <div>
-          <div className={`font-bold text-base`}>Users</div>
-          <div className={`text-sm mt-0.5`}>
-            <a
-              href="https://docs.swizzle.co/backend/users"
-              target="_blank"
-              rel="nofollow"
-              className="underline decoration-dotted text-[#d2d3e0] hover:text-white"
-            >
-              Read more
-            </a>{" "}
-            about creating users.
-          </div>
-        </div>
-        <div>
-          <Button
-            className="text-sm px-5 py-2 mt-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
-            onClick={() => {setIsCreatingUser(true)}}
-            text="Create User"
-          />
-        </div>
-      </div>
       <div className={`flex pr-2 h-8`}>
         <SearchBar
           keys={keys}
@@ -230,6 +207,14 @@ export default function UserTableView() {
           refreshHandler={handleRefresh}
           numberOfResults={data.length}
         />
+        <div className="w-[1px] bg-[#85869833] mx-4 h-10 my-auto"></div>
+        <div>
+          <Button
+            className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
+            onClick={() => {setIsCreatingUser(true)}}
+            text="Create User"
+          />
+        </div>
       </div>
       <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>
         <table className="table-auto flex-grow my-4 ml-4" style={{ tableLayout: "auto", minWidth: "100%" }}>

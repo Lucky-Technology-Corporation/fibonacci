@@ -157,7 +157,7 @@ export default function SearchBar({
         }}
       />
       <Button
-        text={filterName == "_exec_mongo_query" ? "Run" : "Search"}
+        text={filterName == "_exec_mongo_query" ? "Run" : "Go"}
         onClick={runSearch}
         className="h-[36px] px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
       />
