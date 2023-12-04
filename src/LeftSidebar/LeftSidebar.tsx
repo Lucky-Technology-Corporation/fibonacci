@@ -403,7 +403,7 @@ export default function LeftSidebar({
           <div className="h-[500px]"></div>
         </div> */}
 
-        <div className="flex w-full">
+        <div className="flex w-full mt-auto mb-2">
           <UserDropdown />
         </div>
       </div>
