@@ -211,6 +211,9 @@ export default function useDatabaseApi() {
       );
       return response.data;
     } catch (e: any) {
+      if (e.response && e.response.status == 400) {
+        //error is e.response.data.message
+      }
       console.error(e);
       throw e.response.data;
     }

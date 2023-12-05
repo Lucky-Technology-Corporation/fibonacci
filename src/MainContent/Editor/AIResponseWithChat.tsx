@@ -30,11 +30,11 @@ export default function AIResponseWithChat({descriptionIn, operationIn, setRespo
     return (
       <div className="flex flex-col">
         <div className="text-sm mb-2">{description}</div>
-        <div className="flex">
-            <div className="font-bold font-mono text-xs my-auto">{operation}</div>
+        <div className="flex items-center">
+            <div className="font-bold font-mono text-xs my-auto" style={{whiteSpace: "pre-wrap"}}>{operation}</div>
             <Button
                 text="Run"
-                className="text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                className="text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border flex-shrink-0 flex-grow-0"
                 onClick={() => {
                     setResponse(null);
                     setCurrentDbQuery(operation)

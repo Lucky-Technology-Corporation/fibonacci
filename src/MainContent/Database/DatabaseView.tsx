@@ -88,6 +88,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
   const handleRefresh = () => {
     if (!activeCollection || activeCollection == "") return;
+    setCurrentDbQuery("")
     setDidSearch(false)
     setIsRefreshing(true);
     fetchData(0);
@@ -167,14 +168,14 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     if(!currentDbQuery || currentDbQuery == "") return;
     if(currentDbQuery == "_reset"){
       handleRefresh()
-      setCurrentDbQuery("")
       return
     }
     toast.promise(runMongoQuery(currentDbQuery, activeCollection), {
       loading: "Running query...",
       success: (data) => {
         if(data.search_results == null && data.updated_count == 0 && data.count_result == 0){
-          toast.error("No results were matched")
+          setCurrentDbQuery("")
+          return "No results were matched"
         }
         if(data.search_results){
           setDidSearch(true);
@@ -205,7 +206,10 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         }
         return "Complete!";
       },
-      error: "Failed to run query",
+      error: (data) => {
+        setCurrentDbQuery("")
+        return "Failed to run query"
+      }
     });
   }, [currentDbQuery])
 
