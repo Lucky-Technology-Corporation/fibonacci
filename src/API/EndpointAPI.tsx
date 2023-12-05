@@ -203,11 +203,12 @@ export default function useEndpointApi() {
     }
   }
 
-  const promptDbHelper = async (userQuery: string, collection: string) => {
+  const promptDbHelper = async (userQuery: string, collection: string, history?: any[]) => {
     try {
       var body = {
         prompt: userQuery,
         collection: collection,
+        history: history,
       };
 
       const response = await axios.post(

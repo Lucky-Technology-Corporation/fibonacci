@@ -203,7 +203,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         if(data.count_result){
           toast.success("Found " + data.count_result + " documents")
         }
-        return "Query complete";
+        return "Complete!";
       },
       error: "Failed to run query",
     });

@@ -212,7 +212,7 @@ export default function useDatabaseApi() {
       return response.data;
     } catch (e: any) {
       console.error(e);
-      return e.response.data;
+      throw e.response.data;
     }
   };
 

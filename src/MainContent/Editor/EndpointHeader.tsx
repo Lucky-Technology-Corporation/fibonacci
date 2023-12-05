@@ -13,6 +13,7 @@ import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method, methodToColor } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
+import AIResponseWithChat from "./AIResponseWithChat";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
   const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery } = useContext(SwizzleContext);
@@ -41,32 +42,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     setPath("/" + splitEndpoint[1] || "");
   }, [activeEndpoint]);
 
-  const createConfirmationModal = (operation: string, description: string, collection: string) => {
-    return (
-      <div className="flex flex-col">
-        <div className="text-sm mb-2">{description}</div>
-        <div className="font-bold font-mono text-xs">{operation}</div>
-        <div className="flex mt-4">
-          <Button
-            text="Cancel"
-            className="text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-            onClick={() => {
-              setResponse(null);
-            }}
-          />
-          <Button
-            text="Run"
-            className="text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-            onClick={() => {
-              setResponse(null);
-              setCurrentDbQuery(operation)
-              //submit to POST collectionId/mongo
-            }}
-          />
-        </div>
-      </div>
-    )
-  }
 
   const runQuery = async (promptQuery: string, queryType: string) => {
     if(queryType == "db"){
@@ -78,7 +53,16 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       return toast.promise(promptDbHelper(promptQuery, activeCollection), {
         loading: "Thinking...",
         success: (data) => {
-          setResponse(createConfirmationModal(data.pending_operation, data.pending_operation_description, data.pending_collection))
+          console.log(data)
+          setResponse(
+            <AIResponseWithChat 
+              descriptionIn={data.pending_operation_description}
+              operationIn={data.pending_operation} 
+              setResponse={setResponse} 
+              setCurrentDbQuery={setCurrentDbQuery} 
+              historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.pending_operation}]}
+              activeCollection={activeCollection}
+            />)
           return "Done";
         },
         error: "Failed",
