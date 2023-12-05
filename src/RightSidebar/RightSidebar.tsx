@@ -197,6 +197,17 @@ export default function RightSidebar({
               icon={<img src="/restart.svg" className="w-4 h-4 m-auto" ref={refreshSpinner} />}
               text="Restart"
             />
+            <div className="h-3" />
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div className="h-3" />
+            <IconTextButton
+              onClick={() => {
+                window.open("https://docs.swizzle.co/frontend", "_blank");
+              }}
+              icon={<img src="/popout.svg" className="w-4 h-4 m-auto" />}
+              text="Docs"
+              className="docs-button"
+            />
           </>
         )}
         {selectedTab == Page.Apis && (
@@ -307,12 +318,12 @@ export default function RightSidebar({
               text="Restart"
               className="restart-button"
             />
-             <div className="h-3" />
+            <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
               onClick={() => {
-                window.open("https://docs.swizzle.co", "_blank");
+                window.open("https://docs.swizzle.co/backend", "_blank");
               }}
               icon={<img src="/popout.svg" className="w-4 h-4 m-auto" />}
               text="Docs"
