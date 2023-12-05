@@ -43,7 +43,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }, [activeEndpoint]);
 
 
-  const runQuery = async (promptQuery: string, queryType: string) => {
+  const runQuery = async (promptQuery: string, queryType: string, selectedText?: string) => {
+    console.log("info", promptQuery, queryType)
     if(queryType == "db"){
       if(promptQuery == ""){
         console.log("resetting db query")
@@ -68,7 +69,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         error: "Failed",
       });
     } else {
-      return toast.promise(promptAiEditor(promptQuery, queryType), {
+      return toast.promise(promptAiEditor(promptQuery, queryType, selectedText), {
         loading: "Thinking...",
         success: (data) => {
           if(queryType == "edit"){
@@ -473,7 +474,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     if(selectedText && isWaitingForText){
       setIsWaitingForText(false)
       console.log("selectedText", selectedText)
-      runQuery(pendingRequest, "selection")
+      runQuery(pendingRequest, "selection", selectedText)
     }
   }, [selectedText])
 

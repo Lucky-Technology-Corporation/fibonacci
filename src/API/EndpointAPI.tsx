@@ -226,7 +226,7 @@ export default function useEndpointApi() {
   };
 
 
-  const promptAiEditor = async (userQuery: string, queryType: string) => {
+  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string) => {
     try {
 
       var body = {
@@ -235,7 +235,8 @@ export default function useEndpointApi() {
         fermat_jwt: await getFermatJwt(),
         path: openUri.replace("/swizzle/code/", ""),
         conversation_id: "",
-        query_type: queryType
+        query_type: queryType,
+        selected_text: selectedText ? selectedText : undefined
       };
 
       sessionStorage.setItem(("ai" + activeProject + "_" + openUri.replace("/swizzle/code/", "") + "_file"), userQuery)
