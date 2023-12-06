@@ -226,7 +226,7 @@ export default function useEndpointApi() {
   };
 
 
-  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string) => {
+  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string, history?: any[]) => {
     try {
 
       var body = {
@@ -236,7 +236,8 @@ export default function useEndpointApi() {
         path: openUri.replace("/swizzle/code/", ""),
         conversation_id: "",
         query_type: queryType,
-        selected_text: selectedText ? selectedText : undefined
+        selected_text: selectedText,
+        history: history,
       };
 
       sessionStorage.setItem(("ai" + activeProject + "_" + openUri.replace("/swizzle/code/", "") + "_file"), userQuery)

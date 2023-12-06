@@ -152,7 +152,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         if (ws) {
             ws.close();
         }
-
+        console.log("socket", "connect")
         if(!activeProject || !testDomain || !(props.selectedTab == Page.Apis || props.selectedTab == Page.Hosting)) return;
 
         var fermatJwt = await endpointApi.getFermatJwt();

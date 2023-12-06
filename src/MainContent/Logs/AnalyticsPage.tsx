@@ -225,9 +225,6 @@ export default function AnalyticsPage() {
           <span className="font-bold mr-1">Storage</span>
           to save big files.
         </div>
-        <div className="mx-4 mt-2">
-          Get support through the chat widget or by <a href="https://discord.gg/C93FVKxR" target="_blank" rel="nofollower">joining our Discord.</a>.
-        </div>
       </div>
 
       <div className="no-focus-ring pt-2">
