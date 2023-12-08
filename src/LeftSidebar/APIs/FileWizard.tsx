@@ -18,12 +18,12 @@ export default function FileWizard({
   setIsVisible: (isVisible: boolean) => void;
   files: string[];
   fileType: string;
-  pathIfEditing?: string
-  fallbackPathIfEditing?: string
+  pathIfEditing?: string;
+  fallbackPathIfEditing?: string;
 }) {
-  const filesystemApi = useFilesystemApi()
-  const endpointApi = useEndpointApi()
-  
+  const filesystemApi = useFilesystemApi();
+  const endpointApi = useEndpointApi();
+
   const [inputValue, setInputValue] = useState("");
   const [fallbackInputValue, setFallbackInputValue] = useState("");
 
@@ -38,178 +38,196 @@ export default function FileWizard({
       return;
     }
 
-    const regex = /^\/?([a-zA-Z][a-zA-z0-9-]*)(?:\/([a-zA-Z][a-zA-z0-9-]*))*\/?$/g
-    if(!regex.test(inputValue)){
-      toast.error("Please enter a valid path")
-      return
+    const regex = /^\/?([a-zA-Z][a-zA-Z0-9-]*)(?:\/([a-zA-Z][a-zA-Z0-9-]*))*\/?$/g;
+    if (!regex.test(inputValue)) {
+      toast.error("Please enter a valid path");
+      return;
     }
 
-    if(inputValue == "/"){
-      toast.error("Your homepage already exists")
-      return
+    if (inputValue == "/") {
+      toast.error("Your homepage already exists");
+      return;
     }
 
     const newFileName = cleanupInputValue(inputValue);
     const hasConflicts = checkForConflicts(newFileName);
-    if(hasConflicts){ return }
-
-    var fileContent;
-    if(pathIfEditing && pathIfEditing != ""){
-      fileContent = await generateNewFileContent(pathIfEditing, newFileName, authRequired)
-      await runDeleteProcess(pathIfEditing)
+    if (hasConflicts) {
+      return;
     }
 
-    if(fileType == "page"){
-      var routePath = inputValue.toLowerCase()
-      if(!inputValue.startsWith("/")){
-        routePath = "/" + routePath
+    var fileContent;
+    if (pathIfEditing && pathIfEditing != "") {
+      fileContent = await generateNewFileContent(pathIfEditing, newFileName, authRequired);
+      await runDeleteProcess(pathIfEditing);
+    }
+
+    if (fileType == "page") {
+      var routePath = inputValue.toLowerCase();
+      if (!inputValue.startsWith("/")) {
+        routePath = "/" + routePath;
       }
 
-      var unauthenticatedFallback = null
-      if(authRequired){
-        unauthenticatedFallback = fallbackInputValue.toLowerCase()
-        if(!fallbackInputValue.startsWith("/")){
-          unauthenticatedFallback = "/" + unauthenticatedFallback
+      var unauthenticatedFallback = null;
+      if (authRequired) {
+        unauthenticatedFallback = fallbackInputValue.toLowerCase();
+        if (!fallbackInputValue.startsWith("/")) {
+          unauthenticatedFallback = "/" + unauthenticatedFallback;
         }
       }
 
-      await filesystemApi.createNewFile("/frontend/src/pages/" + newFileName, undefined, routePath, unauthenticatedFallback, fileContent)
+      await filesystemApi.createNewFile(
+        "/frontend/src/pages/" + newFileName,
+        undefined,
+        routePath,
+        unauthenticatedFallback,
+        fileContent,
+      );
       setActiveFile("frontend/src/pages/" + newFileName);
-    } else if(fileType == "file"){
-      await filesystemApi.createNewFile("/frontend/src/components/" + newFileName, undefined, undefined, undefined, fileContent)
+    } else if (fileType == "file") {
+      await filesystemApi.createNewFile(
+        "/frontend/src/components/" + newFileName,
+        undefined,
+        undefined,
+        undefined,
+        fileContent,
+      );
       setActiveFile("frontend/src/components/" + newFileName);
     }
-    
+
     setTimeout(() => {
       setShouldRefreshList(!shouldRefreshList);
     }, 300); //trying to fix the not-showing-up issue
 
     setIsVisible(false);
-    
   };
 
   const cleanupInputValue = (inputValue: string) => {
     var newFileName = inputValue;
 
-    if(newFileName.endsWith("/")){
-      newFileName = newFileName.substring(0, newFileName.length - 1)
+    if (newFileName.endsWith("/")) {
+      newFileName = newFileName.substring(0, newFileName.length - 1);
     }
 
     if (!newFileName.endsWith(".ts") || !newFileName.endsWith(".tsx")) {
       newFileName = newFileName + ".tsx";
     }
 
-    if(newFileName.startsWith("/")){
-      newFileName = newFileName.substring(1)
+    if (newFileName.startsWith("/")) {
+      newFileName = newFileName.substring(1);
     }
-    return pathToFile(newFileName)
-  }
+    return pathToFile(newFileName);
+  };
 
   const checkForConflicts = (newFileName: string) => {
-    const restrictedNames = ["SwizzleHomePage.tsx", "SwizzleRoute.tsx", "SwizzlePrivateRoute.tsx", "SwizzleRoutes.tsx"]
-    if(fileType == "page" && restrictedNames.includes(newFileName)){
-      toast.error("SwizzleHomePage is a reserved endpoint")
-      return true
+    const restrictedNames = ["SwizzleHomePage.tsx", "SwizzleRoute.tsx", "SwizzlePrivateRoute.tsx", "SwizzleRoutes.tsx"];
+    if (fileType == "page" && restrictedNames.includes(newFileName)) {
+      toast.error("SwizzleHomePage is a reserved endpoint");
+      return true;
     }
 
-    const testPath = fileType == "page" ? "pages/" + newFileName : "components/" + newFileName
-    const isSameAsEditingPath = fileType == "page" ? "pages/" + newFileName : "components/" + newFileName
-    if(files.includes(testPath) && testPath != isSameAsEditingPath){
-      toast.error("That file already exists")
-      return true
+    const testPath = fileType == "page" ? "pages/" + newFileName : "components/" + newFileName;
+    const isSameAsEditingPath = fileType == "page" ? "pages/" + newFileName : "components/" + newFileName;
+    if (files.includes(testPath) && testPath != isSameAsEditingPath) {
+      toast.error("That file already exists");
+      return true;
     }
 
-    return false
-  }
+    return false;
+  };
 
   const generateNewFileContent = async (oldPath: string, newPath: string, authRequired: boolean) => {
-    const subfolder = fileType == "page" ? "pages" : "components"
-    var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath))
-    const oldComponentName = pathToFile(oldPath).replace(".tsx", "")
-    const newComponentName = pathToFile(newPath).replace(".tsx", "")
-    const functionDeclaration = "function " + oldComponentName + "("
-    const newFunctionDeclaration = "function " + newComponentName + "("
-    const constFunctionDeclaration = "const " + oldComponentName + " ="
-    const newConstFunctionDeclaration = "const " + newComponentName + " ="
-    const exportDeclaration = "export default " + oldComponentName + ""
-    const newExportDeclaration = "export default " + newComponentName + ""
-    const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`
-    const authDeclaration = `const auth = useAuthUser();\n`
-    fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration)
-    fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration)
-    fileContent = fileContent.replace(exportDeclaration, newExportDeclaration)
-    
-    if(authRequired){
-      fileContent = fileContent.replace("return (", `${authDeclaration}    return (`)
-      fileContent = fileContent = authImportDeclaration + fileContent
-    } else{
-      fileContent = fileContent.replace(authDeclaration, "")
-      fileContent = fileContent.replace(authImportDeclaration, "")
+    const subfolder = fileType == "page" ? "pages" : "components";
+    var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath));
+    const oldComponentName = pathToFile(oldPath).replace(".tsx", "");
+    const newComponentName = pathToFile(newPath).replace(".tsx", "");
+    const functionDeclaration = "function " + oldComponentName + "(";
+    const newFunctionDeclaration = "function " + newComponentName + "(";
+    const constFunctionDeclaration = "const " + oldComponentName + " =";
+    const newConstFunctionDeclaration = "const " + newComponentName + " =";
+    const exportDeclaration = "export default " + oldComponentName + "";
+    const newExportDeclaration = "export default " + newComponentName + "";
+    const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`;
+    const authDeclaration = `const auth = useAuthUser();\n`;
+    fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration);
+    fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration);
+    fileContent = fileContent.replace(exportDeclaration, newExportDeclaration);
+
+    if (authRequired) {
+      fileContent = fileContent.replace("return (", `${authDeclaration}    return (`);
+      fileContent = fileContent = authImportDeclaration + fileContent;
+    } else {
+      fileContent = fileContent.replace(authDeclaration, "");
+      fileContent = fileContent.replace(authImportDeclaration, "");
     }
 
-    return fileContent
-  }
+    return fileContent;
+  };
 
   const runDeleteProcess = async (fileName: string) => {
-    try{
-      const subfolder = fileType == "page" ? "pages" : "components"
-      const fileNameParsed = "/frontend/src/" + subfolder + "/" + pathToFile(pathIfEditing)
+    try {
+      const subfolder = fileType == "page" ? "pages" : "components";
+      const fileNameParsed = "/frontend/src/" + subfolder + "/" + pathToFile(pathIfEditing);
 
       //close file
       setPostMessage({
         type: "removeFile",
         fileName: fileNameParsed,
-      })
+      });
 
       //clean up codegen
-      if(fileNameParsed.includes("frontend/src/pages/")){
-        await filesystemApi.removeFile("/frontend/src/pages/" + fileName, undefined, formatPath(pathIfEditing, pathIfEditing))
+      if (fileNameParsed.includes("frontend/src/pages/")) {
+        await filesystemApi.removeFile(
+          "/frontend/src/pages/" + fileName,
+          undefined,
+          formatPath(pathIfEditing, pathIfEditing),
+        );
       }
 
       //delete file
-      await endpointApi.deleteFile(subfolder + "/" + pathToFile(pathIfEditing), "frontend")
-    } catch(e){
-      throw "Error deleting endpoint"
+      await endpointApi.deleteFile(subfolder + "/" + pathToFile(pathIfEditing), "frontend");
+    } catch (e) {
+      throw "Error deleting endpoint";
     }
-  }
+  };
 
   const pathToFile = (pathIn) => {
-    var path = pathIn
-    if(path.endsWith(".tsx")){ path = pathIn.substring(0, pathIn.length - 4) }
+    var path = pathIn;
+    if (path.endsWith(".tsx")) {
+      path = pathIn.substring(0, pathIn.length - 4);
+    }
 
-    const segments = path.split('/').filter(Boolean);
+    const segments = path.split("/").filter(Boolean);
 
     // Capitalize the first letter of each segment and letters after underscores, also handle dashes
-    const capitalizedSegments = segments.map(segment => {
-    // Convert dashes to camelCase
-    const camelCaseSegment = segment.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-    
-    // Capitalize first letter and letters after underscores
-    return camelCaseSegment
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join('_')
-      .replace("-", "")
+    const capitalizedSegments = segments.map((segment) => {
+      // Convert dashes to camelCase
+      const camelCaseSegment = segment.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+
+      // Capitalize first letter and letters after underscores
+      return camelCaseSegment
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("_")
+        .replace("-", "");
     });
-    
-    return capitalizedSegments.join('_') + '.tsx';  
-  }
-  
+
+    return capitalizedSegments.join("_") + ".tsx";
+  };
 
   useEffect(() => {
     if (isVisible) {
-      if(pathIfEditing){
-        setInputValue(pathIfEditing)
-        setFallbackInputValue(fallbackPathIfEditing)
+      if (pathIfEditing) {
+        setInputValue(pathIfEditing);
+        setFallbackInputValue(fallbackPathIfEditing);
         setAuthRequired(fallbackPathIfEditing != "");
-      } else{
+      } else {
         setInputValue("");
-        setFallbackInputValue("");  
+        setFallbackInputValue("");
         setAuthRequired(false);
       }
-    } else{
+    } else {
       setInputValue("");
-      setFallbackInputValue("");  
+      setFallbackInputValue("");
       setAuthRequired(false);
     }
   }, [isVisible]);
@@ -233,33 +251,39 @@ export default function FileWizard({
               <>
                 <div className="flex justify-between">
                   <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                  {pathIfEditing == "" ? "New" : "Edit"}{fileType == "file" ? " Component" : " Page"}
+                    {pathIfEditing == "" ? "New" : "Edit"}
+                    {fileType == "file" ? " Component" : " Page"}
                   </h3>
                 </div>
                 <div className="my-2">
-                  {fileType == "file" 
-                    ? `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} reusable component` 
-                    : <div className="mt-1"><Checkbox
+                  {fileType == "file" ? (
+                    `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} reusable component`
+                  ) : (
+                    <div className="mt-1">
+                      <Checkbox
                         id="requireAuthPage"
                         label="Require Authentication"
                         isChecked={authRequired}
                         setIsChecked={setAuthRequired}
-                      /></div>
-                  }
+                      />
+                    </div>
+                  )}
                 </div>
                 {overrideRender ? (
                   overrideRender
                 ) : (
                   <>
                     <div className={`mt-1 ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>
-                    {fileType == "file" ? "Component Name" : "Page URL"}
+                      {fileType == "file" ? "Component Name" : "Page URL"}
                     </div>
                     <div className={`mt-1 mb-2 flex ${fileType == "page" && pathIfEditing == "/" ? "hidden" : ""}`}>
                       <input
                         type="text"
                         value={inputValue}
                         onChange={(e) => {
-                          if(fileType == "page" && pathIfEditing == "/"){ return }
+                          if (fileType == "page" && pathIfEditing == "/") {
+                            return;
+                          }
                           const sanitizedValue = e.target.value;
                           setInputValue(sanitizedValue.trim());
                         }}
@@ -275,24 +299,24 @@ export default function FileWizard({
                     </div>
                     {authRequired && (
                       <>
-                      <div className="mt-1">Fallback URL (where users are redirected if not logged in)</div>
-                      <div className="mt-1 mb-2 flex">
-                        <input
-                          type="text"
-                          value={fallbackInputValue}
-                          onChange={(e) => {
-                            const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_/]/g, "");
-                            setFallbackInputValue(sanitizedValue.trim());
-                          }}
-                          className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
-                          placeholder={`/login`}
-                          onKeyDown={(event: any) => {
-                            if (event.key == "Enter") {
-                              createHandler();
-                            }
-                          }}
-                        />
-                      </div>
+                        <div className="mt-1">Fallback URL (where users are redirected if not logged in)</div>
+                        <div className="mt-1 mb-2 flex">
+                          <input
+                            type="text"
+                            value={fallbackInputValue}
+                            onChange={(e) => {
+                              const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_/]/g, "");
+                              setFallbackInputValue(sanitizedValue.trim());
+                            }}
+                            className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
+                            placeholder={`/login`}
+                            onKeyDown={(event: any) => {
+                              if (event.key == "Enter") {
+                                createHandler();
+                              }
+                            }}
+                          />
+                        </div>
                       </>
                     )}
                     <div className="bg-[#32333b] py-3 pt-0 mt-3 sm:flex sm:flex-row-reverse">
