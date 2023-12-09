@@ -1,7 +1,8 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
+import { SwizzleContext } from "../../../Utilities/GlobalContext";
 
 export default function TaskComponent({task, headerNode, removeTask, editTask, allTasks}: {task: any, headerNode: ReactNode, removeTask: any, editTask: any, allTasks: any[]}){
     const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -11,6 +12,8 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
     const [isTaskComplete, setIsTaskComplete] = useState<boolean>(false)
     const [taskCode, setTaskCode] = useState<string>("")
     const [isExecuting, setIsExecuting] = useState<boolean>(false)
+
+    const { shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext)
 
     const editTaskWithAi = () => {
         setIsPromptDisabled(true)
@@ -43,6 +46,7 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                 } else if(response.status == "Succeeded"){
                     setTaskCode("")
                     setIsTaskComplete(true)
+                    setShouldRefreshList(!shouldRefreshList)
                 } else{
                     toast.error("An error occured")
                 }
