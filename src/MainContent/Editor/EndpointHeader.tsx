@@ -399,6 +399,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         </div>
       )
     } else if(suggestion.type == "ai"){
+      if(suggestion.ai_type == -1 && (selectedText == null || selectedText == "")){ return } 
       return(
         <>
         <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
@@ -466,6 +467,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }
 
   useEffect(() => {
+    console.log("selectedText", selectedText, isWaitingForText)
     if(selectedText && isWaitingForText){
       setIsWaitingForText(false)
       console.log("selectedText", selectedText)
@@ -619,6 +621,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                   placeholder: `${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "Cmd + K: write code, search the docs, and more..." : selectedTab == Page.Db ? "Cmd + K: search and update your database" : ""}`,
                   value: prompt,
                   onChange: onPromptChange,
+                  onFocus: () => { setPostMessage({type: "getSelectedText"}) },
                   className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2",
                   style: {
                     width: "calc(100% - 1rem)",

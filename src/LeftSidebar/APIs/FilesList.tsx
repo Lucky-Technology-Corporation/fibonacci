@@ -266,7 +266,21 @@ export default function FilesList({ active }: { active: boolean }) {
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
 
-      <div className="flex ml-2 mt-2">
+      <div className="ml-1 mr-1">
+        <Dropdown
+          className=""
+          onSelect={(item: any) => {
+            setFileType(item);
+            setIsVisible(true);
+          }}
+          children={methods}
+          direction="left"
+          title={"+ New"}        
+          selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
+        />
+      </div>
+
+      <div className="flex ml-2 my-1">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
           placeholder="Filter"
@@ -281,20 +295,6 @@ export default function FilesList({ active }: { active: boolean }) {
             searchFilter == "" ? "hidden" : ""
           }`}
           onClick={() => setSearchFilter("")}
-        />
-      </div>
-
-      <div className="ml-1 mr-1">
-        <Dropdown
-          className=""
-          onSelect={(item: any) => {
-            setFileType(item);
-            setIsVisible(true);
-          }}
-          children={methods}
-          direction="left"
-          title={"+ New"}        
-          selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
         />
       </div>
 

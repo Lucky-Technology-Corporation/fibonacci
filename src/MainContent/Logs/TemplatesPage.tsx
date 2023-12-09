@@ -18,12 +18,12 @@ export default function TemplatesPage() {
   useEffect(() => {
     async function runFetcher(){
       var response = await api.getTemplates();
-      console.log("response", response)
+      if(response == null) return;
       setTemplates(response);
     }
+    if(activeProject == "") return;
     runFetcher()
-  }, [])
-
+  }, [activeProject])
 
   const getTemplates = () => {
     return (

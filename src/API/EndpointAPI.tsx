@@ -256,36 +256,73 @@ export default function useEndpointApi() {
     }
   };
 
-  // const askQuestion = async (userQuery: string, aiCommand: string) => {
-  //   try {
-  //     const fileName = endpointToFilename(activeEndpoint);
-      
-  //     var currentFile = "backend/user-dependencies/" + fileName
-  //     if(fileName.includes("!helper!")){
-  //       currentFile = "backend/helpers/" + fileName.replace("!helper!", "")
-  //     }
+  const promptAiPlanner = async (userQuery: string, history?: any[]) => {
+    try {
 
-  //     var body = (body = {
-  //       question_type: aiCommand,
-  //       user_query: userQuery,
-  //       fermat_domain: testDomain.replace("https://", "https://fermat."),
-  //       fermat_jwt: await getFermatJwt(),
-  //       current_file: currentFile,
-  //     });
+      var body = {
+        prompt: userQuery,
+        fermat_domain: testDomain.replace("https://", "https://fermat."),
+        fermat_jwt: await getFermatJwt(),
+        history: history,
+      };
 
-  //     const response = await axios.post(
-  //       `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,
-  //       body,
-  //       {
-  //         withCredentials: true,
-  //       },
-  //     );
-  //     return response.data;
-  //   } catch (e) {
-  //     console.error(e);
-  //     return null;
-  //   }
-  // };
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/plan?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
+  const promptAiTaskEdit = async (task: any, prompt: string) => {
+    try {
+
+      var body = {
+        prompt: prompt,
+        task: task,
+      };
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/task_edit?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  const aiTaskExecute = async (task: any, allTasks: any) => {
+    try {
+
+      var body = {
+        task: task,
+        full_task_summary: allTasks,
+      };
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/execute`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
 
   const getCodeFromFigma = async (figmaUrl: string, language: string) => {
     const figmaFileId = figmaUrl.split("file/")[1].split("/")[0];
@@ -433,7 +470,6 @@ export default function useEndpointApi() {
     npmSearch,
     getPackageJson,
     getFile,
-    // askQuestion,
     getAutocheckResponse,
     deploy,
     getFermatJwt,
@@ -444,6 +480,9 @@ export default function useEndpointApi() {
     restartBackend,
     writeFile,
     promptAiEditor,
-    promptDbHelper
+    promptDbHelper,
+    promptAiPlanner,
+    promptAiTaskEdit,
+    aiTaskExecute
   };
 }

@@ -88,8 +88,8 @@ export default function CenterContent({
           <ObjectTableView />
         </div>
       </div>
-      <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
-        <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] min-h-[50vh] overflow-scroll">
+      <div style={{ opacity: selectedTab === Page.Logs ? "1" : "0" }}>
+        <div className={`m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] min-h-[50vh] ${activeLogsPage == "assistant" ? "overflow-none" : "overflow-scroll"}`}>
           <MonitoringPage activeLogsPage={activeLogsPage} shouldShow={selectedTab === Page.Logs} />
         </div>
       </div>

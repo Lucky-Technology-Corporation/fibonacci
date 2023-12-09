@@ -144,23 +144,6 @@ export default function EndpointList({ active, currentFileProperties }: { active
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-      <div className="flex ml-2 mt-2">
-        <input
-          className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
-          placeholder="Filter"
-          value={searchFilter}
-          onChange={(e) => {
-            setSearchFilter(e.target.value);
-          }}
-        />
-        <FontAwesomeIcon
-          icon={faXmarkCircle}
-          className={`w-3 h-3 m-auto text-[#525363] cursor-pointer hover:text-[#D9D9D9] ${
-            searchFilter == "" ? "hidden" : ""
-          }`}
-          onClick={() => setSearchFilter("")}
-        />
-      </div>
 
       <div className="ml-1 mr-1">
         <Dropdown
@@ -176,6 +159,24 @@ export default function EndpointList({ active, currentFileProperties }: { active
           direction="left"
           title={"+ New"}        
           selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
+        />
+      </div>
+
+      <div className="flex ml-2 my-1">
+        <input
+          className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
+          placeholder="Filter"
+          value={searchFilter}
+          onChange={(e) => {
+            setSearchFilter(e.target.value);
+          }}
+        />
+        <FontAwesomeIcon
+          icon={faXmarkCircle}
+          className={`w-3 h-3 m-auto text-[#525363] cursor-pointer hover:text-[#D9D9D9] ${
+            searchFilter == "" ? "hidden" : ""
+          }`}
+          onClick={() => setSearchFilter("")}
         />
       </div>
 

@@ -25,7 +25,7 @@ export default function Dashboard() {
   //Active collection handler
   const [activeCollection, setActiveCollection] = useState<string>("");
   //Active logs page handler
-  const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
+  const [activeLogsPage, setActiveLogsPage] = useState<string>("assistant");
   //Loading Modal handler
   const [isModalOpen, setIsModalOpen] = useState(false);
 

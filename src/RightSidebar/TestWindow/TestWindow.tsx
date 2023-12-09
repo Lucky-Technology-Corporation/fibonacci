@@ -181,7 +181,7 @@ export default function TestWindow({
       </div>
       <div className="flex space-between mt-2">
         <Button
-          text="+ New Request"
+          text="+ New Test"
           onClick={handleNewRequestClick}
           className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         />

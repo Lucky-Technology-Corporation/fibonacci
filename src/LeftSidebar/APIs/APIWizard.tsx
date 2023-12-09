@@ -98,17 +98,11 @@ export default function APIWizard({
     const newEndpointName = methodToUse + "/" + cleanInputValue.replace(/\/+$/, "");
     const fileName = endpointToFilename(newEndpointName);
 
-    console.log("endpointPathIfEditing", endpointPathIfEditing)
-    console.log("newEndpointName", newEndpointName)
-    console.log("cleanInputValue", cleanInputValue)
-    console.log("endpoints", endpoints)
 
     if(endpoints.includes(newEndpointName) && newEndpointName != endpointPathIfEditing){ //stop if the endpoint already exists AND we're not editing it  
       toast.error("That endpoint already exists")
       return
     }
-
-
 
     if(endpointPathIfEditing && endpointPathIfEditing != ""){ //check if the endpoint path was changed
       if(endpointPathIfEditing != newEndpointName){ //Path was changed!
