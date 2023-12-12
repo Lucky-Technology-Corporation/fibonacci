@@ -26,45 +26,45 @@ export default function RightSidebar() {
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
-  const [isPreviewVisible, setIsPreviewVisible] = useState(true);
-  const { ideReady, setPostMessage, currentFileProperties, selectedTab, setCurrentFileProperties } = useContext(SwizzleContext);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const { ideReady, setPostMessage, currentFileProperties, selectedTab, setCurrentFileProperties, swizzleActionDispatch, setSwizzleActionDispatch } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
 
-  const toggleAuth = (isRequired: boolean) => {
-    if(isScheduleChecked){
-      toast.error("You cannot enable authentication and scheduling at the same time.")
-      return
-    }
+  // const toggleAuth = (isRequired: boolean) => {
+  //   if(isScheduleChecked){
+  //     toast.error("You cannot enable authentication and scheduling at the same time.")
+  //     return
+  //   }
 
-    setIsAuthChecked(isRequired);
+  //   setIsAuthChecked(isRequired);
 
-    var newImportStatement = currentFileProperties.importStatement
-    if(isRequired){
-      newImportStatement = newImportStatement.replace("optionalAuthentication", "requiredAuthentication")
-    } else{
-      newImportStatement = newImportStatement.replace("requiredAuthentication", "optionalAuthentication")
-    }
+  //   var newImportStatement = currentFileProperties.importStatement
+  //   if(isRequired){
+  //     newImportStatement = newImportStatement.replace("optionalAuthentication", "requiredAuthentication")
+  //   } else{
+  //     newImportStatement = newImportStatement.replace("requiredAuthentication", "optionalAuthentication")
+  //   }
 
-    const message = {
-      findText: currentFileProperties.importStatement,
-      replaceText: newImportStatement,
-      type: "findAndReplace",
-    };
-    setPostMessage(message);
-    setCurrentFileProperties({...currentFileProperties, hasPassportAuth: isRequired, importStatement: newImportStatement})
+  //   const message = {
+  //     findText: currentFileProperties.importStatement,
+  //     replaceText: newImportStatement,
+  //     type: "findAndReplace",
+  //   };
+  //   setPostMessage(message);
+  //   setCurrentFileProperties({...currentFileProperties, hasPassportAuth: isRequired, importStatement: newImportStatement})
 
-    //Modify middleware
-    setTimeout(() => {
-      if (currentFileProperties.fileUri.includes("backend/user-dependencies/")) {
-        const message = {
-          findText: isRequired ? "optionalAuthentication, async" : "requiredAuthentication, async",
-          replaceText: isRequired ? "requiredAuthentication, async" : "optionalAuthentication, async",
-          type: "findAndReplace",
-        };
-        setPostMessage(message);
-      }
-    }, 100)
-  }
+  //   //Modify middleware
+  //   setTimeout(() => {
+  //     if (currentFileProperties.fileUri.includes("backend/user-dependencies/")) {
+  //       const message = {
+  //         findText: isRequired ? "optionalAuthentication, async" : "requiredAuthentication, async",
+  //         replaceText: isRequired ? "requiredAuthentication, async" : "optionalAuthentication, async",
+  //         type: "findAndReplace",
+  //       };
+  //       setPostMessage(message);
+  //     }
+  //   }, 100)
+  // }
 
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
@@ -104,9 +104,54 @@ export default function RightSidebar() {
     }
   }
 
+  const runAutocheck = () => {
+    toast.promise(getAutocheckResponse(), {
+      loading: "Running autocheck...",
+      success: (data) => {
+        if (data == "") {
+          toast.error("Error running autocheck");
+          return;
+        }
+        setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+        return "Done";
+      },
+      error: "Error running autocheck",
+    });
+  }
+
+  useEffect(() => {
+    if(swizzleActionDispatch == "Preview"){
+      setIsPreviewVisible(true)
+    } else if(swizzleActionDispatch == "Autocheck"){
+      runAutocheck()
+    } else if(swizzleActionDispatch == "Packages"){
+      setShouldShowPackagesWindow(true);
+    } else if(swizzleActionDispatch == "Restart"){
+      if(selectedTab == Page.Apis){
+        toast.promise(restartBackend(), {
+          loading: "Restarting backend...",
+          success: "Restarted!",
+          error: "Error restarting backend",
+        });
+      } else if(selectedTab == Page.Hosting){
+        toast.promise(restartFrontend(), {
+          loading: "Sending restart command...",
+          success: "Restarting!",
+          error: "Error restarting frontend",
+        });
+      }
+    } else if(swizzleActionDispatch == "Test"){
+      setShouldShowTestWindow(true);
+    } else if(swizzleActionDispatch == "Secrets"){
+      setShouldShowSecretsWindow(true);
+    } 
+    setSwizzleActionDispatch(null)
+
+  }, [swizzleActionDispatch])
+
   return (
     <div
-      className={`w-[180px] text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
+      className={`text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
       ${ideReady ? "" : "opacity-50 pointer-events-none"}
       `}
     >
@@ -114,6 +159,7 @@ export default function RightSidebar() {
         {selectedTab == Page.Hosting && (
           <>
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setPostMessage({
                   type: "saveFile",
@@ -127,7 +173,8 @@ export default function RightSidebar() {
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
 
-          <IconTextButton
+            <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setIsPreviewVisible(true);
               }}
@@ -141,20 +188,8 @@ export default function RightSidebar() {
             <div className="h-3" />
             
             <IconTextButton
-              onClick={() => {
-                toast.promise(getAutocheckResponse(), {
-                  loading: "Running autocheck...",
-                  success: (data) => {
-                    if (data == "") {
-                      toast.error("Error running autocheck");
-                      return;
-                    }
-                    setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
-                    return "Done";
-                  },
-                  error: "Error running autocheck",
-                });
-              }}
+              textHidden={true}
+              onClick={runAutocheck}
               icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
               text="Autocheck"
             />
@@ -169,6 +204,7 @@ export default function RightSidebar() {
             <div className="h-3" />
             
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setShouldShowPackagesWindow(true);
               }}
@@ -178,6 +214,7 @@ export default function RightSidebar() {
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
             <div className="h-4" />
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 spin()
                 toast.promise(restartFrontend(), {
@@ -193,6 +230,7 @@ export default function RightSidebar() {
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 window.open("https://docs.swizzle.co/frontend", "_blank");
               }}
@@ -205,6 +243,7 @@ export default function RightSidebar() {
         {selectedTab == Page.Apis && (
           <>
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setPostMessage({
                   type: "saveFile",
@@ -220,6 +259,7 @@ export default function RightSidebar() {
             {isCron && (
               <>
               <IconTextButton
+              textHidden={true}
                 onClick={() => {
                   setIsSchedulerVisible(true); 
                 }}
@@ -237,6 +277,7 @@ export default function RightSidebar() {
             )}
 
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setShouldShowTestWindow(true);
               }}
@@ -250,20 +291,8 @@ export default function RightSidebar() {
             />
             <div className="h-4" />
             <IconTextButton
-              onClick={() => {
-                toast.promise(getAutocheckResponse(), {
-                  loading: "Running autocheck...",
-                  success: (data) => {
-                    if (data == "") {
-                      toast.error("Error running autocheck");
-                      return;
-                    }
-                    setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
-                    return "Done";
-                  },
-                  error: "Error running autocheck",
-                });
-              }}
+              textHidden={true}
+              onClick={runAutocheck}
               icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
               text="Autocheck"
               className="autocheck-button"
@@ -278,6 +307,7 @@ export default function RightSidebar() {
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setShouldShowSecretsWindow(true);
               }}
@@ -288,6 +318,7 @@ export default function RightSidebar() {
             <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
             <div className="h-4" />
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 setShouldShowPackagesWindow(true);
               }}
@@ -298,6 +329,7 @@ export default function RightSidebar() {
             <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
             <div className="h-4" />
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 spin()
                 toast.promise(restartBackend(), {
@@ -314,6 +346,7 @@ export default function RightSidebar() {
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
+              textHidden={true}
               onClick={() => {
                 window.open("https://docs.swizzle.co/backend", "_blank");
               }}

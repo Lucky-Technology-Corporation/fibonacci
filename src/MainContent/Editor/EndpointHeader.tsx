@@ -16,7 +16,7 @@ import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
-  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery } = useContext(SwizzleContext);
+  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, setSwizzleActionDispatch } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -85,6 +85,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
             //Add undo button
             setupUndo(data.old_code)
+
+            setTimeout(() => {
+              setPostMessage({
+                type: "saveFile"
+              })
+            }, 100)
 
             //TODO: finish this function later to add backend endpoints if needed
             if(selectedTab == Page.Hosting){
@@ -327,6 +333,58 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     },
   ]
 
+  const swizzleActionOptions = [
+    {
+      "type": "action",
+      "image": "save",      
+      "title": "Save",
+      "description": "Save changes to this file",
+      "filter": ""
+    },
+    {
+      "type": "action",
+      "image": "preview",
+      "title": "Preview",
+      "description": "Open a preview this page",
+      "filter": "frontend"
+    },
+    {
+      "type": "action",
+      "image": "wand",
+      "title": "Autocheck",
+      "description": "Automatically check for errors",
+      "filter": ""
+    },
+    {
+      "type": "action",
+      "image": "Packages",
+      "title": "Packages",
+      "description": "Install an NPM package",
+      "filter": ""
+    },
+    {
+      "type": "action",
+      "image": "restart",
+      "title": "Restart",
+      "description": "Restart the server",
+      "filter": ""
+    },
+    {
+      "type": "action",
+      "image": "beaker",
+      "title": "Test",
+      "description": "Test this endpoint",
+      "filter": "backend"
+    },
+    {
+      "type": "action",
+      "image": "lock",
+      "title": "Secrets",
+      "description": "Manage secret environment variables",
+      "filter": "backend"
+    },
+  ]
+
   const [suggestions, setSuggestions] = useState(docOptions);
   const onSuggestionsFetchRequested = ({ value }) => {
     const ai_options = [
@@ -337,13 +395,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         "description": "Ask AI to update selected code",
         "ai_type": -1
       },
-      // {
-      //   "type": "ai",
-      //   "image": "ai_write",
-      //   "title": value,
-      //   "description": "Ask AI to edit this file",
-      //   "ai_type": 1
-      // },
       {
         "type": "ai",
         "image": "ai_snippet",
@@ -364,15 +415,17 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     ]
 
     if(selectedTab == Page.Apis){
+      const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "backend") ).slice(0, 1)
       const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
-      setSuggestions([...ai_options, ...docs])
+      setSuggestions([...ai_options, ...actions, ...docs])
     } else if(selectedTab == Page.Hosting){
+      const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "frontend") ).slice(0, 1)
       const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
       const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value)).map((endpoint) => {
         const parsedEndpoint = new ParsedActiveEndpoint(endpoint)
         return {type: "endpoint", ...parsedEndpoint}
       })
-      setSuggestions([...ai_options, ...docs, ...filteredList])
+      setSuggestions([...ai_options, ...actions, ...docs, ...filteredList])
     } else if(selectedTab == Page.Db){
       setSuggestions([...db_ai_options])
     }
@@ -415,10 +468,16 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {suggestion.description}
           </div>
         </div>
-        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && suggestion.ai_type == 0) &&
+        {(suggestions.some(s => s.type == "action") && suggestion.ai_type == 0) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
-            <div className="mt-2 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
+            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Swizzle Actions</div>
+          </div>
+        }
+         {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action")) &&
+          <div className="">
+            <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
+            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Documentation</div>
           </div>
         }
         </>
@@ -440,6 +499,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       )
     } else if(suggestion.type == "action"){
       return(
+        <>
         <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
           <div className="font-bold text-sm flex">
             <img 
@@ -451,6 +511,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           <div className="text-sm font-normal mt-0.5" dangerouslySetInnerHTML={{__html: suggestion.description}}>
           </div>
         </div>
+        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link")) &&
+          <div className="">
+            <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
+            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Documentation</div>
+          </div>
+        }
+        </>
       )
     }
   };
@@ -532,6 +599,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         setPostMessage({type: "upsertImport", content: newImportStatement + "\n", importStatement: newImportStatement})
       } else if(suggestion.type == "link"){
         window.open(suggestion.link, '_blank');
+      } else if(suggestion.type == "action"){
+        if(suggestion.title == "Save"){
+          setPostMessage({type: "saveFile"})
+        } else{
+          setSwizzleActionDispatch(suggestion.title)
+        }
       }
     }
     setPrompt("")
@@ -611,13 +684,14 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                 renderSuggestionsContainer={renderSuggestionsContainer}
                 onSuggestionSelected={onSuggestionSelected}
                 shouldRenderSuggestions={() => { return true }}
-                highlightFirstSuggestion={true}
+                highlightFirstSuggestion={false}
                 onSuggestionHighlighted={({ suggestion }) => {
                   setHighlighted(true)
                 }}
                 inputProps={{
                   onKeyDown: (event) => {
                     if(event.key == "Enter"){
+                      console.log("highlighted", highlighted)
                       if(!highlighted){
                         runQuery(prompt, "edit")
                       }

@@ -68,6 +68,8 @@ export interface SwizzleContextType {
   setCurrentFileProperties: Dispatch<SetStateAction<any>>;
   activeCollection: string;
   setActiveCollection: Dispatch<SetStateAction<string>>;
+  swizzleActionDispatch: any;
+  setSwizzleActionDispatch: Dispatch<SetStateAction<any>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -101,6 +103,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [refreshTheia, setRefreshTheia] = useState(false);
   const [selectedText, setSelectedText] = useState("")
   const [currentDbQuery, setCurrentDbQuery] = useState("")
+  const [swizzleActionDispatch, setSwizzleActionDispatch] = useState<any>(null)
 
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
@@ -173,8 +176,9 @@ export const GlobalContextProvider = ({ children }) => {
         currentFileProperties,
         setCurrentFileProperties,
         activeCollection,
-        setActiveCollection
-
+        setActiveCollection,
+        swizzleActionDispatch,
+        setSwizzleActionDispatch
       }}
     >
       {children}
