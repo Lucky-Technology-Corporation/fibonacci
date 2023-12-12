@@ -30,6 +30,12 @@ export default function AssistantPage() {
     
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
     var rawResponse = await promptAiPlanner(aiPrompt, history)
+    if(rawResponse == undefined || rawResponse.tasks == undefined || rawResponse.tasks.length == 0){
+      var audio = new Audio("/error.mp3");
+      audio.play();      
+      toast("No tasks found. Please try again with more detail.")
+      return
+    }
     var audio = new Audio("/newendpoint.mp3");
     audio.play();    
 
