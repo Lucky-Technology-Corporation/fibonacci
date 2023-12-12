@@ -104,6 +104,7 @@ export default function useEndpointApi() {
     }
   };
 
+  //path starts at backend or frontend (e.g. "frontend/src/..."")
   const writeFile = async (path: string, content: string) => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
@@ -226,21 +227,22 @@ export default function useEndpointApi() {
   };
 
 
-  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string, history?: any[]) => {
+  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string, history?: any[], path?: string) => {
     try {
+      const filePath = path ? path : openUri.replace("/swizzle/code/", "")
 
       var body = {
         prompt: userQuery,
         fermat_domain: testDomain.replace("https://", "https://fermat."),
         fermat_jwt: await getFermatJwt(),
-        path: openUri.replace("/swizzle/code/", ""),
+        path: filePath,
         conversation_id: "",
         query_type: queryType,
         selected_text: selectedText,
         history: history,
       };
 
-      sessionStorage.setItem(("ai" + activeProject + "_" + openUri.replace("/swizzle/code/", "") + "_file"), userQuery)
+      sessionStorage.setItem(("ai" + activeProject + "_" + filePath + "_file"), userQuery)
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/edit?env=${environment}`,
@@ -344,7 +346,7 @@ export default function useEndpointApi() {
     return response.data;
   };
 
-  const getAutocheckResponse = async () => {
+  const getAutocheckResponse = async (thisFilesErrors?: any[]) => {
     try {
       const fileName = openUri.replace("/swizzle/code/", "");
       const fileContents = await getFile(fileName);
@@ -359,6 +361,7 @@ export default function useEndpointApi() {
         {
           file_contents: fileContents,
           path: fileName,
+          diagnostics: thisFilesErrors,
         },
         {
           withCredentials: true

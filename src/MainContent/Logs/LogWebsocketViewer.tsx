@@ -282,7 +282,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 mr-[72px] rounded mt-0 p-1 bg-[#1e1e1e] bg-opacity-70">
+            <div className="flex mt-1 z-40 fixed right-0 mr-[72px] rounded mt-[-4px] p-1 bg-[#1e1e1e]">
                 {currentLocation == "backend" ? (
                     <div className="text-sm font-bold m-auto ml-1">Backend Logs</div>
                 ) : (

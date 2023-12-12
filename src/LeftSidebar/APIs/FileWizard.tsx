@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import Checkbox from "../../Utilities/Checkbox";
-import { formatPath } from "../../Utilities/EndpointParser";
+import { formatPath, pathToFile } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function FileWizard({
@@ -188,30 +188,6 @@ export default function FileWizard({
     } catch (e) {
       throw "Error deleting endpoint";
     }
-  };
-
-  const pathToFile = (pathIn) => {
-    var path = pathIn;
-    if (path.endsWith(".tsx")) {
-      path = pathIn.substring(0, pathIn.length - 4);
-    }
-
-    const segments = path.split("/").filter(Boolean);
-
-    // Capitalize the first letter of each segment and letters after underscores, also handle dashes
-    const capitalizedSegments = segments.map((segment) => {
-      // Convert dashes to camelCase
-      const camelCaseSegment = segment.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-
-      // Capitalize first letter and letters after underscores
-      return camelCaseSegment
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join("_")
-        .replace("-", "");
-    });
-
-    return capitalizedSegments.join("_") + ".tsx";
   };
 
   useEffect(() => {

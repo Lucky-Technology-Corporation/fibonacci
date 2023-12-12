@@ -4,7 +4,7 @@ import { ReactNode, useContext, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
-import { filenameToEndpoint } from "../../../Utilities/EndpointParser";
+import { filenameToEndpoint, pathToFile } from "../../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../../Utilities/GlobalContext";
 import { Page } from "../../../Utilities/Page";
 
@@ -13,28 +13,32 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
     const [isPromptDisabled, setIsPromptDisabled] = useState<boolean>(false)
     const [taskEditPrompt, setTaskEditPrompt] = useState<string>("")
     const { promptAiTaskEdit, aiTaskExecute } = useEndpointApi()
-    const [isTaskComplete, setIsTaskComplete] = useState<boolean>(false)
+    const [isTaskComplete, setIsTaskComplete] = useState<boolean>(task.complete)
     const [taskCode, setTaskCode] = useState<string>("")
     const [isExecuting, setIsExecuting] = useState<boolean>(false)
+    
+    const { promptAiEditor, writeFile } = useEndpointApi()
 
     const { shouldRefreshList, setShouldRefreshList, setActiveEndpoint, setSelectedTab } = useContext(SwizzleContext)
 
     const editTaskWithAi = () => {
+        const fullPath = "frontend/src/pages/" + pathToFile(task.inputs.path)  
         setIsPromptDisabled(true)
-        toast.promise(promptAiTaskEdit(task, taskEditPrompt), {
+        toast.promise(promptAiEditor(taskEditPrompt, "edit", null, null, fullPath), {
             loading: "Thinking...",
             success: (data) => {
-                editTask(data)
+                const updatedPageCode = data.new_code
+                writeFile(fullPath, updatedPageCode)
                 setIsEditing(false)
                 setIsPromptDisabled(false)
-                setTaskCode("")
-                return "Done"
+                setTaskEditPrompt("")
+                return "Generated Code"
             },
             error: () => {
                 setIsPromptDisabled(false)
                 return "An error occured"
-            }
-        })
+            },
+        });    
     }
 
     const executeTask = () => {
@@ -51,6 +55,9 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                     setTaskCode("")
                     setIsTaskComplete(true)
                     setShouldRefreshList(!shouldRefreshList)
+                    var newTask = task
+                    newTask.complete = true
+                    editTask(newTask)
                     console.log("task", task)
                 } else{
                     toast.error("An error occured")
@@ -76,24 +83,37 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                     <div className="flex text-sm items-center">
                         {headerNode}
                     </div>
-                    <div className="flex flex-col mt-2">
+                    <div className="flex mt-2">
+                        {isTaskComplete && (
+                            <FontAwesomeIcon
+                                icon={faCheckCircle}
+                                className="text-green-400 text-lg w-3 h-3 mr-1 my-auto"
+                            />
+                        )}
                         {task.summary}
                     </div>
                 </div>
                 <div className="ml-auto flex">
                     {isTaskComplete ? (
-                        <div className="cursor-pointer" onClick={() => {
-                            if(task.type == "CreateEndpoint"){
-                                console.log(task.inputs.method.toLowerCase() + task.inputs.path)
-                                setActiveEndpoint(filenameToEndpoint(task.inputs.method.toLowerCase() + task.inputs.path))
-                                setSelectedTab(Page.Apis)
-                            }
-                        }}>
-                            <FontAwesomeIcon
-                                icon={faCheckCircle}
-                                className="text-green-400 text-lg w-4 h-4 mr-2"
-                            />
-                            Open File
+                        <div className="cursor-pointer">
+                            <div className="flex">
+                                {(task.type == "CreateEndpoint") ? (
+                                    <Button
+                                        className={`text-sm px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
+                                        onClick={() => { 
+                                            setActiveEndpoint(filenameToEndpoint(task.inputs.method.toLowerCase() + task.inputs.path))
+                                            setSelectedTab(Page.Apis)            
+                                         }}
+                                        text={"Open"}
+                                    />
+                                ) : (
+                                    <Button
+                                        className={`text-sm px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
+                                        onClick={() => { setIsEditing(!isEditing) }}
+                                        text={!isEditing ? "Edit" : "Done"}
+                                    />
+                                )}
+                            </div>
                         </div>
                     ) : isEditing ? (
                         <>
@@ -110,11 +130,6 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                                 onClick={removeTask}
                                 text={`Remove`}
                             />
-                            {/* <Button
-                                className={`text-sm px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
-                                onClick={() => { setIsEditing(true) }}
-                                text={`Edit`}
-                            /> */}
                             <Button
                                 className="text-sm text-green-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border" 
                                 onClick={executeTask}

@@ -97,7 +97,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
           });
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
-        setActiveEndpoint(transformedEndpoints[0]);
+        // setActiveEndpoint(transformedEndpoints[0]);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");

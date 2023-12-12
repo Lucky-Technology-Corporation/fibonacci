@@ -6,10 +6,12 @@ import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
 import dog from "../public/dog.json";
 import useDatabaseApi from "./API/DatabaseAPI";
+import useSettingsApi from "./API/SettingsAPI";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
 import CenterContent from "./MainContent/CenterContent";
 import RightSidebar from "./RightSidebar/RightSidebar";
 import SignIn from "./SignIn";
+import AddEmailModal from "./Utilities/AddEmailModal";
 import { SwizzleContext } from "./Utilities/GlobalContext";
 import InProgressDeploymentModal from "./Utilities/InProgressDeploymentModal";
 import { Page } from "./Utilities/Page";
@@ -20,12 +22,15 @@ export default function Dashboard() {
   const [activeLogsPage, setActiveLogsPage] = useState<string>("assistant");
   //Loading Modal handler
   const [isModalOpen, setIsModalOpen] = useState(false);
+  //Add email modal handler
+  const [needsEmail, setNeedsEmail] = useState(false);
 
   const { setSelectedTab } = useContext(SwizzleContext);
 
   //Initialization code...
   const { isFree, projects, setProjects, activeProject, testDomain, ideReady } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
+  const { checkIfAccountNeedsEmail } = useSettingsApi()
   const auth = useAuthUser();
 
   const onboardingSteps = [
@@ -280,6 +285,13 @@ export default function Dashboard() {
         console.error(e);
       }
     };
+    
+    checkIfAccountNeedsEmail().then((needsEmail) => {
+      if(needsEmail.email == ""){
+        setNeedsEmail(true);
+      }
+    })
+
     fetchProjects();
   }, []);
 
@@ -336,6 +348,8 @@ export default function Dashboard() {
               <RightSidebar />
 
               <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+              <AddEmailModal isOpen={needsEmail} onClose={() => setNeedsEmail(false)} />
             </div>
           </div>
         </TourProvider>

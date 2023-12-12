@@ -27,7 +27,8 @@ export default function RightSidebar() {
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const { ideReady, setPostMessage, currentFileProperties, selectedTab, setCurrentFileProperties, swizzleActionDispatch, setSwizzleActionDispatch } = useContext(SwizzleContext);
+  const [didRunAutocheck, setDidRunAutocheck] = useState(false);
+  const { ideReady, setPostMessage, currentFileProperties, selectedTab, swizzleActionDispatch, setSwizzleActionDispatch, postMessage, fileErrors } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
 
   // const toggleAuth = (isRequired: boolean) => {
@@ -105,19 +106,45 @@ export default function RightSidebar() {
   }
 
   const runAutocheck = () => {
-    toast.promise(getAutocheckResponse(), {
-      loading: "Running autocheck...",
-      success: (data) => {
-        if (data == "") {
-          toast.error("Error running autocheck");
-          return;
-        }
-        setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
-        return "Done";
-      },
-      error: "Error running autocheck",
-    });
+    setDidRunAutocheck(true)
+    setPostMessage({
+      type: "getFileErrors"
+    })
   }
+
+  useEffect(() => {
+    console.log("rs postMessage", fileErrors)
+    console.log("rs didRunAutocheck", didRunAutocheck)
+    if(!didRunAutocheck) return
+    if(fileErrors && fileErrors.length > 0){
+      toast.promise(getAutocheckResponse(postMessage.thisFilesErrors), {
+        loading: "Running autocheck...",
+        success: (data) => {
+          if (data == "") {
+            toast.error("Error running autocheck");
+            return;
+          }
+          setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+          return "Done";
+        },
+        error: "Error running autocheck",
+      });
+    } else{
+      toast.promise(getAutocheckResponse(), {
+        loading: "Running autocheck...",
+        success: (data) => {
+          if (data == "") {
+            toast.error("Error running autocheck");
+            return;
+          }
+          setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+          return "Done";
+        },
+        error: "Error running autocheck",
+      });
+    }
+    setDidRunAutocheck(false)
+  }, [fileErrors])
 
   useEffect(() => {
     if(swizzleActionDispatch == "Preview"){

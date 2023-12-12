@@ -8,7 +8,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText } = useContext(SwizzleContext);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -63,6 +63,11 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
     if(event.data.type === "selectedText"){
       setSelectedText(event.data.selectedText)
+    }
+
+    if(event.data.type === "fileErrors"){
+      const parsed = JSON.parse(event.data.thisFilesErrors)
+      setFileErrors(parsed)
     }
 
   };

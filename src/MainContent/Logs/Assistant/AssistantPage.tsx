@@ -10,10 +10,20 @@ export default function AssistantPage() {
   const { promptAiPlanner } = useEndpointApi()
   const [messages, setMessages] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>([])
-  const {testDomain} = useContext(SwizzleContext)
+  const {testDomain, activeProject} = useContext(SwizzleContext)
   const [path, setPath] = useState<string>("")
   const [url, setUrl] = useState<string>("")
-  
+  const [debouncedPath, setDebouncedPath] = useState('');
+  const [timeoutId, setTimeoutId] = useState(null);
+
+  const handlePathChange = (newPath) => {
+    clearTimeout(timeoutId); 
+    const id = setTimeout(() => {
+      setPath(newPath); 
+    }, 500); 
+    setTimeoutId(id); 
+  };
+
   const runAiPlanner = async () => {
     console.log("Submitting " + aiPrompt)
     const messageSaved = messages
@@ -28,19 +38,45 @@ export default function AssistantPage() {
   
   useEffect(() => {
     if(testDomain != ""){
+      setDebouncedPath(path)
       setUrl(testDomain + path)
     }
   }, [path, testDomain])
 
-  
+  useEffect(() => {
+    if(activeProject != ""){
+      var history = localStorage.getItem("history_"+activeProject)
+      if(history != null){
+        setHistory(JSON.parse(history))
+      }
+      var messages = localStorage.getItem("messages_"+activeProject)
+      if(messages != null){
+        setMessages(JSON.parse(messages))
+      }
+    }
+  }, [activeProject])
+
+  useEffect(() => {
+    if(history != null){
+      localStorage.setItem("history_"+activeProject, JSON.stringify(history))
+    }
+  }, [history])
+
+  useEffect(() => {
+    if(messages != null){
+      localStorage.setItem("messages_"+activeProject, JSON.stringify(messages))
+    }
+  }, [messages])
+
   return (
     <div className="w-full h-[100vh] overflow-none">
       <div className="flex mx-4 mb-4">
         <input
           className="grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2"
-          placeholder="What do you want to make?"
+          placeholder={messages.length == 0 ? "What do you want to make?" : "What do you want to add?"}
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
+          onFocus={() => { setAiPrompt("") }}
           onKeyDown={(event) => {
             if (event.key == "Enter") {
               toast.promise(runAiPlanner(), {
@@ -86,7 +122,21 @@ export default function AssistantPage() {
             setPath={setPath}
           />
           <div className="w-1/2">
-            <div className="text-base font-bold mb-1">Preview</div>
+            <div className="text-base font-bold mb-1 flex no-focus-ring">
+              Preview
+              <input 
+                type="text" 
+                className="w-full bg-[#2D2E33] border-[#525363] border rounded p-0.5 px-1 mr-2 ml-2 font-normal text-sm m-auto" 
+                placeholder="/path/to/page" 
+                value={debouncedPath}
+                onChange={(e) => { setDebouncedPath(e.target.value); handlePathChange(e.target.value); }}
+                onKeyDown={(event) => {
+                  if(event.key == "Enter"){
+                    setPath(debouncedPath)
+                  }
+                }}
+              />
+            </div>
              <iframe 
                 className="bg-white"
                 src={url} 

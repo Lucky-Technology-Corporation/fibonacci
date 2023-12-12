@@ -9,12 +9,28 @@ export default function useSettingsApi() {
   const authHeader = useAuthHeader();
   const { environment, activeProject } = useContext(SwizzleContext);
 
-  const addEmailToWaitlist = async (email: string) => {
+  const checkIfAccountNeedsEmail = async () => {  
+    try {
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/login/email`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  const addEmailToAccount = async (email: string, projectType?: string) => {
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/login/email`,
         {
           email: email,
+          project_type: projectType,
         },
         {
           withCredentials: true,
@@ -166,7 +182,8 @@ export default function useSettingsApi() {
     updatePaymentMethod,
     hasAddedPaymentMethod,
     deleteProject,
-    addEmailToWaitlist
+    addEmailToAccount,
+    checkIfAccountNeedsEmail
   };
 }
 

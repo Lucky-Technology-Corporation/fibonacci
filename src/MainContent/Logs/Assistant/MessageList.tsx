@@ -9,11 +9,9 @@ export default function MessageList( {messages, setMessages, setPath} : {message
     }
 
     const editTaskInMessage = (messageIndex: number, taskIndex: number, newTask: any) => {
-        console.log("editing task", messageIndex, taskIndex, newTask)
         const newMessages = [...messages]
         newMessages[messageIndex].tasks[taskIndex] = newTask
         setMessages(newMessages)
-        console.log(newMessages)
     }
 
     return (

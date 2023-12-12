@@ -19,7 +19,7 @@ export default function ProjectSelector({
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
   const deploymentApi = useDeploymentApi();
-  const { addEmailToWaitlist } = useSettingsApi()
+  const { addEmailToAccount } = useSettingsApi()
   const POLLING_INTERVAL = 5000;
   const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();
@@ -80,7 +80,7 @@ export default function ProjectSelector({
         return 
       }
       setDidSave(true)
-      await addEmailToWaitlist(email);
+      await addEmailToAccount(email);
       toast.success("We'll let you know when we're ready for you!");
       setTimeout(() => {
         setIsVisible(true)
