@@ -48,14 +48,26 @@ export default function DeployButton({}: {}) {
       toast.error("Switch to Test to deploy your updated code")
       return
     }
+    if(isDeploymentInProgress){
+      toast.error("Deployment already in progress")
+      return
+    }
+
+    setIsDeploymentInProgress(true);
+
+    setTimeout(() => {
+      var audio = new Audio("/deploy.mp3");
+      audio.play();    
+    }, 2000);
 
     toast.promise(deploy(), {
       loading: "Sending...",
-      success: "Project is building and will be deployed in a few minutes",
+      success: () => {
+        return "Project is building and will be deployed in a few minutes"
+      },
       error: "Error deploying",
     });
 
-    setIsDeploymentInProgress(true);
 
     const element = document.getElementById("deploy-progress-bar");
     if (element) {

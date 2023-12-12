@@ -30,6 +30,9 @@ export default function AssistantPage() {
     
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
     var rawResponse = await promptAiPlanner(aiPrompt, history)
+    var audio = new Audio("/newendpoint.mp3");
+    audio.play();    
+
     setMessages([{role: "assistant", tasks: rawResponse.tasks}, {role: "user", content: aiPrompt}, ...messageSaved])
 
     console.log("adding to history", ...rawResponse.openai_message)

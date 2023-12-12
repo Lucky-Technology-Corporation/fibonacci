@@ -115,7 +115,12 @@ export default function ProjectSelector({
       loading: "Provisioning resources...",
       success: () => {
         gtagReportConversion()
-        window.location.reload();
+        //play sound
+        var audio = new Audio("/deploy.mp3");
+        audio.play();
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
         return "Kicked off project creation!";
       },
       error: () => {
