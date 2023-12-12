@@ -287,7 +287,7 @@ export default function Dashboard() {
     };
     
     checkIfAccountNeedsEmail().then((needsEmail) => {
-      if(needsEmail.email == ""){
+      if(!needsEmail || !needsEmail.email || needsEmail.email == ""){
         setNeedsEmail(true);
       }
     })

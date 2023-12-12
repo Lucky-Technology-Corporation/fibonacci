@@ -127,7 +127,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   const forceAddPackageToProject = async () => {
     const response = await updatePackage([savedMessage], "install", location as any, "--legacy-peer-deps");
-    if(response.length == 0){ 
+    if(!Array.isArray(response) || response.length == 0){ 
       toast.error("Failed to install " + savedMessage + ". If this package is needed, please email us at team@swizzle.co")
       return
     }
