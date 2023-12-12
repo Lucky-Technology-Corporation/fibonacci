@@ -28,6 +28,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [isWaitingForText, setIsWaitingForText] = useState<boolean>(false);
   const [oldCode, setOldCode] = useState<string>("");
   const [pendingRequest, setPendingRequest] = useState<string>("");
+  const [highlighted, setHighlighted] = useState<boolean>(false);
 
   const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
 
@@ -336,6 +337,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         "description": "Ask AI to update selected code",
         "ai_type": -1
       },
+      // {
+      //   "type": "ai",
+      //   "image": "ai_write",
+      //   "title": value,
+      //   "description": "Ask AI to edit this file",
+      //   "ai_type": 1
+      // },
       {
         "type": "ai",
         "image": "ai_snippet",
@@ -343,13 +351,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         "description": "Ask AI",
         "ai_type": 0
       },
-      {
-        "type": "ai",
-        "image": "ai_write",
-        "title": value,
-        "description": "Ask AI to edit this file",
-        "ai_type": 1
-      }
     ]
 
     const db_ai_options = [
@@ -414,7 +415,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {suggestion.description}
           </div>
         </div>
-        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && suggestion.ai_type == 1) &&
+        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && suggestion.ai_type == 0) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
             <div className="mt-2 pl-3 pr-3 pb-2 text-sm opacity-70">Results from documentation</div>
@@ -481,9 +482,9 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         setPendingRequest(suggestion.title)
         getHighlightedText()
       } else if(suggestion.ai_type == 0){
-        runQuery(suggestion.title, "snippet")
-      } else if(suggestion.ai_type == 1){
         runQuery(suggestion.title, "edit")
+      } else if(suggestion.ai_type == 1){
+        // runQuery(suggestion.title, "edit")
       } else if(suggestion.ai_type == 2){
         runQuery(suggestion.title, "db")
       }
@@ -611,14 +612,20 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                 onSuggestionSelected={onSuggestionSelected}
                 shouldRenderSuggestions={() => { return true }}
                 highlightFirstSuggestion={true}
+                onSuggestionHighlighted={({ suggestion }) => {
+                  setHighlighted(true)
+                }}
                 inputProps={{
                   onKeyDown: (event) => {
                     if(event.key == "Enter"){
+                      if(!highlighted){
+                        runQuery(prompt, "edit")
+                      }
                       setPrompt("")
                       return
                     }
                   },
-                  placeholder: `${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "Cmd + K: write code, search the docs, and more..." : selectedTab == Page.Db ? "Cmd + K: search and update your database" : ""}`,
+                  placeholder: `${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "Update code with AI" : selectedTab == Page.Db ? "Cmd + K: search and update your database" : ""}`,
                   value: prompt,
                   onChange: onPromptChange,
                   onFocus: () => { setPostMessage({type: "getSelectedText"}) },

@@ -20,29 +20,19 @@ import ProjectSelector from "./ProjectSelector";
 import SectionTitle from "./SectionTitle";
 
 type LeftSidebarProps = {
-  selectedTab: Page;
-  setSelectedTab: Dispatch<SetStateAction<Page>>;
-  activeCollection: string;
-  setActiveCollection: Dispatch<SetStateAction<string>>;
   activeLogsPage: string;
   setActiveLogsPage: Dispatch<SetStateAction<string>>;
-  currentFileProperties: any;
   isModalOpen: any;
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function LeftSidebar({
-  selectedTab,
-  setSelectedTab,
-  activeCollection,
-  setActiveCollection,
   activeLogsPage,
   setActiveLogsPage,
-  currentFileProperties,
   isModalOpen, 
   setIsModalOpen,
 }: LeftSidebarProps) {
-  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject, ideReady, setOpenUri, setRefreshTheia } =
+  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject, ideReady, setOpenUri, setRefreshTheia, currentFileProperties, selectedTab, setSelectedTab, activeCollection, setActiveCollection } =
     useContext(SwizzleContext);
 
   const [refreshHidden, setRefreshHidden] = useState(true)

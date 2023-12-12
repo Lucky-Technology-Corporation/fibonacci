@@ -9,14 +9,13 @@ import { Page } from "../../Utilities/Page";
 type LogWebsocketViewerProps = {
     location: "frontend" | "backend";
     style: CSSProperties;
-    selectedTab: Page;
 };
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const [log, setLog] = useState([]);
     const [ws, setWs] = useState<WebSocket>(null);
     const endpointApi = useEndpointApi();
-    const {testDomain, activeProject, activeEndpoint, setPostMessage} = useContext(SwizzleContext);
+    const {testDomain, activeProject, activeEndpoint, setPostMessage, selectedTab} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const [currentLocation, setCurrentLocation] = useState<string>();
     const [socketDomain, setSocketDomain] = useState<string>();
@@ -27,8 +26,8 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     useEffect(() => {
         
         //Don't reconnect if we're already on the right tab
-        if(ws && ws.OPEN && currentLocation == "backend" && props.selectedTab == Page.Apis){ return } 
-        else if(ws && ws.OPEN && currentLocation == "frontend" && props.selectedTab == Page.Hosting){ return }
+        if(ws && ws.OPEN && currentLocation == "backend" && selectedTab == Page.Apis){ return } 
+        else if(ws && ws.OPEN && currentLocation == "frontend" && selectedTab == Page.Hosting){ return }
 
         //Close and reset
         if(ws){ ws.close() }
@@ -36,15 +35,15 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         //Don't connect if we don't have the right data
         if(!activeProject || !testDomain || !activeEndpoint) return;
-        if(props.selectedTab != Page.Apis && props.selectedTab != Page.Hosting) return;
+        if(selectedTab != Page.Apis && selectedTab != Page.Hosting) return;
 
         //Set our location
-        setCurrentLocation(props.selectedTab == Page.Hosting ? "frontend" : "backend");
-    }, [activeEndpoint, props.selectedTab])
+        setCurrentLocation(selectedTab == Page.Hosting ? "frontend" : "backend");
+    }, [activeEndpoint, selectedTab])
 
     useEffect(() => {
         if(socketDomain != testDomain){
-            if(props.selectedTab == Page.Hosting || props.selectedTab == Page.Apis){
+            if(selectedTab == Page.Hosting || selectedTab == Page.Apis){
                 reconnectWebsocket()
             }
             setSocketDomain(testDomain)
@@ -153,7 +152,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             ws.close();
         }
         console.log("socket", "connect")
-        if(!activeProject || !testDomain || !(props.selectedTab == Page.Apis || props.selectedTab == Page.Hosting)) return;
+        if(!activeProject || !testDomain || !(selectedTab == Page.Apis || selectedTab == Page.Hosting)) return;
 
         var fermatJwt = await endpointApi.getFermatJwt();
         fermatJwt = fermatJwt.replace("Bearer ", "");

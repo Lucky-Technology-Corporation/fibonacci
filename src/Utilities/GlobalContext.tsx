@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, createContext, useState } from "react";
 import { ProjectResponse } from "../API/DatabaseAPI";
 import { ProjectDeploymentStatus } from "../API/DeploymentAPI";
+import { Page } from "./Page";
 
 export type ProjectEnvironment = "test" | "prod";
 
@@ -61,6 +62,12 @@ export interface SwizzleContextType {
   setSelectedText;
   currentDbQuery;
   setCurrentDbQuery;
+  selectedTab: Page;
+  setSelectedTab: Dispatch<SetStateAction<Page>>;
+  currentFileProperties: any;
+  setCurrentFileProperties: Dispatch<SetStateAction<any>>;
+  activeCollection: string;
+  setActiveCollection: Dispatch<SetStateAction<string>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -94,6 +101,13 @@ export const GlobalContextProvider = ({ children }) => {
   const [refreshTheia, setRefreshTheia] = useState(false);
   const [selectedText, setSelectedText] = useState("")
   const [currentDbQuery, setCurrentDbQuery] = useState("")
+
+  //Content handler
+  const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
+  //Current file properties handler
+  const [currentFileProperties, setCurrentFileProperties] = useState<any>({});
+  //Active collection handler
+  const [activeCollection, setActiveCollection] = useState<string>("");  
 
   return (
     <SwizzleContext.Provider
@@ -153,7 +167,14 @@ export const GlobalContextProvider = ({ children }) => {
         selectedText,
         setSelectedText,
         currentDbQuery,
-        setCurrentDbQuery
+        setCurrentDbQuery,
+        selectedTab,
+        setSelectedTab,
+        currentFileProperties,
+        setCurrentFileProperties,
+        activeCollection,
+        setActiveCollection
+
       }}
     >
       {children}

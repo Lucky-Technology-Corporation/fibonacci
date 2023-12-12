@@ -10,25 +10,17 @@ import NotificationPage from "./Notifications/NotificationPage";
 import ObjectTableView from "./Storage/ObjectTableView";
 
 type CenterContentProps = {
-  selectedTab: Page;
-  currentFileProperties: any;
-  setCurrentFileProperties: (properties: any) => void;
-  activeCollection: string;
   activeLogsPage: string;
   isModalOpen: any;
   setIsModalOpen: any;
 };
 
 export default function CenterContent({
-  selectedTab,
-  currentFileProperties,
-  setCurrentFileProperties,
-  activeCollection,
   activeLogsPage,
   isModalOpen,
   setIsModalOpen,
 }: CenterContentProps) {
-  const { activeEndpoint, activeFile, activeHelper, shouldOverlay } = useContext(SwizzleContext);
+  const { activeEndpoint, activeFile, activeHelper, shouldOverlay, selectedTab, currentFileProperties, setCurrentFileProperties, activeCollection } = useContext(SwizzleContext);
 
   const headerRef = useRef(null);
   const focusOnHeader = () => {

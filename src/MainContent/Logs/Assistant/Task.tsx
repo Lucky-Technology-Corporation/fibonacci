@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { methodToColor } from "../../../Utilities/Method";
 import TaskComponent from "./TaskComponent";
 
-export default function Task({ task, removeTask, editTask, allTasks }: { task: any, removeTask: any, editTask: any, allTasks: any[] }) {
+export default function Task({ task, removeTask, editTask, allTasks, setPath }: { task: any, removeTask: any, editTask: any, allTasks: any[], setPath: any }) {
     switch(task.type){
         case "CreateEndpoint":
             return (
@@ -37,6 +37,7 @@ export default function Task({ task, removeTask, editTask, allTasks }: { task: a
                             />
                         </>
                     }
+                    setPath={setPath}
                 />
             )
         case "CreateComponent":

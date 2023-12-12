@@ -12,15 +12,7 @@ import SecretInfo from "./Sections/SecretInfo";
 import TestWindow from "./TestWindow/TestWindow";
 import WebPreview from "./WebPreview";
 
-export default function RightSidebar({
-  selectedTab,
-  currentFileProperties,
-  setCurrentFileProperties
-}: {
-  selectedTab: Page;
-  currentFileProperties: any;
-  setCurrentFileProperties: (properties: any) => void;
-}) {
+export default function RightSidebar() {
   const programmaticDbUpdateRef = useRef(false);
   const programmaticAuthUpdateRef = useRef(false);
 
@@ -34,8 +26,8 @@ export default function RightSidebar({
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const { ideReady, setPostMessage } = useContext(SwizzleContext);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(true);
+  const { ideReady, setPostMessage, currentFileProperties, selectedTab, setCurrentFileProperties } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
 
   const toggleAuth = (isRequired: boolean) => {

@@ -1,10 +1,14 @@
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
+import { filenameToEndpoint } from "../../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../../Utilities/GlobalContext";
+import { Page } from "../../../Utilities/Page";
 
-export default function TaskComponent({task, headerNode, removeTask, editTask, allTasks}: {task: any, headerNode: ReactNode, removeTask: any, editTask: any, allTasks: any[]}){
+export default function TaskComponent({task, headerNode, removeTask, editTask, allTasks, setPath}: {task: any, headerNode: ReactNode, removeTask: any, editTask: any, allTasks: any[], setPath?: any}){
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [isPromptDisabled, setIsPromptDisabled] = useState<boolean>(false)
     const [taskEditPrompt, setTaskEditPrompt] = useState<string>("")
@@ -13,7 +17,7 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
     const [taskCode, setTaskCode] = useState<string>("")
     const [isExecuting, setIsExecuting] = useState<boolean>(false)
 
-    const { shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext)
+    const { shouldRefreshList, setShouldRefreshList, setActiveEndpoint, setSelectedTab } = useContext(SwizzleContext)
 
     const editTaskWithAi = () => {
         setIsPromptDisabled(true)
@@ -40,13 +44,14 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
             loading: "Thinking...",
             success: (response: any) => {
                 console.log(response)
-                if(response.status == "WaitingForApproval"){
+                if(response.status == "TASK_WAITING_FOR_APPROVAL"){
                     setTaskCode(response.task.code)
                     editTask(response.task)
-                } else if(response.status == "Succeeded"){
+                } else if(response.status == "TASK_SUCCEEDED"){
                     setTaskCode("")
                     setIsTaskComplete(true)
                     setShouldRefreshList(!shouldRefreshList)
+                    console.log("task", task)
                 } else{
                     toast.error("An error occured")
                 }
@@ -61,7 +66,11 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
     }
 
     return (
-        <div className="flex flex-col bg-[#85869822] rounded px-4 p-2 mt-2 mb-2 w-full">
+        <div className={`flex flex-col bg-[#85869822] rounded px-4 p-2 mt-2 mb-2 w-full ${setPath && "cursor-pointer"}`} onClick={() => {
+            if(setPath){
+                setPath(task.inputs.path)
+            }
+        }}>
             <div className="flex items-center">
                 <div className="">
                     <div className="flex text-sm items-center">
@@ -73,8 +82,18 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                 </div>
                 <div className="ml-auto flex">
                     {isTaskComplete ? (
-                        <div className="">
-                            Completed
+                        <div className="cursor-pointer" onClick={() => {
+                            if(task.type == "CreateEndpoint"){
+                                console.log(task.inputs.method.toLowerCase() + task.inputs.path)
+                                setActiveEndpoint(filenameToEndpoint(task.inputs.method.toLowerCase() + task.inputs.path))
+                                setSelectedTab(Page.Apis)
+                            }
+                        }}>
+                            <FontAwesomeIcon
+                                icon={faCheckCircle}
+                                className="text-green-400 text-lg w-4 h-4 mr-2"
+                            />
+                            Open File
                         </div>
                     ) : isEditing ? (
                         <>
@@ -91,15 +110,15 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                                 onClick={removeTask}
                                 text={`Remove`}
                             />
-                            <Button
+                            {/* <Button
                                 className={`text-sm px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
                                 onClick={() => { setIsEditing(true) }}
                                 text={`Edit`}
-                            />
+                            /> */}
                             <Button
                                 className="text-sm text-green-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border" 
                                 onClick={executeTask}
-                                text={taskCode != "" ? "Create" : `Execute`}
+                                text="Create"
                             />
                         </div>
                     )}

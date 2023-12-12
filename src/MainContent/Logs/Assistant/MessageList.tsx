@@ -1,6 +1,6 @@
 import Task from "./Task";
 
-export default function MessageList( {messages, setMessages} : {messages: any[], setMessages: any}){
+export default function MessageList( {messages, setMessages, setPath} : {messages: any[], setMessages: any, setPath: any}){
 
     const removeTaskFromMessage = (messageIndex: number, taskIndex: number) => {
         const newMessages = [...messages]
@@ -22,16 +22,18 @@ export default function MessageList( {messages, setMessages} : {messages: any[],
                 <div className="flex flex-col leading-normal">
                     <div className="flex items-center">
                         {message.role == "assistant" ? (
-                            <span className="font-bold text-base ml-2">Pending Tasks</span>
+                            <span className="font-bold text-base ml-2">Items</span>
                         ) : (
-                            <span className="font-bold text-base ml-2">Me</span>
+                            <></>
+                            // <span className="font-bold text-base ml-2">Me</span>
                         )}
                     </div>
                     <div className="flex flex-col justify-center items-center">
                             {message.role == "user" ? (
-                                <div className="bg-[#85869822] rounded px-4 p-2 mt-2 mb-2 w-full">
-                                    <div className={`text-white italic opacity-70`}>{message.content}</div>
-                                </div>
+                                <></>
+                                // <div className="bg-[#85869822] rounded px-4 p-2 mt-2 mb-2 w-full">
+                                //     <div className={`text-white italic opacity-70`}>{message.content}</div>
+                                // </div>
                             ) : (
                                 message.tasks.map((task, taskIndex) => (
                                    <Task 
@@ -39,6 +41,7 @@ export default function MessageList( {messages, setMessages} : {messages: any[],
                                         removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
                                         editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
                                         allTasks={messages.map((message) => message.tasks).flat()}
+                                        setPath={setPath}
                                     />
                                 ))
                             )}

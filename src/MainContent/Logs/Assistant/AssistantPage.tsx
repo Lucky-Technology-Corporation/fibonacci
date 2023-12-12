@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
+import { SwizzleContext } from "../../../Utilities/GlobalContext";
 import MessageList from "./MessageList";
 
 export default function AssistantPage() {
@@ -9,6 +10,9 @@ export default function AssistantPage() {
   const { promptAiPlanner } = useEndpointApi()
   const [messages, setMessages] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>([])
+  const {testDomain} = useContext(SwizzleContext)
+  const [path, setPath] = useState<string>("")
+  const [url, setUrl] = useState<string>("")
   
   const runAiPlanner = async () => {
     console.log("Submitting " + aiPrompt)
@@ -21,6 +25,13 @@ export default function AssistantPage() {
     console.log("adding to history", ...rawResponse.openai_message)
     setHistory([...history, {role: "user", content: aiPrompt}, ...rawResponse.openai_message])
   }
+  
+  useEffect(() => {
+    if(testDomain != ""){
+      setUrl(testDomain + path)
+    }
+  }, [path, testDomain])
+
   
   return (
     <div className="w-full h-[100vh] overflow-none">
@@ -68,10 +79,25 @@ export default function AssistantPage() {
             <div className="w-full mt-4 text-center opacity-70">Waiting for instructions</div>
           </div>
         ) : (
+          <>
           <MessageList 
             messages={messages}
             setMessages={setMessages} 
+            setPath={setPath}
           />
+          <div className="w-1/2">
+            <div className="text-base font-bold mb-1">Preview</div>
+             <iframe 
+                className="bg-white"
+                src={url} 
+                title="Preview" 
+                width="100%" 
+                height="100%" 
+                frameBorder="0"
+                z-index="1000"
+              />
+            </div>
+          </>
         )}
       </div>
     </div>

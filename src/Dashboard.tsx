@@ -16,18 +16,12 @@ import { Page } from "./Utilities/Page";
 
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
-  //Content handler
-  const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
-  //Current file properties handler
-  const [currentFileProperties, setCurrentFileProperties] = useState<any>({});
-  //Deploy state handler
-  const [didDeploy, setDidDeploy] = useState(false);
-  //Active collection handler
-  const [activeCollection, setActiveCollection] = useState<string>("");
   //Active logs page handler
   const [activeLogsPage, setActiveLogsPage] = useState<string>("assistant");
   //Loading Modal handler
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { setSelectedTab } = useContext(SwizzleContext);
 
   //Initialization code...
   const { isFree, projects, setProjects, activeProject, testDomain, ideReady } = useContext(SwizzleContext);
@@ -327,32 +321,19 @@ export default function Dashboard() {
             </div>
             <div className="grid grid-cols-[auto,1fr,auto] gap-0">
               <LeftSidebar
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
-                activeCollection={activeCollection}
-                setActiveCollection={setActiveCollection}
                 activeLogsPage={activeLogsPage}
                 setActiveLogsPage={setActiveLogsPage}
-                currentFileProperties={currentFileProperties}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />
 
               <CenterContent
-                selectedTab={selectedTab}
-                currentFileProperties={currentFileProperties}
-                setCurrentFileProperties={setCurrentFileProperties}
-                activeCollection={activeCollection}
                 activeLogsPage={activeLogsPage}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />
 
-              <RightSidebar
-                selectedTab={selectedTab}
-                currentFileProperties={currentFileProperties}
-                setCurrentFileProperties={setCurrentFileProperties}
-              />
+              <RightSidebar />
 
               <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
             </div>
