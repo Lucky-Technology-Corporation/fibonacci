@@ -136,12 +136,19 @@ export default function EndpointList({ active, currentFileProperties }: { active
   useEffect(() => {
     if (searchFilter == "") {
       setEndpoints(fullEndpointList);
+      setHelperList(fullHelperList);
       return;
     }
     const filteredEndpoints = endpoints.filter((endpoint) => {
       return endpoint.includes(searchFilter);
     });
     setEndpoints(filteredEndpoints);
+
+    const filteredHelpers = helperList.filter((helper) => {
+      return helper.includes(searchFilter);
+    });
+    setHelperList(filteredHelpers);
+
   }, [searchFilter]);
 
   useEffect(() => {
@@ -171,7 +178,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
         />
       </div>
 
-      <div className="flex ml-2 my-1">
+      <div className="flex ml-2 my-1 mr-2 mb-1.5">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
           placeholder="Filter"
@@ -222,7 +229,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
           <div className="flex items-center">Helpers</div>
         </div>
         <div className="ml-1">
-          {fullHelperList.map((helper, index) => {
+          {helperList.map((helper, index) => {
             return (
               <HelperItem
                 key={index}

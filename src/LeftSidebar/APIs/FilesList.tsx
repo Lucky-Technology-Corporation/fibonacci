@@ -288,7 +288,7 @@ export default function FilesList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="flex ml-2 my-1">
+      <div className="flex ml-2 my-1 mr-2 mb-1.5">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
           placeholder="Filter"
