@@ -21,7 +21,8 @@ export default function WebPreview({isVisible, setIsVisible}: {isVisible: boolea
     const [path, setPath] = useState<string>("")
 
     useEffect(() => {
-      if(activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
+      console.log(activeFile)
+      if(activeFile != undefined && activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
         const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase()
         setPath("/" + path)
         setUrl(testDomain + "/" + path)

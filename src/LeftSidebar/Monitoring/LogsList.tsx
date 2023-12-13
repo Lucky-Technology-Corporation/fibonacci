@@ -21,6 +21,14 @@ export default function Logslist({
         }}
       />
       <LogsItem
+        className="logs-tab"
+        active={activePage == "logs"}
+        name="Logs"
+        onClick={() => {
+          setActivePage("logs");
+        }}
+      />
+      <LogsItem
         active={activePage == "analytics"}
         name="Analytics"
         onClick={() => {
@@ -33,14 +41,6 @@ export default function Logslist({
         name="Templates"
         onClick={() => {
           setActivePage("templates");
-        }}
-      />
-      <LogsItem
-        className="logs-tab"
-        active={activePage == "logs"}
-        name="Logs"
-        onClick={() => {
-          setActivePage("logs");
         }}
       />
     </div>

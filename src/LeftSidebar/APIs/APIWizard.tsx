@@ -230,7 +230,7 @@ export default function APIWizard({
                     value={inputValue}
                     onChange={(e) => {
                       if(endpointPathIfEditing == "/"){ return }
-                      const regex = /^\/?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/
+                      const regex = /^\/:?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/
                       if(!regex.test(e.target.value)){
                         setValidUrl(false)
                       } else{

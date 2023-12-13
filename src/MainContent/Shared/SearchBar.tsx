@@ -37,7 +37,7 @@ export default function SearchBar({
     } 
     
     const newKeyArray = newKeys
-      .filter((k) => k !== "_id")
+      // .filter((k) => k !== "_id")
       .map((key) => {
         if (key == "_swizzle_uid") {
           return { id: key, name: "userId" };

@@ -72,19 +72,19 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
   };
 
-  useEffect(() => {
-    console.log("selectedTab", selectedTab)
-    if(selectedTab == Page.Hosting){ 
-      if(!(currentFileProperties.fileUri || "").includes("frontend/")){
-        setActiveFile("frontend/src/pages/SwizzleHomePage.tsx");
-      }
-    }
-    else if(selectedTab == Page.Apis){
-      if(!(currentFileProperties.fileUri || "").includes("backend/")){
-        setActiveEndpoint("get/");
-      }
-    }
-  }, [selectedTab])
+  // useEffect(() => {
+  //   console.log("selectedTab", selectedTab)
+  //   if(selectedTab == Page.Hosting){ 
+  //     if(!(currentFileProperties.fileUri || "").includes("frontend/")){
+  //       setActiveFile("frontend/src/pages/SwizzleHomePage.tsx");
+  //     }
+  //   }
+  //   else if(selectedTab == Page.Apis){
+  //     if(!(currentFileProperties.fileUri || "").includes("backend/")){
+  //       setActiveEndpoint("get/");
+  //     }
+  //   }
+  // }, [selectedTab])
 
   //Resend the file name when ready
   useEffect(() => {

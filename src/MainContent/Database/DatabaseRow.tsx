@@ -30,7 +30,7 @@ export default function DatabaseRow({
   setShouldShowSaveHint,
   showDetailView,
   style,
-  shouldHideFields = ["_id"],
+  shouldHideFields = [],
   shouldBlockEdits = [],
   shouldShowStrikethrough = false,
   setJsonToEdit,

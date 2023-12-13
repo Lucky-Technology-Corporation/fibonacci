@@ -76,7 +76,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
         if(filterName == null){
-          setFilterName(data.keys.sort().filter(k => k != "_id")[0])
+          setFilterName(data.keys.sort()[0])
         }
       })
       .catch((e) => {
@@ -304,12 +304,11 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 w-6"></th>
               {keys
-                .filter((k) => k != "_id")
                 .map((key, index) => (
                   <th
                     className={`cursor-pointer text-left py-1.5`}
                     style={{
-                      minWidth: `${getEstimatedColumnWidth(keys.length - 1, key)}px`,
+                      minWidth: `${getEstimatedColumnWidth(keys.length, key)}px`,
                     }}
                     key={index + 1}
                     onClick={() => didClickSortColumn(key)}
@@ -335,7 +334,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
                 keys={keys}
                 data={row}
                 setShouldShowSaveHint={setShouldShowSaveHint}
-                shouldBlockEdits={["swizzle_uid"]}
+                shouldBlockEdits={["swizzle_uid", "_id"]}
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}

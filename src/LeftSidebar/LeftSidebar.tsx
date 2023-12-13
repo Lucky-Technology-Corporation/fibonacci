@@ -62,6 +62,7 @@ export default function LeftSidebar({
         return
       };
     }
+    if(activeFile == undefined || activeFile == "") return;
     setPostMessage({
       type: "openFile",
       fileName: `/${activeFile}`,
@@ -71,7 +72,7 @@ export default function LeftSidebar({
   const openActiveEndpoint = () => {
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     var fileName = endpointToFilename(activeEndpoint)
-
+    console.log("selected tab", "opening", activeEndpoint, fileName)
     if (fileName.startsWith("!helper!")) {
       //Check if we're already on the helper
       fileName = fileName.replace("!helper!", "");

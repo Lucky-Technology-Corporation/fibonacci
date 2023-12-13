@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Page } from "../../Utilities/Page";
 import FileItem from "./FileItem";
 import FileWizard from "./FileWizard";
 
@@ -20,7 +21,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [fileToEdit, setFileToEdit] = useState<string>("");
   const [fileToEditFallback, setFileToEditFallback] = useState<string>("");
 
-  const { testDomain, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
+  const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
   const methods: any = [
@@ -40,6 +41,13 @@ export default function FilesList({ active }: { active: boolean }) {
         console.error(e);
       });
   }, [testDomain, shouldRefreshList]);
+
+  useEffect(() => {
+    if(selectedTab == Page.Hosting && activeFile == undefined && pages && pages.length > 0){
+      setActiveFile("frontend/src/App.tsx");
+      setShowServerFiles(true)
+    }
+  }, [selectedTab])
 
   //This is here to fix badly formatted RouteList files from before the fix was implemented.
   const temporaryFixOldRouteList = async (data) => {

@@ -32,7 +32,7 @@ export default function EndpointList({ active, currentFileProperties }: { active
     { id: "helper", name: "+ Helper" },
   ];
 
-  const { activeProject, testDomain, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
+  const { activeProject, testDomain, selectedTab, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
     useContext(SwizzleContext);
 
 
@@ -80,6 +80,15 @@ export default function EndpointList({ active, currentFileProperties }: { active
       temporaryFixOldTsConfigs()
     }
   }, [testDomain])
+
+  // useEffect(() => {
+  //   console.log("selected tab")
+  //   console.log("selected tab", selectedTab, activeEndpoint, endpoints)
+  //   if(selectedTab == Page.Apis && activeEndpoint == undefined && endpoints && endpoints.length > 0){
+  //     console.log("selected tab", "SETTING", endpoints[0])
+  //     setActiveEndpoint(endpoints[0])
+  //   }
+  // }, [selectedTab])
 
   useEffect(() => {
     getFiles("endpoints")
