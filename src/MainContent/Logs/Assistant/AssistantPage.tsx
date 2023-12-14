@@ -117,7 +117,7 @@ export default function AssistantPage() {
             text="Clear Plan"
           />
       </div>
-      <div className="h-full flex align-center justify-center overflow-scroll">
+      <div className="h-full flex align-center justify-center overflow-none">
         {messages.length == 0 ? (
           <div>
             <img src="logo_white.png" className="w-20 h-20 mx-auto mt-28 pulsate" />
@@ -130,13 +130,13 @@ export default function AssistantPage() {
             setMessages={setMessages} 
             setPath={setPath}
           />
-          <div className="w-1/2">
-            <div className="text-base font-bold mb-1 flex no-focus-ring">
-              Preview
+          <div className="w-1/2 h-full flex-col">
+            <div className="text-base font-bold mb-1.5 flex no-focus-ring">
+              {/* Preview */}
               <input 
                 type="text" 
-                className="w-full bg-[#2D2E33] border-[#525363] border rounded p-0.5 px-1 mr-2 ml-2 font-normal text-sm m-auto" 
-                placeholder="/path/to/page" 
+                className="w-full bg-[#2D2E33] border-[#525363] rounded p-1 px-1 mx-0 font-normal text-sm m-auto" 
+                placeholder="Preview /" 
                 value={debouncedPath}
                 onChange={(e) => { setDebouncedPath(e.target.value); handlePathChange(e.target.value); }}
                 onKeyDown={(event) => {
@@ -147,11 +147,11 @@ export default function AssistantPage() {
               />
             </div>
              <iframe 
-                className="bg-white"
+                style={{height: "calc(100% - 120px)"}}
+                className="bg-white rounded border-[#525363] border"
                 src={url} 
                 title="Preview" 
                 width="100%" 
-                height="100%" 
                 frameBorder="0"
                 z-index="1000"
               />

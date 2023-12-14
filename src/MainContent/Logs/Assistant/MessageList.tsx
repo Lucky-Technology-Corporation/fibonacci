@@ -15,12 +15,12 @@ export default function MessageList( {messages, setMessages, setPath} : {message
     }
 
     return (
-        <div className="w-full h-full flex flex-col mx-4">
+        <div className="w-full h-full flex flex-col mx-4 overflow-scroll">
             {messages.map((message, messageIndex) => (
                 <div className="flex flex-col leading-normal">
-                    <div className="flex items-center">
+                    <div className="flex items-center mb-0.5 mt-2">
                         {message.role == "assistant" ? (
-                            <span className="font-bold text-base ml-2">Items</span>
+                            <span className="text-sm ml-2">"{messages[messageIndex + 1].content}"</span>
                         ) : (
                             <></>
                             // <span className="font-bold text-base ml-2">Me</span>

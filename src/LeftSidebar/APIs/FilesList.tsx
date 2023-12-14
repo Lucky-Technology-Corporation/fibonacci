@@ -44,8 +44,7 @@ export default function FilesList({ active }: { active: boolean }) {
 
   useEffect(() => {
     if(selectedTab == Page.Hosting && activeFile == undefined && pages && pages.length > 0){
-      setActiveFile("frontend/src/App.tsx");
-      setShowServerFiles(true)
+      setActiveFile("frontend/src/pages/"+pages[0].component+".tsx");
     }
   }, [selectedTab])
 

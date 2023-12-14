@@ -70,5 +70,35 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     }
                 />
             )    
+        case "InstallBackendPackage": 
+            return (
+                <TaskComponent
+                    removeTask={removeTask}
+                    editTask={editTask}
+                    task={task}
+                    allTasks={allTasks}
+                    headerNode={
+                        <>
+                            <img src="/box.svg" className="w-4 h-4 mr-2" />
+                            <span className={`font-mono`}>npm install {task.inputs.name}</span>
+                        </>
+                    }
+                />
+            )
+        case "InstallFrontendPackage": 
+            return (
+                <TaskComponent
+                    removeTask={removeTask}
+                    editTask={editTask}
+                    task={task}
+                    allTasks={allTasks}
+                    headerNode={
+                        <>
+                            <img src="/box.svg" className="w-4 h-4 mr-2" />
+                            <span className={`font-mono`}>npm install {task.inputs.name}</span>
+                        </>
+                    }
+                />
+            )
     }
 }

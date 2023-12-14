@@ -44,7 +44,7 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
     const executeTask = () => {
         setIsExecuting(true)
         setIsEditing(false)
-        toast.promise(aiTaskExecute(task, allTasks), {
+        toast.promise(aiTaskExecute(task, allTasks.filter(v => v != null)), {
             loading: "Thinking...",
             success: (response: any) => {
                 console.log(response)
@@ -128,12 +128,12 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                             <Button
                                 className="text-sm text-red-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border-[#525363] border" 
                                 onClick={removeTask}
-                                text={`Remove`}
+                                text={`Cancel`}
                             />
                             <Button
                                 className="text-sm text-green-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border" 
                                 onClick={executeTask}
-                                text="Create"
+                                text="Go"
                             />
                         </div>
                     )}

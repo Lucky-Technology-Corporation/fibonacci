@@ -1,4 +1,3 @@
-import Hotjar from '@hotjar/browser';
 import { loadIntercom } from "next-intercom";
 import { useEffect } from "react";
 import { AuthProvider } from "react-auth-kit";
@@ -17,10 +16,6 @@ function App() {
       initWindow: true,
       delay: 0,
     });
-
-    const siteId = 3734575;
-    const hotjarVersion = 6;
-    Hotjar.init(siteId, hotjarVersion);
   }, [])
 
   return (

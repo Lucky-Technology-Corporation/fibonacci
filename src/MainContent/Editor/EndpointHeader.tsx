@@ -46,6 +46,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   const runQuery = async (promptQuery: string, queryType: string, selectedText?: string) => {
     console.log("info", promptQuery, queryType)
+    const currentFile = currentFileProperties.fileUri.split("/").pop()
+    console.log("currentFile", currentFile)
     if(queryType == "db"){
       if(promptQuery == ""){
         console.log("resetting db query")
