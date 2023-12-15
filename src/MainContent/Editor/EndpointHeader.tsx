@@ -615,6 +615,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     setPrompt(newValue);
   }
 
+  useEffect(() => {
+    if(prompt == ""){
+      setHighlighted(false)
+    }
+  }, [prompt])
+
   const storeInputRef = (autosuggest) => {
     if (autosuggest !== null) {
       headerRef.current = autosuggest.input;

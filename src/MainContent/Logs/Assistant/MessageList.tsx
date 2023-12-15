@@ -16,22 +16,19 @@ export default function MessageList( {messages, setMessages, setPath} : {message
 
     return (
         <div className="w-full h-full flex flex-col mx-4 overflow-scroll" style={{paddingBottom: "68px"}}>
+            <div className="ml-1 mt-0.5"><div className="text-sm font-bold">App code</div></div>
             {messages.map((message, messageIndex) => (
-                <div className="flex flex-col leading-normal">
-                    <div className="flex items-center mb-0.5 mt-2">
-                        {message.role == "assistant" ? (
-                            <span className="text-sm ml-2">"{messages[messageIndex + 1].content}"</span>
-                        ) : (
-                            <></>
-                            // <span className="font-bold text-base ml-2">Me</span>
-                        )}
-                    </div>
+                <div className="flex flex-col leading-normal mb-0.5">
+                    {message.role == "assistant" && message.tasks.length > 0 ? (
+                        <div className="flex items-center mb-0.5 mt-1">
+                            <span className="text-sm ml-1">"{messages[messageIndex + 1].content}"</span>
+                        </div>
+                    ) : (
+                        <></>
+                    )}
                     <div className="flex flex-col justify-center items-center">
                             {message.role == "user" ? (
                                 <></>
-                                // <div className="bg-[#85869822] rounded px-4 p-2 mt-2 mb-2 w-full">
-                                //     <div className={`text-white italic opacity-70`}>{message.content}</div>
-                                // </div>
                             ) : (
                                 message.tasks.map((task, taskIndex) => (
                                    <Task 

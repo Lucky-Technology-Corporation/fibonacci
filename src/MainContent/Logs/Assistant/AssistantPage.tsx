@@ -67,7 +67,6 @@ export default function AssistantPage() {
   }, [messages])
 
   const schemaEditHandler = (newSchema: any) => {
-    setSchemaLocal(newSchema)
     toast.promise(setSchema(newSchema), {
       loading: "Saving...",
       success: "Done",
@@ -115,15 +114,15 @@ export default function AssistantPage() {
           }}
           text="Clear Plan"
         />
-        <Button
+        {/* <Button
           className={`${messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
           onClick={() => {
             setAiPrompt("")
             setMessages([])
             setHistory([])
           }}
-          text="Execute Plan"
-        />
+          text="Start Plan"
+        /> */}
       </div>
       <div className="h-full flex align-center justify-center overflow-none">
         {messages.length == 0 ? (
@@ -138,9 +137,9 @@ export default function AssistantPage() {
             setMessages={setMessages} 
             setPath={() => {}} //this is the onclick handler
           />
-          <div className="w-1/3 h-full flex-col">
-              <div className="ml-1 mt-0.5"><div className="text-sm font-bold">Schema</div><div className="mt-0.5">This how information will be stored in the database</div></div>
-              <SchemaViewer schema={schema} setSchema={schemaEditHandler} />
+          <div className="w-1/3 h-full flex-col overflow-scroll pb-[68px]">
+              <div className="ml-1 mt-0.5"><div className="text-sm font-bold">Schema</div><div className="mt-0.5">This is your database structure</div></div>
+              <SchemaViewer schema={schema} setSchema={setSchemaLocal} commitSchema={schemaEditHandler} />
             </div>
           </>
         )}
