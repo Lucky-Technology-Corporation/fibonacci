@@ -13,6 +13,7 @@ export default function SchemaViewer({schema, setSchema}: {schema: any, setSchem
   };
 
   const handleRemove = (collection, field) => {
+    console.log(collection, field)
     const newData = { ...schema };
     delete newData[collection][field];
     setSchema(newData);

@@ -12,48 +12,7 @@ export default function AssistantPage() {
   const [messages, setMessages] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>([])
   const {activeProject} = useContext(SwizzleContext)
-  const [schema, setSchemaLocal] = useState<any>({
-    "dog-owners": {
-      "_id": "ObjectId",
-      "userId": "string",
-      "display_name": "string",
-      "dog": {
-        "breed": "string",
-        "name": {
-          "first": "string",
-          "last": "string"
-        },
-        "age": "number"
-      },
-      "address": {
-        "street": "string",
-        "city": "string",
-        "state": "string",
-        "zip": "string"
-      }
-    },
-    "dog-walkers": {
-      "_id": "ObjectId",
-      "userId": "string",
-      "display_name": "string",
-      "covered_zip_codes": "string[]",
-      "price_per_hour": "number",
-      "average_rating": "number",
-      "available_timeslots": [
-        {
-          "start": "string",
-          "end": "string"
-        }
-      ], 
-      "appointments": [
-        {
-          "dog_owner_userId": "string",
-          "start": "string",
-          "end": "string"
-        }
-      ]
-    }
-  })
+  const [schema, setSchemaLocal] = useState<any>({})
 
   const runAiPlanner = async () => {
     console.log("Submitting " + aiPrompt)
