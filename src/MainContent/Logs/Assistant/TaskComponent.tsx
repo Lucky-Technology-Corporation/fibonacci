@@ -128,13 +128,13 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                             <Button
                                 className="text-sm text-red-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border-[#525363] border" 
                                 onClick={removeTask}
-                                text={`Cancel`}
+                                text={`Remove`}
                             />
-                            <Button
+                            {/* <Button
                                 className="text-sm text-green-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border" 
                                 onClick={executeTask}
                                 text="Go"
-                            />
+                            /> */}
                         </div>
                     )}
                 </div>

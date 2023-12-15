@@ -15,7 +15,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
     }
 
     return (
-        <div className="w-full h-full flex flex-col mx-4 overflow-scroll">
+        <div className="w-full h-full flex flex-col mx-4 overflow-scroll" style={{paddingBottom: "68px"}}>
             {messages.map((message, messageIndex) => (
                 <div className="flex flex-col leading-normal">
                     <div className="flex items-center mb-0.5 mt-2">

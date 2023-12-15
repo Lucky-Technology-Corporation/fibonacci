@@ -4,25 +4,56 @@ import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
 import { SwizzleContext } from "../../../Utilities/GlobalContext";
 import MessageList from "./MessageList";
+import SchemaViewer from "./SchemaViewer";
 
 export default function AssistantPage() {
   const [aiPrompt, setAiPrompt] = useState<string>("")
-  const { promptAiPlanner } = useEndpointApi()
+  const { promptAiPlanner, getSchema, setSchema } = useEndpointApi()
   const [messages, setMessages] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>([])
-  const {testDomain, activeProject} = useContext(SwizzleContext)
-  const [path, setPath] = useState<string>("")
-  const [url, setUrl] = useState<string>("")
-  const [debouncedPath, setDebouncedPath] = useState('');
-  const [timeoutId, setTimeoutId] = useState(null);
-
-  const handlePathChange = (newPath) => {
-    clearTimeout(timeoutId); 
-    const id = setTimeout(() => {
-      setPath(newPath); 
-    }, 500); 
-    setTimeoutId(id); 
-  };
+  const {activeProject} = useContext(SwizzleContext)
+  const [schema, setSchemaLocal] = useState<any>({
+    "dog-owners": {
+      "_id": "ObjectId",
+      "userId": "string",
+      "display_name": "string",
+      "dog": {
+        "breed": "string",
+        "name": {
+          "first": "string",
+          "last": "string"
+        },
+        "age": "number"
+      },
+      "address": {
+        "street": "string",
+        "city": "string",
+        "state": "string",
+        "zip": "string"
+      }
+    },
+    "dog-walkers": {
+      "_id": "ObjectId",
+      "userId": "string",
+      "display_name": "string",
+      "covered_zip_codes": "string[]",
+      "price_per_hour": "number",
+      "average_rating": "number",
+      "available_timeslots": [
+        {
+          "start": "string",
+          "end": "string"
+        }
+      ], 
+      "appointments": [
+        {
+          "dog_owner_userId": "string",
+          "start": "string",
+          "end": "string"
+        }
+      ]
+    }
+  })
 
   const runAiPlanner = async () => {
     console.log("Submitting " + aiPrompt)
@@ -30,12 +61,11 @@ export default function AssistantPage() {
     
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
     var rawResponse = await promptAiPlanner(aiPrompt, history)
-    if(rawResponse == undefined || rawResponse.tasks == undefined || rawResponse.tasks.length == 0){
-      var audio = new Audio("/error.mp3");
-      audio.play();      
-      toast("No tasks found. Please try again with more detail.")
-      return
+
+    if(rawResponse.schema){
+      setSchemaLocal(rawResponse.schema)
     }
+
     var audio = new Audio("/newendpoint.mp3");
     audio.play();    
 
@@ -44,15 +74,13 @@ export default function AssistantPage() {
     console.log("adding to history", ...rawResponse.openai_message)
     setHistory([...history, {role: "user", content: aiPrompt}, ...rawResponse.openai_message])
   }
-  
-  useEffect(() => {
-    if(testDomain != ""){
-      setDebouncedPath(path)
-      setUrl(testDomain + path)
-    }
-  }, [path, testDomain])
 
   useEffect(() => {
+    async function fetchSchema(){
+      var rawResponse = await getSchema()
+      // setSchemaLocal(rawResponse.schema)
+    }
+
     if(activeProject != ""){
       var history = localStorage.getItem("history_"+activeProject)
       if(history != null){
@@ -62,6 +90,8 @@ export default function AssistantPage() {
       if(messages != null){
         setMessages(JSON.parse(messages))
       }
+      
+      fetchSchema()
     }
   }, [activeProject])
 
@@ -76,6 +106,15 @@ export default function AssistantPage() {
       localStorage.setItem("messages_"+activeProject, JSON.stringify(messages))
     }
   }, [messages])
+
+  const schemaEditHandler = (newSchema: any) => {
+    setSchemaLocal(newSchema)
+    toast.promise(setSchema(newSchema), {
+      loading: "Saving...",
+      success: "Done",
+      error: "An error occured",
+    })
+  }
 
   return (
     <div className="w-full h-[100vh] overflow-none">
@@ -107,15 +146,25 @@ export default function AssistantPage() {
           }}
           text={messages.length == 0  ? "Create Plan" : "Update Plan"}
         />
-          <Button
-            className={`${messages.length == 0 && "hidden"} text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
-            onClick={() => {
-              setAiPrompt("")
-              setMessages([])
-              setHistory([])
-            }}
-            text="Clear Plan"
-          />
+        <Button
+          className={`${messages.length == 0 && "hidden"} text-red-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border`} 
+          onClick={() => {
+            setAiPrompt("")
+            setMessages([])
+            setHistory([])
+            toast.promise(setSchema({}), { loading: "Clearing...", success: "Done", error: "An error occured" })
+          }}
+          text="Clear Plan"
+        />
+        <Button
+          className={`${messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
+          onClick={() => {
+            setAiPrompt("")
+            setMessages([])
+            setHistory([])
+          }}
+          text="Execute Plan"
+        />
       </div>
       <div className="h-full flex align-center justify-center overflow-none">
         {messages.length == 0 ? (
@@ -128,33 +177,11 @@ export default function AssistantPage() {
           <MessageList 
             messages={messages}
             setMessages={setMessages} 
-            setPath={setPath}
+            setPath={() => {}} //this is the onclick handler
           />
-          <div className="w-1/2 h-full flex-col">
-            <div className="text-base font-bold mb-1.5 flex no-focus-ring">
-              {/* Preview */}
-              <input 
-                type="text" 
-                className="w-full bg-[#2D2E33] border-[#525363] rounded p-1 px-1 mx-0 font-normal text-sm m-auto" 
-                placeholder="Preview /" 
-                value={debouncedPath}
-                onChange={(e) => { setDebouncedPath(e.target.value); handlePathChange(e.target.value); }}
-                onKeyDown={(event) => {
-                  if(event.key == "Enter"){
-                    setPath(debouncedPath)
-                  }
-                }}
-              />
-            </div>
-             <iframe 
-                style={{height: "calc(100% - 120px)"}}
-                className="bg-white rounded border-[#525363] border"
-                src={url} 
-                title="Preview" 
-                width="100%" 
-                frameBorder="0"
-                z-index="1000"
-              />
+          <div className="w-1/3 h-full flex-col">
+              <div className="ml-1 mt-0.5"><div className="text-sm font-bold">Schema</div><div className="mt-0.5">This how information will be stored in the database</div></div>
+              <SchemaViewer schema={schema} setSchema={schemaEditHandler} />
             </div>
           </>
         )}

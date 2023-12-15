@@ -423,6 +423,39 @@ export default function useEndpointApi() {
     }
   };
 
+  const getSchema = async () => {
+    try {
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/schema?env=${environment}`,
+        {
+          withCredentials: true
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+
+  const setSchema = async (schema) => {
+    try {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/schema?env=${environment}`,
+        {
+          schema: schema
+        },
+        {
+          withCredentials: true
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+
   const checkIfAllEndpointsExist = (data: string) => {
     const regex = /api\.(get|post)\((.*?)\)/g;
     const matches = []
@@ -486,6 +519,8 @@ export default function useEndpointApi() {
     promptDbHelper,
     promptAiPlanner,
     promptAiTaskEdit,
-    aiTaskExecute
+    aiTaskExecute,
+    setSchema,
+    getSchema
   };
 }
