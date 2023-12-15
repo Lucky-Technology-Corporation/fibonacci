@@ -16,7 +16,8 @@ export default function SchemaViewer({schema, setSchema}: {schema: any, setSchem
     console.log(collection, field)
     const newData = { ...schema };
     delete newData[collection][field];
-    setSchema(newData);
+    console.log(newData)
+    // setSchema(newData);
   };
 
   const CollapsibleSection = ({ title, children, level = 0 }) => {

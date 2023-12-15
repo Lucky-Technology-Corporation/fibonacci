@@ -37,7 +37,7 @@ export default function AssistantPage() {
   useEffect(() => {
     async function fetchSchema(){
       var rawResponse = await getSchema()
-      // setSchemaLocal(rawResponse.schema)
+      setSchemaLocal(rawResponse.schema)
     }
 
     if(activeProject != ""){
