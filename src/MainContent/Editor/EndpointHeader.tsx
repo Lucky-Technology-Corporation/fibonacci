@@ -33,10 +33,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
 
   useEffect(() => {
-    console.log(selectedTab)
-  }, [])
-
-  useEffect(() => {
     if (activeEndpoint == undefined) return;
     const splitEndpoint = activeEndpoint.split("/");
     setMethod(splitEndpoint[0].toUpperCase() as Method);
@@ -359,7 +355,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     },
     {
       "type": "action",
-      "image": "Packages",
+      "image": "packages",
       "title": "Packages",
       "description": "Install an NPM package",
       "filter": ""
@@ -399,7 +395,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       },
       {
         "type": "ai",
-        "image": "ai_snippet",
+        "image": "wand",
         "title": value,
         "description": "Ask AI",
         "ai_type": 0

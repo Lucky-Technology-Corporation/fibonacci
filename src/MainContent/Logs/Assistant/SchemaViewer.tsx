@@ -1,15 +1,43 @@
-import { faChevronDown, faChevronRight, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronRight, faPlus, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import Button from "../../../Utilities/Button";
+import NewFieldModal from "./NewFieldModal";
 
 export default function SchemaViewer({schema, setSchema, commitSchema}: {schema: any, setSchema: any, commitSchema: any}){
   
-  const handleAdd = (collection, field) => {
+  const [addVisible, setAddVisible] = useState<boolean>(false);
+  const [inputCollection, setInputCollection] = useState<string>("");
+  const [inputKeyPath, setInputKeyPath] = useState<string[]>([]);
+
+  const handleAdd = (collection, keyPath, schemaEntry) => {
     const newData = { ...schema };
-    // Assuming the field value is a string for simplicity
-    newData[collection][field] = '';
+  
+    // Helper function to recursively add the field
+    const addField = (obj, path, value) => {
+      const key = path[0];
+      if (path.length === 0) {
+        const key = Object.keys(value)[0];
+        console.log("set", obj, key, value[key])
+        obj[key] = value[key] // Set value at the last key
+        if(path[0] != value){
+          delete obj[path[0]];
+        }
+        return;
+      }
+  
+      if (!obj[key]) {
+        obj[key] = {}; 
+      }
+  
+      addField(obj[key], path.slice(1), value);
+    };
+  
+
+    addField(newData[collection], keyPath, schemaEntry);
+  
     setSchema(newData);
+    commitSchema(newData);
   };
 
   const handleRemove = (collection, keyPath: string[]) => {
@@ -36,14 +64,16 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
   };
 
   const handleEdit = (collection, keyPath: string[], value, shouldCommit) => {
-    console.log("shouldCommit", shouldCommit)
+    console.log("handleEdit", collection, keyPath, value, shouldCommit)
     const newData = { ...schema };
 
     // Helper function to recursively set the field
     const setField = (obj, path, value) => {
       if (path.length === 1) {
         obj[value] = obj[path[0]]; // Set value at the last key
-        delete obj[path[0]];
+        if(path[0] != value){
+          delete obj[path[0]];
+        }
         return;
       }
 
@@ -59,11 +89,17 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
     setSchema(newData);
 
     if(shouldCommit){
-      // commitSchema(newData)
+      commitSchema(newData)
     }
   }
 
-  const CollapsibleSection = ({ title, children, level = 0 }) => {
+  const openAddModal = (collection, keyPath) => {
+    setInputKeyPath(keyPath)
+    setInputCollection(collection)
+    setAddVisible(true)
+  }
+
+  const CollapsibleSection = ({ title, children, keyPath, collection, level = 0 }) => {
     const [isOpen, setIsOpen] = useState(true);
   
     return (
@@ -76,8 +112,9 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
               children={<FontAwesomeIcon icon={isOpen ? faChevronDown : faChevronRight} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" />}
             />
           </div>
-          <input className="my-auto text-xs font-mono font-semibold bg-transparent rounded p-1 px-1 mx-0" value={title} onChange={() => {}} />
-          <div className="my-auto ml-auto mr-4">Object</div>
+          <div className="my-auto text-xs font-mono font-semibold bg-transparent rounded p-1 px-1 mx-0">{title}</div>
+          <div className="my-auto ml-1 mr-auto cursor-pointer" onClick={() => {openAddModal(collection, keyPath)}}><FontAwesomeIcon icon={faPlus} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" /></div>
+          <div className="my-auto ml-auto mr-2">Object</div>
         </div>
 
         {isOpen && children}
@@ -109,7 +146,7 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
   const renderField = (field, type, collection, handleRemove, keyPath: string[], level = 0) => {
     if (typeof type === 'object' && !Array.isArray(type)) {
       return (
-        <CollapsibleSection key={field} title={field} level={level}>
+        <CollapsibleSection key={field} title={field} keyPath={keyPath} collection={collection} level={level}>
           {Object.entries(type).map(([nestedField, nestedType]) => (
             renderField(nestedField, nestedType, collection, handleRemove, [...keyPath, nestedField], level + 1)
           ))}
@@ -127,12 +164,11 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
           </div>
           <InputField
             key={keyPath.join("-") + "-" + field + "-input"}
-            className={`my-auto text-xs font-mono font-semibold ${field == "_id" ? "bg-transparent" : "bg-[#85869822]"} border-[#525363] rounded p-1 px-1 mx-0`}
+            className={`my-auto w-full text-xs font-mono font-semibold ${field == "_id" ? "bg-transparent" : "bg-[#85869822]"} border-[#525363] rounded p-1 px-1 mx-0 mr-2`}
             initialValue={field}
-            // onChange={(newValue) => handleEdit(collection, keyPath, newValue, false)}
             onBlur={(newValue) => handleEdit(collection, keyPath, newValue, true)}
           />
-          <div className="my-auto ml-auto mr-4">{JSON.stringify(type).replace(/"/g,"")}</div>
+          <div className="my-auto mr-2">{JSON.stringify(type).replace(/"/g,"")}</div>
         </div>
       );
     }
@@ -150,13 +186,15 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
             {Object.entries(fields).map(([field, type]) =>
               renderField(field, type, collection, handleRemove, [field])
             )}
-          <Button
-              className={`text-sm my-4 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
-              onClick={() => {  }}
-              text={"Add Field"}
-          />
+          <div className="my-auto ml-2 mb-1 mr-auto cursor-pointer" onClick={() => {openAddModal(collection, [])}}><FontAwesomeIcon icon={faPlus} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" /></div>
+          {/* <Button
+            className={`text-sm my-4 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
+            onClick={() => { setAddVisible(true) }}
+            text={"Add Field"}
+          /> */}
         </div>
       ))}
+      <NewFieldModal addFieldHandler={handleAdd} addVisible={addVisible} setAddVisible={setAddVisible} collectionName={inputCollection} keyPath={inputKeyPath} />
     </div>
   )
 }

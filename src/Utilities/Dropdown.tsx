@@ -64,7 +64,7 @@ export default function Dropdown({
             direction != "center" ? direction + "-0" : ""
           } z-50 mt-2 w-56 origin-top-right rounded-md shadow-lg bg-[#333336] ring-1 ring-inset ring-[#525363] focus:outline-none`}
         >
-          <div className="py-1">
+          <div className="py-1 border-[#525363] border rounded bg-[#252629]">
             {children.map((child: any) => (
               <Menu.Item key={child.id}>
                 {({ active }) => (
