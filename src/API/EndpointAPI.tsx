@@ -227,7 +227,7 @@ export default function useEndpointApi() {
   };
 
 
-  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string, history?: any[], path?: string) => {
+  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string, history?: any[], path?: string, fileErrors?: string) => {
     try {
       const filePath = path ? path : openUri.replace("/swizzle/code/", "")
 
@@ -240,6 +240,7 @@ export default function useEndpointApi() {
         query_type: queryType,
         selected_text: selectedText,
         history: history,
+        error_message: fileErrors,
       };
 
       sessionStorage.setItem(("ai" + activeProject + "_" + filePath + "_file"), userQuery)

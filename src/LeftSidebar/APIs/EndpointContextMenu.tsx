@@ -87,8 +87,8 @@ export default function EndpointContextMenu({showContextMenu, setShowContextMenu
         <TailwindModal
           open={showDeleteModal}
           setOpen={setShowDeleteModal}
-          title="Delete endpoint"
-          subtitle="Are you sure you want to delete this endpoint?"
+          title="Delete"
+          subtitle="Are you sure you want to delete this?"
           confirmButtonText="Delete"
           confirmButtonAction={() => { 
             runDeleteProcess()

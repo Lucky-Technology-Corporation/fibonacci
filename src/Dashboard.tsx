@@ -1,6 +1,6 @@
 import { Position, TourProvider, useTour } from "@reactour/tour";
 import Lottie from "lottie-react";
-import { initIntercomWindow } from "next-intercom";
+// import { initIntercomWindow } from "next-intercom";
 import { useContext, useEffect, useState } from "react";
 import { useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import toast, { Toaster } from "react-hot-toast";
@@ -266,14 +266,14 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    initIntercomWindow({
-      appId: "cxvvsphp",
-      name: (auth() || { user: "unknown" }).user,
-      projectId: activeProject,
-      testDomain: testDomain,
-    });
-  }, [auth, activeProject, testDomain]);
+  // useEffect(() => {
+  //   initIntercomWindow({
+  //     appId: "cxvvsphp",
+  //     name: (auth() || { user: "unknown" }).user,
+  //     projectId: activeProject,
+  //     testDomain: testDomain,
+  //   });
+  // }, [auth, activeProject, testDomain]);
 
   useEffect(() => {
     const fetchProjects = async () => {

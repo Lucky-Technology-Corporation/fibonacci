@@ -184,7 +184,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     allMessages.push(messageQueue.shift().replace(regex, ''));
                 }
                 var allElements = [];
-                console.log("allMessages", allMessages)
+    
                 allMessages.forEach((lineIn, index) => {
                     try{
                         var lines;

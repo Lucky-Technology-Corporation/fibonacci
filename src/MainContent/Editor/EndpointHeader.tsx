@@ -16,7 +16,7 @@ import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
-  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, setSwizzleActionDispatch } = useContext(SwizzleContext);
+  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -44,6 +44,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     console.log("info", promptQuery, queryType)
     const currentFile = currentFileProperties.fileUri.split("/").pop()
     console.log("currentFile", currentFile)
+
     if(queryType == "db"){
       if(promptQuery == ""){
         console.log("resetting db query")
@@ -68,51 +69,58 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         error: "Failed",
       });
     } else {
-      return toast.promise(promptAiEditor(promptQuery, queryType, selectedText), {
-        loading: "Thinking...",
-        success: (data) => {
-          if(queryType == "edit"){
-            //Replace the text
-            setPostMessage({
-              type: "replaceText",
-              content: data.new_code,
-            })
-        
-            //TODO: Update currentFileProperties here
-            //Update auth-required and imports
-
-            //Add undo button
-            setupUndo(data.old_code)
-
-            setTimeout(() => {
+      //find file errors if they exist
+      setPostMessage({
+        type: "getFileErrors"
+      })
+      toast("Scanning for build errors...")
+      setTimeout(() => {
+        console.log("fileError", fileErrors)
+        return toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, JSON.stringify(fileErrors)), {
+          loading: "Thinking...",
+          success: (data) => {
+            if(queryType == "edit"){
+              //Replace the text
               setPostMessage({
-                type: "saveFile"
+                type: "replaceText",
+                content: data.new_code,
               })
-            }, 100)
+          
+              //TODO: Update currentFileProperties here
+              //Update auth-required and imports
 
-            //TODO: finish this function later to add backend endpoints if needed
-            if(selectedTab == Page.Hosting){
-              checkIfAllEndpointsExist(data.new_code)
+              //Add undo button
+              setupUndo(data.old_code)
+
+              setTimeout(() => {
+                setPostMessage({
+                  type: "saveFile"
+                })
+              }, 100)
+
+              //TODO: finish this function later to add backend endpoints if needed
+              if(selectedTab == Page.Hosting){
+                checkIfAllEndpointsExist(data.new_code)
+              }
+
+            } else if(queryType == "snippet"){
+              setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
+            } else if(queryType == "selection"){
+              //open window and confirm
+              setResponse(
+                <AIResponseWithChat 
+                  descriptionIn={"The selected code will be replaced with the following"}
+                  operationIn={data.new_code} 
+                  setResponse={setResponse} 
+                  historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.new_code}]}
+                  selectedText={selectedText}
+                />)
             }
-
-          } else if(queryType == "snippet"){
-            setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
-          } else if(queryType == "selection"){
-            //open window and confirm
-            setResponse(
-              <AIResponseWithChat 
-                descriptionIn={"The selected code will be replaced with the following"}
-                operationIn={data.new_code} 
-                setResponse={setResponse} 
-                historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.new_code}]}
-                selectedText={selectedText}
-              />)
-          }
-
-          return "Done";
-        },
-        error: "Failed",
-      });
+            return "Done";
+          },
+          error: "Failed",
+        });
+      }, 1000);
     }
   };
 

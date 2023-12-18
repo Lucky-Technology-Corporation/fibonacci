@@ -93,6 +93,18 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
     }
   }
 
+  const changeCollectionName = (collection, value) => {
+    console.log("changeCollectionName", collection, value, schema)
+    const newData = { ...schema };
+    if(collection == value){ return }
+
+    newData[value] = newData[collection]
+    delete newData[collection]
+
+    setSchema(newData);
+    commitSchema(newData)
+  }
+
   const openAddModal = (collection, keyPath) => {
     setInputKeyPath(keyPath)
     setInputCollection(collection)
@@ -124,13 +136,18 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
 
   const InputField = ({ initialValue, onBlur, ...props }) => {
     const [value, setValue] = useState(initialValue);
-  
+    const [isDirty, setIsDirty] = useState(false);
+
     const handleChange = (e) => {
+      if (!isDirty) setIsDirty(true);
       setValue(e.target.value);
     };
   
     const handleBlur = (e) => {
-      onBlur?.(e.target.value); // Call onBlur prop with the final value
+      if (isDirty && onBlur) {
+        onBlur(e.target.value);
+        setIsDirty(false);
+      }
     };
   
     return (
@@ -182,16 +199,18 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
     <div className="w-full overflow-scroll">
       {Object.entries(schema).map(([collection, fields]) => (
         <div key={collection} className="my-2 bg-[#85869822] p-2 rounded">
-          <div className="text-sm font-bold font-mono text-center my-1">{collection}</div>
+            <div className="text-sm font-bold font-mono text-center my-1">
+              <InputField
+                key={collection + "-name-input"}
+                className={`my-auto text-center w-full font-mono font-semibold bg-[#85869822] border-[#525363] rounded p-1 px-1 mx-0 mr-2`}
+                initialValue={collection}
+                onBlur={(newValue) => changeCollectionName(collection, newValue)}
+              />
+            </div>
             {Object.entries(fields).map(([field, type]) =>
               renderField(field, type, collection, handleRemove, [field])
             )}
           <div className="my-auto ml-2 mb-1 mr-auto cursor-pointer" onClick={() => {openAddModal(collection, [])}}><FontAwesomeIcon icon={faPlus} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" /></div>
-          {/* <Button
-            className={`text-sm my-4 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
-            onClick={() => { setAddVisible(true) }}
-            text={"Add Field"}
-          /> */}
         </div>
       ))}
       <NewFieldModal addFieldHandler={handleAdd} addVisible={addVisible} setAddVisible={setAddVisible} collectionName={inputCollection} keyPath={inputKeyPath} />

@@ -113,11 +113,11 @@ export default function RightSidebar() {
   }
 
   useEffect(() => {
-    console.log("rs postMessage", fileErrors)
-    console.log("rs didRunAutocheck", didRunAutocheck)
     if(!didRunAutocheck) return
+    console.log("here")
+    console.log("fileErrors", fileErrors)
     if(fileErrors && fileErrors.length > 0){
-      toast.promise(getAutocheckResponse(postMessage.thisFilesErrors), {
+      toast.promise(getAutocheckResponse(fileErrors), {
         loading: "Running autocheck...",
         success: (data) => {
           if (data == "") {

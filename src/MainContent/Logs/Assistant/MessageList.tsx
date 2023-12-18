@@ -1,3 +1,4 @@
+import Button from "../../../Utilities/Button";
 import Task from "./Task";
 
 export default function MessageList( {messages, setMessages, setPath} : {messages: any[], setMessages: any, setPath: any}){
@@ -16,7 +17,17 @@ export default function MessageList( {messages, setMessages, setPath} : {message
 
     return (
         <div className="w-full h-full flex flex-col mx-4 overflow-scroll" style={{paddingBottom: "68px"}}>
-            <div className="ml-1 mt-0.5"><div className="text-sm font-bold">App code</div></div>
+            <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
+                <div>
+                    <div className="text-sm font-bold mb-0">App code</div>
+                    <div className="mt-0.5">This is a list of resources Swizzle will build for you</div>
+                </div>
+                <Button
+                    onClick={() => { setPath("appCode") }}
+                    text="+"
+                    className="mr-1.5 text-sm px-3 my-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                />
+            </div>
             {messages.map((message, messageIndex) => (
                 <div className="flex flex-col leading-normal mb-0.5">
                     {message.role == "assistant" && message.tasks.length > 0 ? (
