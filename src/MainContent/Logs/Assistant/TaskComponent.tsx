@@ -47,7 +47,6 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
         toast.promise(aiTaskExecute(task, allTasks.filter(v => v != null)), {
             loading: "Thinking...",
             success: (response: any) => {
-                console.log(response)
                 if(response.status == "TASK_WAITING_FOR_APPROVAL"){
                     setTaskCode(response.task.code)
                     editTask(response.task)
@@ -58,7 +57,6 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                     var newTask = task
                     newTask.complete = true
                     editTask(newTask)
-                    console.log("task", task)
                 } else{
                     toast.error("An error occured")
                 }

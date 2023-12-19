@@ -8,13 +8,14 @@ import Dropdown from "../../Utilities/Dropdown";
 import { filenameToEndpoint } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method } from "../../Utilities/Method";
+import { Page } from "../../Utilities/Page";
 import APIWizard from "./APIWizard";
 import EndpointItem from "./EndpointItem";
 import HelperItem from "./HelperItem";
 import HelperWizard from "./HelperWizard";
 // import HelperWizard from "./HelperWizard";
 
-export default function EndpointList({ active, currentFileProperties }: { active: boolean, currentFileProperties: any }) {
+export default function EndpointList({ currentFileProperties }: { currentFileProperties: any }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
@@ -81,14 +82,12 @@ export default function EndpointList({ active, currentFileProperties }: { active
     }
   }, [testDomain])
 
-  // useEffect(() => {
-  //   console.log("selected tab")
-  //   console.log("selected tab", selectedTab, activeEndpoint, endpoints)
-  //   if(selectedTab == Page.Apis && activeEndpoint == undefined && endpoints && endpoints.length > 0){
-  //     console.log("selected tab", "SETTING", endpoints[0])
-  //     setActiveEndpoint(endpoints[0])
-  //   }
-  // }, [selectedTab])
+  useEffect(() => {
+    if(selectedTab == Page.Apis && activeEndpoint == undefined && endpoints && endpoints.length > 0){
+      console.log("selected tab", "SETTING", endpoints[0])
+      setActiveEndpoint(endpoints[0])
+    }
+  }, [selectedTab])
 
   useEffect(() => {
     getFiles("endpoints")
@@ -106,7 +105,6 @@ export default function EndpointList({ active, currentFileProperties }: { active
           });
         setFullEndpointList(transformedEndpoints);
         setEndpoints(transformedEndpoints);
-        // setActiveEndpoint(transformedEndpoints[0]);
       })
       .catch((e) => {
         toast.error("Error fetching endpoints");
@@ -152,14 +150,14 @@ export default function EndpointList({ active, currentFileProperties }: { active
   }, [searchFilter]);
 
   useEffect(() => {
-    if (active && endpoints && endpoints.length > 0 && activeEndpoint == undefined) {
+    if (selectedTab == Page.Apis && endpoints && endpoints.length > 0 && activeEndpoint == undefined) {
       setActiveEndpoint(endpoints[0]);
     }
-  }, [active, endpoints]);
+  }, [selectedTab, endpoints]);
 
   //Fetch from backend and populate it here.
   return (
-    <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
+    <div className={`flex-col w-full px-1 text-sm ${selectedTab == Page.Apis ? "" : "hidden"}`}>
 
       <div className="ml-1 mr-1">
         <Dropdown

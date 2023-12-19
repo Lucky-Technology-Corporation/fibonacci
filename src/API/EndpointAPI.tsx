@@ -170,7 +170,6 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      console.log(await getFermatJwt())
       const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_backend`, {}, {
         headers: {
           Authorization: await getFermatJwt(),
@@ -191,7 +190,6 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      console.log(await getFermatJwt())
       const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_frontend`, {}, {
         headers: {
           Authorization: await getFermatJwt(),
@@ -351,7 +349,6 @@ export default function useEndpointApi() {
       const fileName = openUri.replace("/swizzle/code/", "");
       const fileContents = await getFile(fileName);
       
-      console.log("autochecking", fileName)
       if(fileName.includes("frontend/")){
         const neededEndpoints = checkIfAllEndpointsExist(fileContents)
       }
@@ -467,7 +464,7 @@ export default function useEndpointApi() {
     var neededEndpoints = []
     for(var urlInQuotes of matches){
       const url = urlInQuotes.replace(/^['"]|['"]$/g, '');
-      console.log("Checking " + url + " against " + fullEndpointList)
+
       const doesMatch = doesUrlMatch(url, fullEndpointList)
       if(!doesMatch){
         console.warn("Endpoint " + url + " does not exist")

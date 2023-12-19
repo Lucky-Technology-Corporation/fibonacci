@@ -34,7 +34,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         setLog([]);
 
         //Don't connect if we don't have the right data
-        if(!activeProject || !testDomain || !activeEndpoint) return;
+        if(!activeProject || !testDomain) return;
         if(selectedTab != Page.Apis && selectedTab != Page.Hosting) return;
 
         //Set our location
@@ -51,8 +51,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     }, [testDomain])
 
     useEffect(() => {
-        console.log("location", currentLocation)
-        if(currentLocation){
+        if(currentLocation != undefined){
             reconnectWebsocket()
         }
     }, [currentLocation])
@@ -106,7 +105,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     const lineNumber = lineNumbers[0]
                     const columnNumber = lineNumbers[1]
                     if(line.split("):")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
-                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
+                        return <span className="font-mono text-sm" key={key}><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                     }
                     return (<>
                         <span className="font-mono text-sm" key={key}>
@@ -121,7 +120,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     const lineNumber = lineNumbers[0]
                     const columnNumber = lineNumbers[1]
                     if(line.split(":")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
-                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { console.log("open the offender"); setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
+                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                     }
                     return <span className="font-mono text-sm" key={key}><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                 }
@@ -156,7 +155,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         if (ws) {
             ws.close();
         }
-        console.log("socket", "connect")
+
         if(!activeProject || !testDomain || !(selectedTab == Page.Apis || selectedTab == Page.Hosting)) return;
 
         var fermatJwt = await endpointApi.getFermatJwt();
@@ -251,7 +250,6 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         
 
         webSocket.onclose = () => {
-            console.log("socket", "close")
             if(selectedTab == Page.Hosting || selectedTab == Page.Apis){
                 reconnectWebsocket();
             }

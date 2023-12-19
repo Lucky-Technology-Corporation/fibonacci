@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Page } from "../../Utilities/Page";
 import FileItem from "./FileItem";
 import FileWizard from "./FileWizard";
 
@@ -19,7 +20,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [fileToEdit, setFileToEdit] = useState<string>("");
   const [fileToEditFallback, setFileToEditFallback] = useState<string>("");
 
-  const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
+  const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList, setActivePage } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
   const methods: any = [
@@ -42,11 +43,12 @@ export default function FilesList({ active }: { active: boolean }) {
 
   useEffect(() => {
     //set the active file to the first page
-    if(fileTree){
+    if(fileTree && selectedTab == Page.Hosting && activeFile == undefined){
       const pages = filterIfNeeded(fileTree.children.find(child => child.name === "pages").children)
       if(pages.length > 0){
         const page = pages[0]
-        setActiveFile("frontend/src/pages/" + page.path)
+        var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
+        setActiveFile("frontend/src/pages/" + pageRelativePath)
       }
     }
   }, [selectedTab])
@@ -148,7 +150,7 @@ export default function FilesList({ active }: { active: boolean }) {
       if (!showCurrent && !childMatch) return null;
   
       return (
-        <div key={node.path}>
+        <div key={node.path + node.name}>
           <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-2 px-2 hover:bg-[#85869833] rounded cursor-pointer">
             {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
             <div className="ml-2">{node.name}</div>
@@ -169,11 +171,14 @@ export default function FilesList({ active }: { active: boolean }) {
         return (
           <>
           <FileItem
-            key={node.path}
+            key={node.path + node.name +"-item"}
             path={node.name}
             fullPath={node.path}
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
+              if(node.path.includes("src/pages")){
+                setActivePage(node.name)
+              }
               setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
             }}
             removeFromList={() => {

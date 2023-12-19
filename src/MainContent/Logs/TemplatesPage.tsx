@@ -27,11 +27,11 @@ export default function TemplatesPage() {
 
   const getTemplates = () => {
     return (
-      templates.map((template) => {
+      templates.map((template, index) => {
         if(searchQuery == "" || template.name.toLowerCase().includes(searchQuery.toLowerCase())){
           if(template.type == "dropin"){
             return (
-              <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0" style={{ width: 'calc(33.333% - 1rem)' }}>
+              <Card key={index} className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0" style={{ width: 'calc(33.333% - 1rem)' }}>
                 <div className="font-semibold text-lg flex">
                   <img src={template.icon_url || "/puzzle.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
                   <div className="my-auto mr-auto">{template.name}</div>

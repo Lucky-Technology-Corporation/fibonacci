@@ -253,10 +253,10 @@ export default function LogRow({
       </tr>
       <tr className={`${isExpanded ? "" : "hidden"} border-b border-[#4C4F6B]`}>
         <td colSpan={9} className="text-left pl-6 text-xs py-3 word-wrap max-w-full font-mono">
-          <div className="font-mono">{(message.logs || []).map(logString => {
+          <div className="font-mono">{(message.logs || []).map((logString, index) => {
             var log = JSON.parse(logString);
             return (
-              <div className={`mb-1 flex`}>
+              <div className={`mb-1 flex`} key={"message-" + index}>
                 <div className="mr-2">{new Date(log.timestamp).toLocaleTimeString()}</div>
                 <div className="mr-2">{getIconForLevel(log.level)}</div>
                 <div className={log.level == "error" ? "text-red-400" : log.level == "warn" ? "text-yellow-400" : "text-[#d2d3e0]"}>{log.text}</div>

@@ -136,7 +136,6 @@ export default function ProjectSelector({
       project = projects[0];
     }
     setIdeReady(false)
-    console.log("SET TO ", project)
     const deploymentStatus = await checkDeploymentStatus(project.id);
     switch (deploymentStatus) {
       case "DEPLOYMENT_FAILURE":

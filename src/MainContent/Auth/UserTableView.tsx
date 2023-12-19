@@ -94,7 +94,6 @@ export default function UserTableView() {
         body: JSON.stringify(requestBody),
       });
       const flagData = await flagResponse.json();
-      console.log(flagData)
       for (var i = 0; i < data.documents.length; i++) {
         data.documents[i].countryCode = flagData[i].countryCode;
       }

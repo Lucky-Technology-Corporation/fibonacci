@@ -72,6 +72,8 @@ export interface SwizzleContextType {
   setSwizzleActionDispatch: Dispatch<SetStateAction<any>>;
   fileErrors: string;
   setFileErrors: Dispatch<SetStateAction<string>>;
+  activePage: string;
+  setActivePage: Dispatch<SetStateAction<string>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -107,6 +109,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [currentDbQuery, setCurrentDbQuery] = useState("")
   const [swizzleActionDispatch, setSwizzleActionDispatch] = useState<any>(null)
   const [fileErrors, setFileErrors] = useState<string>("")
+  const [activePage, setActivePage] = useState<string>(undefined)
 
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
@@ -183,7 +186,9 @@ export const GlobalContextProvider = ({ children }) => {
         swizzleActionDispatch,
         setSwizzleActionDispatch,
         fileErrors,
-        setFileErrors
+        setFileErrors,
+        activePage,
+        setActivePage
       }}
     >
       {children}

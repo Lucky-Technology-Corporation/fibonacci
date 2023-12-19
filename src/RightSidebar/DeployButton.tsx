@@ -97,7 +97,6 @@ export default function DeployButton({}: {}) {
 
 
   useEffect(() => {
-    console.log("shouldCancelHide", shouldCancelHide)
     if(!shouldCancelHide){
       setTimeout(() => {
         setShowDeployInfo(false);

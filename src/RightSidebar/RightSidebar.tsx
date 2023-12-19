@@ -96,7 +96,6 @@ export default function RightSidebar() {
   const refreshSpinner = useRef(null)
   const spin = () => {
     const spinner = refreshSpinner.current
-    console.log("spinner", spinner)
     if (spinner) {
       spinner.classList.add("spin-rotate");
       setTimeout(() => {
@@ -113,9 +112,9 @@ export default function RightSidebar() {
   }
 
   useEffect(() => {
-    if(!didRunAutocheck) return
-    console.log("here")
-    console.log("fileErrors", fileErrors)
+    if(!didRunAutocheck) { 
+      return
+    }
     if(fileErrors != ""){
       toast.promise(getAutocheckResponse(fileErrors), {
         loading: "Running autocheck...",

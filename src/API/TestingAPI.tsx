@@ -22,7 +22,6 @@ export default function useTestApi() {
 
   const runTest = async (testDoc: TestType) => {
     if (!activeEndpoint) {
-      console.error("No active project selected");
       return;
     }
 

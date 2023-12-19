@@ -21,7 +21,7 @@
     "@reactour/tour": "^3.6.1",
     "@stripe/react-stripe-js": "^2.3.1",
     "@stripe/stripe-js": "^2.1.10",
-    "@tremor/react": "^3.6.1",
+    "@tremor/react": "^3.12.1",
     "@types/chart.js": "^2.9.37",
     "@types/express": "^4.17.17",
     "@uiw/react-textarea-code-editor": "^2.1.7",

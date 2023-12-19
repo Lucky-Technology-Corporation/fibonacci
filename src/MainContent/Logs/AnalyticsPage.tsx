@@ -24,7 +24,8 @@ export default function AnalyticsPage() {
   const [isHintHidden, setIsHintHidden] = useState<boolean>(false)
   const [prodDeployed, setProdDeployed] = useState<boolean>(false)
 
-  const [data, setData] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any[]>([]);
+  const [requestData, setRequestData] = useState<any[]>([]);
   const fetchAndProcessData = async () => {
     try {
       const startDateStr = dateRange.from.toISOString();
@@ -33,12 +34,18 @@ export default function AnalyticsPage() {
       if (fetchedData == null) {
         return;
       }
-      const processedData = fetchedData.map((entry) => ({
+      const requestDataObject = fetchedData.map((entry, index) => ({
+        id: index + "-r",
         date: entry._id,
-        uniqueUsers: entry.uniqueUsers,
         totalRequests: entry.totalRequests,
       }));
-      setData(processedData);
+      const userDataObject = fetchedData.map((entry, index) => ({
+        id: index + "-u",
+        date: entry._id,
+        uniqueUsers: entry.uniqueUsers,
+      }));
+      setRequestData(requestDataObject)
+      setUserData(userDataObject);
     } catch (error) {
       console.error("Error fetching monitoring data:", error);
     }
@@ -69,9 +76,9 @@ export default function AnalyticsPage() {
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (
-      <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded !mx-6">
+      <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded !mx-6" style={{minWidth: "1px", minHeight: "1px"}}>
         <div className="mb-2 text-[#cccccc] font-md">{title}</div>
-        <LineChart className="dark-tremor" data={chartdata} index="date" categories={categories} yAxisWidth={40} colors={["indigo"]} />
+        <LineChart className="dark-tremor" data={chartdata} index="date" categories={categories} yAxisWidth={40} colors={["indigo"]} style={{minWidth: "1px", minHeight: "1px"}} />
       </Card>
     );
   };
@@ -104,7 +111,7 @@ export default function AnalyticsPage() {
 
 
   return (
-    <div className="">
+    <div className="h-full">
       <div className="flex flex-row items-center ml-10 mb-2 pt-2">
         {/* <div className="flex-col mr-4">
           <div className="font-bold text-[#cccccc] text-lg">{activeProjectName}</div>
@@ -228,11 +235,11 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="no-focus-ring pt-2">
-        {data.length > 0 ? (
+        {userData.length > 0 ? (
           <>
-            <div className="p-4 pt-0 flex flex-row space-x-2">
-              {processDataAndCreateGraph(data, "Unique Users", ["uniqueUsers"])}
-              {processDataAndCreateGraph(data, "Total Requests", ["totalRequests"])}
+            <div className="p-4 pt-0 flex flex-row space-x-2 w-full h-full">
+              {processDataAndCreateGraph(userData, "Unique Users", ["uniqueUsers"])}
+              {processDataAndCreateGraph(requestData, "Total Requests", ["totalRequests"])}
             </div>
           </>
         ) : (

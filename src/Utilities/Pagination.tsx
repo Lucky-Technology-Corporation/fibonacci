@@ -33,7 +33,6 @@ const Pagination = ({
   const refreshSpinner = useRef(null)
   const spin = () => {
     const spinner = refreshSpinner.current
-    console.log("spinner", spinner)
     if (spinner) {
       spinner.classList.add("spin-rotate");
       setTimeout(() => {

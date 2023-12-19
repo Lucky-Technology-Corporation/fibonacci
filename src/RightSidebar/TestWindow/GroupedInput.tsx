@@ -6,11 +6,10 @@ export default function GroupedInput({valueList, setValueList, isQuery = false}:
     const [emptyRow, setEmptyRow] = useState({ key: "", value: "" });
 
     useEffect(() => {
-        console.log("valueList", valueList)
-        if (valueList.length > prevLength.current && lastEditedRef.current) {
-            lastEditedRef.current.focus();
-        }
-        prevLength.current = valueList.length;
+      if (valueList.length > prevLength.current && lastEditedRef.current) {
+          lastEditedRef.current.focus();
+      }
+      prevLength.current = valueList.length;
     }, [valueList]);
 
     const handleInputChange = (id: number, newKey: string, newValue: string) => {
@@ -30,7 +29,6 @@ export default function GroupedInput({valueList, setValueList, isQuery = false}:
     };
     
     if(!valueList) return <></>
-    console.log("valueList", typeof valueList)
     return (
         <div key="grouped-rows" className="w-full">
             {valueList.map(({ id, key, value }) => (

@@ -2,59 +2,59 @@ import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
-import { capitalizeAfterLastSlash, formatPath } from "../../Utilities/EndpointParser";
+import { capitalizeAfterLastSlash } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import TailwindModal from "../../Utilities/TailwindModal";
 
 export default function FileContextMenu({showContextMenu, setShowContextMenu, path, disableDelete, fullPath, isPrivate, editFile}: {showContextMenu: boolean, setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>, path: string, disableDelete: boolean, fullPath: string, isPrivate: boolean, editFile: () => void }){
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
+  const filesystemApi = useFilesystemApi()
 
-    const modalRef = useRef<HTMLDivElement | null>(null);
-    useEffect(() => {
-      function handleClickOutside(event: MouseEvent) {
-        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-          setShowContextMenu(false);
-        }
-      }
-      document.addEventListener("mousedown", handleClickOutside);
-  
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside); // Unbind the event listener on clean up
-      };
-    }, []);
-
-    const {setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext)
-    const { deleteFile } = useEndpointApi()
-    const { removeFile, removeAuthFromPage } = useFilesystemApi()
-  
-    const runDeleteProcess = async (fileName: string) => {
-      try{
-        var fileNameParsed = fullPath.replace("/home/swizzle/code", "")
-        fileNameParsed = capitalizeAfterLastSlash(fileNameParsed)
-        if(!fileNameParsed.endsWith(".tsx")){ 
-          fileNameParsed = fileNameParsed + ".tsx"
-        }
-
-        //close file
-        setPostMessage({
-          type: "removeFile",
-          fileName: fileNameParsed,
-        })
-
-        //clean up codegen
-        if(fileNameParsed.includes("/pages/")){
-          await removeFile("/frontend/src/pages/" + fileName, undefined, formatPath(fullPath, path))
-        }
-        
-        //delete file
-        await deleteFile(fullPath.replace("/home/swizzle/code/frontend/src/", ""), "frontend")
-        setShouldRefreshList(!shouldRefreshList)
-      } catch(e){
-        throw "Error deleting endpoint"
+  const modalRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setShowContextMenu(false);
       }
     }
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside); // Unbind the event listener on clean up
+    };
+  }, []);
+
+  const runDeleteProcess = async () => {
+    try{
+
+      var fileNameParsed = fullPath.replace("/home/swizzle/code", "")
+      fileNameParsed = capitalizeAfterLastSlash(fileNameParsed)
+      if(!fileNameParsed.endsWith(".tsx")){ 
+        fileNameParsed = fileNameParsed + ".tsx"
+      }
+
+      //close file
+      setPostMessage({
+        type: "removeFile",
+        fileName: fileNameParsed,
+      })
+
+      //clean up codegen
+      if(fileNameParsed.includes("/pages/")){
+        const relativeFilePath = fileNameParsed.split("/pages/")[1]
+        await filesystemApi.deletePage(path)
+      } else{
+        const relativeFilePath = fileNameParsed.split("/components/")[1]
+        await filesystemApi.deleteComponent(relativeFilePath)
+      }
+
+      setShouldRefreshList(!shouldRefreshList)
+    } catch(e){
+      throw "Error deleting endpoint"
+    }
+  }
 
 
     return (
@@ -133,7 +133,7 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
           subtitle="Are you sure you want to delete this?"
           confirmButtonText="Delete"
           confirmButtonAction={() => { 
-            toast.promise(runDeleteProcess(path), {
+            toast.promise(runDeleteProcess(), {
               loading: "Deleting...",
               success: "Deleted",
               error: "Error deleting"

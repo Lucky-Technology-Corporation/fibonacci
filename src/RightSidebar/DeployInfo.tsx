@@ -66,8 +66,8 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
       className={`z-50 w-[370px] text-sm bg-[#252629] border border-gray-700 rounded-lg shadow-lg pt-2 pb-2 ${shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       style={{ transition: "opacity 0.2s", marginTop: "0px" }}
       ref={myRef}
-      onMouseEnter={() =>  { console.log("enter zone"); setShouldCancelHide(true)}}
-      onMouseLeave={() => { console.log("exit zone"); setShouldCancelHide(false); } }
+      onMouseEnter={() =>  { setShouldCancelHide(true)}}
+      onMouseLeave={() => { setShouldCancelHide(false); } }
     >
       {logs.length === 0 ? (
         <div className="text-center p-4 text-sm">No deployments yet</div>

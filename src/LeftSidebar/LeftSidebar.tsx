@@ -72,7 +72,7 @@ export default function LeftSidebar({
   const openActiveEndpoint = () => {
     if (activeEndpoint == undefined || activeEndpoint == "") return;
     var fileName = endpointToFilename(activeEndpoint)
-    console.log("selected tab", "opening", activeEndpoint, fileName)
+
     if (fileName.startsWith("!helper!")) {
       //Check if we're already on the helper
       fileName = fileName.replace("!helper!", "");
@@ -104,7 +104,6 @@ export default function LeftSidebar({
   };
 
   useEffect(() => {
-    console.log("currentFileProperties", currentFileProperties)
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.startsWith("file:///")) {
       return;
     }
@@ -135,18 +134,6 @@ export default function LeftSidebar({
     }
   }, [currentFileProperties]);
 
-  // useEffect(() => {
-  //   if(ideReady){
-  //     if(selectedTab == Page.Hosting){
-  //       console.log("Setting active file to frontend/src/pages/SwizzleHomePage.tsx")
-  //       setActiveFile("frontend/src/pages/SwizzleHomePage.tsx")
-  //     } else {
-  //       console.log("Setting active file to backend/user-dependencies/get..ts")
-  //       setActiveFile("backend/user-dependencies/get..ts")
-  //     }
-  //   }
-  // }, [ideReady])
-
   const changeEnvironment = async (env) => {
     const status = await getProjectDeploymentStatus(activeProject, env)
     if (status == "DEPLOYMENT_SUCCESS") {
@@ -160,7 +147,6 @@ export default function LeftSidebar({
   const refreshSpinner = useRef(null)
   const spin = () => {
     const spinner = refreshSpinner.current
-    console.log("spinner", spinner)
     if (spinner) {
       spinner.classList.add("spin-rotate");
       setTimeout(() => {
@@ -272,7 +258,6 @@ export default function LeftSidebar({
                 text="Reload"
                 children={refreshHidden ? <FontAwesomeIcon icon={faSpinner} color="#ddd" /> : <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />}
                 onClick={() => { 
-                  console.log("ideReady", ideReady)
                   setRefreshTheia(true)
                   toast("Reloading IDE...")
                   spin()
@@ -285,7 +270,7 @@ export default function LeftSidebar({
             </div>
           </div>
         </a>
-        <EndpointList active={selectedTab == Page.Apis} currentFileProperties={currentFileProperties} />
+        <EndpointList currentFileProperties={currentFileProperties} />
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
@@ -312,7 +297,6 @@ export default function LeftSidebar({
                 text="Reload"
                 children={refreshHidden ? <FontAwesomeIcon icon={faSpinner} color="#ddd" /> : <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />}
                 onClick={() => { 
-                  console.log("ideReady", ideReady)
                   setRefreshTheia(true)
                   toast("Reloading IDE...")
                   spin()

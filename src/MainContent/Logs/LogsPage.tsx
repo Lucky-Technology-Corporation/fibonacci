@@ -244,7 +244,7 @@ export default function LogsPage() {
           </thead>
           <tbody className="overflow-y-scroll">
             {(messages || []).map((message, index) => {
-              return <LogRow key={index} message={message} freshLogs={freshLogs} setModalText={setModalText} autofixButtonClassName={index == 0 ? "autofix-button" : ""} />;
+              return <LogRow key={"log-"+index} message={message} freshLogs={freshLogs} setModalText={setModalText} autofixButtonClassName={index == 0 ? "autofix-button" : ""} />;
             })}
             <tr></tr>
           </tbody>

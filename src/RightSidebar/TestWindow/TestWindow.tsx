@@ -237,9 +237,7 @@ export default function TestWindow({
                     setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
                     api
                       .deleteTest(activeCollection, testDoc._id)
-                      .then(() => {
-                        console.log("Deleted test")
-                      })
+                      .then(() => { })
                       .catch((error) => {
                         toast.error("Error deleting test")
                         console.error("Error deleting test:", error);

@@ -71,7 +71,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     if (!activeCollection || activeCollection == "") return;
     getDocuments(activeCollection, page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
-        console.log("resetting all data")
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
@@ -164,7 +163,6 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   }, [currentPage, sortedByColumn, sortDirection]);
 
   useEffect(() => {
-    console.log("currentDbQuery", currentDbQuery)
     if(!currentDbQuery || currentDbQuery == "") return;
     if(currentDbQuery == "_reset"){
       handleRefresh()

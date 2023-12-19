@@ -14,7 +14,6 @@ export default function useTemplateApi() {
     const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/templates`, {
       withCredentials: true,
     });
-    console.log("templates", response)
     return response.data;
   };
 

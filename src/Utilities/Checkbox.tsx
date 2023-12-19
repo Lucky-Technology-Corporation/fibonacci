@@ -21,7 +21,6 @@ export default function Checkbox({
         type="checkbox"
         style={{ display: "none" }}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          console.log("Set checkbox to", e.target.checked)
           setIsChecked(e.target.checked);
         }}
         checked={isChecked}

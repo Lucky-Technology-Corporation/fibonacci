@@ -25,7 +25,6 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
     postMessageToIframe(postMessage);
     setPostMessage(null);
-    console.log("postMessage", postMessage)
   }, [postMessage]);
 
   const postMessageToIframe = (message) => {
@@ -35,7 +34,6 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
   useEffect(() => {
     if(refreshTheia){
-      console.log("refreshTheia", refreshTheia)
       iframeRef.current.src = iframeRef.current.src;
       setRefreshTheia(false);
     }
@@ -66,27 +64,10 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
 
     if(event.data.type === "fileErrors"){
-      console.log("fileErrors Post message", event.data)
-      // const parsed = JSON.parse(event.data.thisFilesErrors)
-      // console.log(parsed)
       setFileErrors(event.data.thisFilesErrors)
     }
 
   };
-
-  // useEffect(() => {
-  //   console.log("selectedTab", selectedTab)
-  //   if(selectedTab == Page.Hosting){ 
-  //     if(!(currentFileProperties.fileUri || "").includes("frontend/")){
-  //       setActiveFile("frontend/src/pages/SwizzleHomePage.tsx");
-  //     }
-  //   }
-  //   else if(selectedTab == Page.Apis){
-  //     if(!(currentFileProperties.fileUri || "").includes("backend/")){
-  //       setActiveEndpoint("get/");
-  //     }
-  //   }
-  // }, [selectedTab])
 
   //Resend the file name when ready
   useEffect(() => {
@@ -140,10 +121,10 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% - 140px)",
+          height: "calc(100% - 116px)",
           marginLeft: "-48px",
           marginRight: "-48px",
-          // marginTop: "-68px",
+          marginTop: "-52px",
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>
@@ -152,7 +133,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         style={{
           height: "200px",
           width: "calc(100% - 24px)",
-          bottom: "0px",
+          bottom: "24px",
           position: "absolute",
           // zIndex: -1
         }}

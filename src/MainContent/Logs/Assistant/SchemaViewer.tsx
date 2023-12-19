@@ -18,7 +18,6 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
       const key = path[0];
       if (path.length === 0) {
         const key = Object.keys(value)[0];
-        console.log("set", obj, key, value[key])
         obj[key] = value[key] // Set value at the last key
         if(path[0] != value){
           delete obj[path[0]];
@@ -64,7 +63,6 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
   };
 
   const handleEdit = (collection, keyPath: string[], value, shouldCommit) => {
-    console.log("handleEdit", collection, keyPath, value, shouldCommit)
     const newData = { ...schema };
 
     // Helper function to recursively set the field
@@ -94,7 +92,6 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
   }
 
   const changeCollectionName = (collection, value) => {
-    console.log("changeCollectionName", collection, value, schema)
     const newData = { ...schema };
     if(collection == value){ return }
 

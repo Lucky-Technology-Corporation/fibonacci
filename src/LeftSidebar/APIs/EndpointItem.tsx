@@ -1,7 +1,6 @@
 import { faClock, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
-import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -23,8 +22,8 @@ export default function EndpointItem({
   removeFromList?: () => void
   editFile?: () => void
 }) {
-  const { deleteFile } = useEndpointApi()
-  const { removeFile } = useFilesystemApi()
+
+  const  filesystemApi = useFilesystemApi()
 
   const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -43,10 +42,9 @@ export default function EndpointItem({
         type: "removeFile",
         fileName: "/backend/user-dependencies/" + fileName,
       });
-      //clean up codegen
-      await removeFile("/backend/user-dependencies/" + fileName, newEndpointName)
-      //delete file
-      await deleteFile(fileName, "backend")
+
+      filesystemApi.deleteEndpoint(method, path)
+      
       removeFromList()
     } catch(e){
       throw "Error deleting endpoint"

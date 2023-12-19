@@ -254,7 +254,6 @@ export default function Dashboard() {
   };
 
   const prepareNextStep = (nextStep: number) => {
-    console.log("prepareNextStep", nextStep);
     if(nextStep == 1){
       setActiveLogsPage("logs")
     } else if (nextStep == 4) {

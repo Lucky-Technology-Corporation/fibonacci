@@ -48,7 +48,6 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
   const { setPostMessage, domain, shouldRefreshList } = useContext(SwizzleContext);
 
   useEffect(() => {
-    console.log("refreshing package list")
     if (domain == null || domain == undefined || domain == "") {
       return;
     }

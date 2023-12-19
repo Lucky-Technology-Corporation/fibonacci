@@ -62,7 +62,6 @@ export default function DatabaseRow({
 
   const setupEditing = (key: string) => {
     if (shouldBlockEdits.includes(key)) return;
-    console.log(currentDbQuery)
     if(currentDbQuery && currentDbQuery != "" && !currentDbQuery.includes("find(")){
       toast.error('You cannot edit documents displayed by an aggregation query. Search for the document to edit or refresh the database to make edits.');
       return;

@@ -42,7 +42,7 @@ export default function CenterContent({
         {(shouldOverlay || (selectedTab !== Page.Apis && selectedTab !== Page.Hosting)) && (
           <div className="absolute top-0 left-0 w-full h-full z-10"></div>
         )}
-        <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}>
+        <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }} className="absolute w-full z-40">
           <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
           <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} focusOnHeader={focusOnHeader} />
         </div>
@@ -80,8 +80,8 @@ export default function CenterContent({
           <ObjectTableView />
         </div>
       </div>
-      <div style={{ opacity: selectedTab === Page.Logs ? "1" : "0" }}>
-        <div className={`m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] min-h-[50vh] ${activeLogsPage == "assistant" ? "overflow-none" : "overflow-scroll"}`}>
+      <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
+        <div className={`m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] ${activeLogsPage == "assistant" ? "overflow-none" : "overflow-scroll"}`}>
           <MonitoringPage activeLogsPage={activeLogsPage} shouldShow={selectedTab === Page.Logs} />
         </div>
       </div>

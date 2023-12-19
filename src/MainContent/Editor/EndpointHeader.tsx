@@ -1,4 +1,4 @@
-import { faBug, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faBug, faClock, faCloud, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
@@ -16,7 +16,7 @@ import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
-  const { activeEndpoint, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch } = useContext(SwizzleContext);
+  const { activeEndpoint, activeFile, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch, activePage } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -38,28 +38,30 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
 
   useEffect(() => {
-    if (activeEndpoint == undefined) return;
-    const splitEndpoint = activeEndpoint.split("/");
-    setMethod(splitEndpoint[0].toUpperCase() as Method);
-    setPath("/" + splitEndpoint[1] || "");
-  }, [activeEndpoint]);
+    if(activeEndpoint && selectedTab == Page.Apis){
+      const splitEndpoint = activeEndpoint.split("/");
+      setMethod(splitEndpoint[0].toUpperCase() as Method);
+      setPath("/" + splitEndpoint[1] || "");
+    }
+    if(activeFile && selectedTab == Page.Hosting){
+      if(activeFile.includes("/src/pages")){
+        setPath(activePage)
+      } else{
+        setPath(activeFile);
+      }
+    }
+  }, [activeEndpoint, activeFile, activePage]);
 
 
   const runQuery = async (promptQuery: string, queryType: string, selectedText?: string) => {
-    console.log("info", promptQuery, queryType)
-    const currentFile = currentFileProperties.fileUri.split("/").pop()
-    console.log("currentFile", currentFile)
-
     if(queryType == "db"){
       if(promptQuery == ""){
-        console.log("resetting db query")
         setCurrentDbQuery("_reset")
         return
       }
       return toast.promise(promptDbHelper(promptQuery, activeCollection), {
         loading: "Thinking...",
         success: (data) => {
-          console.log(data)
           setResponse(
             <AIResponseWithChat 
               descriptionIn={data.pending_operation_description}
@@ -86,7 +88,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   };
 
   useEffect(() => {
-    console.log("EndpointHeader got fileErrors", fileErrors)
     if(!isWaitingForErrors) return
     toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, fileErrors), {
       loading: "Thinking...",
@@ -552,10 +553,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }
 
   useEffect(() => {
-    console.log("selectedText", selectedText, isWaitingForText)
     if(selectedText && isWaitingForText){
       setIsWaitingForText(false)
-      console.log("selectedText", selectedText)
       runQuery(pendingRequest, "selection", selectedText)
     }
   }, [selectedText])
@@ -661,8 +660,27 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   return (
     <>
         <div className="flex-col magic-bar">
+          
+          <div className="pt-3 ml-5">
+            {selectedTab == Page.Hosting ? (
+              <div className="flex align-middle pr-2 font-normal font-mono">
+                <img src="/world.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
+                {path}
+              </div>
+            ) : (selectedTab == Page.Apis ? (
+              <div className="flex align-middle pr-2 font-normal font-mono">
+                <FontAwesomeIcon icon={faCloud} className="w-3 h-3 my-auto mr-2" />
+                {path.startsWith("/cron") ? (
+                  <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
+                ) : (
+                  <span className={`${methodToColor(method)} font-semibold mr-1 `}>{method}</span> 
+                )}
+                {path.startsWith("/cron/") ? path.replace("/cron/", "") : path}
+              </div>
+            ) : (<></>))}
+          </div>
           <div
-            className={`flex justify-between mb-2 text-lg font-bold pt-4 max-h-[52px] ${
+            className={`flex justify-between mb-2 text-lg font-bold pt-2 max-h-[52px] ${
               (ideReady || (selectedTab != Page.Hosting && selectedTab != Page.Apis)) ? "" : "opacity-50 pointer-events-none"
             }`}
           >

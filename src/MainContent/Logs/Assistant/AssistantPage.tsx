@@ -15,7 +15,6 @@ export default function AssistantPage() {
   const [schema, setSchemaLocal] = useState<any>({})
 
   const runAiPlanner = async () => {
-    console.log("Submitting " + aiPrompt)
     const messageSaved = messages
     
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
@@ -30,7 +29,6 @@ export default function AssistantPage() {
 
     setMessages([{role: "assistant", tasks: rawResponse.tasks}, {role: "user", content: aiPrompt}, ...messageSaved])
 
-    console.log("adding to history", ...rawResponse.openai_message)
     setHistory([...history, {role: "user", content: aiPrompt}, ...rawResponse.openai_message])
   }
 
@@ -67,7 +65,6 @@ export default function AssistantPage() {
   }, [messages])
 
   const schemaEditHandler = (newSchema: object) => {
-    console.log("schemaEditHandler", newSchema)
 
     const cleanSchema = Object.keys(newSchema).reduce((acc, key) => {
       if (key.replace(/\s/g, "").length > 0) {
@@ -90,7 +87,7 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="w-full h-[100vh] overflow-none">
+    <div className="w-full h-full overflow-none">
       <div className="flex mx-4 mr-2 mb-4">
         <input
           className="grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2"
@@ -140,7 +137,7 @@ export default function AssistantPage() {
           text="Start Plan"
         />
       </div>
-      <div className="h-full flex align-center justify-center overflow-none">
+      <div className="h-screen flex align-center justify-center overflow-none">
         {messages.length == 0 ? (
           <div>
             <img src="logo_white.png" className="w-20 h-20 mx-auto mt-28 pulsate" />
@@ -153,7 +150,7 @@ export default function AssistantPage() {
             setMessages={setMessages} 
             setPath={() => {}} //this is the onclick handler
           />
-          <div className="w-1/3 mx-2 h-full flex-col overflow-scroll pb-[68px]">
+          <div className="w-1/3 mx-2 h-screen flex-col overflow-scroll pb-[68px]">
               <div className="ml-1 mt-0.5 flex justify-between">
                 <div>
                   <div className="text-sm font-bold flex">

@@ -29,7 +29,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                 />
             </div>
             {messages.map((message, messageIndex) => (
-                <div className="flex flex-col leading-normal mb-0.5">
+                <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
                     {message.role == "assistant" && message.tasks.length > 0 ? (
                         <div className="flex items-center mb-0.5 mt-1">
                             <span className="text-sm ml-1">"{messages[messageIndex + 1].content}"</span>
@@ -43,6 +43,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             ) : (
                                 message.tasks.map((task, taskIndex) => (
                                    <Task 
+                                        key={taskIndex + "-task"}
                                         task={task} 
                                         removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
                                         editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 

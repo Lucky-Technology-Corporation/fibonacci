@@ -122,6 +122,75 @@ export default function useFilesystemApi(){
     }
   }
 
+  const deleteEndpoint = async (method: string, path: string) => {
+    try {
+      await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/endpoint/delete`,
+          {
+            path: path,
+            method: method,
+          },
+          {
+            withCredentials: true,
+          },
+      );
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  const deleteHelper = async (helper: string) => {
+    try {
+      await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/helper/delete`,
+          {
+            path: helper,
+          },
+          {
+            withCredentials: true,
+          },
+      );
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  const deletePage = async (page: string) => {
+    try {
+      await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/frontend/page/delete`,
+          {
+            path: page,
+          },
+          {
+            withCredentials: true,
+          },
+      );
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+  
+  const deleteComponent = async (component: string) => {
+    try {
+      await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/frontend/component/delete`,
+          {
+            path: component,
+          },
+          {
+            withCredentials: true,
+          },
+      );
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
 
   return {
     // createNewFile,
@@ -130,7 +199,11 @@ export default function useFilesystemApi(){
     createNewPage,
     createNewComponent,
     createNewHelper,
-    createNewEndpoint
+    createNewEndpoint,
+    deleteEndpoint,
+    deleteHelper,
+    deletePage,
+    deleteComponent,
   }
 
 }
