@@ -121,10 +121,9 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         tabIndex={-1}
         style={{
           width: "calc(100% + 96px)",
-          height: "calc(100% - 116px)",
+          height: "calc(100% - 110px)",
           marginLeft: "-48px",
           marginRight: "-48px",
-          marginTop: "-52px",
           display: "block", // This ensures the iframe takes up the full width
         }}
       ></iframe>

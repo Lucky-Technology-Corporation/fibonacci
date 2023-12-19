@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useFilesystemApi from "../../API/FilesystemAPI";
-import { capitalizeAfterLastSlash } from "../../Utilities/EndpointParser";
+import { capitalizeAfterLastSlash, formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import TailwindModal from "../../Utilities/TailwindModal";
 
@@ -28,7 +28,6 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
 
   const runDeleteProcess = async () => {
     try{
-
       var fileNameParsed = fullPath.replace("/home/swizzle/code", "")
       fileNameParsed = capitalizeAfterLastSlash(fileNameParsed)
       if(!fileNameParsed.endsWith(".tsx")){ 
@@ -43,8 +42,8 @@ export default function FileContextMenu({showContextMenu, setShowContextMenu, pa
 
       //clean up codegen
       if(fileNameParsed.includes("/pages/")){
-        const relativeFilePath = fileNameParsed.split("/pages/")[1]
-        await filesystemApi.deletePage(path)
+        const urlPath = formatPath(fullPath, path, true)
+        await filesystemApi.deletePage(urlPath)
       } else{
         const relativeFilePath = fileNameParsed.split("/components/")[1]
         await filesystemApi.deleteComponent(relativeFilePath)

@@ -52,7 +52,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       if(activeFile.includes("/src/pages")){
         setPath(activePage)
       } else{
-        setPath(activeFile);
+        setPath(activeFile.replace("frontend/src/components/", ""));
       }
     }
   }, [activeEndpoint, activeFile, activePage]);

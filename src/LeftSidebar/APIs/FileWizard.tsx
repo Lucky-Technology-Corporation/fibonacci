@@ -42,6 +42,10 @@ export default function FileWizard({
       return;
     }
 
+
+    //TODO: handle editing an existing file
+
+
     if(fileType == "page"){
       await filesystemApi.createNewPage(inputValue, authRequired, fallbackInputValue);
     }
@@ -214,11 +218,13 @@ export default function FileWizard({
                           if (fileType == "page" && pathIfEditing == "/") {
                             return;
                           }
-                          const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
-                          if(!regex.test(e.target.value)){
-                            setValidPageUrl(false)
-                          } else{
-                            setValidPageUrl(true)
+                          if(fileType == "page"){
+                            const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
+                            if(!regex.test(e.target.value)){
+                              setValidPageUrl(false)
+                            } else{
+                              setValidPageUrl(true)
+                            }
                           }
                           setInputValue(e.target.value);
                         }}

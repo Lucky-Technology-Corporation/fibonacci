@@ -31,7 +31,7 @@ export function modifySwizzleImport(importStatement: string, newImport: string, 
   return `import ${newImports} from 'swizzle-js';`;
 }
 
-export function formatPath(fullPath: string, path: string) {
+export function formatPath(fullPath: string, path: string, allComponents: boolean = false) {
   if((fullPath || "").includes("frontend/src/pages")){
     var p = path
     var p = p.replace(".tsx", "").replace(/\./g, "/").toLowerCase()
@@ -43,10 +43,27 @@ export function formatPath(fullPath: string, path: string) {
     if(p == "/swizzlehomepage"){
       p = "/"
     }
+
+    if(allComponents){
+      const pathAfterPages = fullPath.split("/pages")[1]
+      const numberOfLevels = pathAfterPages.match(/\//g);
+      if(numberOfLevels.length > 1){
+        const prependPath = splitAtLast(pathAfterPages, "/")[0].replace(/\$/g, ":");
+        return prependPath + p
+      }
+    }
+
     return p
   } else{
     return path
   }
+}
+
+function splitAtLast(str, delimiter) {
+    const lastIndex = str.lastIndexOf(delimiter);
+    if (lastIndex === -1) return [str]; // Delimiter not found
+
+    return [str.substring(0, lastIndex), str.substring(lastIndex + 1)];
 }
 
 export function capitalizeAfterLastSlash(str: string) {

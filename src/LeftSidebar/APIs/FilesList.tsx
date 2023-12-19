@@ -50,7 +50,7 @@ export default function FilesList({ active }: { active: boolean }) {
         const page = pages[0]
         var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
         setActiveFile("frontend/src/pages/" + pageRelativePath)
-        setActivePage(formatPath(page.path, page.name))
+        setActivePage(formatPath(page.path, page.name, true))
       }
     }
   }, [selectedTab])
@@ -103,14 +103,17 @@ export default function FilesList({ active }: { active: boolean }) {
     }
   }, [searchFilter])
 
-  const editFileHandler = (path: string, fallbackPath: string, type: string) => {
+  const editFileHandler = (path: string, fullPath: string, fallbackPath: string) => {
+    const type = fullPath.includes("/src/pages") ? "page" : "file"
     setFileType(type)
     setFileToEditFallback(fallbackPath)
-    var name = path.replace(".tsx", "").replace(".ts", "")
+
     if(type == "page"){
-      name = name.toLowerCase()
+      const urlPath = formatPath(fullPath, path, true)
+      setFileToEdit(urlPath)
+    } else{
+      setFileToEdit(path)
     }
-    setFileToEdit(name)
   }
 
   useEffect(() => {
@@ -155,7 +158,7 @@ export default function FilesList({ active }: { active: boolean }) {
         <div key={node.path + node.name}>
           <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-2 px-2 hover:bg-[#85869833] rounded cursor-pointer">
             {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
-            <div className="ml-2">{node.name}</div>
+            <div className="ml-2">{node.name.replace("$", ":")}</div>
           </div>
           {expandedDirs[fullPath] && (
             <div className="ml-4">
@@ -179,7 +182,7 @@ export default function FilesList({ active }: { active: boolean }) {
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
               if(node.path.includes("src/pages")){
-                setActivePage(formatPath(node.path, node.name))
+                setActivePage(formatPath(node.path, node.name, true))
               }
               setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
             }}
@@ -188,7 +191,7 @@ export default function FilesList({ active }: { active: boolean }) {
                 setShouldRefreshList(!shouldRefreshList)
               }, 250)
             }}
-            editFile={() => {editFileHandler(node.name, "", "file")}}
+            editFile={() => {editFileHandler(node.name, node.path, "")}}
           />
           </>
         );
