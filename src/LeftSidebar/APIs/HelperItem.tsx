@@ -2,7 +2,6 @@ import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
-import useFilesystemApi from "../../API/FilesystemAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import EndpointContextMenu from "./EndpointContextMenu";
 
@@ -21,7 +20,6 @@ export default function HelperItem({
   const [showContextMenu, setShowContextMenu] = useState(false);
   const {setPostMessage, setShouldRefreshList, shouldRefreshList} = useContext(SwizzleContext)
   const { deleteFile } = useEndpointApi()
-  const { removeFile } = useFilesystemApi()
 
   const runDeleteProcess = async (fileName: string) => {
     try{
