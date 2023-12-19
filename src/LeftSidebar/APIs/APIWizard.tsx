@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import Checkbox from "../../Utilities/Checkbox";
 import Dropdown from "../../Utilities/Dropdown";
+import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function APIWizard({
@@ -22,6 +24,7 @@ export default function APIWizard({
   endpointPathIfEditing?: string
   currentFileProperties?: any
 }) {
+  const endpointApi = useEndpointApi();
   const filesystemApi = useFilesystemApi()
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
@@ -49,7 +52,22 @@ export default function APIWizard({
       methodToUse = "get"
     }
 
-    await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired)
+    //If we're editing an existing endpoint, copy the contents over to a new file
+    var contentsToCopy = ""
+    if(endpointPathIfEditing != ""){
+      const fileNameOnServer = "backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing)
+      contentsToCopy = await endpointApi.getFile(fileNameOnServer)
+    }
+
+    //Make the new file
+    await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy)
+
+    //If we're editing an existing endpoint, remove the old file
+    if(endpointPathIfEditing != ""){
+      const methodToDelete = endpointPathIfEditing.split("/")[0].toUpperCase()
+      const pathToDelete = endpointPathIfEditing.split("/").slice(1).join("/")
+      await filesystemApi.deleteEndpoint(methodToDelete, pathToDelete)
+    }
 
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
@@ -109,12 +127,16 @@ export default function APIWizard({
     return cleanInputValue.replace(/\/+$/, "");
   }
 
+  //HACK not the best way of doing this... but it works since the wizard can only be triggered when the file is open
+  useEffect(() => {
+    setAuthRequired(currentFileProperties.hasPassportAuth)
+  }, [currentFileProperties])
+
   useEffect(() => {
     if (isVisible) {
       if(endpointPathIfEditing){
         setSelectedMethod(endpointPathIfEditing.split("/")[0])
         setInputValue("/" + endpointPathIfEditing.split("/").slice(1).join("/"))
-        // setAuthRequired(false); //CHANGE THIS TO THE ACTUAL AUTH STATE
       } else{
         setInputValue("");
         setAuthRequired(false);

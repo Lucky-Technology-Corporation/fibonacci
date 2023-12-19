@@ -58,6 +58,10 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
       deleteField(newData[collection], keyPath);
     }
 
+    if(Object.keys(newData[collection]).length == 0){
+      delete newData[collection]
+    }
+
     setSchema(newData);
     commitSchema(newData)
   };

@@ -68,7 +68,7 @@ export default function useFilesystemApi(){
     }
   }
 
-  const createNewEndpoint = async (relativeEndpointPath: string, method: string, authRequired: boolean) => {
+  const createNewEndpoint = async (relativeEndpointPath: string, method: string, authRequired: boolean, contentsToCopy?: string) => {
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/endpoint`,
@@ -76,6 +76,7 @@ export default function useFilesystemApi(){
           endpoint: relativeEndpointPath,
           http_method: method,
           auth_required: authRequired,
+          contents: contentsToCopy
         },
         {
           withCredentials: true,

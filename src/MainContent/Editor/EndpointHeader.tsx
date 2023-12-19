@@ -39,9 +39,14 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   useEffect(() => {
     if(activeEndpoint && selectedTab == Page.Apis){
-      const splitEndpoint = activeEndpoint.split("/");
-      setMethod(splitEndpoint[0].toUpperCase() as Method);
-      setPath("/" + splitEndpoint[1] || "");
+      if(activeEndpoint.includes("!helper!")){
+        setMethod(Method.HELPER)
+        setPath(activeEndpoint.replace("!helper!", ""))
+      } else{
+        const splitEndpoint = activeEndpoint.split("/");
+        setMethod(splitEndpoint[0].toUpperCase() as Method);
+        setPath("/" + splitEndpoint[1] || "");
+      }
     }
     if(activeFile && selectedTab == Page.Hosting){
       if(activeFile.includes("/src/pages")){

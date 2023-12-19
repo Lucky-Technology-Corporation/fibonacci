@@ -43,7 +43,7 @@ export default function EndpointItem({
         fileName: "/backend/user-dependencies/" + fileName,
       });
 
-      filesystemApi.deleteEndpoint(method, path)
+      await filesystemApi.deleteEndpoint(method, path)
       
       removeFromList()
     } catch(e){

@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import Dropdown from "../../Utilities/Dropdown";
+import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import FileItem from "./FileItem";
@@ -49,6 +50,7 @@ export default function FilesList({ active }: { active: boolean }) {
         const page = pages[0]
         var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
         setActiveFile("frontend/src/pages/" + pageRelativePath)
+        setActivePage(formatPath(page.path, page.name))
       }
     }
   }, [selectedTab])
@@ -177,7 +179,7 @@ export default function FilesList({ active }: { active: boolean }) {
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
               if(node.path.includes("src/pages")){
-                setActivePage(node.name)
+                setActivePage(formatPath(node.path, node.name))
               }
               setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
             }}

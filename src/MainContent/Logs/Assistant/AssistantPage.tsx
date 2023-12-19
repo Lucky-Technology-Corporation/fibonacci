@@ -53,13 +53,13 @@ export default function AssistantPage() {
   }, [activeProject])
 
   useEffect(() => {
-    if(history != null){
+    if(history != null && history.length > 0){
       localStorage.setItem("history_"+activeProject, JSON.stringify(history))
     }
   }, [history])
 
   useEffect(() => {
-    if(messages != null){
+    if(messages != null && messages.length > 0){
       localStorage.setItem("messages_"+activeProject, JSON.stringify(messages))
     }
   }, [messages])

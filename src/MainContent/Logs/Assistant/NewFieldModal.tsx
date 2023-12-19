@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../../Utilities/Button";
 import Dropdown from "../../../Utilities/Dropdown";
 
@@ -22,6 +22,14 @@ export default function NewFieldModal({addFieldHandler, addVisible, setAddVisibl
     addFieldHandler(collectionName, keyPath, newSchemaField);
     setAddVisible(false)
   }
+
+  useEffect(() => {
+    if(addVisible){
+      setFieldName("")
+      setSelectedType("string")
+      setSelectedSubtype("string")
+    }
+  }, [addVisible])
   
   return (
     <div

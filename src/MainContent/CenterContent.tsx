@@ -30,7 +30,7 @@ export default function CenterContent({
   }
   
   return (
-    <div className="relative m-0 text-sm whitespace-pre-line max-h-[100vh]">
+    <div className="relative m-0 text-sm whitespace-pre-line max-h-[100vh] overflow-hidden">
 
       <div
         style={{
