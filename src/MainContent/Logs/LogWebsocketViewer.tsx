@@ -66,18 +66,19 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     }, []);
 
     const greyOutUnimportantLines = (inputLine: string): ReactNode => {
+        const timestamp = new Date().toLocaleTimeString()
         if(inputLine == undefined){ return <></> }
         return inputLine.split("\n").map((line, index) => {
             if(line.trimStart().startsWith("at ")){
-                return <span className="text-gray-500">{line}<br/></span>
+                return <span className="text-gray-500" key={"grey-"+index+"-"+timestamp}>{line}<br/></span>
             } else if(line.trimStart().startsWith("diagnosticCodes: [")){
-                return <span className="text-gray-500">{line}<br/></span>
+                return <span className="text-gray-500" key={"grey-"+index+"-"+timestamp}>{line}<br/></span>
             } else if(line.replace(/\s/g, '') == "}"){
-                return <span className="text-gray-500">{line}<br/></span>
+                return <span className="text-gray-500" key={"grey-"+index+"-"+timestamp}>{line}<br/></span>
             } else if(line.replace(/\s/g, '') == "^"){
                 return <></>
             } else if(line.replace(/\s/g, '') == "Serverrunning!"){
-                return <span className="text-green-500">{line}<br/></span>
+                return <span className="text-green-500" key={"grey-"+index+"-"+timestamp}>{line}<br/></span>
             } else if(line.trimStart().startsWith("/swizzle/code/node_modules/ts-node/src/index.ts:")){
                 return <></>
             } else if(line.trimStart().startsWith("return new TSError(diagnosticText, diagnosticCodes, diagnostics);")){
@@ -89,7 +90,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             } else if(line.includes("--import 'data:text/javascript,import { register } from")){
                 return <></>
             } else {
-                return <span key={index}>{line}<br/></span>
+                return <span key={"grey-"+index+"-"+timestamp}>{line}<br/></span>
             }
         })
     }
@@ -105,7 +106,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     const lineNumber = lineNumbers[0]
                     const columnNumber = lineNumbers[1]
                     if(line.split("):")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
-                        return <span className="font-mono text-sm" key={key}><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
+                        return <span className="font-mono text-sm" key={key}><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1], lineNumber)}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                     }
                     return (<>
                         <span className="font-mono text-sm" key={key}>
@@ -120,7 +121,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     const lineNumber = lineNumbers[0]
                     const columnNumber = lineNumbers[1]
                     if(line.split(":")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
-                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1])}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
+                        return <span className="font-mono text-sm"><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1], lineNumber)}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                     }
                     return <span className="font-mono text-sm" key={key}><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                 }
@@ -136,17 +137,50 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         return <span className="font-mono text-sm" key={key}>{greyOutUnimportantLines(cleanLine)}</span>
     }
 
-    const autoFixImportJs = (fileName, errorText) => {
-        if(!errorText.includes("Did you mean '")){ return () => {} }
-        const fixedImport = errorText.split("Did you mean '")[1].split("'")[0]
-        return () => {
-            setPostMessage({type: "openFile", fileName: fileName, line: 0, column: 0})
-            setTimeout(() => {
-                setPostMessage({type: "findAndReplace", findText: fixedImport.replace(".js", ""), replaceText: fixedImport})
-            }, 200);
+    const autoFixImportJs = (fileName, errorText, lineNumber) => {
+        if(errorText.includes("Did you mean '")){
+            const fixedImport = errorText.split("Did you mean '")[1].split("'")[0]
+            return () => {
+                setPostMessage({type: "openFile", fileName: fileName, line: 0, column: 0})
+                setTimeout(() => {
+                    setPostMessage({type: "findAndReplace", findText: fixedImport.replace(".js", ""), replaceText: fixedImport})
+                }, 200);
+                setTimeout(() => {
+                    setPostMessage({type: "saveFile"})
+                }, 400);
+            }
+        }
+        if(errorText.includes("Consider adding an extension to the import path")){
+            return async () => {
+                const contents = await endpointApi.getFile(fileName)
+                const lineInQuestion = contents.split("\n")[lineNumber - 1]
+                //handle " ' and ;
+                var fixedImport = ""
+                if(lineInQuestion.includes("\"")){
+                    fixedImport = replaceLastInstance(lineInQuestion, "\"", ".js\"")
+                } else if(lineInQuestion.includes("'")){
+                    fixedImport = replaceLastInstance(lineInQuestion, "'", ".js'")
+                }
+
+                setPostMessage({type: "openFile", fileName: fileName, line: 0, column: 0})
+                setTimeout(() => {
+                    setPostMessage({type: "findAndReplace", findText: lineInQuestion, replaceText: fixedImport})
+                }, 200);
+                setTimeout(() => {
+                    setPostMessage({type: "saveFile"})
+                }, 400);
+            }
         }
     }
 
+    function replaceLastInstance(str, substring, replacement) {
+        const index = str.lastIndexOf(substring);
+        if (index === -1) {
+            return str; // substring not found
+        }
+        return str.slice(0, index) + replacement + str.slice(index + substring.length);
+    }
+    
 
     //Reconnect websocket
     const reconnectWebsocket = async () => {

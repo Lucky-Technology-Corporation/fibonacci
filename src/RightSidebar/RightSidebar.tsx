@@ -1,3 +1,5 @@
+import { faWrench } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../API/EndpointAPI";
@@ -105,6 +107,7 @@ export default function RightSidebar() {
   }
 
   const runAutocheck = () => {
+    toast("Getting file errors...")
     setDidRunAutocheck(true)
     setPostMessage({
       type: "getFileErrors"
@@ -216,7 +219,7 @@ export default function RightSidebar() {
             <IconTextButton
               textHidden={true}
               onClick={runAutocheck}
-              icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
+              icon={<FontAwesomeIcon icon={faWrench} className={`w-4 h-4 m-auto`} />}
               text="Autocheck"
             />
             <FloatingModal
@@ -319,7 +322,7 @@ export default function RightSidebar() {
             <IconTextButton
               textHidden={true}
               onClick={runAutocheck}
-              icon={<img src="/wand.svg" className="w-4 h-4 m-auto" />}
+              icon={<FontAwesomeIcon icon={faWrench} className={`w-4 h-4 m-auto`} />}
               text="Autocheck"
               className="autocheck-button"
             />
