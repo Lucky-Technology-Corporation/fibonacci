@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } fro
 import Switch from "react-switch";
 import useEndpointApi from "../../API/EndpointAPI";
 import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
-import { filenameToEndpoint } from "../../Utilities/EndpointParser";
+import { filenameToEndpoint, formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 
@@ -132,10 +132,25 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 const columnNumber = lineNumbers[1]
                 return <span className="font-mono text-sm" key={key}><span className="text-red-500">{fileName} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/helpers/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
             }
+        } else if(currentLocation == "frontend"){
+            if(line.includes("ERROR in")){
+                const page = "frontend/" + line.split("ERROR in ")[1].split(".tsx")[0] + ".tsx"
+                const lineNumber = line.split("\n")[0].split(/:/g)[1]
+                const urlPath = formatPath(page, page.split("pages/")[1])
+                return <span className="font-mono text-sm" key={key}><span className="text-red-500">Error in {urlPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/" + page, line: lineNumber, column: 0})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(getStringAfterFirstNewline(line))}</span>
+            }
         }
 
         return <span className="font-mono text-sm" key={key}>{greyOutUnimportantLines(cleanLine)}</span>
     }
+
+    function getStringAfterFirstNewline(str) {
+        const newlineIndex = str.indexOf('\n');
+        if (newlineIndex === -1) {
+            return ''; // Return an empty string if no newline character is found
+        }
+        return str.substring(newlineIndex + 1);
+    }    
 
     const autoFixImportJs = (fileName, errorText, lineNumber) => {
         if(errorText.includes("Did you mean '")){
