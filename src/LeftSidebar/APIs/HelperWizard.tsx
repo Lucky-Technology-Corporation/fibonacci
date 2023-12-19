@@ -18,56 +18,32 @@ export default function HelperWizard({
 }) {
   const filesystemApi = useFilesystemApi()
   const [inputValue, setInputValue] = useState("");
-  const { setPostMessage, setActiveHelper, setActiveEndpoint } = useContext(SwizzleContext);
+  const { shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
 
   const createHandler = async () => {
-    if (inputValue == "") {
-      toast.error("Please enter a value");
-      return;
-    }
-
-    var cleanInputValue = inputValue;
-    if (inputValue.endsWith(".ts")) {
-      cleanInputValue = inputValue.slice(0, -3);
-    }
-    const fileName = cleanInputValue + ".ts";
-    const newHelperName = cleanInputValue;
-
-    if(helpers.includes(newHelperName)){
-      toast.error("That helper already exists")
+    const fileName = cleanInputValue(inputValue);
+    if(!checkForConflicts(fileName)){
       return
     }
 
-    let isDuplicate = false;
-    setFullHelpers((helpers: any[]) => {
-      if (!helpers.includes(newHelperName)) {
-        return [...helpers, newHelperName];
-      }
-      isDuplicate = true;
-      return helpers;
-    });
-
-    setHelpers((helpers: any[]) => {
-      if (!helpers.includes(newHelperName)) {
-        return [...helpers, newHelperName];
-      }
-      isDuplicate = true;
-      return helpers;
-    });
-
-    if (isDuplicate) {
-      toast.error("That helper already exists");
-      return;
-    }
-    
-    await filesystemApi.createNewFile("/backend/helpers/" + fileName)
-    setActiveEndpoint("!helper!" + newHelperName)
-
+    await filesystemApi.createNewHelper(inputValue);
+    setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
-    setTimeout(() => {
-      setActiveHelper(newHelperName);
-    }, 500);
-  };
+  }
+
+  const checkForConflicts = (inputValue: string) => {
+    if (helpers.includes(inputValue)) {
+      toast.error("That helper already exists");
+      return false
+    }
+    return true
+  }
+
+  const cleanInputValue = (inputValue: string) => {
+    var cleanInputValue = inputValue.split(".")[0]
+    const fileName = cleanInputValue + ".ts";
+    return fileName
+  }
 
   useEffect(() => {
     if (isVisible) {

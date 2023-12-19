@@ -30,6 +30,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [pendingRequest, setPendingRequest] = useState<string>("");
   const [highlighted, setHighlighted] = useState<boolean>(false);
 
+  //save query info for re-render when we get fileErrors 
+  const [ promptQuery, setPromptQuery ] = useState<string>("");
+  const [ queryType, setQueryType ] = useState<string>("");
+  const [isWaitingForErrors, setIsWaitingForErrors] = useState<boolean>(false);
+
   const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
 
   useEffect(() => {
@@ -70,59 +75,65 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       });
     } else {
       //find file errors if they exist
+      setPromptQuery(promptQuery)
+      setQueryType(queryType)
+      setIsWaitingForErrors(true)
       setPostMessage({
         type: "getFileErrors"
       })
       toast("Scanning for build errors...")
-      setTimeout(() => {
-        console.log("fileError", fileErrors)
-        return toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, JSON.stringify(fileErrors)), {
-          loading: "Thinking...",
-          success: (data) => {
-            if(queryType == "edit"){
-              //Replace the text
-              setPostMessage({
-                type: "replaceText",
-                content: data.new_code,
-              })
-          
-              //TODO: Update currentFileProperties here
-              //Update auth-required and imports
-
-              //Add undo button
-              setupUndo(data.old_code)
-
-              setTimeout(() => {
-                setPostMessage({
-                  type: "saveFile"
-                })
-              }, 100)
-
-              //TODO: finish this function later to add backend endpoints if needed
-              if(selectedTab == Page.Hosting){
-                checkIfAllEndpointsExist(data.new_code)
-              }
-
-            } else if(queryType == "snippet"){
-              setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
-            } else if(queryType == "selection"){
-              //open window and confirm
-              setResponse(
-                <AIResponseWithChat 
-                  descriptionIn={"The selected code will be replaced with the following"}
-                  operationIn={data.new_code} 
-                  setResponse={setResponse} 
-                  historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.new_code}]}
-                  selectedText={selectedText}
-                />)
-            }
-            return "Done";
-          },
-          error: "Failed",
-        });
-      }, 1000);
     }
   };
+
+  useEffect(() => {
+    console.log("EndpointHeader got fileErrors", fileErrors)
+    if(!isWaitingForErrors) return
+    toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, fileErrors), {
+      loading: "Thinking...",
+      success: (data) => {
+        if(queryType == "edit"){
+          //Replace the text
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          })
+      
+          //TODO: Update currentFileProperties here
+          //Update auth-required and imports
+
+          //Add undo button
+          setupUndo(data.old_code)
+
+          setTimeout(() => {
+            setPostMessage({
+              type: "saveFile"
+            })
+          }, 100)
+
+          //TODO: finish this function later to add backend endpoints if needed
+          if(selectedTab == Page.Hosting){
+            checkIfAllEndpointsExist(data.new_code)
+          }
+
+        } else if(queryType == "snippet"){
+          setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
+        } else if(queryType == "selection"){
+          //open window and confirm
+          setResponse(
+            <AIResponseWithChat 
+              descriptionIn={"The selected code will be replaced with the following"}
+              operationIn={data.new_code} 
+              setResponse={setResponse} 
+              historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.new_code}]}
+              selectedText={selectedText}
+            />)
+        }
+        return "Done";
+      },
+      error: "Failed",
+    });
+    setIsWaitingForErrors(false)
+  }, [fileErrors])
 
 
   const setupUndo = (oldCode: string) => {

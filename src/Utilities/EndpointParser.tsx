@@ -34,9 +34,14 @@ export function modifySwizzleImport(importStatement: string, newImport: string, 
 export function formatPath(fullPath: string, path: string) {
   if((fullPath || "").includes("frontend/src/pages")){
     var p = path
-    var p = p.replace(".ts", "").replace(/\./g, "/").toLowerCase()
+    var p = p.replace(".tsx", "").replace(/\./g, "/").toLowerCase()
     if(!p.startsWith("/")){
       p = "/" + p
+    }
+    p = p.replace(/\$/g, ":");
+    p = p.replace("_", "/")
+    if(p == "/swizzlehomepage"){
+      p = "/"
     }
     return p
   } else{

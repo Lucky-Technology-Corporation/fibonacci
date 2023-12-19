@@ -125,6 +125,7 @@ export default function AssistantPage() {
             setAiPrompt("")
             setMessages([])
             setHistory([])
+            setSchemaLocal({})
             toast.promise(setSchema({}), { loading: "Clearing...", success: "Done", error: "An error occured" })
           }}
           text="Clear"

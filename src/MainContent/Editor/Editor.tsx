@@ -66,8 +66,10 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
 
     if(event.data.type === "fileErrors"){
-      const parsed = JSON.parse(event.data.thisFilesErrors)
-      setFileErrors(parsed)
+      console.log("fileErrors Post message", event.data)
+      // const parsed = JSON.parse(event.data.thisFilesErrors)
+      // console.log(parsed)
+      setFileErrors(event.data.thisFilesErrors)
     }
 
   };

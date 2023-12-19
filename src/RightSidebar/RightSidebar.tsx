@@ -116,7 +116,7 @@ export default function RightSidebar() {
     if(!didRunAutocheck) return
     console.log("here")
     console.log("fileErrors", fileErrors)
-    if(fileErrors && fileErrors.length > 0){
+    if(fileErrors != ""){
       toast.promise(getAutocheckResponse(fileErrors), {
         loading: "Running autocheck...",
         success: (data) => {

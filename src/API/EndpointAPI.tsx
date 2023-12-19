@@ -307,7 +307,6 @@ export default function useEndpointApi() {
 
   const aiTaskExecute = async (task: any, allTasks: any) => {
     try {
-
       var body = {
         task: task,
         full_task_summary: allTasks,
@@ -347,7 +346,7 @@ export default function useEndpointApi() {
     return response.data;
   };
 
-  const getAutocheckResponse = async (thisFilesErrors?: any[]) => {
+  const getAutocheckResponse = async (thisFilesErrors?: string) => {
     try {
       const fileName = openUri.replace("/swizzle/code/", "");
       const fileContents = await getFile(fileName);

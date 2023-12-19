@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
-import { Page } from "../../Utilities/Page";
 import FileItem from "./FileItem";
 import FileWizard from "./FileWizard";
 
@@ -14,7 +13,6 @@ export default function FilesList({ active }: { active: boolean }) {
   const { getFiles, getFile, writeFile } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fileTree, setFileTree] = useState(null);
-  const [pages, setPages] = useState<any[]>([]);
   const [expandedDirs, setExpandedDirs] = useState({});
   const [fileType, setFileType] = useState<string>("file");
   const [showServerFiles, setShowServerFiles] = useState<boolean>(false);
@@ -43,77 +41,15 @@ export default function FilesList({ active }: { active: boolean }) {
   }, [testDomain, shouldRefreshList]);
 
   useEffect(() => {
-    if(selectedTab == Page.Hosting && activeFile == undefined && pages && pages.length > 0){
-      setActiveFile("frontend/src/pages/"+pages[0].component+".tsx");
-    }
-  }, [selectedTab])
-
-  //This is here to fix badly formatted RouteList files from before the fix was implemented.
-  const temporaryFixOldRouteList = async (data) => {
-    var cleanData = data
-    if(typeof data !== "string") return data
-    const regex = /pageComponent={<(\w+) \/>}/g;
-    const updatedData = cleanData.replace(regex, 'pageComponent={$1}');
-    if(updatedData == cleanData) return cleanData
-    await writeFile("frontend/src/RouteList.tsx", updatedData)
-    return updatedData
-  }
-
-  useEffect(() => {
-    getFile("frontend/src/RouteList.tsx")
-      .then(async (data) => {
-        var cleanData = data
-        cleanData = await temporaryFixOldRouteList(data)
-        createPageArrayFromFile(cleanData)
-      })
-      .catch((e) => {
-        toast.error("Error fetching pages")
-        console.error("pageError", e);
-      })
-  }, [fileTree, shouldRefreshList])
-
-  const createPageArrayFromFile = (data) => {
-    if (typeof data !== "string") { return; }
-    const routeBlockRegex = /<SwizzleRoutes>[\s\S]*?<\/SwizzleRoutes>/;
-    const routeTagsRegex = /<(?:SwizzleRoute|SwizzlePrivateRoute)\s+path="(.*?)"\s*element={<((\w+).*)}.*\/>/g;
-
-    var routeBlock = data.match(routeBlockRegex);
-
-    var routes = [];
-    if (routeBlock) {
-      let match;
-      
-      while ((match = routeTagsRegex.exec(routeBlock[0])) !== null) {
-        var authRequired = false
-        var fallbackPath = ""
-
-        if(match[1] == "SwizzlePrivateRoute"){
-          authRequired = true
-          const regex = /unauthenticatedFallback="([^"]+)"/;
-          const fallback = match[0].match(regex);
-          if(fallback){
-            fallbackPath = fallback[1]
-          }
-        }
-
-        var componentName = match[3]
-        if(componentName == "SwizzlePrivateRoute"){
-          const pageComponentRegex = /pageComponent={(\w+)/
-          const pageComponent = match[2].match(pageComponentRegex);
-          componentName = pageComponent[1]
-
-          authRequired = true
-          const regex = /unauthenticatedFallback="([^"]+)"/;
-          const fallback = match[0].match(regex);
-          if(fallback){
-            fallbackPath = fallback[1]
-          }
-        }
-        routes.push({ path: match[1], component: componentName, authRequired: authRequired, fallbackPath: fallbackPath });
+    //set the active file to the first page
+    if(fileTree){
+      const pages = filterIfNeeded(fileTree.children.find(child => child.name === "pages").children)
+      if(pages.length > 0){
+        const page = pages[0]
+        setActiveFile("frontend/src/pages/" + page.path)
       }
     }
-    setPages(routes)
-  }
+  }, [selectedTab])
 
   const getFilePathArray = () => {
     if(!fileTree) return
@@ -199,7 +135,6 @@ export default function FilesList({ active }: { active: boolean }) {
 
     let showCurrent = searchActive || !searchFilter || parentPath.toLowerCase().includes(searchFilter.toLowerCase()) || node.name.toLowerCase().includes(searchFilter.toLowerCase());
 
-  
     if (node.isDir) {
       if (node.children == undefined || node.children.length === 0) return null; // Skip empty folders
 
@@ -232,6 +167,7 @@ export default function FilesList({ active }: { active: boolean }) {
         (node.name.includes('.ts') || node.name.includes('.tsx'))
       ) {  
         return (
+          <>
           <FileItem
             key={node.path}
             path={node.name}
@@ -247,6 +183,7 @@ export default function FilesList({ active }: { active: boolean }) {
             }}
             editFile={() => {editFileHandler(node.name, "", "file")}}
           />
+          </>
         );
       } 
       return null
@@ -365,24 +302,9 @@ export default function FilesList({ active }: { active: boolean }) {
           <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
           <div className="flex items-center">Pages</div>
         </div>
+        
         <div className="ml-1">
-          {filterIfNeeded(pages).map((page) => {
-            return (
-              <FileItem
-                key={page.path}
-                path={page.path}
-                active={"frontend/src/pages/" + page.component + ".tsx" == activeFile}
-                fullPath={"/home/swizzle/code/frontend/src/pages/" + page.component + ".tsx"}
-                onClick={() => {
-                  setActiveFile("frontend/src/pages/" + page.component + ".tsx");
-                }}
-                isPrivate={page.authRequired}
-                fallbackUrl={page.fallbackPath}
-                editFile={() => {editFileHandler(page.path, page.fallbackPath, "page")}}
-
-              />
-            )
-          })}
+          {fileTree ? renderSection(fileTree, 'pages') : null}
         </div>
       </div>
       <div className="components-list">
