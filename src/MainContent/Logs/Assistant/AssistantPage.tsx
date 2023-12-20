@@ -27,7 +27,12 @@ export default function AssistantPage() {
     var audio = new Audio("/newendpoint.mp3");
     audio.play();    
 
-    setMessages([{role: "assistant", tasks: rawResponse.tasks}, {role: "user", content: aiPrompt}, ...messageSaved])
+    const sortByFeatureGroup = (a, b) => a.feature_group.localeCompare(b.feature_group);
+    const sortedEndpoints = rawResponse.tasks.filter(task => task.type == "CreateEndpoint").sort(sortByFeatureGroup)
+    const sortedPages = rawResponse.tasks.filter(task => task.type == "CreatePage").sort(sortByFeatureGroup)
+    const newTasks = [...sortedEndpoints, ...sortedPages]
+
+    setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...messageSaved])
 
     setHistory([...history, {role: "user", content: aiPrompt}, ...rawResponse.openai_message])
   }
@@ -130,11 +135,9 @@ export default function AssistantPage() {
         <Button
           className={`${messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
           onClick={() => {
-            setAiPrompt("")
-            setMessages([])
-            setHistory([])
+           //start!
           }}
-          text="Start Plan"
+          text="Begin Code Generation"
         />
       </div>
       <div className="h-screen flex align-center justify-center overflow-none">

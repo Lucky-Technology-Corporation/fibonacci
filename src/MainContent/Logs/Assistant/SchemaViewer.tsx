@@ -18,7 +18,11 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
       const key = path[0];
       if (path.length === 0) {
         const key = Object.keys(value)[0];
-        obj[key] = value[key] // Set value at the last key
+        var valueToSet = value[key];
+        if(valueToSet == "object"){
+          valueToSet = {}
+        }
+        obj[key] = valueToSet // Set value at the last key
         if(path[0] != value){
           delete obj[path[0]];
         }
@@ -56,9 +60,10 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
 
     if (keyPath.length > 0) {
       deleteField(newData[collection], keyPath);
-    }
-
-    if(Object.keys(newData[collection]).length == 0){
+      if(Object.keys(newData[collection]).length == 0){
+        delete newData[collection]
+      }
+    } else{
       delete newData[collection]
     }
 
@@ -200,12 +205,18 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
     <div className="w-full overflow-scroll">
       {Object.entries(schema).map(([collection, fields]) => (
         <div key={collection} className="my-2 bg-[#85869822] p-2 rounded">
-            <div className="text-sm font-bold font-mono text-center my-1">
+            <div className="text-sm font-bold font-mono text-center my-1 no-focus-ring flex">
+              <Button
+                className={`w-3 ml-auto text-sm font-sans mr-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer hover:bg-[#85869822]`} 
+                onClick={() => handleRemove(collection, [])}
+                children={<FontAwesomeIcon icon={faXmarkCircle} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" />}
+              />
               <InputField
                 key={collection + "-name-input"}
                 className={`my-auto text-center w-full font-mono font-semibold bg-[#85869822] border-[#525363] rounded p-1 px-1 mx-0 mr-2`}
                 initialValue={collection}
                 onBlur={(newValue) => changeCollectionName(collection, newValue)}
+                placeholder="collectionName"
               />
             </div>
             {Object.entries(fields).map(([field, type]) =>

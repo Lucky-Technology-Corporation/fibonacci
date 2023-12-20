@@ -1,3 +1,5 @@
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../../Utilities/Button";
 import Task from "./Task";
 
@@ -16,7 +18,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
     }
 
     return (
-        <div className="w-full h-full flex flex-col mx-4 overflow-scroll" style={{paddingBottom: "68px"}}>
+        <div className="w-full h-full flex flex-col mx-4 overflow-scroll overflow-x-hidden" style={{paddingBottom: "68px"}}>
             <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
                 <div>
                     <div className="text-sm font-bold mb-0">App code</div>
@@ -31,8 +33,9 @@ export default function MessageList( {messages, setMessages, setPath} : {message
             {messages.map((message, messageIndex) => (
                 <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
                     {message.role == "assistant" && message.tasks.length > 0 ? (
-                        <div className="flex items-center mb-0.5 mt-1">
-                            <span className="text-sm ml-1">"{messages[messageIndex + 1].content}"</span>
+                        <div className="flex items-center mb-0.5 mt-1 ml-2">
+                            <FontAwesomeIcon icon={faUser} className="text-sm mr-1" />
+                            <span className="text-sm ml-0">: "{messages[messageIndex + 1].content}"</span>
                         </div>
                     ) : (
                         <></>

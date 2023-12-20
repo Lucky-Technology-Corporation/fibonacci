@@ -279,7 +279,13 @@ export default function useDatabaseApi() {
     } catch (e: any) {
       console.error(e);
       if (e.response && e.response.status == 401) {
+        console.log("signing out")
         signOut();
+        const urlParams = new URLSearchParams(window.location.search);
+        const signedIn = urlParams.get("signed_in");
+        if (signedIn && signedIn.length > 0) {
+          location.href = "/";
+        }
       }
       return null;
     }
