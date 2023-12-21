@@ -44,7 +44,10 @@ export default function FileWizard({
 
 
     //TODO: handle editing an existing file
-
+    var contentsToCopy = ""
+    if(pathIfEditing != ""){
+      //man i really dont want to do this...
+    }
 
     if(fileType == "page"){
       await filesystemApi.createNewPage(inputValue, authRequired, fallbackInputValue);
