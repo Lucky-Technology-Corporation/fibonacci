@@ -16,7 +16,7 @@ import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
-  const { activeEndpoint, activeFile, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch, activePage } = useContext(SwizzleContext);
+  const { setFileErrors, activeEndpoint, activeFile, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch, activePage } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -84,6 +84,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       //find file errors if they exist
       setPromptQuery(promptQuery)
       setQueryType(queryType)
+      setSelectedText(selectedText)
+      setFileErrors("")
       setIsWaitingForErrors(true)
       setPostMessage({
         type: "getFileErrors"
@@ -94,6 +96,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
 
   useEffect(() => {
     if(!isWaitingForErrors) return
+    setIsWaitingForErrors(false)
+    runQueryFromState()
+  }, [fileErrors])
+
+  const runQueryFromState = () => {
     toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, fileErrors), {
       loading: "Thinking...",
       success: (data) => {
@@ -138,9 +145,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       },
       error: "Failed",
     });
-    setIsWaitingForErrors(false)
-  }, [fileErrors])
-
+  }
 
   const setupUndo = (oldCode: string) => {
     setIsUndoVisible(true)
@@ -739,7 +744,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                     if(event.key == "Enter"){
                       console.log("highlighted", highlighted)
                       if(!highlighted){
-                        runQuery(prompt, "edit")
+                        if(selectedText != null && selectedText != ""){
+                          runQuery(prompt, "selection", selectedText)
+                        }
+                        else {
+                          runQuery(prompt, "edit")
+                        }
                       }
                       setPrompt("")
                       return

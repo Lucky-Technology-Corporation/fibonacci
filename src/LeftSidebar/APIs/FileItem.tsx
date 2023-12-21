@@ -15,6 +15,7 @@ export default function FileItem({
   isPrivate = false,
   fallbackUrl = "",
   editFile,
+  pagePath
 }: {
   active?: boolean;
   path: string;
@@ -25,6 +26,7 @@ export default function FileItem({
   isPrivate?: boolean
   fallbackUrl?: string
   editFile?: () => void
+  pagePath?: string
 }) {
   const [showContextMenu, setShowContextMenu] = useState(false);
 
@@ -38,7 +40,7 @@ export default function FileItem({
         onContextMenu={(e) => { e.preventDefault(); onClick(); setShowContextMenu(true);}}
       >
         <div className="flex relative">
-          <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>{formatPath(fullPath, path)}</div>
+          <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>{pagePath ? pagePath : formatPath(fullPath, path)}</div>
           {isPrivate ? (
             <>
             <Tooltip id="my-tooltip" className="fixed z-50" />

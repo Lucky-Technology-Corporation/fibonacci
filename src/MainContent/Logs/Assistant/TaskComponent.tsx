@@ -63,14 +63,14 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                     <div className="flex text-sm items-center">
                         {headerNode}
                     </div>
-                    <div className="flex mt-2 w-full items-center">
+                    <div className="flex mt-2 w-full items-top">
                         {isTaskComplete && (
                             <FontAwesomeIcon
                                 icon={faCheckCircle}
                                 className="text-green-400 text-lg w-3 h-3 mr-1 my-auto"
                             />
                         )}
-                        <span className="font-bold mr-2">{task.feature_group}</span>
+                        <div className="font-bold mr-2 shrink-0">{task.feature_group}</div>
                         <div className="no-focus-ring w-full">
                             {isEditing ? (
                                 <input 

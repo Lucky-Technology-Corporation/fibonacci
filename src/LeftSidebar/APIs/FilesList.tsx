@@ -20,6 +20,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [showServerFiles, setShowServerFiles] = useState<boolean>(false);
   const [fileToEdit, setFileToEdit] = useState<string>("");
   const [fileToEditFallback, setFileToEditFallback] = useState<string>("");
+  const [pageInformation, setPageInformation] = useState(undefined)
 
   const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList, setActivePage } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
@@ -40,6 +41,43 @@ export default function FilesList({ active }: { active: boolean }) {
         toast.error("Error fetching components");
         console.error(e);
       });
+    
+    getFile("frontend/src/RouteList.tsx")
+      .then((data) => {
+        var pageInformationLocal = {}
+        if(data.includes("\n")){
+          var lines = data.split("\n")
+          for(var line of lines){
+            if(line.includes("import ") && line.includes("./pages/")){
+              const componentName = line.split("import ")[1].split(" from")[0]
+              const fullPath = "/home/swizzle/code/frontend/src/pages/" + line.split("./pages/")[1].split("'")[0] + ".tsx"
+
+              var isPageProtected = false
+              var fallbackUrl = undefined
+              var realPath = "/"
+
+              lines.forEach((line, index) => {
+                if(line.includes(`<${componentName} />`)){
+                  if(line.includes("<SwizzlePrivateRoute")){
+                    isPageProtected = true
+                    fallbackUrl = line.split("unauthenticatedFallback=\"")[1].split("\"")[0]
+                  }
+                  realPath = line.split("path=\"")[1].split("\"")[0]
+                }
+              })
+
+              pageInformationLocal[fullPath] = {"component": componentName, "requiresAuth": isPageProtected, "fallbackUrl": fallbackUrl, "realPath": realPath}
+            }
+          }
+          console.log("pageInformationLocal", pageInformationLocal)
+          setPageInformation(pageInformationLocal)
+        }
+      })
+      .catch((e) => {
+        toast.error("Error fetching pages")
+        console.error(e)
+      })
+    
   }, [testDomain, shouldRefreshList]);
 
   useEffect(() => {
@@ -109,8 +147,7 @@ export default function FilesList({ active }: { active: boolean }) {
     setFileToEditFallback(fallbackPath)
 
     if(type == "page"){
-      const urlPath = formatPath(fullPath, path, true)
-      setFileToEdit(urlPath)
+      setFileToEdit(path)
     } else{
       setFileToEdit(path)
     }
@@ -179,6 +216,9 @@ export default function FilesList({ active }: { active: boolean }) {
             key={node.path + node.name +"-item"}
             path={node.name}
             fullPath={node.path}
+            pagePath={pageInformation && pageInformation[node.path] ? pageInformation[node.path].realPath : undefined}
+            isPrivate={pageInformation && pageInformation[node.path] ? pageInformation[node.path].requiresAuth : false}
+            fallbackUrl={pageInformation && pageInformation[node.path] ? pageInformation[node.path].fallbackUrl : undefined}
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
               if(node.path.includes("src/pages")){
@@ -186,12 +226,8 @@ export default function FilesList({ active }: { active: boolean }) {
               }
               setActiveFile("frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath));
             }}
-            removeFromList={() => {
-              setTimeout(() => {
-                setShouldRefreshList(!shouldRefreshList)
-              }, 250)
-            }}
-            editFile={() => {editFileHandler(node.name, node.path, "")}}
+            removeFromList={() => { setTimeout(() => { setShouldRefreshList(!shouldRefreshList) }, 250) }}
+            editFile={() => {editFileHandler(pageInformation && pageInformation[node.path] ? pageInformation[node.path].realPath : node.name, node.path, pageInformation && pageInformation[node.path] ? pageInformation[node.path].fallbackUrl : "")}}
           />
           </>
         );

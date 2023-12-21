@@ -1,4 +1,4 @@
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faRobot, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../../Utilities/Button";
 import Task from "./Task";
@@ -17,6 +17,8 @@ export default function MessageList( {messages, setMessages, setPath} : {message
         setMessages(newMessages)
     }
 
+    if(!messages) return <></>
+
     return (
         <div className="w-full h-full flex flex-col mx-4 overflow-scroll overflow-x-hidden" style={{paddingBottom: "68px"}}>
             <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
@@ -32,14 +34,19 @@ export default function MessageList( {messages, setMessages, setPath} : {message
             </div>
             {messages.map((message, messageIndex) => (
                 <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
-                    {message.role == "assistant" && message.tasks.length > 0 ? (
-                        <div className="flex items-center mb-0.5 mt-1 ml-2">
-                            <FontAwesomeIcon icon={faUser} className="text-sm mr-1" />
-                            <span className="text-sm ml-0">: "{messages[messageIndex + 1].content}"</span>
-                        </div>
-                    ) : (
-                        <></>
-                    )}
+                    {message.role == "assistant" && 
+                        (message.tasks.length > 0 ? (
+                            <div className="flex items-center mb-0.5 mt-1 ml-2 opacity-70">
+                                <FontAwesomeIcon icon={faUser} className="text-sm mr-1" />
+                                <span className="text-sm ml-0">"{messages[messageIndex + 1].content}"</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-top mb-0.5 mt-1 ml-2 font-bold text-violet-300">
+                                <FontAwesomeIcon icon={faRobot} className="text-sm mt-0.5 mr-1" />
+                                <span className="text-sm ml-0">"{message.content}"</span>
+                            </div>
+                        ))
+                    }
                     <div className="flex flex-col justify-center items-center">
                             {message.role == "user" ? (
                                 <></>

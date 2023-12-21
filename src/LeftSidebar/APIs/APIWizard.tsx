@@ -29,7 +29,7 @@ export default function APIWizard({
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
   const [validUrl, setValidUrl] = useState<boolean>(true)
-  const { shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
+  const { shouldRefreshList, setShouldRefreshList, setPostMessage } = useContext(SwizzleContext);
   const [authRequired, setAuthRequired] = useState<boolean>(false);
 
   const methods: any = [
@@ -55,19 +55,40 @@ export default function APIWizard({
     //If we're editing an existing endpoint, copy the contents over to a new file
     var contentsToCopy = ""
     if(endpointPathIfEditing != ""){
+      setPostMessage({
+        type: "saveFile"
+      });
+
       const fileNameOnServer = "backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing)
       contentsToCopy = await endpointApi.getFile(fileNameOnServer)
+
+      const methodToDelete = endpointPathIfEditing.split("/")[0].toUpperCase()
+      const pathToDelete = endpointPathIfEditing.split("/").slice(1).join("/")
+      const fileName = endpointToFilename(endpointPathIfEditing)
+
+      setPostMessage({
+        type: "removeFile",
+        fileName: "/backend/user-dependencies/" + fileName,
+      });
+
+      await filesystemApi.deleteEndpoint(methodToDelete, pathToDelete)
+
+      if(authRequired){
+        contentsToCopy = contentsToCopy.replace(/optionalAuthentication/g, "requiredAuthentication")
+      } else{
+        contentsToCopy = contentsToCopy.replace(/requiredAuthentication/g, "optionalAuthentication")
+      }
+      //Note this only works with single quotes right now
+      contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
     }
 
     //Make the new file
     await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy)
 
-    //If we're editing an existing endpoint, remove the old file
-    if(endpointPathIfEditing != ""){
-      const methodToDelete = endpointPathIfEditing.split("/")[0].toUpperCase()
-      const pathToDelete = endpointPathIfEditing.split("/").slice(1).join("/")
-      await filesystemApi.deleteEndpoint(methodToDelete, pathToDelete)
-    }
+    setPostMessage({
+      type: "openFile",
+      fileName: "/backend/user-dependencies/" + endpointToFilename(methodToUse + "/" + newEndpointPath),
+    })
 
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
@@ -202,7 +223,11 @@ export default function APIWizard({
                     placeholder={selectedMethod == "schedule" ? "jobName" : "/path/:variable"}
                     onKeyDown={(event: any) => {
                       if (event.key == "Enter") {
-                        createHandler();
+                        toast.promise(createHandler(), {
+                          "loading": "Loading...",
+                          "success": "Done",
+                          "error": "An error occured"
+                        })
                       }
                     }}
                   />
@@ -212,7 +237,11 @@ export default function APIWizard({
                     <button
                       type="button"
                       onClick={() => {
-                        createHandler();
+                        toast.promise(createHandler(), {
+                          "loading": "Loading...",
+                          "success": "Done",
+                          "error": "An error occured"
+                        })
                       }}
                       className={`${validUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
                       disabled={!validUrl}

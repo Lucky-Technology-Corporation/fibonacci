@@ -9,10 +9,18 @@ import SchemaViewer from "./SchemaViewer";
 export default function AssistantPage() {
   const [aiPrompt, setAiPrompt] = useState<string>("")
   const { promptAiPlanner, getSchema, setSchema } = useEndpointApi()
-  const [messages, setMessages] = useState<any[]>([])
-  const [history, setHistory] = useState<any[]>([])
+  const [messages, setMessages] = useState<any[]>(null)
+  const [history, setHistory] = useState<any[]>(null)
   const {activeProject} = useContext(SwizzleContext)
   const [schema, setSchemaLocal] = useState<any>({})
+  const [needsAuth, setNeedsAuth] = useState<boolean>(true)
+
+  const beginCodeGeneration = () => {
+    if(needsAuth){
+      //TODO: show user auth modal then move forward
+    }
+
+  }
 
   const runAiPlanner = async () => {
     const messageSaved = messages
@@ -20,8 +28,18 @@ export default function AssistantPage() {
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
     var rawResponse = await promptAiPlanner(aiPrompt, history)
 
+    if(rawResponse.tasks.length == 0){
+      setMessages([{role: "assistant", content: rawResponse.gpt_response, tasks: []}, {role: "user", content: aiPrompt}, ...messageSaved])
+      setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
+      return
+    }
+
     if(rawResponse.schema){
       setSchemaLocal(rawResponse.schema)
+    }
+
+    if(rawResponse.needs_auth != undefined){
+      setNeedsAuth(rawResponse.needs_auth)
     }
 
     var audio = new Audio("/newendpoint.mp3");
@@ -33,8 +51,7 @@ export default function AssistantPage() {
     const newTasks = [...sortedEndpoints, ...sortedPages]
 
     setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...messageSaved])
-
-    setHistory([...history, {role: "user", content: aiPrompt}, ...rawResponse.openai_message])
+    setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
   }
 
   useEffect(() => {
@@ -58,13 +75,13 @@ export default function AssistantPage() {
   }, [activeProject])
 
   useEffect(() => {
-    if(history != null && history.length > 0){
+    if(history != null){
       localStorage.setItem("history_"+activeProject, JSON.stringify(history))
     }
   }, [history])
 
   useEffect(() => {
-    if(messages != null && messages.length > 0){
+    if(messages != null){
       localStorage.setItem("messages_"+activeProject, JSON.stringify(messages))
     }
   }, [messages])
@@ -96,7 +113,7 @@ export default function AssistantPage() {
       <div className="flex mx-4 mr-2 mb-4">
         <input
           className="grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2"
-          placeholder={messages.length == 0 ? "What do you want to make?" : "What do you want to add?"}
+          placeholder={messages && messages.length == 0 ? "What do you want to make?" : "What do you want to add?"}
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           onFocus={() => { setAiPrompt("") }}
@@ -119,10 +136,10 @@ export default function AssistantPage() {
               error: "An error occured",
             })
           }}
-          text={messages.length == 0  ? "Create" : "Update"}
+          text={messages && messages.length == 0  ? "Create" : "Update"}
         />
         <Button
-          className={`${messages.length == 0 && "hidden"} text-red-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border`} 
+          className={`${messages && messages.length == 0 && "hidden"} text-red-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border`} 
           onClick={() => {
             setAiPrompt("")
             setMessages([])
@@ -133,15 +150,15 @@ export default function AssistantPage() {
           text="Clear"
         />
         <Button
-          className={`${messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
+          className={`${messages && messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
           onClick={() => {
-           //start!
+            beginCodeGeneration()
           }}
           text="Begin Code Generation"
         />
       </div>
       <div className="h-screen flex align-center justify-center overflow-none">
-        {messages.length == 0 ? (
+        {messages && messages.length == 0 ? (
           <div>
             <img src="logo_white.png" className="w-20 h-20 mx-auto mt-28 pulsate" />
             <div className="w-full mt-4 text-center opacity-70">Waiting for instructions</div>
