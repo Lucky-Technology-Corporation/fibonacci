@@ -1,5 +1,6 @@
 import { useContext, useRef } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import InProgressDeploymentModal from "../Utilities/InProgressDeploymentModal";
 import { Page } from "../Utilities/Page";
 import UserTableView from "./Auth/UserTableView";
 import DatabaseView from "./Database/DatabaseView";
@@ -95,6 +96,7 @@ export default function CenterContent({
           <AppCodePage />
         </div>
       </div> */}
+      <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

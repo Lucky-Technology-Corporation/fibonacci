@@ -13,7 +13,6 @@ import RightSidebar from "./RightSidebar/RightSidebar";
 import SignIn from "./SignIn";
 import AddEmailModal from "./Utilities/AddEmailModal";
 import { SwizzleContext } from "./Utilities/GlobalContext";
-import InProgressDeploymentModal from "./Utilities/InProgressDeploymentModal";
 import { Page } from "./Utilities/Page";
 
 export default function Dashboard() {
@@ -346,7 +345,7 @@ export default function Dashboard() {
 
               <RightSidebar />
 
-              <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+              {/* <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
 
               <AddEmailModal isOpen={needsEmail} onClose={() => setNeedsEmail(false)} />
             </div>
