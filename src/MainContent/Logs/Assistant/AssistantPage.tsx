@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
@@ -8,12 +8,13 @@ import SchemaViewer from "./SchemaViewer";
 
 export default function AssistantPage() {
   const [aiPrompt, setAiPrompt] = useState<string>("")
-  const { promptAiPlanner, getSchema, setSchema } = useEndpointApi()
+  const { promptAiPlanner, getSchema, setSchema, promptSchemaPlanner } = useEndpointApi()
   const [messages, setMessages] = useState<any[]>(null)
   const [history, setHistory] = useState<any[]>(null)
   const {activeProject} = useContext(SwizzleContext)
   const [schema, setSchemaLocal] = useState<any>({})
   const [needsAuth, setNeedsAuth] = useState<boolean>(true)
+  const schemaRef = useRef(null)
 
   const beginCodeGeneration = () => {
     if(needsAuth){
@@ -29,13 +30,15 @@ export default function AssistantPage() {
     var rawResponse = await promptAiPlanner(aiPrompt, history)
 
     if(rawResponse.tasks.length == 0){
+      console.log("no new tasks, return early")
       setMessages([{role: "assistant", content: rawResponse.gpt_response, tasks: []}, {role: "user", content: aiPrompt}, ...messageSaved])
       setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
+      toast.promise(callUpdateSchema([{role: "assistant", content: rawResponse.gpt_response, tasks: []}, {role: "user", content: aiPrompt}, ...messageSaved]), {
+        loading: "Updating schema...",
+        success: "Done",
+        error: "An error occured",
+      })
       return
-    }
-
-    if(rawResponse.schema){
-      setSchemaLocal(rawResponse.schema)
     }
 
     if(rawResponse.needs_auth != undefined){
@@ -50,8 +53,71 @@ export default function AssistantPage() {
     const sortedPages = rawResponse.tasks.filter(task => task.type == "CreatePage").sort(sortByFeatureGroup)
     const newTasks = [...sortedEndpoints, ...sortedPages]
 
-    setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...messageSaved])
+    //deal with overwriting tasks in previous messages
+    var uniqueMessages = []
+    var uniqueMessagesMap = {}
+    for(var i = 0; i < messageSaved.length; i++){
+      if(messageSaved[i].role == "assistant"){ //for each old assistant message
+        const tasks = messageSaved[i].tasks
+        for(var j = 0; j < tasks.length; j++){ //for each task in the old assistant message
+          if(tasks.type == "CreateEndpoint"){
+            const newTaskWithSamePathAndMethod = newTasks.filter(task => task.inputs.path == tasks[j].inputs.path && task.inputs.method == tasks[j].inputs.method)
+            if(newTaskWithSamePathAndMethod.length == 0){
+              //there is no new task with the same path and method, so we can keep the old one
+              uniqueMessages.push(messageSaved[i])
+            }
+          } else if(tasks.type == "CreatePage"){
+            const newTaskWithSamePath = newTasks.filter(task => task.inputs.path == tasks[j].inputs.path)
+            if(newTaskWithSamePath.length == 0){
+              //there is no new task with the same path and method, so we can keep the old one
+              uniqueMessages.push(messageSaved[i])
+            }
+          }
+        }
+      }
+    }
+    console.log("old messages", messageSaved)
+    console.log("filtered old messages", uniqueMessages)
+    console.log("new tasks", newTasks)
+
+    setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...uniqueMessages])
     setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
+
+    toast.promise(callUpdateSchema([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...uniqueMessages]), {
+      loading: "Updating schema...",
+      success: "Done",
+      error: "An error occured",
+    })
+
+  }
+
+  const callUpdateSchema = async (messages) => {
+    var backendTasks = []
+    var userPrompts = []
+    console.log("messages", messages)
+    for(var i = 0; i < messages.length; i++){
+      console.log("message", messages[i])
+      if(messages[i].role == "assistant"){
+        console.log("tasks", messages[i].tasks)
+        for(var j = 0; j < messages[i].tasks.length; j++){
+          console.log("task", messages[i].tasks[j])
+          if(messages[i].tasks[j].type == "CreateEndpoint"){
+            console.log("is an endpoint")
+            backendTasks.push(messages[i].tasks[j])
+          }
+        }
+      } else if(messages[i].role == "user"){
+        console.log("content", messages[i].content)
+        userPrompts.push(messages[i].content)
+      }
+    }
+    console.log("userPrompts", userPrompts)
+    console.log("backendTasks", backendTasks)
+    if(backendTasks.length == 0){ return }
+    var rawResponse = await promptSchemaPlanner(userPrompts, backendTasks)
+    if(rawResponse.schema){
+      setSchemaLocal(rawResponse.schema)
+    }
   }
 
   useEffect(() => {
@@ -106,6 +172,12 @@ export default function AssistantPage() {
     const newData = { ...schema };
     newData[""] = {}
     setSchemaLocal(newData);
+
+    //TODO: not working
+    // const scroll = schemaRef.current;
+    // if (scroll) {
+    //   scroll.scrollTop = scroll.scrollHeight;
+    // }
   }
 
   return (
@@ -184,7 +256,7 @@ export default function AssistantPage() {
                   className="mr-1 my-2 text-sm px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
                 />
               </div>
-              <SchemaViewer schema={schema} setSchema={setSchemaLocal} commitSchema={schemaEditHandler} />
+              <SchemaViewer schema={schema} setSchema={setSchemaLocal} commitSchema={schemaEditHandler} schemaRef={schemaRef} />
             </div>
           </>
         )}

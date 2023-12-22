@@ -257,6 +257,27 @@ export default function useEndpointApi() {
     }
   };
 
+  const promptSchemaPlanner = async (prompts: string[], tasks: any[]) => {
+    try {
+      var body = {
+        prompts: prompts,
+        backend_tasks: tasks,
+      };
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/plan/schema?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
   const promptAiPlanner = async (userQuery: string, history?: any[]) => {
     try {
 
@@ -518,6 +539,7 @@ export default function useEndpointApi() {
     promptAiTaskEdit,
     aiTaskExecute,
     setSchema,
-    getSchema
+    getSchema,
+    promptSchemaPlanner
   };
 }

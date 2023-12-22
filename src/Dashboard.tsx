@@ -19,7 +19,7 @@ import { Page } from "./Utilities/Page";
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
   //Active logs page handler
-  const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
+  const [activeLogsPage, setActiveLogsPage] = useState<string>("assistant");
   //Loading Modal handler
   const [isModalOpen, setIsModalOpen] = useState(false);
   //Add email modal handler

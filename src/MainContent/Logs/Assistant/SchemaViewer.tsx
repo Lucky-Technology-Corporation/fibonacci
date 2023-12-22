@@ -4,7 +4,7 @@ import { useState } from "react";
 import Button from "../../../Utilities/Button";
 import NewFieldModal from "./NewFieldModal";
 
-export default function SchemaViewer({schema, setSchema, commitSchema}: {schema: any, setSchema: any, commitSchema: any}){
+export default function SchemaViewer({schema, setSchema, commitSchema, schemaRef}: {schema: any, setSchema: any, commitSchema: any, schemaRef: any}){
   
   const [addVisible, setAddVisible] = useState<boolean>(false);
   const [inputCollection, setInputCollection] = useState<string>("");
@@ -202,7 +202,7 @@ export default function SchemaViewer({schema, setSchema, commitSchema}: {schema:
   }
   
   return(
-    <div className="w-full overflow-scroll">
+    <div className="w-full overflow-scroll" ref={schemaRef}>
       {Object.entries(schema).map(([collection, fields]) => (
         <div key={collection} className="my-2 bg-[#85869822] p-2 rounded">
             <div className="text-sm font-bold font-mono text-center my-1 no-focus-ring flex">
