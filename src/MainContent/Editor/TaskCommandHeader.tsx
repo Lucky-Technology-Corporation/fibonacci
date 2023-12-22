@@ -42,7 +42,7 @@ export default function TaskCommandHeader(){
   }
   console.log(taskQueue[0])
   return (
-    <div className="flex w-full mt-2 justify-between no-focus-ring">
+    <div className="flex w-full py-2 justify-between no-focus-ring">
       {isEditing ? (
         <input
           className="ml-4 flex-1 p-2 my-1 bg-[#85869822] rounded"
@@ -54,6 +54,9 @@ export default function TaskCommandHeader(){
         />
       ) : (
       <div className="flex flex-col justify-leading ml-5 pt-2">
+        <div>
+          {fullTaskQueue.length - taskQueue.length} of {fullTaskQueue.length} tasks
+        </div>
        <div className="mb-0.5">
           {taskQueue[0].type == "CreatePage" ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
@@ -90,7 +93,7 @@ export default function TaskCommandHeader(){
           onClick={() => {
             //DO IT
           }}
-          text={isEditing ? "Revise" : "Next"}
+          text={isEditing ? "Revise" : "Approve"}
         />
       </div>
     </div>

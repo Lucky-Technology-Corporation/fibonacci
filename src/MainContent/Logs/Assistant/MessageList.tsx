@@ -35,7 +35,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                     <Button
                         onClick={() => {}}
                         children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
-                        className="mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
+                        className="ml-0 pl-0 mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
                     />
                     <div>
                         <div className="flex">
@@ -50,11 +50,6 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             and connect to other APIs.
                         </div>
                     </div>
-                    <Button
-                        className={`${messages && messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
-                        onClick={() => { }}
-                        text="Start"
-                    />
                 </div>
                 </div>
                 {messages.map((message, messageIndex) => (
@@ -97,7 +92,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             <Button
                                 onClick={() => {}}
                                 children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
-                                className="mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
+                                className="ml-0 pl-0 mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
                             />
                             <div className="w-full grow">
                                 <div className="flex">
@@ -108,11 +103,6 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                                     Code that runs in the browser and generates UI
                                 </div>
                             </div>
-                            <Button
-                                className={`${messages && messages.length == 0 && "hidden"} text-green-400 text-sm ml-auto mr-0 px-5 py-2 h-10 my-auto font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
-                                onClick={() => { }}
-                                text="Start"
-                            />
                         </div>
                     </div>
                     {/* <Button
