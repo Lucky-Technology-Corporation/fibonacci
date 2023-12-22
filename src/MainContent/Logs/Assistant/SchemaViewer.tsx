@@ -1,4 +1,4 @@
-import { faChevronDown, faChevronRight, faPlus, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faChevronDown, faChevronRight, faPlus, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import Button from "../../../Utilities/Button";
@@ -177,10 +177,10 @@ export default function SchemaViewer({schema, setSchema, commitSchema, schemaRef
       );
     } else {
       return (
-        <div key={field} className="flex justify-between align-middle my-2 p-1 rounded no-focus-ring" style={{ marginLeft: `${level * 20}px` }}>
+        <div key={field} className="flex w-full justify-between align-middle my-2 p-1 px-0 rounded no-focus-ring" style={{ marginLeft: `${level * 20}px` }}>
           <div className="my-auto">
             <Button
-              className={`${field == "_id" && "opacity-0 pointer-events-none"} w-3 ml-auto text-sm font-sans mr-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer hover:bg-[#85869822]`} 
+              className={`${field == "_id" && "opacity-0 pointer-events-none"} w-3 ml-0 text-sm font-sans mr-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer hover:bg-[#85869822]`} 
               onClick={() => handleRemove(collection, keyPath)}
               children={<FontAwesomeIcon icon={faXmarkCircle} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" />}
             />
@@ -202,13 +202,13 @@ export default function SchemaViewer({schema, setSchema, commitSchema, schemaRef
   }
   
   return(
-    <div className="w-full overflow-scroll" ref={schemaRef}>
+    <div className="w-full overflow-scroll flex flex-wrap" ref={schemaRef}>
       {Object.entries(schema).sort((a, b) => {
           if (a[0] === "") return -1; // If the first entry's key is an empty string, it should come first
           if (b[0] === "") return 1;  // If the second entry's key is an empty string, it should come second
           return 0; // If neither key is an empty string, keep original order
         }).map(([collection, fields]) => (
-        <div key={collection} className="my-2 bg-[#85869822] p-2 rounded">
+        <div key={collection} className="my-2 mx-4 bg-[#85869822] p-2 rounded w-72">
             <div className="text-sm font-bold font-mono text-center my-1 no-focus-ring flex">
               <Button
                 className={`w-3 ml-auto text-sm font-sans mr-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer hover:bg-[#85869822]`} 
@@ -222,11 +222,16 @@ export default function SchemaViewer({schema, setSchema, commitSchema, schemaRef
                 onBlur={(newValue) => changeCollectionName(collection, newValue)}
                 placeholder="collectionName"
               />
+              <Button
+                className={`${true ? "hidden" : ""} w-4 ml-auto text-sm font-sans py-1 font-medium rounded flex justify-center items-center cursor-pointer`} 
+                onClick={() => {openAddModal(collection, [])}}
+                children={<FontAwesomeIcon icon={faCheck} className="text-sm w-4 h-4 opacity-70 hover:opacity-100" />}
+              />
             </div>
             {Object.entries(fields).map(([field, type]) =>
               renderField(field, type, collection, handleRemove, [field])
             )}
-          <div className="my-auto ml-2 mb-1 mr-auto cursor-pointer" onClick={() => {openAddModal(collection, [])}}><FontAwesomeIcon icon={faPlus} className="text-sm w-3 h-3 opacity-70 hover:opacity-100" /></div>
+          <div className="my-auto mb-1 mr-auto cursor-pointer" onClick={() => {openAddModal(collection, [])}}><FontAwesomeIcon icon={faPlus} className="text-sm w-4 h-4 opacity-70 hover:opacity-100" /></div>
         </div>
       ))}
       <NewFieldModal addFieldHandler={handleAdd} addVisible={addVisible} setAddVisible={setAddVisible} collectionName={inputCollection} keyPath={inputKeyPath} />

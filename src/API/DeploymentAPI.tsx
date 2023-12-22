@@ -29,14 +29,21 @@ export default function useDeploymentApi() {
     useContext(SwizzleContext);
 
   const listProjectBuilds = async (page, pageSize) => {
-    if (activeProject == "") return;
-    const response = await axios.get(
-      `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/list?page=${page}&page_size=${pageSize}`,
-      {
-        withCredentials: true,
-      },
-    );
-    return response.data;
+    try{
+      if (activeProject == "") return;
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/list?page=${page}&page_size=${pageSize}`,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch(e){
+      if(e.response.status == 404){
+        location.reload()
+      }
+      return null
+    }
   };
 
   const getProjectDeploymentStatus = async (projectId, env = environment) => {

@@ -1,4 +1,4 @@
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useState } from "react";
 import useEndpointApi from "../../../API/EndpointAPI";
@@ -39,11 +39,11 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                                 className="text-green-400 text-lg w-3 h-3 mr-1 my-auto"
                             />
                         )}
-                        <div className="font-bold mr-2 shrink-0">{task.feature_group}</div>
+                        {/* <div className="font-bold mr-2 shrink-0">{task.feature_group}</div> */}
                         <div className="no-focus-ring w-full">
                             {isEditing ? (
                                 <input 
-                                    className="my-auto w-full text-xs font-semibold bg-[#85869822] border-[#525363] border rounded p-1 px-1 mx-0 mr-2"
+                                    className="my-auto w-full text-xs bg-[#85869822] border-[#525363] border rounded p-1 px-1 mx-0 mr-2"
                                     placeholder="Change the summary"
                                     value={taskEditPrompt}
                                     onChange={(e) => { setTaskEditPrompt(e.target.value) } }
@@ -74,12 +74,14 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
                              <Button
                                 className="text-sm px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
                                 onClick={() => { setIsEditing(true) }}
-                                text={`Edit`}
+                                // text={`Edit`}
+                                children={<FontAwesomeIcon icon={faPencil} className="text-sm py-1 w-4 h-4" />}
                             />
                             <Button
                                 className="text-sm text-red-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border-[#525363] border" 
                                 onClick={removeTask}
-                                text={`Remove`}
+                                // text={`X`}
+                                children={<FontAwesomeIcon icon={faXmark} className="text-sm py-1 w-4 h-4" />}
                             />
                             {/* <Button
                                 className="text-sm text-green-400 px-3 py-1 ml-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border" 

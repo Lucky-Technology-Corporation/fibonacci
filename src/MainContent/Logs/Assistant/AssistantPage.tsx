@@ -1,3 +1,5 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
@@ -11,7 +13,7 @@ export default function AssistantPage() {
   const [aiPrompt, setAiPrompt] = useState<string>("")
   const { promptAiPlanner, getSchema, setSchema, promptSchemaPlanner } = useEndpointApi()
   const [messages, setMessages] = useState<any[]>([])
-  const [history, setHistory] = useState<any[]>(null)
+  // const [history, setHistory] = useState<any[]>(null)
   const {activeProject, setTaskQueue, setSelectedTab, setFullTaskQueue} = useContext(SwizzleContext)
   const [schema, setSchemaLocal] = useState<any>({})
   const [needsAuth, setNeedsAuth] = useState<boolean>(true)
@@ -45,16 +47,12 @@ export default function AssistantPage() {
 
   const runAiPlanner = async () => {
     const messageSaved = messages
-    console.log("messageSaved", messageSaved)
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
-    console.log("message", messages)
-    var rawResponse = await promptAiPlanner(aiPrompt, history)
-    console.log("Response", rawResponse)
+    var rawResponse = await promptAiPlanner(aiPrompt, messages.reverse())
 
     if(rawResponse.tasks.length == 0){
       console.log("no new tasks, return early")
       setMessages([{role: "assistant", content: rawResponse.gpt_response, tasks: []}, {role: "user", content: aiPrompt}, ...messageSaved])
-      setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
       toast.promise(callUpdateSchema([{role: "assistant", content: rawResponse.gpt_response, tasks: []}, {role: "user", content: aiPrompt}, ...messageSaved]), {
         loading: "Updating schema...",
         success: "Done",
@@ -80,14 +78,18 @@ export default function AssistantPage() {
     for(var i = 0; i < messageSaved.length; i++){
       if(messageSaved[i].role == "assistant"){ //for each old assistant message
         const tasks = messageSaved[i].tasks
+        console.log("tasks", tasks)
         for(var j = 0; j < tasks.length; j++){ //for each task in the old assistant message
-          if(tasks.type == "CreateEndpoint"){
+          console.log("task", tasks[j])
+          if(tasks[j].type == "CreateEndpoint"){
+            console.log("checking for", tasks[j].inputs.path, tasks[j].inputs.method)
             const newTaskWithSamePathAndMethod = newTasks.filter(task => task.inputs.path == tasks[j].inputs.path && task.inputs.method == tasks[j].inputs.method)
             if(newTaskWithSamePathAndMethod.length == 0){
               //there is no new task with the same path and method, so we can keep the old one
               uniqueMessages.push(messageSaved[i])
             }
-          } else if(tasks.type == "CreatePage"){
+          } else if(tasks[j].type == "CreatePage"){
+            console.log("checking for", tasks[j].inputs.path, tasks[j].inputs.method)
             const newTaskWithSamePath = newTasks.filter(task => task.inputs.path == tasks[j].inputs.path)
             if(newTaskWithSamePath.length == 0){
               //there is no new task with the same path and method, so we can keep the old one
@@ -102,7 +104,7 @@ export default function AssistantPage() {
     console.log("new tasks", newTasks)
 
     setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...uniqueMessages])
-    setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
+    // setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
 
     toast.promise(callUpdateSchema([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...uniqueMessages]), {
       loading: "Updating schema...",
@@ -115,20 +117,14 @@ export default function AssistantPage() {
   const callUpdateSchema = async (messages) => {
     var backendTasks = []
     var userPrompts = []
-    console.log("messages", messages)
     for(var i = 0; i < messages.length; i++){
-      console.log("message", messages[i])
       if(messages[i].role == "assistant"){
-        console.log("tasks", messages[i].tasks)
         for(var j = 0; j < messages[i].tasks.length; j++){
-          console.log("task", messages[i].tasks[j])
           if(messages[i].tasks[j].type == "CreateEndpoint"){
-            console.log("is an endpoint")
             backendTasks.push(messages[i].tasks[j])
           }
         }
       } else if(messages[i].role == "user"){
-        console.log("content", messages[i].content)
         userPrompts.push(messages[i].content)
       }
     }
@@ -147,10 +143,6 @@ export default function AssistantPage() {
     }
 
     if(activeProject != ""){
-      var history = localStorage.getItem("history_"+activeProject)
-      if(history != null){
-        setHistory(JSON.parse(history))
-      }
       var messages = localStorage.getItem("messages_"+activeProject)
       if(messages != null){
         setMessages(JSON.parse(messages))
@@ -161,16 +153,9 @@ export default function AssistantPage() {
   }, [activeProject])
 
   useEffect(() => {
-    if(history != null){
-      localStorage.setItem("history_"+activeProject, JSON.stringify(history))
-    }
-  }, [history])
-
-  useEffect(() => {
     if(messages != null){
       localStorage.setItem("messages_"+activeProject, JSON.stringify(messages))
     }
-    console.log("messages", messages)
   }, [messages])
 
   const schemaEditHandler = (newSchema: object) => {
@@ -236,21 +221,20 @@ export default function AssistantPage() {
           onClick={() => {
             setAiPrompt("")
             setMessages([])
-            setHistory([])
             setSchemaLocal({})
             toast.promise(setSchema({}), { loading: "Clearing...", success: "Done", error: "An error occured" })
           }}
           text="Clear"
         />
-        <Button
+        {/* <Button
           className={`${messages && messages.length == 0 && "hidden"} text-green-400 text-sm ml-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
           onClick={() => {
             beginCodeGeneration()
           }}
           text="Begin Code Generation"
-        />
+        /> */}
       </div>
-      <div className="h-screen flex align-center justify-center overflow-none">
+      <div className="flex flex-col align-center justify-center overflow-scroll">
         {messages == null || messages.length == 0 ? (
           <div>
             <img src="logo_white.png" className="w-20 h-20 mx-auto mt-28 pulsate" />
@@ -263,22 +247,28 @@ export default function AssistantPage() {
             setMessages={setMessages} 
             setPath={() => {}} //this is the onclick handler
           />
-          <div className="w-1/3 mx-2 h-screen flex-col overflow-scroll pb-[68px]">
+          <>
+          <div className="w-full flex flex-col mx-4 mt-4 overflow-x-hidden">
               <div className="ml-1 mt-0.5 flex justify-between">
-                <div>
-                  <div className="text-sm font-bold flex">
-                    Schema
+                <div className="flex"> 
+                  <Button
+                    onClick={addNewSchemaCollection}
+                    children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
+                    className="mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
+                  />
+                  <div>
+                    <div className="flex">
+                        <img src="/database.svg" className="w-4 h-4 my-auto mr-1.5" />
+                        <div className="text-base font-bold mb-0">Schema</div>
+                    </div>
+                    <div className="mt-0.5">This is your database structure</div>
                   </div>
-                  <div className="mt-0.5">This is your database structure</div>
                 </div>
-                <Button
-                  onClick={addNewSchemaCollection}
-                  text="+"
-                  className="mr-1 my-2 text-sm px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-                />
+                
               </div>
-              <SchemaViewer schema={schema} setSchema={setSchemaLocal} commitSchema={schemaEditHandler} schemaRef={schemaRef} />
             </div>
+            <SchemaViewer schema={schema} setSchema={setSchemaLocal} commitSchema={schemaEditHandler} schemaRef={schemaRef} />
+            </>
           </>
         )}
       </div>

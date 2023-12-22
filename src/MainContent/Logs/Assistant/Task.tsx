@@ -14,7 +14,7 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     allTasks={allTasks}
                     headerNode={
                         <>
-                            <img src="/cloud.svg" className="w-4 h-4 mr-2" />
+                            {/* <img src="/cloud.svg" className="w-4 h-4 mr-2" /> */}
                             <span className={`${methodToColor(undefined, task.inputs.method)} font-bold font-mono`}>{task.inputs.method}</span><span className="font-mono ml-1">{task.inputs.path}</span>
                         </>
                     }
@@ -29,7 +29,7 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     allTasks={allTasks}
                     headerNode={
                         <>
-                            <img src="/world.svg" className="w-4 h-4 mr-2" />
+                            {/* <img src="/world.svg" className="w-4 h-4 mr-2" /> */}
                             <span className={`${task.inputs.requiresAuth && "text-blue-200"} font-mono`}>{task.inputs.path}</span>
                             <FontAwesomeIcon
                                 className={`h-2 mb-0.5 ml-1 ${task.inputs.requiresAuth ? "text-blue-200" : "hidden"}`}
@@ -49,7 +49,7 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     allTasks={allTasks}
                     headerNode={
                         <>
-                            <img src="/world.svg" className="w-4 h-4 mr-2" />
+                            {/* <img src="/world.svg" className="w-4 h-4 mr-2" /> */}
                             <span className={`font-mono`}>{task.inputs.name}</span>
                         </>
                     }
@@ -64,7 +64,7 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     allTasks={allTasks}
                     headerNode={
                         <>
-                            <img src="/cloud.svg" className="w-4 h-4 mr-2" />
+                            {/* <img src="/cloud.svg" className="w-4 h-4 mr-2" /> */}
                             <span className={`font-mono`}>{task.inputs.name}</span>
                         </>
                     }
@@ -79,7 +79,7 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     allTasks={allTasks}
                     headerNode={
                         <>
-                            <img src="/box.svg" className="w-4 h-4 mr-2" />
+                            {/* <img src="/box.svg" className="w-4 h-4 mr-2" /> */}
                             <span className={`font-mono`}>npm install {task.inputs.name}</span>
                         </>
                     }
@@ -94,7 +94,7 @@ export default function Task({ task, removeTask, editTask, allTasks, setPath }: 
                     allTasks={allTasks}
                     headerNode={
                         <>
-                            <img src="/box.svg" className="w-4 h-4 mr-2" />
+                            {/* <img src="/box.svg" className="w-4 h-4 mr-2" /> */}
                             <span className={`font-mono`}>npm install {task.inputs.name}</span>
                         </>
                     }
