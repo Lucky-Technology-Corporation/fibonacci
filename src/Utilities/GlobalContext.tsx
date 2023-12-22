@@ -74,6 +74,10 @@ export interface SwizzleContextType {
   setFileErrors: Dispatch<SetStateAction<string>>;
   activePage: string;
   setActivePage: Dispatch<SetStateAction<string>>;
+  taskQueue: any;
+  setTaskQueue: Dispatch<SetStateAction<any>>;
+  fullTaskQueue: any;
+  setFullTaskQueue: Dispatch<SetStateAction<any>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -117,6 +121,10 @@ export const GlobalContextProvider = ({ children }) => {
   const [currentFileProperties, setCurrentFileProperties] = useState<any>({});
   //Active collection handler
   const [activeCollection, setActiveCollection] = useState<string>("");  
+
+  //Code generation task list
+  const [taskQueue, setTaskQueue] = useState<any>([]);
+  const [fullTaskQueue, setFullTaskQueue] = useState<any>([]);
 
   return (
     <SwizzleContext.Provider
@@ -188,7 +196,11 @@ export const GlobalContextProvider = ({ children }) => {
         fileErrors,
         setFileErrors,
         activePage,
-        setActivePage
+        setActivePage,
+        taskQueue,
+        setTaskQueue,
+        fullTaskQueue,
+        setFullTaskQueue
       }}
     >
       {children}

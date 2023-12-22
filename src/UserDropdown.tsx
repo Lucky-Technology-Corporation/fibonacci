@@ -89,6 +89,7 @@ export default function UserDropdown() {
                     onClick={() => {
                       const c = prompt(`Are you sure you want to delete this project? Type the project name to confirm:\n\n${activeProjectName}`);
                       if (c == activeProjectName) {
+                        console.log(activeProject)
                         toast.promise(deleteProject(activeProject), {
                           loading: "Deleting project...",
                           success: () => {

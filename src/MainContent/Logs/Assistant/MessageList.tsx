@@ -1,6 +1,5 @@
-import { faRobot, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../../Utilities/Button";
 import Task from "./Task";
 
 export default function MessageList( {messages, setMessages, setPath} : {messages: any[], setMessages: any, setPath: any}){
@@ -17,6 +16,13 @@ export default function MessageList( {messages, setMessages, setPath} : {message
         setMessages(newMessages)
     }
 
+    function removeQuotes(str) {
+        if (str.startsWith('"') && str.endsWith('"')) {
+            return str.slice(1, -1);
+        }
+        return str;
+    }    
+
     if(!messages) return <></>
 
     return (
@@ -26,30 +32,35 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                     <div className="text-sm font-bold mb-0">App code</div>
                     <div className="mt-0.5">This is a list of resources Swizzle will build for you</div>
                 </div>
-                <Button
+                {/* <Button
                     onClick={() => { setPath("appCode") }}
                     text="+"
                     className="mr-1.5 text-sm px-3 my-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-                />
+                /> */}
             </div>
             {messages.map((message, messageIndex) => (
                 <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
                     {message.role == "assistant" && 
                         (message.tasks.length > 0 ? (
-                            <div className="flex items-center mb-0.5 mt-1 ml-2 opacity-70">
-                                <FontAwesomeIcon icon={faUser} className="text-sm mr-1" />
-                                <span className="text-sm ml-0">"{messages[messageIndex + 1].content}"</span>
-                            </div>
+                            <></>
+                            // <div className="flex items-center mb-0.5 mt-1 ml-2 opacity-70">
+                            //     <FontAwesomeIcon icon={faUser} className="text-sm mr-1" />
+                            //     <span className="text-sm ml-0">"{messages[messageIndex + 1].content}"</span>
+                            // </div>
                         ) : (
                             <div className="flex items-top mb-0.5 mt-1 ml-2 font-bold text-violet-300">
                                 <FontAwesomeIcon icon={faRobot} className="text-sm mt-0.5 mr-1" />
-                                <span className="text-sm ml-0">"{message.content}"</span>
+                                <span className="text-sm ml-0">"{removeQuotes(message.content)}"</span>
                             </div>
                         ))
                     }
                     <div className="flex flex-col justify-center items-center">
                             {message.role == "user" ? (
                                 <></>
+                                //  <div className="flex items-center mb-0.5 mt-1 ml-2 opacity-70">
+                                //     <FontAwesomeIcon icon={faUser} className="text-sm mr-1" />
+                                //     <span className="text-sm ml-0">"{messages[messageIndex].content}"</span>
+                                // </div>
                             ) : (
                                 message.tasks.map((task, taskIndex) => (
                                    <Task 

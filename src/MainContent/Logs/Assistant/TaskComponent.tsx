@@ -1,7 +1,6 @@
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useState } from "react";
-import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
 import { SwizzleContext } from "../../../Utilities/GlobalContext";
@@ -10,7 +9,6 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [isPromptDisabled, setIsPromptDisabled] = useState<boolean>(false)
     const [taskEditPrompt, setTaskEditPrompt] = useState<string>(task.summary)
-    const { promptAiTaskEdit, aiTaskExecute } = useEndpointApi()
     const [isTaskComplete, setIsTaskComplete] = useState<boolean>(task.complete)
     const [taskCode, setTaskCode] = useState<string>("")
     const [isExecuting, setIsExecuting] = useState<boolean>(false)
@@ -21,35 +19,6 @@ export default function TaskComponent({task, headerNode, removeTask, editTask, a
 
     const editTaskSummary = () => {
         editTask({ ...task, summary: taskEditPrompt })    
-    }
-
-    const executeTask = () => {
-        setIsExecuting(true)
-        setIsEditing(false)
-        toast.promise(aiTaskExecute(task, allTasks.filter(v => v != null)), {
-            loading: "Thinking...",
-            success: (response: any) => {
-                if(response.status == "TASK_WAITING_FOR_APPROVAL"){
-                    setTaskCode(response.task.code)
-                    editTask(response.task)
-                } else if(response.status == "TASK_SUCCEEDED"){
-                    setTaskCode("")
-                    setIsTaskComplete(true)
-                    setShouldRefreshList(!shouldRefreshList)
-                    var newTask = task
-                    newTask.complete = true
-                    editTask(newTask)
-                } else{
-                    toast.error("An error occured")
-                }
-                setIsExecuting(false)
-                return "Done"
-            },
-            error: () => {
-                setIsExecuting(false)
-                return "An error occured"
-            },
-        });
     }
 
     return (

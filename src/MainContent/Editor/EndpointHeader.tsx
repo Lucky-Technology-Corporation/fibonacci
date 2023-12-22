@@ -14,9 +14,10 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Method, methodToColor } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
+import TaskCommandHeader from "./TaskCommandHeader";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
-  const { setFileErrors, activeEndpoint, activeFile, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch, activePage } = useContext(SwizzleContext);
+  const { taskQueue, setFileErrors, activeEndpoint, activeFile, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch, activePage } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
@@ -667,10 +668,15 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     };
   }, []);
 
+  if(taskQueue.length > 0){
+    return (
+      <TaskCommandHeader />
+    )
+  }
+
   return (
     <>
         <div className="flex-col magic-bar">
-          
           <div className="pt-3 ml-5">
             {selectedTab == Page.Hosting ? (
               <div className="flex align-middle pr-2 font-normal font-mono">

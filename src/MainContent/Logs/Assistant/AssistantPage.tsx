@@ -3,15 +3,16 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../../API/EndpointAPI";
 import Button from "../../../Utilities/Button";
 import { SwizzleContext } from "../../../Utilities/GlobalContext";
+import { Page } from "../../../Utilities/Page";
 import MessageList from "./MessageList";
 import SchemaViewer from "./SchemaViewer";
 
 export default function AssistantPage() {
   const [aiPrompt, setAiPrompt] = useState<string>("")
   const { promptAiPlanner, getSchema, setSchema, promptSchemaPlanner } = useEndpointApi()
-  const [messages, setMessages] = useState<any[]>(null)
+  const [messages, setMessages] = useState<any[]>([])
   const [history, setHistory] = useState<any[]>(null)
-  const {activeProject} = useContext(SwizzleContext)
+  const {activeProject, setTaskQueue, setSelectedTab, setFullTaskQueue} = useContext(SwizzleContext)
   const [schema, setSchemaLocal] = useState<any>({})
   const [needsAuth, setNeedsAuth] = useState<boolean>(true)
   const schemaRef = useRef(null)
@@ -21,13 +22,34 @@ export default function AssistantPage() {
       //TODO: show user auth modal then move forward
     }
 
+    var endpointsToBuild = messages.filter(message => message.role == "assistant").map(message => message.tasks).flat().filter(task => task.type == "CreateEndpoint")
+    endpointsToBuild = endpointsToBuild.filter((v, i, a) => a.findIndex(t => (t.inputs.path === v.inputs.path && t.inputs.method === v.inputs.method)) === i)
+
+    var pagesToBuild = messages.filter(message => message.role == "assistant").map(message => message.tasks).flat().filter(task => task.type == "CreatePage")
+    pagesToBuild = pagesToBuild.filter((v, i, a) => a.findIndex(t => (t.inputs.path === v.inputs.path)) === i)
+
+    if(endpointsToBuild.length == 0 && pagesToBuild.length == 0){
+      toast.error("No new endpoints or pages to build")
+      return
+    }
+
+    setTaskQueue([...endpointsToBuild, ...pagesToBuild])
+    setFullTaskQueue([...endpointsToBuild, ...pagesToBuild])
+
+    if(endpointsToBuild.length > 0){
+      setSelectedTab(Page.Apis)
+    } else{
+      setSelectedTab(Page.Hosting)
+    }
   }
 
   const runAiPlanner = async () => {
     const messageSaved = messages
-    
+    console.log("messageSaved", messageSaved)
     setMessages([{role: "user", content: aiPrompt}, ...messageSaved])
+    console.log("message", messages)
     var rawResponse = await promptAiPlanner(aiPrompt, history)
+    console.log("Response", rawResponse)
 
     if(rawResponse.tasks.length == 0){
       console.log("no new tasks, return early")
@@ -55,7 +77,6 @@ export default function AssistantPage() {
 
     //deal with overwriting tasks in previous messages
     var uniqueMessages = []
-    var uniqueMessagesMap = {}
     for(var i = 0; i < messageSaved.length; i++){
       if(messageSaved[i].role == "assistant"){ //for each old assistant message
         const tasks = messageSaved[i].tasks
@@ -111,8 +132,7 @@ export default function AssistantPage() {
         userPrompts.push(messages[i].content)
       }
     }
-    console.log("userPrompts", userPrompts)
-    console.log("backendTasks", backendTasks)
+
     if(backendTasks.length == 0){ return }
     var rawResponse = await promptSchemaPlanner(userPrompts, backendTasks)
     if(rawResponse.schema){
@@ -150,6 +170,7 @@ export default function AssistantPage() {
     if(messages != null){
       localStorage.setItem("messages_"+activeProject, JSON.stringify(messages))
     }
+    console.log("messages", messages)
   }, [messages])
 
   const schemaEditHandler = (newSchema: object) => {
@@ -230,7 +251,7 @@ export default function AssistantPage() {
         />
       </div>
       <div className="h-screen flex align-center justify-center overflow-none">
-        {messages && messages.length == 0 ? (
+        {messages == null || messages.length == 0 ? (
           <div>
             <img src="logo_white.png" className="w-20 h-20 mx-auto mt-28 pulsate" />
             <div className="w-full mt-4 text-center opacity-70">Waiting for instructions</div>

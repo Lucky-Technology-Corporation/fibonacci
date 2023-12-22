@@ -203,7 +203,11 @@ export default function SchemaViewer({schema, setSchema, commitSchema, schemaRef
   
   return(
     <div className="w-full overflow-scroll" ref={schemaRef}>
-      {Object.entries(schema).map(([collection, fields]) => (
+      {Object.entries(schema).sort((a, b) => {
+          if (a[0] === "") return -1; // If the first entry's key is an empty string, it should come first
+          if (b[0] === "") return 1;  // If the second entry's key is an empty string, it should come second
+          return 0; // If neither key is an empty string, keep original order
+        }).map(([collection, fields]) => (
         <div key={collection} className="my-2 bg-[#85869822] p-2 rounded">
             <div className="text-sm font-bold font-mono text-center my-1 no-focus-ring flex">
               <Button
