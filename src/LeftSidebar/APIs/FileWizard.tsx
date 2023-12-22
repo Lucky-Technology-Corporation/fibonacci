@@ -32,49 +32,43 @@ export default function FileWizard({
 
   const [overrideRender, setOverrideRender] = useState<ReactNode | null>(null);
 
-  const [validPageUrl, setValidPageUrl] = useState<boolean>(true)
-  const [validFallbackUrl, setValidFallbackUrl] = useState<boolean>(true)
+  const [validPageUrl, setValidPageUrl] = useState<boolean>(true);
+  const [validFallbackUrl, setValidFallbackUrl] = useState<boolean>(true);
 
   const createHandler = async () => {
-    const newFileName = cleanupInputValue(inputValue);
+    const newFileName = pathToFile(inputValue);
     const hasConflicts = checkForConflicts(newFileName);
+
+    console.info(`Input Value: ${inputValue}`);
+    console.info(`New filename: ${newFileName}`);
+    console.info(`Path If Editing: ${pathIfEditing}`);
+
     if (hasConflicts) {
       return;
     }
 
-
-    //TODO: handle editing an existing file
-    var contentsToCopy = ""
-    if(pathIfEditing != ""){
-      //man i really dont want to do this...
+    let content = "";
+    if (pathIfEditing != "") {
+      content = await generateNewFileContent(pathIfEditing, newFileName, authRequired);
+      console.info(`New file content: ${content}`);
     }
 
-    if(fileType == "page"){
-      await filesystemApi.createNewPage(inputValue, authRequired, fallbackInputValue);
+    if (fileType == "page") {
+      await filesystemApi.createNewPage(inputValue, authRequired, fallbackInputValue, content);
+    } else if (fileType == "file") {
+      await filesystemApi.createNewComponent(inputValue, content);
     }
-    else if(fileType == "file"){
-      await filesystemApi.createNewComponent(inputValue);
+
+    console.info(`File created!`);
+
+    if (pathIfEditing != "") {
+      console.info(`Deleting: ${pathIfEditing}`);
+      await runDeleteProcess(pathIfEditing);
+      console.info(`Deleted!`);
     }
 
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
-  }
-
-  const cleanupInputValue = (inputValue: string) => {
-    var newFileName = inputValue;
-
-    if (newFileName.endsWith("/")) {
-      newFileName = newFileName.substring(0, newFileName.length - 1);
-    }
-
-    if (!newFileName.endsWith(".ts") || !newFileName.endsWith(".tsx")) {
-      newFileName = newFileName + ".tsx";
-    }
-
-    if (newFileName.startsWith("/")) {
-      newFileName = newFileName.substring(1);
-    }
-    return pathToFile(newFileName);
   };
 
   const checkForConflicts = (newFileName: string) => {
@@ -95,60 +89,56 @@ export default function FileWizard({
     return false;
   };
 
-  // const generateNewFileContent = async (oldPath: string, newPath: string, authRequired: boolean) => {
-  //   const subfolder = fileType == "page" ? "pages" : "components";
-  //   var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath));
-  //   const oldComponentName = pathToFile(oldPath).replace(".tsx", "");
-  //   const newComponentName = pathToFile(newPath).replace(".tsx", "");
-  //   const functionDeclaration = "function " + oldComponentName + "(";
-  //   const newFunctionDeclaration = "function " + newComponentName + "(";
-  //   const constFunctionDeclaration = "const " + oldComponentName + " =";
-  //   const newConstFunctionDeclaration = "const " + newComponentName + " =";
-  //   const exportDeclaration = "export default " + oldComponentName + "";
-  //   const newExportDeclaration = "export default " + newComponentName + "";
-  //   const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`;
-  //   const authDeclaration = `const auth = useAuthUser();\n`;
-  //   fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration);
-  //   fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration);
-  //   fileContent = fileContent.replace(exportDeclaration, newExportDeclaration);
+  const generateNewFileContent = async (oldPath: string, newPath: string, authRequired: boolean) => {
+    const subfolder = fileType == "page" ? "pages" : "components";
+    var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath));
+    const oldComponentName = pathToFile(oldPath).replace(".tsx", "");
+    const newComponentName = pathToFile(newPath).replace(".tsx", "");
+    const functionDeclaration = "function " + oldComponentName + "(";
+    const newFunctionDeclaration = "function " + newComponentName + "(";
+    const constFunctionDeclaration = "const " + oldComponentName + " =";
+    const newConstFunctionDeclaration = "const " + newComponentName + " =";
+    const exportDeclaration = "export default " + oldComponentName + "";
+    const newExportDeclaration = "export default " + newComponentName + "";
+    const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`;
+    const authDeclaration = `const auth = useAuthUser();\n`;
+    fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration);
+    fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration);
+    fileContent = fileContent.replace(exportDeclaration, newExportDeclaration);
 
-  //   if (authRequired) {
-  //     fileContent = fileContent.replace("return (", `${authDeclaration}    return (`);
-  //     fileContent = fileContent = authImportDeclaration + fileContent;
-  //   } else {
-  //     fileContent = fileContent.replace(authDeclaration, "");
-  //     fileContent = fileContent.replace(authImportDeclaration, "");
-  //   }
+    if (authRequired) {
+      fileContent = fileContent.replace("return (", `${authDeclaration}    return (`);
+      fileContent = fileContent = authImportDeclaration + fileContent;
+    } else {
+      fileContent = fileContent.replace(authDeclaration, "");
+      fileContent = fileContent.replace(authImportDeclaration, "");
+    }
 
-  //   return fileContent;
-  // };
+    return fileContent;
+  };
 
-  // const runDeleteProcess = async (fileName: string) => {
-  //   try {
-  //     const subfolder = fileType == "page" ? "pages" : "components";
-  //     const fileNameParsed = "/frontend/src/" + subfolder + "/" + pathToFile(pathIfEditing);
+  const runDeleteProcess = async (fileName: string) => {
+    try {
+      const subfolder = fileType == "page" ? "pages" : "components";
+      const pageOrComponent = pathToFile(fileName);
+      const fileNameParsed = "/frontend/src/" + subfolder + "/" + pageOrComponent;
 
-  //     //close file
-  //     setPostMessage({
-  //       type: "removeFile",
-  //       fileName: fileNameParsed,
-  //     });
+      //close file
+      setPostMessage({
+        type: "removeFile",
+        fileName: fileNameParsed,
+      });
 
-  //     //clean up codegen
-  //     if (fileNameParsed.includes("frontend/src/pages/")) {
-  //       await filesystemApi.removeFile(
-  //         "/frontend/src/pages/" + fileName,
-  //         undefined,
-  //         formatPath(pathIfEditing, pathIfEditing),
-  //       );
-  //     }
-
-  //     //delete file
-  //     await endpointApi.deleteFile(subfolder + "/" + pathToFile(pathIfEditing), "frontend");
-  //   } catch (e) {
-  //     throw "Error deleting endpoint";
-  //   }
-  // };
+      //clean up codegen
+      if (fileNameParsed.includes("frontend/src/pages/")) {
+        await filesystemApi.deletePage(fileName);
+      } else {
+        await filesystemApi.deleteComponent(fileName);
+      }
+    } catch (e) {
+      throw "Error deleting endpoint";
+    }
+  };
 
   useEffect(() => {
     if (isVisible) {
@@ -194,8 +184,8 @@ export default function FileWizard({
                 <div className="my-2">
                   {fileType == "file" ? (
                     <></>
-                    // `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} reusable component`
                   ) : (
+                    // `${pathIfEditing == "" ? "Create a new" : "Edit the name of your"} reusable component`
                     <div className="mt-1">
                       <Checkbox
                         id="requireAuthPage"
@@ -221,12 +211,12 @@ export default function FileWizard({
                           if (fileType == "page" && pathIfEditing == "/") {
                             return;
                           }
-                          if(fileType == "page"){
-                            const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
-                            if(!regex.test(e.target.value)){
-                              setValidPageUrl(false)
-                            } else{
-                              setValidPageUrl(true)
+                          if (fileType == "page") {
+                            const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/;
+                            if (!regex.test(e.target.value)) {
+                              setValidPageUrl(false);
+                            } else {
+                              setValidPageUrl(true);
                             }
                           }
                           setInputValue(e.target.value);
@@ -249,14 +239,17 @@ export default function FileWizard({
                             type="text"
                             value={fallbackInputValue}
                             onChange={(e) => {
-                              if(e.target.value == ""){ setValidFallbackUrl(true); return; }
-                              const regex = /^\/:?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/
-                              if(!regex.test(e.target.value)){
-                                setValidFallbackUrl(false)
-                              } else{
-                                setValidFallbackUrl(true)
+                              if (e.target.value == "") {
+                                setValidFallbackUrl(true);
+                                return;
                               }
-                              setFallbackInputValue(e.target.value);    
+                              const regex = /^\/:?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/;
+                              if (!regex.test(e.target.value)) {
+                                setValidFallbackUrl(false);
+                              } else {
+                                setValidFallbackUrl(true);
+                              }
+                              setFallbackInputValue(e.target.value);
                             }}
                             className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                             placeholder={`/login`}
@@ -275,7 +268,9 @@ export default function FileWizard({
                         onClick={() => {
                           createHandler();
                         }}
-                        className={`${validPageUrl && validFallbackUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
+                        className={`${
+                          validPageUrl && validFallbackUrl ? "" : "opacity-70"
+                        } w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
                         disabled={!validPageUrl || !validFallbackUrl}
                       >
                         {validPageUrl && validFallbackUrl ? "Next" : "Invalid URL"}

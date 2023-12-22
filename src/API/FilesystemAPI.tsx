@@ -9,7 +9,7 @@ export default function useFilesystemApi(){
   const { activeProject } = useContext(SwizzleContext)
   const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const createNewPage = async (relativePagePath: string, authRequired: boolean, fallbackPath: string) => {
+  const createNewPage = async (relativePagePath: string, authRequired: boolean, fallbackPath: string, contents = "") => {
     try {
       if(!authRequired){
         fallbackPath = ""
@@ -20,6 +20,7 @@ export default function useFilesystemApi(){
         {
           name: relativePagePath,
           unauthenticated_fallback: fallbackPath,
+          contents 
         },
         {
           withCredentials: true,
@@ -32,12 +33,13 @@ export default function useFilesystemApi(){
     }
   }
 
-  const createNewComponent = async (relativeComponentPath: string) => {
+  const createNewComponent = async (relativeComponentPath: string, contents = "") => {
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/frontend/component`,
         {
           name: relativeComponentPath,
+          contents 
         },
         {
           withCredentials: true,
