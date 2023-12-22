@@ -45,6 +45,10 @@ const filenameToEnglish = (filename: string) => {
     return "GET " + filename.slice(3);
   } else if(filename.startsWith("post")) {
     return "POST " + filename.slice(4);
+  } else if(filename.startsWith("put")) {
+    return "PUT " + filename.slice(3);
+  } else if(filename.startsWith("delete")) {
+    return "DELETE " + filename.slice(6);
   }
 }
 

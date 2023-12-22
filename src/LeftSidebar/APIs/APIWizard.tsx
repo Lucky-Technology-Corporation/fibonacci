@@ -35,6 +35,8 @@ export default function APIWizard({
   const methods: any = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
+    { id: "put", name: "PUT" },
+    { id: "delete", name: "DELETE" },
     // { id: "schedule", name: "Scheduled Job" }
   ];
 

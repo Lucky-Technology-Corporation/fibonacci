@@ -71,6 +71,10 @@ export default function LogRow({
         await axios.get(domain.replace("https://", "https://api.") + message.url, { headers: filterHeaders(message.headers) });
       } else if (message.method == "POST") {
         await axios.post(domain.replace("https://", "https://api.") + message.url, message.request, { headers: filterHeaders(message.headers) });
+      } else if (message.method == "PUT") {
+        await axios.put(domain.replace("https://", "https://api.") + message.url, message.request, { headers: filterHeaders(message.headers) });
+      } else if (message.method == "DELETE") {
+        await axios.delete(domain.replace("https://", "https://api.") + message.url, { headers: filterHeaders(message.headers) });
       }
       return freshLogs();
     } catch(e){
@@ -141,9 +145,6 @@ export default function LogRow({
               } else if(message.responseCode == 404){
                   const endpointPath = message.method.toLowerCase() + message.url.split("?")[0]
                   var exists = fullEndpointList.includes(endpointPath)
-
-                  const otherMethodPath = (message.method == "GET" ? "post" : "get") + message.url.split("?")[0]
-                  const inverseExists = fullEndpointList.includes(otherMethodPath)
                   if(message.url.includes("/swizzle/storage")){
                     explainError(`A 404 error means something doesn't exist. 
                     It looks like you're trying to access a file in your storage bucket. Make sure:
@@ -153,7 +154,7 @@ export default function LogRow({
                     `)
                   } else {
                     explainError(`A 404 error means something doesn't exist.\n 
-                      ${!exists ? `The endpoint ${message.method} ${message.url.split("?")[0]} doesn't exist in your project files. ${inverseExists ? `However, an endpoint named the same under a different method exists (${(message.method == "GET" ? "POST " : "GET ") + message.url.split("?")[0]} exists.) If you meant to use that one, make sure the client calls ${(message.method == "GET" ? "POST" : "GET")}` : ""}` 
+                      ${!exists ? `The endpoint ${message.method} ${message.url.split("?")[0]} doesn't exist in your project files. Check that you're using the correct method and don't have any typos.` 
                       : `However, ${message.method} ${message.url.split("?")[0]} does indeed exist in your project files. There could be a few reasons for this:\n
                         ${environment == "test" && "- The test server was restarting. Try again in a few seconds."}
                         - You're returning a 404 in your code manually.
