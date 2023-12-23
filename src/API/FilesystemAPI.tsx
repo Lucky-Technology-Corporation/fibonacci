@@ -3,16 +3,26 @@ import { useContext } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import useEndpointApi from "./EndpointAPI";
 
-export default function useFilesystemApi(){
-
-  const endpointApi = useEndpointApi()
-  const { activeProject } = useContext(SwizzleContext)
+export default function useFilesystemApi() {
+  const endpointApi = useEndpointApi();
+  const { activeProject } = useContext(SwizzleContext);
   const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const createNewPage = async (relativePagePath: string, authRequired: boolean, fallbackPath: string) => {
+  const createNewPage = async (
+    relativePagePath: string,
+    authRequired: boolean,
+    fallbackPath: string,
+    contents = "",
+  ) => {
     try {
-      if(!authRequired){
-        fallbackPath = ""
+      if (!authRequired) {
+        fallbackPath = "";
+      } else {
+        // If we have authRequired set to true but no fallbackPath is given we need to set it to
+        // something other than the empty string. Euler treats the empty string to mean public route.
+        if (fallbackPath === "") {
+          fallbackPath = "/";
+        }
       }
 
       const response = await axios.post(
@@ -20,6 +30,7 @@ export default function useFilesystemApi(){
         {
           name: relativePagePath,
           unauthenticated_fallback: fallbackPath,
+          contents,
         },
         {
           withCredentials: true,
@@ -30,14 +41,15 @@ export default function useFilesystemApi(){
       console.error(e);
       return null;
     }
-  }
+  };
 
-  const createNewComponent = async (relativeComponentPath: string) => {
+  const createNewComponent = async (relativeComponentPath: string, contents = "") => {
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/frontend/component`,
         {
           name: relativeComponentPath,
+          contents,
         },
         {
           withCredentials: true,
@@ -48,7 +60,7 @@ export default function useFilesystemApi(){
       console.error(e);
       return null;
     }
-  }
+  };
 
   const createNewHelper = async (relativeHelperPath: string) => {
     try {
@@ -66,9 +78,14 @@ export default function useFilesystemApi(){
       console.error(e);
       return null;
     }
-  }
+  };
 
-  const createNewEndpoint = async (relativeEndpointPath: string, method: string, authRequired: boolean, contentsToCopy?: string) => {
+  const createNewEndpoint = async (
+    relativeEndpointPath: string,
+    method: string,
+    authRequired: boolean,
+    contentsToCopy?: string,
+  ) => {
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/endpoint`,
@@ -76,7 +93,7 @@ export default function useFilesystemApi(){
           endpoint: relativeEndpointPath,
           http_method: method,
           auth_required: authRequired,
-          contents: contentsToCopy
+          contents: contentsToCopy,
         },
         {
           withCredentials: true,
@@ -87,24 +104,21 @@ export default function useFilesystemApi(){
       console.error(e);
       return null;
     }
-  }
+  };
 
   const removeAuthFromPage = async (page: string) => {
-    var path = page
-    const routeListTsx = await endpointApi.getFile("frontend/src/RouteList.tsx")
+    var path = page;
+    const routeListTsx = await endpointApi.getFile("frontend/src/RouteList.tsx");
 
     if (routeListTsx) {
-      var content = routeListTsx
+      var content = routeListTsx;
 
       //Find old route to remove
-      const routeToRemoveRegex = new RegExp(
-          `<SwizzleRoute path="${page.replace("/", "\/")}".*>`,
-          "g",
-      );
+      const routeToRemoveRegex = new RegExp(`<SwizzleRoute path="${page.replace("/", "/")}".*>`, "g");
 
       //Build new route
-      if(path.startsWith("/")){
-        path = path.substring(1)
+      if (path.startsWith("/")) {
+        path = path.substring(1);
       }
       const componentName = path
         .replace(/\//g, "_")
@@ -119,79 +133,78 @@ export default function useFilesystemApi(){
       //Swap them
       content = content.replace(routeToRemoveRegex, newRoute);
 
-      await endpointApi.writeFile("frontend/src/RouteList.tsx", content)
+      await endpointApi.writeFile("frontend/src/RouteList.tsx", content);
     }
-  }
+  };
 
   const deleteEndpoint = async (method: string, path: string) => {
     try {
       await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/endpoint/delete`,
-          {
-            path: path,
-            method: method,
-          },
-          {
-            withCredentials: true,
-          },
+        {
+          path: path,
+          method: method,
+        },
+        {
+          withCredentials: true,
+        },
       );
     } catch (e) {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const deleteHelper = async (helper: string) => {
     try {
       await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/helper/delete`,
-          {
-            path: helper,
-          },
-          {
-            withCredentials: true,
-          },
+        {
+          path: helper,
+        },
+        {
+          withCredentials: true,
+        },
       );
     } catch (e) {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const deletePage = async (page: string) => {
     try {
       await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/frontend/page/delete`,
-          {
-            path: page,
-          },
-          {
-            withCredentials: true,
-          },
+        {
+          path: page,
+        },
+        {
+          withCredentials: true,
+        },
       );
     } catch (e) {
       console.error(e);
       return null;
     }
-  }
-  
+  };
+
   const deleteComponent = async (component: string) => {
     try {
       await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/frontend/component/delete`,
-          {
-            path: component,
-          },
-          {
-            withCredentials: true,
-          },
+        {
+          path: component,
+        },
+        {
+          withCredentials: true,
+        },
       );
     } catch (e) {
       console.error(e);
       return null;
     }
-  }
-
+  };
 
   return {
     // createNewFile,
@@ -205,6 +218,5 @@ export default function useFilesystemApi(){
     deleteHelper,
     deletePage,
     deleteComponent,
-  }
-
+  };
 }
