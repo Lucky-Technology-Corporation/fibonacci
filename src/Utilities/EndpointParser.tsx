@@ -103,6 +103,69 @@ export const pathToFile = (path: string) => {
   return dir + titleCaseDashes(component);
 };
 
+// Returns how many more directorys newPath has compared to oldPath.
+export const pathLengthDifference = (oldPath: string, newPath: string): number => {
+  return (newPath.match(/\//g) || []).length - (oldPath.match(/\//g) || []).length;
+};
+
+// Changes the depth of the relative import statement
+//
+// Improvement: Handle the case where im above the import and I move to below it.
+//
+// Example: we have /page that imports another at ./a/b/c/Another. Now, we want to move
+// /page to /a/b/c/d/e/Page. This should result in a relative import of ../../Another.
+// Currently, this will result in ../../../../../a/b/c/Another. It's still a valid path but
+// it can be simplified.
+//
+// a
+// - b
+// -- c
+// --- another
+// page
+export const changeRelativeImportDepth = (originalPath: string, importPath: string, delta: number): string => {
+  if (delta === 0) {
+    return importPath;
+  }
+
+  if (delta > 0) {
+    if (importPath.startsWith("./")) {
+      importPath = importPath.substring(2);
+    }
+    return "../".repeat(delta) + importPath;
+  }
+
+  let offset = 0;
+  while (delta < 0 && importPath.startsWith("../")) {
+    importPath = importPath.substring(3);
+    delta++;
+    offset++;
+  }
+
+  if (delta === 0) {
+    if (!importPath.startsWith("../")) {
+      importPath = "./" + importPath;
+    }
+    return importPath;
+  }
+
+  // We still need to move up but we've run out of leeway so now we need to pull
+  // from the full path.
+
+  // Remove ./ prefix
+  if (importPath.startsWith("./")) {
+    importPath = importPath.substring(2);
+  }
+
+  const dirPath = originalPath.substring(0, originalPath.lastIndexOf("/"));
+  const pieces = dirPath.split("/");
+
+  if (pieces.length < -delta + offset) {
+    throw new Error("originalPath isn't long enough to determine what the relative import should be");
+  }
+
+  return "./" + pieces.slice(pieces.length + delta - offset, pieces.length - offset).join("/") + "/" + importPath;
+};
+
 // Changes kebab case strings to title case:
 //
 // submit-details ===> SubmitDetails

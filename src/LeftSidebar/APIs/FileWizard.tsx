@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import Checkbox from "../../Utilities/Checkbox";
-import { pathToFile } from "../../Utilities/EndpointParser";
+import { changeRelativeImportDepth, pathLengthDifference, pathToFile } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function FileWizard({
@@ -115,15 +115,17 @@ export default function FileWizard({
     fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration);
     fileContent = fileContent.replace(exportDeclaration, newExportDeclaration);
 
-    // Replace api import
-    const levels = (newFilePath.match(/\//g) || []).length + 1;
-    const newApiImport = "../".repeat(levels) + "Api";
-    const apiRegex = /import api from '([^']+)';/;
+    // Replace imports
+    const levelDiff = pathLengthDifference(oldFilePath, newFilePath);
 
-    // Just replace the capture group with the newApiImport.
-    fileContent = fileContent.replace(apiRegex, (match, p1) => {
-      return match.replace(p1, newApiImport);
-    });
+    if (levelDiff !== 0) {
+      const apiRegex = /import.*from ['"](\.[^"']+)['"];/g;
+
+      // Just replace the capture group with the newApiImport.
+      fileContent = fileContent.replace(apiRegex, (match, p1) => {
+        return match.replace(p1, changeRelativeImportDepth(oldFilePath, p1, levelDiff));
+      });
+    }
 
     // if (authRequired) {
     //   fileContent = fileContent.replace("return (", `${authDeclaration}    return (`);
