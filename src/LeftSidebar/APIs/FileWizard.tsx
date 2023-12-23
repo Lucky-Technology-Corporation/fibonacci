@@ -36,12 +36,9 @@ export default function FileWizard({
   const [validFallbackUrl, setValidFallbackUrl] = useState<boolean>(true);
 
   const createHandler = async () => {
+    const editingSameFile = inputValue === pathIfEditing;
     const newFileName = pathToFile(inputValue);
-    const hasConflicts = checkForConflicts(newFileName);
-
-    console.info(`Input Value: ${inputValue}`);
-    console.info(`New filename: ${newFileName}`);
-    console.info(`Path If Editing: ${pathIfEditing}`);
+    const hasConflicts = !editingSameFile && checkForConflicts(newFileName);
 
     if (hasConflicts) {
       return;
@@ -50,7 +47,19 @@ export default function FileWizard({
     let content = "";
     if (pathIfEditing != "") {
       content = await generateNewFileContent(pathIfEditing, newFileName, authRequired);
-      console.info(`New file content: ${content}`);
+    }
+
+    // NOTE: Normally, when editing a file we want to create the new file with all the contents changed
+    // and then delete the old file afterwards. However, this order of events doesn't work if we're editing
+    // the same file because the create acts as an overwrite and then the delete just deletes the existing
+    // file. So, if we're editing the same file we have to do delete and then create and skip the delete
+    // later on.
+    //
+    // This solution though is risky because if the delete succeeds but the create fails then we just lost
+    // the user's entire file. The better solution would be to make this replacement atomic and do it
+    // in Euler.
+    if (editingSameFile) {
+      await runDeleteProcess(pathIfEditing);
     }
 
     if (fileType == "page") {
@@ -59,12 +68,8 @@ export default function FileWizard({
       await filesystemApi.createNewComponent(inputValue, content);
     }
 
-    console.info(`File created!`);
-
-    if (pathIfEditing != "") {
-      console.info(`Deleting: ${pathIfEditing}`);
+    if (pathIfEditing != "" && !editingSameFile) {
       await runDeleteProcess(pathIfEditing);
-      console.info(`Deleted!`);
     }
 
     setShouldRefreshList(!shouldRefreshList);
@@ -89,30 +94,44 @@ export default function FileWizard({
     return false;
   };
 
-  const generateNewFileContent = async (oldPath: string, newPath: string, authRequired: boolean) => {
+  const generateNewFileContent = async (oldPath: string, newPath: string, _authRequired: boolean) => {
     const subfolder = fileType == "page" ? "pages" : "components";
-    var fileContent = await endpointApi.getFile("frontend/src/" + subfolder + "/" + pathToFile(oldPath));
-    const oldComponentName = pathToFile(oldPath).replace(".tsx", "");
-    const newComponentName = pathToFile(newPath).replace(".tsx", "");
+    const oldFilePath = pathToFile(oldPath);
+    const newFilePath = pathToFile(newPath);
+    var fileContent: string = await endpointApi.getFile("frontend/src/" + subfolder + "/" + oldFilePath);
+
+    const oldComponentName = oldFilePath.replace(".tsx", "").substring(oldFilePath.lastIndexOf("/") + 1);
+    const newComponentName = newFilePath.replace(".tsx", "").substring(newFilePath.lastIndexOf("/") + 1);
+
     const functionDeclaration = "function " + oldComponentName + "(";
     const newFunctionDeclaration = "function " + newComponentName + "(";
     const constFunctionDeclaration = "const " + oldComponentName + " =";
     const newConstFunctionDeclaration = "const " + newComponentName + " =";
     const exportDeclaration = "export default " + oldComponentName + "";
     const newExportDeclaration = "export default " + newComponentName + "";
-    const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`;
-    const authDeclaration = `const auth = useAuthUser();\n`;
+    // const authImportDeclaration = `import { useAuthUser } from 'react-auth-kit';\n`;
+    // const authDeclaration = `const auth = useAuthUser();\n`;
     fileContent = fileContent.replace(functionDeclaration, newFunctionDeclaration);
     fileContent = fileContent.replace(constFunctionDeclaration, newConstFunctionDeclaration);
     fileContent = fileContent.replace(exportDeclaration, newExportDeclaration);
 
-    if (authRequired) {
-      fileContent = fileContent.replace("return (", `${authDeclaration}    return (`);
-      fileContent = fileContent = authImportDeclaration + fileContent;
-    } else {
-      fileContent = fileContent.replace(authDeclaration, "");
-      fileContent = fileContent.replace(authImportDeclaration, "");
-    }
+    // Replace api import
+    const levels = (newFilePath.match(/\//g) || []).length + 1;
+    const newApiImport = "../".repeat(levels) + "Api";
+    const apiRegex = /import api from '([^']+)';/;
+
+    // Just replace the capture group with the newApiImport.
+    fileContent = fileContent.replace(apiRegex, (match, p1) => {
+      return match.replace(p1, newApiImport);
+    });
+
+    // if (authRequired) {
+    //   fileContent = fileContent.replace("return (", `${authDeclaration}    return (`);
+    //   fileContent = fileContent = authImportDeclaration + fileContent;
+    // } else {
+    //   fileContent = fileContent.replace(authDeclaration, "");
+    //   fileContent = fileContent.replace(authImportDeclaration, "");
+    // }
 
     return fileContent;
   };
