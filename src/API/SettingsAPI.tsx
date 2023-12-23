@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useContext } from "react";
-import { useAuthHeader } from "react-auth-kit";
+import { useAuthHeader, useSignOut } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useSettingsApi() {
   const authHeader = useAuthHeader();
+  const signOut = useSignOut()
   const { environment, activeProject } = useContext(SwizzleContext);
 
   const checkIfAccountNeedsEmail = async () => {  
@@ -38,6 +39,14 @@ export default function useSettingsApi() {
       );
       return response.data;
     } catch (e: any) {
+      if(e.response.status == 401){
+        signOut();
+        const urlParams = new URLSearchParams(window.location.search);
+        const signedIn = urlParams.get("signed_in");
+        if (signedIn && signedIn.length > 0) {
+          location.href = "/";
+        }
+      }
       console.error(e);
       return null;
     }
@@ -173,6 +182,23 @@ export default function useSettingsApi() {
     }
   }
 
+  const pingProjectActive = async () => {
+    if(activeProject == null || activeProject == ""){ return false }
+    try {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/active?env=${environment}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      return true;
+    } catch (e: any) {
+      console.error(e);
+      return false;
+    }
+  }
+
   return {
     updateApns,
     getSecrets,
@@ -183,7 +209,8 @@ export default function useSettingsApi() {
     hasAddedPaymentMethod,
     deleteProject,
     addEmailToAccount,
-    checkIfAccountNeedsEmail
+    checkIfAccountNeedsEmail,
+    pingProjectActive
   };
 }
 

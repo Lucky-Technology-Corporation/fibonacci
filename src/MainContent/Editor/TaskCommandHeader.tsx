@@ -1,6 +1,6 @@
 import { faClock, faCloud } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import Button from "../../Utilities/Button";
@@ -11,36 +11,56 @@ export default function TaskCommandHeader(){
   const [isExecuting, setIsExecuting] = useState<boolean>(false)
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [updateValue, setUpdateValue] = useState<string>("")
-  const { aiTaskExecute } = useEndpointApi()
+  const { executeTask, promptAiEditor } = useEndpointApi()
 
-  const {taskQueue, fullTaskQueue, setTaskQueue} = useContext(SwizzleContext)
+  const {taskQueue, fullTaskQueue, fileErrors, setFileErrors, setPostMessage} = useContext(SwizzleContext)
 
-  const executeTask = () => {
-    setIsExecuting(true)
-    toast.promise(aiTaskExecute(taskQueue[0], fullTaskQueue.filter(v => v != null)), {
-        loading: "Thinking...",
-        success: (response: any) => {
-            if(response.status == "TASK_WAITING_FOR_APPROVAL"){
-                //ai is asking for approval on response.task.code
-            } else if(response.status == "TASK_SUCCEEDED"){
-                //ai wrote the file
-            } else{
-                toast.error("An error occured")
-            }
-            setIsExecuting(false)
-            return "Done"
-        },
-        error: () => {
-            setIsExecuting(false)
-            return "An error occured"
-        },
-    });
-  }
+  const [ promptQuery, setPromptQuery ] = useState<string>("");
+  const [isWaitingForErrors, setIsWaitingForErrors] = useState<boolean>(false);
 
   if(taskQueue[0] == null){
     return (<></>)
   }
-  console.log(taskQueue[0])
+
+  const runEdit = async (promptQuery: string) => {
+      //find file errors if they exist
+      setPromptQuery(promptQuery)
+      setFileErrors("")
+      setIsWaitingForErrors(true)
+      setPostMessage({
+        type: "getFileErrors"
+      })
+      toast("Scanning for build errors...")
+  };
+
+  useEffect(() => {
+    if(!isWaitingForErrors) return
+    setIsWaitingForErrors(false)
+    runQueryFromState()
+  }, [fileErrors])
+
+  const runQueryFromState = () => {
+    toast.promise(promptAiEditor(promptQuery, "edit", undefined, undefined, undefined, fileErrors), {
+      loading: "Thinking...",
+      success: (data) => {
+        //Replace the text
+        setPostMessage({
+          type: "replaceText",
+          content: data.new_code,
+        })
+
+        setTimeout(() => {
+          setPostMessage({
+            type: "saveFile"
+          })
+        }, 100)
+
+        return "Done";
+      },
+      error: "Failed",
+    });
+  }
+
   return (
     <div className="flex w-full py-2 justify-between no-focus-ring">
       {isEditing ? (
@@ -50,13 +70,15 @@ export default function TaskCommandHeader(){
           onChange={(e) => {
             setUpdateValue(e.target.value)
           }}
+          onKeyDown={(e) => {
+            if(e.key == "Enter"){
+              runEdit(updateValue)
+            }
+          }}
           placeholder="What do you need changed?"
         />
       ) : (
       <div className="flex flex-col justify-leading ml-5 pt-2">
-        <div>
-          {fullTaskQueue.length - taskQueue.length} of {fullTaskQueue.length} tasks
-        </div>
        <div className="mb-0.5">
           {taskQueue[0].type == "CreatePage" ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
@@ -81,6 +103,9 @@ export default function TaskCommandHeader(){
       </div> 
       )}
       <div className="align-middle flex">
+        <div className={`py-2 ml-2 my-auto ${isEditing && "hidden"}`}>
+          {fullTaskQueue.length - taskQueue.length + 1} of {fullTaskQueue.length} tasks
+        </div>
         <Button
           className="text-sm ml-4 px-5 py-2 ml-2 my-auto font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
           onClick={() => {
@@ -91,7 +116,11 @@ export default function TaskCommandHeader(){
         <Button
           className={`text-green-400 text-sm ml-4 my-auto mr-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-green-400 border-opacity-70 border`} 
           onClick={() => {
-            //DO IT
+            if(isEditing){
+              runEdit(updateValue)
+            } else{
+              executeTask(taskQueue[0], fullTaskQueue)
+            }
           }}
           text={isEditing ? "Revise" : "Approve"}
         />

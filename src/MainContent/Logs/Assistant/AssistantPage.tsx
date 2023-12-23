@@ -11,14 +11,14 @@ import SchemaViewer from "./SchemaViewer";
 
 export default function AssistantPage() {
   const [aiPrompt, setAiPrompt] = useState<string>("")
-  const { promptAiPlanner, getSchema, setSchema, promptSchemaPlanner } = useEndpointApi()
+  const { promptAiPlanner, getSchema, setSchema, promptSchemaPlanner, executeTask } = useEndpointApi()
   const [messages, setMessages] = useState<any[]>([])
-  const {activeProject, setTaskQueue, setSelectedTab, setFullTaskQueue, ideReady} = useContext(SwizzleContext)
+  const {activeProject, setTaskQueue, setSelectedTab, setFullTaskQueue, ideReady } = useContext(SwizzleContext)
   const [schema, setSchemaLocal] = useState<any>({})
   const [needsAuth, setNeedsAuth] = useState<boolean>(true)
   const schemaRef = useRef(null)
 
-  const beginCodeGeneration = () => {
+  const beginCodeGeneration = async () => {
     if(needsAuth){
       //TODO: show user auth modal then move forward
     }
@@ -34,8 +34,13 @@ export default function AssistantPage() {
       return
     }
 
-    setTaskQueue([...endpointsToBuild, ...pagesToBuild])
-    setFullTaskQueue([...endpointsToBuild, ...pagesToBuild])
+    const newTaskQueue = [...endpointsToBuild, ...pagesToBuild]
+    //run first task
+    const firstTask = newTaskQueue[0]
+    await executeTask(firstTask, newTaskQueue)
+
+    setTaskQueue(newTaskQueue)
+    setFullTaskQueue(newTaskQueue)
 
     if(endpointsToBuild.length > 0){
       setSelectedTab(Page.Apis)

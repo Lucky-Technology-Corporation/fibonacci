@@ -29,7 +29,7 @@ export default function Dashboard() {
   //Initialization code...
   const { isFree, projects, setProjects, activeProject, testDomain, ideReady } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
-  const { checkIfAccountNeedsEmail } = useSettingsApi()
+  const { checkIfAccountNeedsEmail, pingProjectActive } = useSettingsApi()
   const auth = useAuthUser();
 
   const onboardingSteps = [
@@ -291,7 +291,18 @@ export default function Dashboard() {
     })
 
     fetchProjects();
+
   }, []);
+
+  useEffect(() => {
+    //Start pinging the project active endpoint every 2 minutes
+    const interval = setInterval(() => {
+      pingProjectActive()
+    }, 120000); 
+
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, [activeProject])    
+  
 
   if (isAuthenticated()) {
     if (projects) {

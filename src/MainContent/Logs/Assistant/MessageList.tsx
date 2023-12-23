@@ -27,7 +27,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
     if(!messages) return <></>
 
     return (
-        <div className="w-full flex flex-row overflow-x-hidden space-x-8">
+        <div className="w-full flex flex-row overflow-x-hidden">
 
             <div className="w-1/2 h-full flex flex-col mx-4">
                 <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
@@ -85,7 +85,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
             </div>   
 
 
-            <div className="w-1/2 h-full flex flex-col">
+            <div className="w-1/2 h-full flex flex-col mx-4">
                 <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
                     <div>
                         <div className="flex"> 

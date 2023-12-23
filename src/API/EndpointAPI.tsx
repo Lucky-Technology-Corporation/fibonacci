@@ -2,13 +2,14 @@ import axios from "axios";
 import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
+import { toast } from "react-hot-toast";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useEndpointApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, activeEndpoint, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList } =
+  const { testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
     useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
@@ -518,6 +519,44 @@ export default function useEndpointApi() {
     });
   }
 
+  const executeTask = (task, allTasks) => {
+    // if(taskQueue.length == 0){
+    //   console.log("no more tasks!")
+    //   return
+    // } else{
+    //   console.log("executing task", task)
+    // }
+
+    setTaskQueue(taskQueue.slice(1))
+
+    return toast.promise(aiTaskExecute(task, allTasks.filter(v => v != null)), {
+        loading: "Thinking...",
+        success: (response: any) => {
+          if(response.status == "TASK_WAITING_FOR_APPROVAL"){
+              console.log("ai is asking for approval on", response.task.code)
+          } else if(response.status == "TASK_SUCCEEDED"){
+            console.log("succeeded on", task)
+            setShouldRefreshList(!shouldRefreshList)
+            if(task.type == "CreateEndpoint"){
+              const endpoint = task.inputs.method.toLowerCase() + task.inputs.path
+              console.log("setting endpoint after codegen to", endpoint)
+              setActiveEndpoint(endpoint)
+            } else if(task.type == "CreatePage"){
+              const endpoint = task.inputs.path
+              console.log("setting page after codegen to", endpoint)
+              setActiveFile(endpoint)
+            }
+          } else{
+              toast.error("An error occured")
+          }
+          return "Done"
+        },
+        error: () => {
+            return "An error occured"
+        },
+    });
+  }
+
   return {
     checkIfAllEndpointsExist,
     getFiles,
@@ -540,6 +579,7 @@ export default function useEndpointApi() {
     aiTaskExecute,
     setSchema,
     getSchema,
-    promptSchemaPlanner
+    promptSchemaPlanner,
+    executeTask
   };
 }
