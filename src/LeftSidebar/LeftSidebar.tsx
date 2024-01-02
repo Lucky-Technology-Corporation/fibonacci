@@ -125,7 +125,7 @@ export default function LeftSidebar({
       }
     }
 
-    if (currentFileProperties.fileUri.includes("frontend")) {
+    if (currentFileProperties.fileUri.includes("frontend/src")) {
       if(selectedTab != Page.Hosting){
         setSelectedTab(Page.Hosting)
       }

@@ -371,7 +371,7 @@ export default function useEndpointApi() {
       const fileName = openUri.replace("/swizzle/code/", "");
       const fileContents = await getFile(fileName);
       
-      if(fileName.includes("frontend/")){
+      if(fileName.includes("frontend/src")){
         const neededEndpoints = checkIfAllEndpointsExist(fileContents)
       }
 

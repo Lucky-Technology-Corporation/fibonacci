@@ -257,7 +257,7 @@ export default function AssistantPage() {
             setPath={() => {}} //this is the onclick handler
           />
           <>
-          <div className="w-full flex flex-col mx-4 mt-6 overflow-x-hidden">
+          <div className="w-full flex flex-col px-4 mt-6 overflow-x-hidden">
               <div className="ml-1 mt-0.5 flex justify-between">
                 <div className="flex"> 
                   <Button

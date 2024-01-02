@@ -99,6 +99,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         var cleanLine = line
         if(currentLocation == "backend"){
             if(line.includes("user-dependencies/") && !line.includes("Internal watch failed: ENOSPC")){
+                console.log(line)
                 if(line.includes("):")){
                     const fileName = line.split("user-dependencies/")[1].split("(")[0]
                     const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))

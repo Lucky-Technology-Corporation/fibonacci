@@ -92,6 +92,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
     setIsRefreshing(true);
     fetchData(0);
     setIsRefreshing(false);
+    setCurrentPage(0);
   };
 
   const createObjectHandler = (id: string) => {
