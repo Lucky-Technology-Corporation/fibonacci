@@ -330,6 +330,17 @@ export default function FilesList({ active }: { active: boolean }) {
             disableDelete={true}
           />
         </div>
+        <div className={searchFilter != "" ? ("manifest.json".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+          <FileItem
+            key={"manifest.json"}
+            path={("manifest.json")}
+            active={"frontend/public/manifest.json" == activeFile}
+            onClick={() => {
+              setActiveFile("frontend/public/manifest.json");
+            }}
+            disableDelete={true}
+          />
+        </div>
         <div className={searchFilter != "" ? ("tailwind.config.js".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
           <FileItem
             key={"tailwind.config.js"}

@@ -31,7 +31,7 @@ export default function CenterContent({
   }
   
   return (
-    <div className="relative m-0 text-sm whitespace-pre-line max-h-[100vh] overflow-hidden">
+    <div className={`relative m-0 text-sm whitespace-pre-line max-h-[100vh] ${selectedTab == Page.Logs && activeLogsPage == "assistant" ? "!overflow-scroll" : ""}`}>
 
       <div
         style={{

@@ -289,7 +289,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       </div>
       <div className={`absolute top-5 right-10 flex h-10 mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
         <Button
-          className="text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#333336] hover:bg-[#3b3b40] border-[#525363] border"
+          className="text-sm px-5 py-1 mb-[-4px] mt-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#333336] hover:bg-[#3b3b40] border-[#525363] border"
           text="+ Add Entry"
           onClick={() => {
             createObjectHandler("json");

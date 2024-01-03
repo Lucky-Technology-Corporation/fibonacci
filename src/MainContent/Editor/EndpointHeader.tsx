@@ -749,6 +749,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                   onKeyDown: (event) => {
                     if(event.key == "Enter"){
                       console.log("highlighted", highlighted)
+                      if(selectedTab == Page.Db){
+                        runQuery(prompt, "db")
+                        return
+                      }
                       if(!highlighted){
                         if(selectedText != null && selectedText != ""){
                           runQuery(prompt, "selection", selectedText)

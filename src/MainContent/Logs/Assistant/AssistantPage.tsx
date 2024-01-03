@@ -18,6 +18,17 @@ export default function AssistantPage() {
   const [needsAuth, setNeedsAuth] = useState<boolean>(true)
   const schemaRef = useRef(null)
 
+  const filterUniqueTasks = (tasks) => {
+    return tasks.filter((v, i, a) => 
+      a.findIndex(t => (
+        t.type === v.type && 
+        t.inputs.path === v.inputs.path && 
+        (t.type === "CreateEndpoint" ? t.inputs.method === v.inputs.method : true)
+      )) === i
+    );
+  };
+
+  
   const beginCodeGeneration = async () => {
     if(needsAuth){
       //TODO: show user auth modal then move forward
@@ -73,9 +84,11 @@ export default function AssistantPage() {
     audio.play();    
 
     const sortByFeatureGroup = (a, b) => a.feature_group.localeCompare(b.feature_group);
+    console.log("rawResponse", rawResponse)
     const sortedEndpoints = rawResponse.tasks.filter(task => task.type == "CreateEndpoint").sort(sortByFeatureGroup)
     const sortedPages = rawResponse.tasks.filter(task => task.type == "CreatePage").sort(sortByFeatureGroup)
-    const newTasks = [...sortedEndpoints, ...sortedPages]
+    var newTasks = [...sortedEndpoints, ...sortedPages]
+    newTasks = filterUniqueTasks(newTasks); 
 
     //deal with overwriting tasks in previous messages
     var uniqueMessages = []
@@ -87,14 +100,17 @@ export default function AssistantPage() {
           console.log("task", tasks[j])
           if(tasks[j].type == "CreateEndpoint"){
             console.log("checking for", tasks[j].inputs.path, tasks[j].inputs.method)
-            const newTaskWithSamePathAndMethod = newTasks.filter(task => task.inputs.path == tasks[j].inputs.path && task.inputs.method == tasks[j].inputs.method)
+            const newTaskWithSamePathAndMethod = sortedEndpoints.filter(task => task.inputs.path == tasks[j].inputs.path && task.inputs.method == tasks[j].inputs.method)
+            console.log("sortedEndpoints", sortedEndpoints)
+            console.log("array of the same tasks", newTaskWithSamePathAndMethod)
             if(newTaskWithSamePathAndMethod.length == 0){
               //there is no new task with the same path and method, so we can keep the old one
               uniqueMessages.push(messageSaved[i])
             }
           } else if(tasks[j].type == "CreatePage"){
-            console.log("checking for", tasks[j].inputs.path, tasks[j].inputs.method)
-            const newTaskWithSamePath = newTasks.filter(task => task.inputs.path == tasks[j].inputs.path)
+            console.log("checking for page", tasks[j].inputs.path)
+            const newTaskWithSamePath = sortedPages.filter(task => task.inputs.path == tasks[j].inputs.path)
+            console.log("array of the same tasks", newTaskWithSamePath)
             if(newTaskWithSamePath.length == 0){
               //there is no new task with the same path and method, so we can keep the old one
               uniqueMessages.push(messageSaved[i])
@@ -191,7 +207,7 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="w-full h-full overflow-none">
+    <div className="w-full h-full">
       <div className="flex mx-4 mr-2 mb-4">
       <Button
           className={`${messages && messages.length == 0 && "hidden"} text-red-400 text-sm mr-4 px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-red-400 border-opacity-70 border`} 

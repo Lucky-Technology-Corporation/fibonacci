@@ -10,6 +10,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [path, setPath] = useState<string | null>(null);
+  const [injectedLog, setInjectedLog] = useState<any>([]);
   const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
@@ -42,6 +43,12 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   }, [refreshTheia])
 
   const messageHandler = (event) => {
+    if(event.data.source == "react-devtools-content-script" || event.data.source == "react-devtools-bridge") return;
+    console.log("messageHandler", event.data);
+    if(event.data.type == "frontendLog"){
+      setInjectedLog(event.data)
+    }
+
     if (event.data.type === "extensionReady") {
       setIdeReady(true);
     }
@@ -142,13 +149,14 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           }}
         />
         <LogWebsocketViewer
+          injectedLog={injectedLog}
+          setInjectedLog={setInjectedLog}
           location={"backend"} 
           style={{
             height: "200px",
             width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 24px)",
             bottom: "24px",
             position: "absolute",
-            // zIndex: -1
           }}
         />
       </div>

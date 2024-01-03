@@ -9,6 +9,8 @@ import { Page } from "../../Utilities/Page";
 type LogWebsocketViewerProps = {
     location: "frontend" | "backend";
     style: CSSProperties;
+    injectedLog: any
+    setInjectedLog: any
 };
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
@@ -64,6 +66,27 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if(props.injectedLog == "" || props.injectedLog == undefined){ return }
+        console.log("adding ", props.injectedLog)
+        const timestamp = new Date().toLocaleTimeString()
+        var errorMethod = props.injectedLog.method
+        if(errorMethod == 'window_error'){
+            errorMethod = 'uncaught error'
+        }
+        var color = ""
+        if(errorMethod.includes("error")){
+            color = "text-red-400"
+        } else if(errorMethod.includes("warn")){
+            color = "text-yellow-400"
+        } else if(errorMethod.includes("info")){
+            color = "text-blue-400"
+        }
+        const newLine = <span className={`font-mono text-sm ${color}`} key={`injected-${timestamp}`}>{"["+errorMethod+"] " + props.injectedLog.message}</span>
+        setLog(prevLog => [...prevLog, newLine]);
+        props.setInjectedLog("")
+    }, [props.injectedLog])
 
     const greyOutUnimportantLines = (inputLine: string): ReactNode => {
         const timestamp = new Date().toLocaleTimeString()
