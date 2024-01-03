@@ -8,7 +8,9 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const iframeRef = useRef(null);
   const currentFileRef = useRef(null);
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
+  const [url, setUrl] = useState<string | null>(null);
+  const [path, setPath] = useState<string | null>(null);
+  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
 
   useEffect(() => {
@@ -93,51 +95,78 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     getUrl();
   }, [activeProject, testDomain]);
 
+  useEffect(() => {
+    if(activeFile != undefined && activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
+      const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase()
+      setPath("/" + path)
+      setUrl(testDomain + "/" + path)
+    }
+  }, [activeFile])
+
+
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
   ) : (
-    <>
-    <div className={`bg-black bg-opacity-70 absolute w-full h-full top-0 left-0 right-0 bottom-0 z-50 pointer-events-none ${environment == "test" && "hidden"}`}>
-      <div className="m-auto mt-20 text-center text-lg font-semibold">
-        You're viewing Production
+    <div className="flex flex-row">
+      <div className={`bg-black bg-opacity-70 absolute w-full h-full top-0 left-0 right-0 bottom-0 z-50 pointer-events-none ${environment == "test" && "hidden"}`}>
+        <div className="m-auto mt-20 text-center text-lg font-semibold">
+          You're viewing Production
+        </div>
+        <div className="m-auto mt-4 text-center">
+        Switch back to Test View in the top left to edit your code.<br/><br/>Then, Deploy your code to update the production app.
+        </div>
       </div>
-      <div className="m-auto mt-4 text-center">
-       Switch back to Test View in the top left to edit your code.<br/><br/>Then, Deploy your code to update the production app.
-      </div>
-    </div>
-    <div style={{ 
+
+      <div style={{ 
         overflow: "hidden", 
         height: "calc(100vh - 72px)", 
         margin: "6px",
         marginRight: "0px",
         marginLeft: "16px",
         borderRadius: "8px",
-        pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}>
-      <iframe
-        className="theia-iframe"
-        ref={iframeRef}
-        src={theiaUrl}
-        frameBorder="0"
-        tabIndex={-1}
-        style={{
-          width: "calc(100% + 96px)",
-          height: "calc(100% - 110px)",
-          marginLeft: "-48px",
-          marginRight: "-48px",
-          display: "block", // This ensures the iframe takes up the full width
-        }}
-      ></iframe>
-      <LogWebsocketViewer
-        location={"backend"} 
-        style={{
-          height: "200px",
-          width: "calc(100% - 24px)",
-          bottom: "24px",
-          position: "absolute",
-          // zIndex: -1
-        }}
-      />
+        width: selectedTab == Page.Hosting ? "calc(60% - 24px)" : "calc(100% - 24px)",
+        pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}
+      >
+        <iframe
+          className="theia-iframe"
+          ref={iframeRef}
+          src={theiaUrl}
+          frameBorder="0"
+          tabIndex={-1}
+          style={{
+            width: "calc(100% + 96px)",
+            height: "calc(100% - 110px)",
+            marginLeft: "-48px",
+            marginRight: "-48px",
+            display: "block", // This ensures the iframe takes up the full width
+          }}
+        />
+        <LogWebsocketViewer
+          location={"backend"} 
+          style={{
+            height: "200px",
+            width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 24px)",
+            bottom: "24px",
+            position: "absolute",
+            // zIndex: -1
+          }}
+        />
+      </div>
+      {selectedTab == Page.Hosting && (
+        <>
+        <iframe
+          src={url}
+          tabIndex={-1}
+          style={{
+            height: "calc(100vh - 72px)", 
+            width: "40%",
+            backgroundColor: "#ffffffdd",
+            marginRight: "16px",
+            marginLeft: "4px",
+          }}
+        />
+        </>
+      )}
     </div>
-    </>
   );
 }

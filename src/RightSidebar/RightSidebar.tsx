@@ -12,7 +12,6 @@ import ScheduleEditor from "./ScheduleEditor";
 import PackageInfo from "./Sections/PackageInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import TestWindow from "./TestWindow/TestWindow";
-import WebPreview from "./WebPreview";
 
 export default function RightSidebar() {
   const programmaticDbUpdateRef = useRef(false);
@@ -198,7 +197,7 @@ export default function RightSidebar() {
               text="Save"
             />
 
-            <div className="h-3" />
+            {/* <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
 
@@ -210,7 +209,7 @@ export default function RightSidebar() {
               icon={<img src="/preview.svg" className="w-4 h-4 m-auto" />}
               text="Preview"
             />
-            <WebPreview isVisible={isPreviewVisible} setIsVisible={setIsPreviewVisible} />
+            <WebPreview isVisible={isPreviewVisible} setIsVisible={setIsPreviewVisible} /> */}
 
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>

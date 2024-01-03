@@ -61,12 +61,12 @@ export default function Dashboard() {
       content: <div className="text-left text-sm">Click this button on broken requests.
       <br/><br/>AI will automatically analyze your code & error logs to find the issue for you.</div>,
     },
-    {
-      selector: ".templates-tab",
-      title: "Templates",
-      position: "right" as Position,
-      content: <div className="text-left text-sm">Add common templates to your project quickly.</div>,
-    },
+    // {
+    //   selector: ".templates-tab",
+    //   title: "Templates",
+    //   position: "right" as Position,
+    //   content: <div className="text-left text-sm">Add common templates to your project quickly.</div>,
+    // },
     {
       selector: ".user-tab",
       title: "Users",
@@ -255,11 +255,11 @@ export default function Dashboard() {
   const prepareNextStep = (nextStep: number) => {
     if(nextStep == 1){
       setActiveLogsPage("logs")
-    } else if (nextStep == 4) {
+    } else if (nextStep == 3) {
       setSelectedTab(Page.Auth);
-    } else if (nextStep == 6) {
+    } else if (nextStep == 5) {
       setSelectedTab(Page.Apis);
-    } else if (nextStep == 15) {
+    } else if (nextStep == 14) {
       setSelectedTab(Page.Hosting);
     }
   };

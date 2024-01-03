@@ -13,10 +13,11 @@ export default function TaskCommandHeader(){
   const [updateValue, setUpdateValue] = useState<string>("")
   const { executeTask, promptAiEditor } = useEndpointApi()
 
-  const {taskQueue, fullTaskQueue, fileErrors, setFileErrors, setPostMessage} = useContext(SwizzleContext)
+  const {taskQueue, fullTaskQueue, fileErrors, setFileErrors, setPostMessage, setTaskQueue} = useContext(SwizzleContext)
 
   const [ promptQuery, setPromptQuery ] = useState<string>("");
   const [isWaitingForErrors, setIsWaitingForErrors] = useState<boolean>(false);
+  const [isThinking, setIsThinking] = useState<boolean>(false);
 
   if(taskQueue[0] == null){
     return (<></>)
@@ -40,6 +41,7 @@ export default function TaskCommandHeader(){
   }, [fileErrors])
 
   const runQueryFromState = () => {
+    setIsThinking(true)
     toast.promise(promptAiEditor(promptQuery, "edit", undefined, undefined, undefined, fileErrors), {
       loading: "Thinking...",
       success: (data) => {
@@ -54,10 +56,15 @@ export default function TaskCommandHeader(){
             type: "saveFile"
           })
         }, 100)
-
+        setIsThinking(false)
+        setIsEditing(false)
         return "Done";
       },
-      error: "Failed",
+      error: () => {
+        setIsThinking(false)
+        setIsEditing(false)
+        return "Failed"
+      },
     });
   }
 
@@ -102,12 +109,12 @@ export default function TaskCommandHeader(){
         </div>
       </div> 
       )}
-      <div className="align-middle flex">
+      <div className={`align-middle flex ${isThinking && "opacity-50 pointer-events-none"}`}>
         <div className={`py-2 ml-2 my-auto ${isEditing && "hidden"}`}>
           {fullTaskQueue.length - taskQueue.length + 1} of {fullTaskQueue.length} tasks
         </div>
         <Button
-          className="text-sm ml-4 px-5 py-2 ml-2 my-auto font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
+          className={`text-sm ml-4 px-5 py-2 ml-2 my-auto font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`} 
           onClick={() => {
             setIsEditing(!isEditing)
           }}
@@ -119,7 +126,8 @@ export default function TaskCommandHeader(){
             if(isEditing){
               runEdit(updateValue)
             } else{
-              executeTask(taskQueue[0], fullTaskQueue)
+              if(taskQueue[1] == undefined){ setTaskQueue([]); return; }
+              executeTask(taskQueue[1], fullTaskQueue)
             }
           }}
           text={isEditing ? "Revise" : "Approve"}

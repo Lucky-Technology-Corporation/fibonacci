@@ -99,7 +99,6 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         var cleanLine = line
         if(currentLocation == "backend"){
             if(line.includes("user-dependencies/") && !line.includes("Internal watch failed: ENOSPC")){
-                console.log(line)
                 if(line.includes("):")){
                     const fileName = line.split("user-dependencies/")[1].split("(")[0]
                     const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
@@ -328,7 +327,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 mr-[72px] rounded mt-[-4px] p-1 bg-[#1e1e1e]">
+            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 42px)" : "72px"}}>
                 {currentLocation == "backend" ? (
                     <div className="text-sm font-bold m-auto ml-1">Backend Logs</div>
                 ) : (

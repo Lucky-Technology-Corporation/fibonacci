@@ -7,7 +7,7 @@ export default function Button({
   onMouseEnter = () => {},
   onMouseLeave = () => {},
   style,
-  ref
+  ref,
 }: {
   text?: any;
   onClick: () => void;

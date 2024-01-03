@@ -3,13 +3,14 @@ import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { toast } from "react-hot-toast";
+import { formatPath } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useEndpointApi() {
   const authHeader = useAuthHeader();
-  const { testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
+  const { setActivePage, testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
     useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
@@ -526,14 +527,15 @@ export default function useEndpointApi() {
     // } else{
     //   console.log("executing task", task)
     // }
-
+    console.log("executing task", task)
+    
     setTaskQueue(taskQueue.slice(1))
 
     return toast.promise(aiTaskExecute(task, allTasks.filter(v => v != null)), {
         loading: "Thinking...",
         success: (response: any) => {
           if(response.status == "TASK_WAITING_FOR_APPROVAL"){
-              console.log("ai is asking for approval on", response.task.code)
+            console.log("ai is asking for approval on", response.task.code)
           } else if(response.status == "TASK_SUCCEEDED"){
             console.log("succeeded on", task)
             setShouldRefreshList(!shouldRefreshList)
@@ -542,9 +544,12 @@ export default function useEndpointApi() {
               console.log("setting endpoint after codegen to", endpoint)
               setActiveEndpoint(endpoint)
             } else if(task.type == "CreatePage"){
-              const endpoint = task.inputs.path
-              console.log("setting page after codegen to", endpoint)
-              setActiveFile(endpoint)
+              const page = task.inputs.path
+              console.log("setting page after codegen to", page)
+
+              var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
+              setActiveFile("frontend/src/pages/" + pageRelativePath)
+              setActivePage(formatPath(page.path, page.name, true))
             }
           } else{
               toast.error("An error occured")

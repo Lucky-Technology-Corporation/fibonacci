@@ -35,14 +35,14 @@ export default function Logslist({
           setActivePage("analytics");
         }}
       />
-      <LogsItem
+      {/* <LogsItem
         className="templates-tab"
         active={activePage == "templates"}
         name="Templates"
         onClick={() => {
           setActivePage("templates");
         }}
-      />
+      /> */}
     </div>
   );
 }
