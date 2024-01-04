@@ -20,13 +20,11 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const {testDomain, activeProject, activeEndpoint, setPostMessage, selectedTab} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const [currentLocation, setCurrentLocation] = useState<string>();
-    const [socketDomain, setSocketDomain] = useState<string>();
-    
-    const [didTryToReconnect, setDidTryToReconnect] = useState(false);
+
+    const isReconnecting = useRef(false);
 
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
-        
         //Don't reconnect if we're already on the right tab
         if(ws && ws.OPEN && currentLocation == "backend" && selectedTab == Page.Apis){ return } 
         else if(ws && ws.OPEN && currentLocation == "frontend" && selectedTab == Page.Hosting){ return }
@@ -37,26 +35,21 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
         //Don't connect if we don't have the right data
         if(!activeProject || !testDomain) return;
-        if(selectedTab != Page.Apis && selectedTab != Page.Hosting) return;
+        if(selectedTab != Page.Apis && selectedTab != Page.Hosting) {
+            if(ws){
+                ws.close()
+                setLog([])
+            }
+            return
+        };
 
         //Set our location
-        setCurrentLocation(selectedTab == Page.Hosting ? "frontend" : "backend");
-    }, [activeEndpoint, selectedTab])
+        const newLocation = (selectedTab == Page.Hosting ? "frontend" : "backend");
+        setCurrentLocation(newLocation)
+        reconnectWebsocket(newLocation)
 
-    useEffect(() => {
-        if(socketDomain != testDomain){
-            if(selectedTab == Page.Hosting || selectedTab == Page.Apis){
-                reconnectWebsocket()
-            }
-            setSocketDomain(testDomain)
-        }
-    }, [testDomain])
+    }, [selectedTab])
 
-    useEffect(() => {
-        if(currentLocation != undefined){
-            reconnectWebsocket()
-        }
-    }, [currentLocation])
 
     //Close websocket on unmount
     useEffect(() => {
@@ -221,8 +214,11 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     
 
     //Reconnect websocket
-    const reconnectWebsocket = async () => {
-        let messageQueue = [];
+    const reconnectWebsocket = async (withLocation: string) => {
+        console.log("trying to reconnect")
+        if (isReconnecting.current) return;
+        isReconnecting.current = true;
+        console.log("not blocked", withLocation)
 
         if (ws) {
             ws.close();
@@ -233,111 +229,109 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         var fermatJwt = await endpointApi.getFermatJwt();
         fermatJwt = fermatJwt.replace("Bearer ", "");
 
-        const path = currentLocation == "frontend" ? "frontend/app.log" : "backend/server.log";
+        const path = withLocation == "frontend" ? "frontend/app.log" : "backend/server.log";
         const webSocket = new WebSocket(`wss://${testDomain.replace("https://", "fermat.")}/tail_logs?path=${path}&jwt=${fermatJwt}&initial_lines=25`);
         
-
-        webSocket.onmessage = (event) => {
-            var newLog = event.data
-            messageQueue.push(...(newLog.split("\n")));
-        };
-
-        const processQueue = () => {
-            if (messageQueue.length > 0) {
-                // const message = messageQueue.shift();
-                // var line = message
-
-                const regex = /\x1B\[\d+m/g;
-                // line = line.replace(regex, '');
-
-                const allMessages = [];
-                while (messageQueue.length > 0) {
-                    allMessages.push(messageQueue.shift().replace(regex, ''));
-                }
-                var allElements = [];
-    
-                allMessages.forEach((lineIn, index) => {
-                    try{
-                        var lines;
-                        if(lineIn.includes("\n")){
-                            lines = lineIn.split("\n");
-                        } else{
-                            lines = [lineIn];
-                        }
-                        
-                        var line = ""
-
-                        for(var i = 0; i < lines.length; i++){
-                            var currentLine = lines[i];
-                            if (
-                                (currentLine.includes("0.0.0.0:9229") ||
-                                currentLine.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
-                                currentLine.includes("ExperimentalWarning: Custom ESM Loaders") ||
-                                currentLine.includes("(Use `node --trace-warnings ...")) ||
-                                currentLine.includes("[nodemon] to restart at any time, enter `rs`") ||
-                                currentLine.includes("[nodemon] watching path(s): **/*") ||
-                                currentLine.includes("[nodemon] watching extensions: ts") ||
-                                currentLine.includes("[nodemon] 3.0.1") ||
-                                currentLine.includes("npm WARN exec The following package was not found and will be installed")
-                            ){ continue }        
-
-                            try{
-                                const parsed = JSON.parse(currentLine);
-                                if(parsed.text !== null && parsed.text !== undefined){
-                                    const date = new Date(parsed.timestamp).toLocaleTimeString()
-                                    currentLine = `[${date}] ${parsed.text}`;
-                                }
-                            } catch(e){ }
-
-                            if(currentLine.startsWith("[0] ")){
-                                currentLine = currentLine.substring(4);
-                            } else if(currentLine.startsWith("[1] ")){
-                                currentLine = currentLine.substring(4);
-                            }
-
-                            currentLine = currentLine.replace(/\n+$/, ""); //remove trailing newlines
-
-                            if(currentLine.replace(/\s/g, '') !== ""){ //replace all whitespace
-                                line = line + currentLine + "\n";
-                            }               
-                        }
-                        if(line == ""){ return }
-                        if(line.endsWith("\n")){
-                            line = line.substring(0, line.length - 1);
-                        }            
-                    } catch (e) {}
-
-                    const filteredLine = line.split('\n')
-                    .filter(line => line.replace(/^\s+/, '') !== '') // Remove lines that are empty or contain only whitespace
-                    .join('\n')               
-
-                    const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine, `${new Date().getTime()}_${index}`);
-                    allElements.push(lineJsxElement);
-                })
-                setLog(prevLog => [...prevLog, ...allElements]);
-            }
-        };
-        
-        setInterval(processQueue, 100);
-        
-
-        webSocket.onclose = () => {
-            if(selectedTab == Page.Hosting || selectedTab == Page.Apis){
-                reconnectWebsocket();
-            }
-        };
-
-        webSocket.onerror = (err) => {
-            console.error(
-                "Socket encountered error: ",
-                err,
-                "Closing socket"
-            );
-            webSocket.close();
-        }
-
         setWs(webSocket);
+
+        isReconnecting.current = false;
     }
+
+    useEffect(() => {
+        if(ws){
+            let messageQueue = [];
+
+            ws.onmessage = (event) => {
+                var newLog = event.data
+                messageQueue.push(...(newLog.split("\n")));
+            };
+
+            ws.onclose = (event) => {
+                console.log("close", event)
+            }
+
+            const processQueue = () => {
+                if (messageQueue.length > 0) {
+                    // const message = messageQueue.shift();
+                    // var line = message
+    
+                    const regex = /\x1B\[\d+m/g;
+                    // line = line.replace(regex, '');
+    
+                    const allMessages = [];
+                    while (messageQueue.length > 0) {
+                        allMessages.push(messageQueue.shift().replace(regex, ''));
+                    }
+                    var allElements = [];
+        
+                    allMessages.forEach((lineIn, index) => {
+                        try{
+                            var lines;
+                            if(lineIn.includes("\n")){
+                                lines = lineIn.split("\n");
+                            } else{
+                                lines = [lineIn];
+                            }
+                            
+                            var line = ""
+    
+                            for(var i = 0; i < lines.length; i++){
+                                var currentLine = lines[i];
+                                if (
+                                    (currentLine.includes("0.0.0.0:9229") ||
+                                    currentLine.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
+                                    currentLine.includes("ExperimentalWarning: Custom ESM Loaders") ||
+                                    currentLine.includes("(Use `node --trace-warnings ...")) ||
+                                    currentLine.includes("[nodemon] to restart at any time, enter `rs`") ||
+                                    currentLine.includes("[nodemon] watching path(s): **/*") ||
+                                    currentLine.includes("[nodemon] watching extensions: ts") ||
+                                    currentLine.includes("[nodemon] 3.0.1") ||
+                                    currentLine.includes("npm WARN exec The following package was not found and will be installed")
+                                ){ continue }        
+    
+                                try{
+                                    const parsed = JSON.parse(currentLine);
+                                    if(parsed.text !== null && parsed.text !== undefined){
+                                        const date = new Date(parsed.timestamp).toLocaleTimeString()
+                                        currentLine = `[${date}] ${parsed.text}`;
+                                    }
+                                } catch(e){ }
+    
+                                if(currentLine.startsWith("[0] ")){
+                                    currentLine = currentLine.substring(4);
+                                } else if(currentLine.startsWith("[1] ")){
+                                    currentLine = currentLine.substring(4);
+                                }
+    
+                                currentLine = currentLine.replace(/\n+$/, ""); //remove trailing newlines
+    
+                                if(currentLine.replace(/\s/g, '') !== ""){ //replace all whitespace
+                                    line = line + currentLine + "\n";
+                                }               
+                            }
+                            if(line == ""){ return }
+                            if(line.endsWith("\n")){
+                                line = line.substring(0, line.length - 1);
+                            }            
+                        } catch (e) {}
+    
+                        const filteredLine = line.split('\n')
+                        .filter(line => line.replace(/^\s+/, '') !== '') // Remove lines that are empty or contain only whitespace
+                        .join('\n')               
+    
+                        const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine, `${new Date().getTime()}_${index}`);
+                        allElements.push(lineJsxElement);
+                    })
+                    setLog(prevLog => [...prevLog, ...allElements]);
+                }
+            };
+            
+            const intervalId = setInterval(processQueue, 100);
+            return () => {
+                clearInterval(intervalId);
+            };    
+        }
+    }, [ws])
 
     useEffect(() => {
         setTimeout(() => {
@@ -346,6 +340,15 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             }
         }, 50);
     }, [log])
+
+
+    // if(ws && (ws.readyState == ws.CLOSED || ws.readyState == ws.CLOSING)){
+    //     return (
+    //         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
+    //             <span className="m-auto text-center mt-2 text-sm">Socket closed</span>
+    //         </div>
+    //     )
+    // }
 
     return (
         <>        
@@ -359,9 +362,11 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                 <Switch
                     className="ml-1 scale-75 env-toggle"
                     onChange={() => {
-                        if(ws){ ws.close(); }
+                        if(ws){ console.log("closing"); ws.close(); }
                         setLog([]);
-                        setCurrentLocation(currentLocation == "frontend" ? "backend" : "frontend");
+                        const newLocation = currentLocation == "frontend" ? "backend" : "frontend"
+                        setCurrentLocation(newLocation);
+                        reconnectWebsocket(newLocation)
                     }}
                     checked={currentLocation == "backend"}
                     uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}

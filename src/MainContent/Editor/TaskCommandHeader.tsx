@@ -31,7 +31,7 @@ export default function TaskCommandHeader(){
       setPostMessage({
         type: "getFileErrors"
       })
-      toast("Scanning for build errors...")
+      // toast("Scanning for build errors...")
   };
 
   useEffect(() => {

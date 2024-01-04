@@ -1,6 +1,5 @@
-import { faPlus, faRobot } from "@fortawesome/free-solid-svg-icons";
+import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../../Utilities/Button";
 import Task from "./Task";
 
 export default function MessageList( {messages, setMessages, setPath} : {messages: any[], setMessages: any, setPath: any}){
@@ -32,11 +31,11 @@ export default function MessageList( {messages, setMessages, setPath} : {message
             <div className="w-1/2 h-full flex flex-col mx-4">
                 <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
                 <div className="flex"> 
-                    <Button
+                    {/* <Button
                         onClick={() => {}}
                         children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
                         className="ml-0 pl-0 mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
-                    />
+                    /> */}
                     <div>
                         <div className="flex">
                             <img src="/cloud.svg" className="w-4 h-4 my-auto mr-1.5" />
@@ -89,11 +88,11 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                 <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
                     <div>
                         <div className="flex"> 
-                            <Button
+                            {/* <Button
                                 onClick={() => {}}
                                 children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
                                 className="ml-0 pl-0 mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
-                            />
+                            /> */}
                             <div className="w-full grow">
                                 <div className="flex">
                                     <img src="/world.svg" className="w-4 h-4 my-auto mr-1.5" />
@@ -113,7 +112,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                 </div>
                 {messages.map((message, messageIndex) => (
                     <>
-                        {message.role == "assistant" && 
+                        {/* {message.role == "assistant" && 
                             (message.tasks.length == 0 && (
                                 <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
                                 <div className="flex items-top mb-0.5 mt-1 ml-2 font-bold text-violet-300">
@@ -122,7 +121,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                                 </div>
                                 </div>
                             ))
-                        }
+                        } */}
                         {message.role == "assistant" && (
                             message.tasks.filter(t => t.type == "CreatePage").map((task, taskIndex) => (
                                 <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>

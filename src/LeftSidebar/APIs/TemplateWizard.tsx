@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import Autosuggest from 'react-autosuggest';
 import toast from "react-hot-toast";
 import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
@@ -12,10 +11,12 @@ export default function TemplateWizard({
   isVisible,
   setIsVisible,
   type,
+  templateId
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
-  type?: string
+  type?: string,
+  templateId?: string
 }) {
   type Input = {
     name: string;
@@ -23,6 +24,7 @@ export default function TemplateWizard({
     desc: string;
     secret: boolean;
     secret_name?: string;
+    default?: string;
   };
 
   type TemplateType = {
@@ -48,6 +50,7 @@ export default function TemplateWizard({
   const endpointApi = useEndpointApi()
   const deploymentApi = useDeploymentApi()
 
+
   useEffect(() => {
     if (template) {
       const initialState = {};
@@ -57,7 +60,11 @@ export default function TemplateWizard({
           if (input.type === "boolean") {
             initialState[input.name] = false; // default value for checkboxes
           } else if (input.type === "string") {
-            initialState[input.name] = ""; // default value for text inputs
+            if(input.default){
+              initialState[input.name] = input.default;
+            } else{
+              initialState[input.name] = ""; // default value for text inputs
+            }
           }
           // add more conditions if there are other input types
         } else{
@@ -77,6 +84,8 @@ export default function TemplateWizard({
         response = response.filter((template) => template.type == type)
       }
       setTemplateOptions(response);
+      const template = response.find((template) => template.id == templateId) || response[0];
+      setTemplate(template);
     }
     if (isVisible) {
       fetchTemplates();
@@ -132,64 +141,8 @@ export default function TemplateWizard({
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
   }
-
-  const handleOnSelectTemplate = (result: { id: any; name: string }) => {
-    const foundTemplate = templateOptions.find((template) => template.id === result.id);
-    if (foundTemplate) {
-      setTemplate(foundTemplate);
-      return true
-    } else {
-      toast.error("Please try to select again")
-      return false
-    }
-  };
-
-
-  const chooseTemplateType = () => {
-    if(!template){
-      toast.error("Please select a template")
-      return
-    }
-    setStep(1);
-  };
-
-  useEffect(() => {
-    if (isVisible) {
-      setStep(0);
-    }
-  }, [isVisible]);
-
-  const onFilterChange = (event, { newValue }) => {
-    setTemplate(null)
-    setFilterValue(newValue);
-  }
-  const [suggestions, setSuggestions] = useState(templateOptions);
-  const onSuggestionsFetchRequested = ({ value }) => {
-    setTemplate(null)
-    setSuggestions(templateOptions.filter((template) => template.name.toLowerCase().includes(value.toLowerCase())))
-  };
-  const onSuggestionsClearRequested = () => {
-    setSuggestions(templateOptions)
-  };
-  const getSuggestionValue = suggestion => suggestion.name;
-  const renderSuggestion = suggestion => (
-    <div className="w-full p-2 flex hover:bg-[#858698aa]">
-      <div className="">
-        <img src={suggestion.icon_url || "/puzzle.svg"} className="w-4 h-4 rounded mt-0.5 mr-2"/>
-      </div>
-      <div>
-        {suggestion.name}
-      </div>
-    </div>
-  );
-  const renderSuggestionsContainer = ({ containerProps, children, query }) => (
-    <div {...containerProps} className="fixed max-h-36 z-50 overflow-scroll bg-[#2e2f39] rounded-bl rounded-br" style={{width: "calc(100% - 3rem)"}}>
-      {children}
-    </div>
-  );
-  const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
-    handleOnSelectTemplate(suggestion)
-  }
+  
+  if(!template){ return <></> }
 
   return (
     <div
@@ -207,80 +160,8 @@ export default function TemplateWizard({
         <div className="inline-block align-bottom bg-[#181922] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
           <div className="border-[#525363] border bg-[#181922] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
-              {step == 0 ? (
-                <>
-                  <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    Add authentication
-                  </h3>
-                  <div className="mt-1">
-                    <p className="text-sm text-[#D9D9D9]">Choose an auth method</p>
-                  </div>
-                  <div className="mt-4">
-                    <div className="w-full mb-2 fixed">
-                    <Autosuggest
-                      suggestions={suggestions}
-                      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                      onSuggestionsClearRequested={onSuggestionsClearRequested}
-                      getSuggestionValue={getSuggestionValue}
-                      renderSuggestion={renderSuggestion}
-                      renderSuggestionsContainer={renderSuggestionsContainer}
-                      onSuggestionSelected={onSuggestionSelected}
-                      shouldRenderSuggestions={() => { return (!template || filterValue == "")}}
-                      inputProps={{
-                        placeholder: "Type to filter",
-                        value: filterValue,
-                        onChange: onFilterChange,
-                        style: {
-                          border: "1px solid #525363",
-                          lineColor: "#525363",
-                          borderRadius: "0.375rem",
-                          boxShadow: "none",
-                          backgroundColor: "#181922",
-                          hoverBackgroundColor: "#52536355",
-                          color: "#D9D9D9",
-                          fontSize: "0.875rem",
-                          iconColor: "#D9D9D9",
-                          placeholderColor: "#74758a",
-                          height: "36px",
-                          outline: "none",
-                          width: "calc(100% - 3rem)",
-                          paddingLeft: "0.5rem",
-                          paddingRight: "0.5rem",
-                        }
-                      }}
-                    />
-                    </div>
-                  </div>
-                  <div className="bg-[#181922] py-3 pt-0 mt-16 sm:flex sm:flex-row-reverse">
-                    <div className={`bg-[#181922] py-3 pt-0 mt-2 sm:flex sm:flex-row-reverse`}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          chooseTemplateType();
-                        }}
-                        className={`${template ? "" : "hidden"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698] sm:ml-3 sm:w-auto sm:text-sm`}
-                      >
-                        Next
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsVisible(false);
-                          setTimeout(function () {
-                            setStep(0);
-                          }, 200);
-                        }}
-                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
                   <h3 className="text-lg mb-2 leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    Setup Template
+                    Add {template.name}
                   </h3>
                   {template && template.inputs && template.inputs.length > 0 &&
                     (template.inputs || []).map((input) => {
@@ -302,9 +183,9 @@ export default function TemplateWizard({
                         return (
                           <div className="mt-4" key={input.name}>
                             <div className="text-gray-300">{input.name}</div>
+                            <div className="text-gray-400" dangerouslySetInnerHTML={{__html: input.desc}}></div>
                             <input
                               className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
-                              placeholder={input.desc}
                               value={inputState[input.name] || ""}
                               onChange={(e) =>
                                 setInputState((prevState) => ({ ...prevState, [input.name]: e.target.value }))
@@ -336,7 +217,7 @@ export default function TemplateWizard({
                         }
                         setIsCreating(true)
                         toast.promise(createTemplateWithInputs(), {
-                          loading: "Creating template...",
+                          loading: "Creating... (this might take a few seconds)",
                           success: () => {
                             setStep(0);
                             setIsCreating(false)
@@ -366,8 +247,6 @@ export default function TemplateWizard({
                       Cancel
                     </button>
                   </div>
-                </>
-              )}
             </div>
           </div>
         </div>

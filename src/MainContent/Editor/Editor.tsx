@@ -44,7 +44,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
   const messageHandler = (event) => {
     if(event.data.source == "react-devtools-content-script" || event.data.source == "react-devtools-bridge") return;
-    console.log("messageHandler", event.data);
+    
     if(event.data.type == "frontendLog"){
       setInjectedLog(event.data)
     }

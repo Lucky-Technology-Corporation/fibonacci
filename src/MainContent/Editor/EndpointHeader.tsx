@@ -91,7 +91,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       setPostMessage({
         type: "getFileErrors"
       })
-      toast("Scanning for build errors...")
+      // toast("Scanning for build errors...")
     }
   };
 
