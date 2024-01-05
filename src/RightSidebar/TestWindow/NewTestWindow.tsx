@@ -133,7 +133,7 @@ export default function NewTestWindow({
 
   return (
     <div
-      className={`z-50 absolute w-[500px] mr-[450px] bg-[#252629] border border-[#525363] rounded-lg shadow-lg pt-2`}
+      className={`z-50 absolute w-[500px] ml-[564px] bg-[#252629] border border-[#525363] rounded-lg shadow-lg pt-2`}
       style={{
         transition: "opacity 0.1s",
         marginTop: "-8px",

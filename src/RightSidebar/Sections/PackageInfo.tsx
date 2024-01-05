@@ -232,7 +232,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       title={""}
       titleClass="text-md font-bold"
       isLarge={false}
-      overrideLeftMargin={-310}
+      overrideLeftMargin={420}
       overrideTopMargin={-4}
       content={
         //table of packages

@@ -340,13 +340,14 @@ export default function Dashboard() {
             <div>
               <Toaster />
             </div>
-            <div className="grid grid-cols-[auto,1fr,auto] gap-0">
+            <div className="grid grid-cols-[auto,auto,1fr] gap-0">
               <LeftSidebar
                 activeLogsPage={activeLogsPage}
                 setActiveLogsPage={setActiveLogsPage}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />
+              <RightSidebar />
 
               <CenterContent
                 activeLogsPage={activeLogsPage}
@@ -354,7 +355,6 @@ export default function Dashboard() {
                 setIsModalOpen={setIsModalOpen}
               />
 
-              <RightSidebar />
 
               {/* <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
 

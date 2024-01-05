@@ -1,4 +1,4 @@
-import { faBug, faClock, faCloud, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faCloud, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
@@ -23,8 +23,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [prompt, setPrompt] = useState<string>("");
   const [AICommand, setAICommand] = useState<string>("ask");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
-  const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [isDebugging, setIsDebugging] = useState<boolean>(false);
   const [isUndoVisible, setIsUndoVisible] = useState<boolean>(false);
   const [isWaitingForText, setIsWaitingForText] = useState<boolean>(false);
   const [oldCode, setOldCode] = useState<string>("");
@@ -166,17 +164,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     setIsUndoVisible(false)
   }, [currentFileProperties])
 
-  const toggleSearch = () => {
-    const command = isSearching ? "closeSearchView" : "openSearchView";
-    setPostMessage({ type: command });
-    setIsSearching(!isSearching);
-  }
-
-  const toggleDebug = () => {
-    const command = isDebugging ? "closeDebugger" : "openDebugger";
-    setPostMessage({ type: command });
-    setIsDebugging(!isDebugging);
-  }
 
   const docOptions: {title: string, description: string, type: string, image: string, import?: string, link?: string}[] = [
     {
@@ -677,7 +664,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   return (
     <>
         <div className="flex-col magic-bar">
-          <div className="pt-3 ml-5">
+          <div className="pt-3" style={{marginLeft: "3.25rem"}}>
             {selectedTab == Page.Hosting ? (
               <div className="flex align-middle pr-2 font-normal font-mono">
                 <img src="/world.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
@@ -702,25 +689,27 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               (ideReady || (selectedTab != Page.Hosting && selectedTab != Page.Apis)) ? "" : "opacity-50 pointer-events-none"
             }`}
           >
-            <div className="ml-4"></div>
+            <div className="ml-12"></div>
 
             {/* Search shows on frontend and backend tabs */}
-            <Button
+            {/* <Button
               className={`text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}`}
               children={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
               onClick={() => {
                 toggleSearch()
               }}
-            />
+            /> */}
             {/* Debug shows on backend tab */}
-            <Button
+            {/* <Button
               className={`text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis ? "" : "hidden"}`}
               children={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
               onClick={() => {
                 toggleDebug()
               }}
-            />
-            <div className={`w-[1px] h-[36px] bg-[#525363] mx-4 ${selectedTab == Page.Db ? "hidden" : ""}`}></div>
+            /> */}
+
+            
+            {/* <div className={`w-[1px] h-[36px] bg-[#525363] mx-4 ${selectedTab == Page.Db ? "hidden" : ""}`}></div> */}
             {/* Undo shows only when isUndoVisible is true */}
             {isUndoVisible && (
               <Button
@@ -771,7 +760,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                   value: prompt,
                   onChange: onPromptChange,
                   onFocus: () => { setPostMessage({type: "getSelectedText"}) },
-                  className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-2",
+                  className: "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-1.5",
                   style: {
                     width: "calc(100% - 1rem)",
                   }

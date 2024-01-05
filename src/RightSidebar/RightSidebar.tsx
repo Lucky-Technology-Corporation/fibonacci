@@ -1,4 +1,4 @@
-import { faWrench } from "@fortawesome/free-solid-svg-icons";
+import { faBug, faSearch, faWrench, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -17,55 +17,17 @@ export default function RightSidebar() {
   const programmaticAuthUpdateRef = useRef(false);
 
   const [isHelper, setIsHelper] = useState(false);
-  const [isCron, setIsCron] = useState(false);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [isScheduleChecked, setIsScheduleChecked] = useState(false);
-  const [isSchedulerVisible, setIsSchedulerVisible] = useState(false);
 
   const [shouldShowTestWindow, setShouldShowTestWindow] = useState(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isDebugging, setIsDebugging] = useState<boolean>(false);
+
   const [didRunAutocheck, setDidRunAutocheck] = useState(false);
   const { ideReady, setPostMessage, currentFileProperties, selectedTab, swizzleActionDispatch, setSwizzleActionDispatch, postMessage, fileErrors } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
-
-  // const toggleAuth = (isRequired: boolean) => {
-  //   if(isScheduleChecked){
-  //     toast.error("You cannot enable authentication and scheduling at the same time.")
-  //     return
-  //   }
-
-  //   setIsAuthChecked(isRequired);
-
-  //   var newImportStatement = currentFileProperties.importStatement
-  //   if(isRequired){
-  //     newImportStatement = newImportStatement.replace("optionalAuthentication", "requiredAuthentication")
-  //   } else{
-  //     newImportStatement = newImportStatement.replace("requiredAuthentication", "optionalAuthentication")
-  //   }
-
-  //   const message = {
-  //     findText: currentFileProperties.importStatement,
-  //     replaceText: newImportStatement,
-  //     type: "findAndReplace",
-  //   };
-  //   setPostMessage(message);
-  //   setCurrentFileProperties({...currentFileProperties, hasPassportAuth: isRequired, importStatement: newImportStatement})
-
-  //   //Modify middleware
-  //   setTimeout(() => {
-  //     if (currentFileProperties.fileUri.includes("backend/user-dependencies/")) {
-  //       const message = {
-  //         findText: isRequired ? "optionalAuthentication, async" : "requiredAuthentication, async",
-  //         replaceText: isRequired ? "requiredAuthentication, async" : "optionalAuthentication, async",
-  //         type: "findAndReplace",
-  //       };
-  //       setPostMessage(message);
-  //     }
-  //   }, 100)
-  // }
 
   useEffect(() => {
     if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined) return;
@@ -76,21 +38,8 @@ export default function RightSidebar() {
       setIsHelper(false);
     }
 
-    if(currentFileProperties.fileUri.includes("backend/user-dependencies/get.cron")){
-      setIsCron(true)
-    } else{
-      setIsCron(false)
-    }
-
     programmaticAuthUpdateRef.current = true;
     programmaticDbUpdateRef.current = true;
-    const importStatement = currentFileProperties.importStatement;
-    if(importStatement == undefined) {
-      setIsAuthChecked(false);
-      return;
-    };
-    setIsAuthChecked(currentFileProperties.hasPassportAuth);
-
   }, [currentFileProperties]);
 
   const refreshSpinner = useRef(null)
@@ -147,9 +96,7 @@ export default function RightSidebar() {
   }, [fileErrors])
 
   useEffect(() => {
-    if(swizzleActionDispatch == "Preview"){
-      setIsPreviewVisible(true)
-    } else if(swizzleActionDispatch == "Autocheck"){
+   if(swizzleActionDispatch == "Autocheck"){
       runAutocheck()
     } else if(swizzleActionDispatch == "Packages"){
       setShouldShowPackagesWindow(true);
@@ -176,15 +123,30 @@ export default function RightSidebar() {
 
   }, [swizzleActionDispatch])
 
+
+  const toggleSearch = () => {
+    const command = isSearching ? "closeSearchView" : "openSearchView";
+    setPostMessage({ type: command });
+    setIsSearching(!isSearching);
+  }
+
+
+  const toggleDebug = () => {
+    const command = isDebugging ? "closeDebugger" : "openDebugger";
+    setPostMessage({ type: command });
+    setIsDebugging(!isDebugging);
+  }
+
   return (
     <div
-      className={`text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}
+      className={`text-sm ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "w-auto" : "w-0"}
       ${ideReady ? "" : "opacity-50 pointer-events-none"}
       `}
     >
-      <div className="flex flex-col items-center pt-4 h-full px-4">
+      <div className="flex flex-col items-center pt-4 h-full px-4 pr-0">
         {selectedTab == Page.Hosting && (
           <>
+
             <IconTextButton
               textHidden={true}
               onClick={() => {
@@ -196,19 +158,18 @@ export default function RightSidebar() {
               text="Save"
             />
 
-            {/* <div className="h-3" />
+            <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
 
             <IconTextButton
               textHidden={true}
               onClick={() => {
-                setIsPreviewVisible(true);
+                toggleSearch()
               }}
-              icon={<img src="/preview.svg" className="w-4 h-4 m-auto" />}
-              text="Preview"
+              icon={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
+              text="Search"
             />
-            <WebPreview isVisible={isPreviewVisible} setIsVisible={setIsPreviewVisible} /> */}
 
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
@@ -269,6 +230,7 @@ export default function RightSidebar() {
         )}
         {selectedTab == Page.Apis && (
           <>
+
             <IconTextButton
               textHidden={true}
               onClick={() => {
@@ -283,25 +245,33 @@ export default function RightSidebar() {
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-            {/* {isCron && (
-              <>
-              <IconTextButton
+
+            <IconTextButton
               textHidden={true}
-                onClick={() => {
-                  setIsSchedulerVisible(true); 
-                }}
-                icon={<img src="/clock.svg" className={`w-4 h-4 m-auto`} />}
-                text={"Schedule"}
-                highlightState={isScheduleChecked}
-                highlightColor="#4696f969"
-                className={`auth-toggle ${isHelper && "pointer-events-none opacity-30"}`}
-              />
-              <div className="h-3" />
-              <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
-              <div className="h-3" />
-              <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} />
-              </>
-            )} */}
+              onClick={() => {
+                toggleSearch()
+              }}
+              icon={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
+              text="Search"
+            />
+
+            <div className="h-3" />
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div className="h-3" />
+            
+
+            <IconTextButton
+              textHidden={true}
+              onClick={() => {
+                toggleDebug()
+              }}
+              icon={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
+              text="Debugger"
+            />
+
+            <div className="h-3" />
+            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div className="h-3" />
 
             <IconTextButton
               textHidden={true}
