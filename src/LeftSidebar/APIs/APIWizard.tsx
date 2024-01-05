@@ -92,7 +92,11 @@ export default function APIWizard({
     await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy)
 
     if(isCron){
-      await endpointApi.scheduleFunction(newEndpointPath, cronExpression)
+      if(endpointPathIfEditing != ""){
+        // await endpointApi.updateScheduledFunction(id, newEndpointPath, cronExpression)
+      } else{
+        await endpointApi.scheduleFunction(newEndpointPath, cronExpression)
+      }
     }
 
     setPostMessage({

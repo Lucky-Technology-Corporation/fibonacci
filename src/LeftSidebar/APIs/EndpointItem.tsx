@@ -48,7 +48,7 @@ export default function EndpointItem({
       await filesystemApi.deleteEndpoint(method, path)
 
       if(path.startsWith("/cron")){
-        await endpointApi.removeScheduledFunction(id)
+        // await endpointApi.removeScheduledFunction(id)
       }
       
       removeFromList()

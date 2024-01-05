@@ -613,6 +613,26 @@ export default function useEndpointApi() {
     }
   }
 
+  const updateScheduledFunction = async (id: string, path: string, schedule: string) => {
+    try {
+      const response = await axios.patch(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/scheduledFunctions/${id}?env=${environment}`,
+        {
+          endpoint: path,
+          schedule: schedule,
+          http_method: "get",
+          description: ""
+        },
+        {
+          withCredentials: true
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
 
   return {
     checkIfAllEndpointsExist,
@@ -640,6 +660,7 @@ export default function useEndpointApi() {
     executeTask,
     scheduleFunction,
     getScheduledFunctions,
-    removeScheduledFunction
+    removeScheduledFunction,
+    updateScheduledFunction
   };
 }
