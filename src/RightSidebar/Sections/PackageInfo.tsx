@@ -2,7 +2,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import Select from "react-select";
+import Select, { CSSObjectWithLabel } from "react-select";
 import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import Button from "../../Utilities/Button";
@@ -172,7 +172,7 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
             fontSize: "0.875rem",
             zIndex: 999999999,
             background: "transparent",
-          }),
+          } as CSSObjectWithLabel),
           control: (provided, state) => ({
             ...provided,
             backgroundColor: "#32333b",
@@ -183,18 +183,18 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
             "&:hover": {
               borderColor: "#525363",
             },
-          }),
+          } as CSSObjectWithLabel),
           indicatorSeparator: (provided, state) => ({
             ...provided,
             display: "none",
-          }),
+          } as CSSObjectWithLabel),
           menu: (provided, state) => ({
             ...provided,
             backgroundColor: "#32333b",
             color: "#D9D9D9",
             fontSize: "0.875rem",
             zIndex: 1000,
-          }),
+          } as CSSObjectWithLabel),
           option: (provided, state) => ({
             ...provided,
             backgroundColor: state.isSelected ? "#525363" : state.isFocused ? "#525363" : "#32333b",
@@ -205,19 +205,19 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
               ...provided[":active"],
               backgroundColor: "#525363",
             },
-          }),
+          } as CSSObjectWithLabel),
           singleValue: (provided, state) => ({
             ...provided,
             color: "#D9D9D9",
             fontSize: "0.875rem",
             zIndex: 1000,
-          }),
+          } as CSSObjectWithLabel),
           placeholder: (provided, state) => ({
             ...provided,
             color: "#D9D9D9",
             fontSize: "0.875rem",
             zIndex: 1000,
-          }),
+          } as CSSObjectWithLabel),
         }}
       />
     );
