@@ -16,7 +16,8 @@ export default function APIWizard({
   endpoints,
   endpointPathIfEditing = "",
   currentFileProperties,
-  isCron = false
+  isCron = false,
+  fullScheduledFunctions
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
@@ -25,7 +26,8 @@ export default function APIWizard({
   endpoints: any[];
   endpointPathIfEditing?: string
   currentFileProperties?: any
-  isCron: boolean
+  isCron: boolean;
+  fullScheduledFunctions?: any[]
 }) {
   const endpointApi = useEndpointApi();
   const filesystemApi = useFilesystemApi()
@@ -36,6 +38,7 @@ export default function APIWizard({
   const [authRequired, setAuthRequired] = useState<boolean>(false);
 
   const [cronExpression, setCronExpression] = useState<string>("")
+  const [cronIdIfEditing, setCronIdIfEditing] = useState<string>("")
 
   const methods: any = [
     { id: "get", name: "GET" },
@@ -93,7 +96,7 @@ export default function APIWizard({
 
     if(isCron){
       if(endpointPathIfEditing != ""){
-        // await endpointApi.updateScheduledFunction(id, newEndpointPath, cronExpression)
+        await endpointApi.updateScheduledFunction(cronIdIfEditing, newEndpointPath, cronExpression)
       } else{
         await endpointApi.scheduleFunction(newEndpointPath, cronExpression)
       }
@@ -179,7 +182,18 @@ export default function APIWizard({
       if(endpointPathIfEditing){
         setSelectedMethod(endpointPathIfEditing.split("/")[0])
         var endpointPath = "/" + endpointPathIfEditing.split("/").slice(1).join("/")
-        if(isCron){ endpointPath = endpointPath.replace("/cron/", "") }
+        if(isCron){ 
+          //clean up the path
+          endpointPath = endpointPath.replace("/cron/", "") 
+          //set the existing cron expression
+          const cronFunction = fullScheduledFunctions.find((func) => {
+            return func.path.split("cron/")[1] == endpointPath
+          })
+          if(cronFunction){
+            setCronExpression(cronFunction.cron)
+            setCronIdIfEditing(cronFunction.id)
+          }
+        }
         setInputValue(endpointPath)
       } else{
         setInputValue("");

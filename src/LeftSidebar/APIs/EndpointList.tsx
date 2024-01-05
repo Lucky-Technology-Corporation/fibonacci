@@ -25,7 +25,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
-
+  const [fullScheduledFunctions, setFullScheduledFunctions] = useState<any[]>([]);
 
   const [isCron, setIsCron] = useState<boolean>(false);
 
@@ -95,6 +95,8 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   }, [selectedTab])
 
   useEffect(() => {
+    if(testDomain == undefined || activeProject == undefined){ return }
+
     getFiles("endpoints")
       .then((data) => {
         if (data == undefined || data.children == undefined || data.children.length == 0) {
@@ -133,12 +135,20 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         toast.error("Error fetching helpers");
         console.error(e);
       });
-
-      getScheduledFunctions().then((data) => {
-        console.log("scheduled functions", data)
-      })
-    
   }, [testDomain, shouldRefreshList]);
+
+  useEffect(() => {
+    if(activeProject == undefined || activeProject == ""){ return }
+    getScheduledFunctions().then((data) => {
+      var scheduledFunctions = []
+      if(data == undefined || data.scheduled_functions == undefined){ return }
+      data.scheduled_functions.forEach((func: any) => {
+        scheduledFunctions.push({path: func.endpoint, cron: func.schedule, id: func.id})
+      })
+      console.log("scheduled functions", scheduledFunctions)
+      setFullScheduledFunctions(scheduledFunctions)
+    })
+  }, [activeProject])
 
   //Used to filter the endopint list
   useEffect(() => {
@@ -290,6 +300,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
                       return prev.filter((e) => e != endpoint);
                     })
                   }}
+                  cronIdIfEditing={(fullScheduledFunctions.filter((func) => ("get" + func.path) == endpoint)[0] || {}).id}
                   editFile={() => { editFileHandler(endpoint, true) }}
                 />
               ))}
@@ -307,6 +318,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         endpointPathIfEditing={endpointToEdit}
         currentFileProperties={currentFileProperties}
         isCron={isCron}
+        fullScheduledFunctions={fullScheduledFunctions}
       />
 
       <HelperWizard

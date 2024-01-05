@@ -14,7 +14,8 @@ export default function EndpointItem({
   method,
   onClick,
   removeFromList,
-  editFile
+  editFile,
+  cronIdIfEditing
 }: {
   active?: boolean;
   path: string;
@@ -22,6 +23,7 @@ export default function EndpointItem({
   onClick?: () => void;
   removeFromList?: () => void
   editFile?: () => void
+  cronIdIfEditing?: string
 }) {
 
   const filesystemApi = useFilesystemApi()
@@ -47,8 +49,8 @@ export default function EndpointItem({
 
       await filesystemApi.deleteEndpoint(method, path)
 
-      if(path.startsWith("/cron")){
-        // await endpointApi.removeScheduledFunction(id)
+      if(path.startsWith("/cron") && cronIdIfEditing){
+        await endpointApi.removeScheduledFunction(cronIdIfEditing)
       }
       
       removeFromList()
