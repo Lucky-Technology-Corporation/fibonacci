@@ -685,11 +685,13 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               </div>
             ) : (selectedTab == Page.Apis ? (
               <div className="flex align-middle pr-2 font-normal font-mono">
-                <FontAwesomeIcon icon={faCloud} className="w-3 h-3 my-auto mr-2" />
                 {path.startsWith("/cron") ? (
                   <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
                 ) : (
+                  <>
+                  <FontAwesomeIcon icon={faCloud} className="w-3 h-3 my-auto mr-2" />
                   <span className={`${methodToColor(method)} font-semibold mr-1 `}>{method}</span> 
+                  </>
                 )}
                 {path.startsWith("/cron/") ? path.replace("/cron/", "") : path}
               </div>

@@ -1,8 +1,6 @@
 import { faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
-// import { Cron } from 'react-js-cron';
-// import 'react-js-cron/dist/styles.css';
 import Button from "../Utilities/Button";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
@@ -24,7 +22,7 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
 
   return (
     <div
-      className={`scrollable-div z-50 absolute w-[500px] mr-[350px] bg-[#252629] border border-[#525363] rounded-lg shadow-lg pt-2 ${
+      className={`scrollable-div z-50 absolute w-[500px] mr-[460px] bg-[#252629] border border-[#525363] rounded-lg shadow-lg pt-2 ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
       style={{
@@ -41,7 +39,7 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
             </div>
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            Set up your recurring function (Cron: <span className="font-mono text-xs">{value == "" ? "off" : value}</span>)
+            Edit the schedule for this job
           </div>
         </div>
         <div className="flex ml-auto mr-0">
@@ -54,11 +52,15 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
       </div>
 
       <div className="px-4 pb-2 text-sm mt-2">
-        {/* <Cron 
-          value={value} 
-          setValue={setValue} 
-          clearButtonAction={"empty"}
-        /> */}
+        <input 
+          type="text"
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
+          placeholder="0 0 * * *"
+        />
       </div>
     </div>
   );

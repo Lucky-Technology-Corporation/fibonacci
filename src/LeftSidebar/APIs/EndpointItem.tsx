@@ -1,6 +1,7 @@
-import { faClock, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
+import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -23,8 +24,9 @@ export default function EndpointItem({
   editFile?: () => void
 }) {
 
-  const  filesystemApi = useFilesystemApi()
-
+  const filesystemApi = useFilesystemApi()
+  const endpointApi = useEndpointApi()
+  
   const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
   const [showContextMenu, setShowContextMenu] = useState(false);
 
@@ -44,6 +46,10 @@ export default function EndpointItem({
       });
 
       await filesystemApi.deleteEndpoint(method, path)
+
+      if(path.startsWith("/cron")){
+        await endpointApi.removeScheduledFunction(id)
+      }
       
       removeFromList()
     } catch(e){
@@ -62,9 +68,7 @@ export default function EndpointItem({
       >
         <div className="flex relative">
         <div className="max-w-[240px] break-all pr-2 font-normal">
-          {path.startsWith("/cron") ? (
-            <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
-          ) : (
+          {path.startsWith("/cron") ? (<></>) : (
             <span className={`${methodToColor(method)} font-semibold mr-1 `}>{method}</span> 
           )}
           {path.startsWith("/cron/") ? path.replace("/cron/", "") : path}

@@ -71,10 +71,10 @@ export default function HelperWizard({
                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
                   New Helper
                 </h3>
-                <div className="mt-1">
-                  <p className="text-sm text-[#D9D9D9]">Name your new file</p>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-400">Helper name</p>
                 </div>
-                <div className="mt-3 mb-2 flex">
+                <div className="mt-1 mb-2 flex">
                   <input
                     type="text"
                     value={inputValue}

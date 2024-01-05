@@ -562,6 +562,58 @@ export default function useEndpointApi() {
     });
   }
 
+  const scheduleFunction = async (path: string, schedule: string) => {
+    try {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/scheduledFunctions/create?env=${environment}`,
+        {
+          endpoint: path,
+          schedule: schedule,
+          http_method: "get",
+          description: ""
+        },
+        {
+          withCredentials: true
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+
+  const getScheduledFunctions = async () => {
+    try {
+      const response = await axios.get(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/scheduledFunctions/list?env=${environment}`,
+        {
+          withCredentials: true
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+
+  const removeScheduledFunction = async (id: string) => {
+    try {
+      const response = await axios.delete(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/scheduledFunctions/${id}?env=${environment}`,
+        {
+          withCredentials: true
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return "";
+    }
+  }
+
+
   return {
     checkIfAllEndpointsExist,
     getFiles,
@@ -585,6 +637,9 @@ export default function useEndpointApi() {
     setSchema,
     getSchema,
     promptSchemaPlanner,
-    executeTask
+    executeTask,
+    scheduleFunction,
+    getScheduledFunctions,
+    removeScheduledFunction
   };
 }

@@ -19,7 +19,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const endpointApi = useEndpointApi();
     const {testDomain, activeProject, activeEndpoint, setPostMessage, selectedTab} = useContext(SwizzleContext);
     const divRef = useRef(null);
-    const [currentLocation, setCurrentLocation] = useState<string>();
+    const [currentLocation, setCurrentLocation] = useState<string>("backend");
 
     const isReconnecting = useRef(false);
 
@@ -62,7 +62,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     useEffect(() => {
         if(props.injectedLog == "" || props.injectedLog == undefined){ return }
-        console.log("adding ", props.injectedLog)
+
         const timestamp = new Date().toLocaleTimeString()
         var errorMethod = props.injectedLog.method
         if(errorMethod == 'window_error'){
@@ -215,10 +215,8 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     //Reconnect websocket
     const reconnectWebsocket = async (withLocation: string) => {
-        console.log("trying to reconnect")
         if (isReconnecting.current) return;
         isReconnecting.current = true;
-        console.log("not blocked", withLocation)
 
         if (ws) {
             ws.close();

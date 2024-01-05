@@ -1,4 +1,4 @@
-import { faGear, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faGear, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -19,25 +19,30 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [isHelperWizardVisible, setIsHelperWizardVisible] = useState<boolean>(false);
 
-  const { getFiles, getFile, writeFile } = useEndpointApi();
+  const { getFiles, getFile, writeFile, getScheduledFunctions } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
 
   const [endpoints, setEndpoints] = useState<any[]>([]);
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
 
+
+  const [isCron, setIsCron] = useState<boolean>(false);
+
   const [endpointToEdit, setEndpointToEdit] = useState<string>("");
 
   const methods: any = [
     { id: "endpoint", name: "+ Endpoint" },
     { id: "helper", name: "+ Helper" },
+    { id: "cron", name: "+ Scheduled Job"}
   ];
 
   const { activeProject, testDomain, selectedTab, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
     useContext(SwizzleContext);
 
 
-  const editFileHandler = (path: string) => {
+  const editFileHandler = (path: string, isCron: boolean = false) => {
+    setIsCron(isCron)
     setEndpointToEdit(path)
   }
   
@@ -128,6 +133,11 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         toast.error("Error fetching helpers");
         console.error(e);
       });
+
+      getScheduledFunctions().then((data) => {
+        console.log("scheduled functions", data)
+      })
+    
   }, [testDomain, shouldRefreshList]);
 
   //Used to filter the endopint list
@@ -164,9 +174,13 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
           className=""
           onSelect={(item: any) => {
             if(item == "endpoint"){
+              setIsCron(false)
               setIsVisible(true);
             } else if(item == "helper"){
               setIsHelperWizardVisible(true)
+            } else if(item == "cron"){
+              setIsCron(true)
+              setIsVisible(true)
             }
           }}
           children={methods}
@@ -201,7 +215,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         </div>
 
         <div className="ml-1">
-          {endpoints.map((endpoint, index) => (
+          {endpoints.filter((v) => !v.startsWith("get/cron")).map((endpoint, index) => (
             <EndpointItem
               key={index}
               path={endpoint.substring(endpoint.indexOf("/"))}
@@ -221,7 +235,11 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
           ))}
         </div>
       </div>
+      
       <div className="helpers-list">
+
+        {helperList.length > 0 && (
+          <>
         <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
           <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
           <div className="flex items-center">Helpers</div>
@@ -246,6 +264,38 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
             );
           })}
         </div>
+        </>
+        )}
+
+          {endpoints.filter((v) => v.startsWith("get/cron")).length > 0 && (
+            <>
+            <div className="font-semibold ml-2 mt-2 flex pb-1 opacity-70">
+              <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-1" />
+              <div className="flex items-center">Jobs</div>
+            </div>
+
+            <div className="ml-1">
+              {endpoints.filter((v) => v.startsWith("get/cron")).map((endpoint, index) => (
+                <EndpointItem
+                  key={index}
+                  path={endpoint.substring(endpoint.indexOf("/"))}
+                  method={endpoint.split("/")[0].toUpperCase() as Method}
+                  active={endpoint == activeEndpoint}
+                  onClick={() => setActiveEndpoint(endpoint)}
+                  removeFromList={() => {
+                    setEndpoints((prev) => {
+                      return prev.filter((e) => e != endpoint);
+                    });
+                    setFullEndpointList((prev) => {
+                      return prev.filter((e) => e != endpoint);
+                    })
+                  }}
+                  editFile={() => { editFileHandler(endpoint, true) }}
+                />
+              ))}
+            </div>
+            </>
+          )}
       </div>
       
       <APIWizard
@@ -256,6 +306,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         endpoints={fullEndpointList}
         endpointPathIfEditing={endpointToEdit}
         currentFileProperties={currentFileProperties}
+        isCron={isCron}
       />
 
       <HelperWizard

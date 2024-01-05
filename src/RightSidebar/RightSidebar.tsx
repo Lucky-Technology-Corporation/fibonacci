@@ -8,7 +8,6 @@ import FloatingModal from "../Utilities/FloatingModal";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
-import ScheduleEditor from "./ScheduleEditor";
 import PackageInfo from "./Sections/PackageInfo";
 import SecretInfo from "./Sections/SecretInfo";
 import TestWindow from "./TestWindow/TestWindow";
@@ -284,7 +283,7 @@ export default function RightSidebar() {
             <div className="h-3" />
             <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-            {isCron && (
+            {/* {isCron && (
               <>
               <IconTextButton
               textHidden={true}
@@ -302,7 +301,7 @@ export default function RightSidebar() {
               <div className="h-3" />
               <ScheduleEditor isVisible={isSchedulerVisible} setIsVisible={setIsSchedulerVisible} setIsScheduleChecked={setIsScheduleChecked} />
               </>
-            )}
+            )} */}
 
             <IconTextButton
               textHidden={true}

@@ -29,6 +29,7 @@
     "bcryptjs": "^2.4.3",
     "buffer": "^6.0.3",
     "chart.js": "^4.3.3",
+    "cronstrue": "^2.47.0",
     "crypto-browserify": "^3.12.0",
     "d3": "^7.8.5",
     "github-oauth-popup": "^1.2.0",

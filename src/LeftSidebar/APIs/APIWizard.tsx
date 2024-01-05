@@ -1,3 +1,4 @@
+import cronstrue from 'cronstrue';
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
@@ -14,7 +15,8 @@ export default function APIWizard({
   setFullEndpoints,
   endpoints,
   endpointPathIfEditing = "",
-  currentFileProperties
+  currentFileProperties,
+  isCron = false
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
@@ -23,6 +25,7 @@ export default function APIWizard({
   endpoints: any[];
   endpointPathIfEditing?: string
   currentFileProperties?: any
+  isCron: boolean
 }) {
   const endpointApi = useEndpointApi();
   const filesystemApi = useFilesystemApi()
@@ -32,12 +35,13 @@ export default function APIWizard({
   const { shouldRefreshList, setShouldRefreshList, setPostMessage } = useContext(SwizzleContext);
   const [authRequired, setAuthRequired] = useState<boolean>(false);
 
+  const [cronExpression, setCronExpression] = useState<string>("")
+
   const methods: any = [
     { id: "get", name: "GET" },
     { id: "post", name: "POST" },
     { id: "put", name: "PUT" },
     { id: "delete", name: "DELETE" },
-    // { id: "schedule", name: "Scheduled Job" }
   ];
 
   const createHandler = async () => {
@@ -50,7 +54,7 @@ export default function APIWizard({
     }
 
     var methodToUse = selectedMethod
-    if(selectedMethod == "schedule"){
+    if(isCron){
       methodToUse = "get"
     }
 
@@ -87,6 +91,10 @@ export default function APIWizard({
     //Make the new file
     await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy)
 
+    if(isCron){
+      await endpointApi.scheduleFunction(newEndpointPath, cronExpression)
+    }
+
     setPostMessage({
       type: "openFile",
       fileName: "/backend/user-dependencies/" + endpointToFilename(methodToUse + "/" + newEndpointPath),
@@ -104,11 +112,18 @@ export default function APIWizard({
     return true
   }
 
+  function cronToEnglish(cron) {
+    try {
+        return cronstrue.toString(cron);
+    } catch (e) {
+        return 'Invalid cron expression';
+    }
+  }
+
   const cleanInputValue = (methodToUse: string, inputValue: string) => { 
     var cleanInputValue = inputValue;
     if (inputValue == "") {
-      toast.error("Please enter a value");
-      return;
+      throw "Please fill out all fields";
     }
     
     if(cleanInputValue.endsWith("/")){
@@ -119,7 +134,7 @@ export default function APIWizard({
       cleanInputValue = "/" + cleanInputValue
     }
 
-    if(cleanInputValue.startsWith("/cron")){
+    if(!isCron && cleanInputValue.startsWith("/cron")){
       toast.error("/cron is reserved for scheduled jobs")
       return
     }
@@ -143,7 +158,7 @@ export default function APIWizard({
       cleanInputValue = cleanInputValue.substring(1)
     }
   
-    if(selectedMethod == "schedule"){
+    if(isCron){
       cleanInputValue = "cron/" + cleanInputValue
     }
 
@@ -159,7 +174,9 @@ export default function APIWizard({
     if (isVisible) {
       if(endpointPathIfEditing){
         setSelectedMethod(endpointPathIfEditing.split("/")[0])
-        setInputValue("/" + endpointPathIfEditing.split("/").slice(1).join("/"))
+        var endpointPath = "/" + endpointPathIfEditing.split("/").slice(1).join("/")
+        if(isCron){ endpointPath = endpointPath.replace("/cron/", "") }
+        setInputValue(endpointPath)
       } else{
         setInputValue("");
         setAuthRequired(false);
@@ -188,31 +205,58 @@ export default function APIWizard({
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               <>
                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                {endpointPathIfEditing == "" ? "New" : "Edit"} endpoint
+                {endpointPathIfEditing == "" ? "New" : "Edit"} {isCron ? "job" : "endpoint"}
                 </h3>
-                <div className="mt-2"><Checkbox
-                  id="requireAuth"
-                  label="Require Authentication"
-                  isChecked={authRequired}
-                  setIsChecked={setAuthRequired}
-                /></div>
+                {isCron ? (
+                  <>
+                  <div className="w-full h-4"></div>
+                  {/* cron input */}
+                  <div className="text-sm text-gray-400 mb-0.5">Cron expression</div>
+                  <input 
+                    type="text"
+                    value={cronExpression}
+                    onChange={(e) => {
+                      setCronExpression(e.target.value)
+                    }}
+                    className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
+                    placeholder="0 0 * * *"
+                  />
+                  <div className="text-sm text-gray-300 mb-1 mt-1.5">{cronToEnglish(cronExpression)}</div>
+                  </>
+                ) : (
+                  <div className="mt-2"><Checkbox
+                    id="requireAuth"
+                    label="Require Authentication"
+                    isChecked={authRequired}
+                    setIsChecked={setAuthRequired}
+                  /></div>
+                )}
+
+                {isCron && (
+                    <div className="text-sm text-gray-400 mb-[-10px] mt-2">Job name</div>
+                )}
 
                 <div className="mt-3 mb-2 flex">
-                  <Dropdown
-                    className="mr-2 fixed"
-                    onSelect={(item: any) => {
-                      setSelectedMethod(item);
-                    }}
-                    children={methods}
-                    direction="center"
-                    title={selectedMethod.toUpperCase()}
-                  />
+                  {!isCron && (
+                    <Dropdown
+                      className="mr-2 fixed"
+                      onSelect={(item: any) => {
+                        setSelectedMethod(item);
+                      }}
+                      children={methods}
+                      direction="center"
+                      title={selectedMethod.toUpperCase()}
+                    />
+                  )}
                   <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
                       if(endpointPathIfEditing == "/"){ return }
-                      const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
+                      var regex = /^(\/|(((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))?(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))*)$/
+                      if(isCron){
+                        regex = /^[a-zA-Z0-9]+$/
+                      }
                       if(!regex.test(e.target.value)){
                         setValidUrl(false)
                       } else{
@@ -222,7 +266,7 @@ export default function APIWizard({
                     }}
                     disabled={endpointPathIfEditing == "/"}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                    placeholder={selectedMethod == "schedule" ? "jobName" : "/path/:variable"}
+                    placeholder={isCron ? "jobName" : "/path/:variable"}
                     onKeyDown={(event: any) => {
                       if (event.key == "Enter") {
                         toast.promise(createHandler(), {
@@ -242,13 +286,15 @@ export default function APIWizard({
                         toast.promise(createHandler(), {
                           "loading": "Loading...",
                           "success": "Done",
-                          "error": "An error occured"
+                          "error": (err) => {
+                            return err || "An error occured"
+                          }
                         })
                       }}
                       className={`${validUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
                       disabled={!validUrl}
                     >
-                      {validUrl ? "Next" : "Invalid URL"}
+                      {validUrl ? "Next" : "Invalid input"}
                     </button>
                     <button
                       type="button"
