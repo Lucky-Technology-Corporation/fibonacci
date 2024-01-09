@@ -1,10 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
+import useFilesystemApi from "../../API/FilesystemAPI";
+import TestWindow from "../../RightSidebar/TestWindow/TestWindow";
+import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
 import EndpointHeader from "./EndpointHeader";
-import CategoryList from "./Wysiwyg/CategoryList";
 
 export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab, focusOnHeader, headerRef }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page, focusOnHeader: () => void, headerRef: any }) {
   const iframeRef = useRef(null);
@@ -14,9 +16,11 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [path, setPath] = useState<string | null>(null);
+  const [previewComponent, setPreviewComponent] = useState<string>("");
   const [injectedLog, setInjectedLog] = useState<any>([]);
   const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
+  const { patchPreviewComponent, setPreviewComponentFromPath } = useFilesystemApi();
 
   useEffect(() => {
     if (postMessage == null) return;
@@ -46,6 +50,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
   }, [refreshTheia])
 
+ 
+  const [currentSelector, setCurrentSelector] = useState("")
   const messageHandler = (event) => {
     if(event.data.source == "react-devtools-content-script" || event.data.source == "react-devtools-bridge") return;
     
@@ -80,7 +86,19 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
       setFileErrors(event.data.thisFilesErrors)
     }
 
+    if(event.data.type === "target-div"){
+      var unwrappedRoot = event.data.message.replace("div#root > ", "")
+      setCurrentSelector(unwrappedRoot)
+    }
   };
+
+  // useEffect(() => {
+  //   if(currentSelector == "") return;
+  //   if(activeFile == undefined || activeFile == "") return;
+  //   findSelector(activeFile, currentSelector).then((selector) => {
+  //     console.log(selector)
+  //   })
+  // }, [currentSelector])
 
   //Resend the file name when ready
   useEffect(() => {
@@ -111,6 +129,11 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
       const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase()
       setPath("/" + path)
       setUrl(testDomain + "/" + path)
+    } else if(activeFile != undefined && activeFile.includes("frontend/src/components/")){
+      setPreviewComponentFromPath(activeFile).then((component) => {
+        setPreviewComponent(component)
+      })
+      setUrl(testDomain + "/d/component_preview")
     }
   }, [activeFile])
 
@@ -168,7 +191,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           tabIndex={-1}
           style={{
             width: "calc(100% + 96px)",
-            height: "calc(100% - 180px)",
+            height: "calc(100% - 200px)",
             marginLeft: "-48px",
             marginRight: "-48px",
             display: "block", // This ensures the iframe takes up the full width
@@ -182,28 +205,52 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           location={"backend"} 
           style={{
             height: "200px",
-            width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 24px)",
+            width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 412px)",
             bottom: "24px",
             position: "absolute",
           }}
         />
       </div>
-      {selectedTab == Page.Hosting && (
+      {selectedTab == Page.Hosting ? (
         <div className="flex flex-col w-[40%]" style={{height: "calc(100vh - 12px)"}}>
-          <div className="flex h-[88px] my-1 pt-3 flex-wrap">
+          {/* <div className="flex h-[88px] my-1 pt-3 flex-wrap">
             <CategoryList handleDragStart={handleDragStart} handleDragEnd={handleDragEnd} />
-          </div>
+          </div> */}
+          {(activeFile || "").includes("frontend/src/components") && (
+            <div className="flex h-[88px] my-1 pt-3 flex-wrap no-focus-ring">
+              <div className="max-w-[120px] my-auto">
+                <div className="font-bold mb-2">Setup preview</div>
+                <Button
+                  text="Update"
+                  onClick={() => {
+                    patchPreviewComponent(previewComponent);
+                  }}
+                  className="mt-2 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                />
+              </div>
+              <textarea
+                className="font-mono mx-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border p-2 text-sm"
+                value={previewComponent}
+                style={{resize: "none"}}
+                onChange={(e) => {
+                  setPreviewComponent(e.target.value)
+                }}
+              />
+            </div>
+          )}
           <iframe
             ref={previewIframeRef}
             src={url}
             tabIndex={-1}
             style={{
-              height: "calc(100vh - 72px)", 
+              height: (activeFile || "").includes("frontend/src/components") ? "calc(100vh - 112px)" : "calc(100vh - 24px)", 
               width: "100%",
               backgroundColor: "#ffffffdd",
               marginRight: "16px",
               marginLeft: "4px",
+              marginTop: "12px",
               pointerEvents: isDragging ? "none" : "auto",
+              borderRadius: "8px"
             }}
           />
           {isDragging && (
@@ -222,6 +269,10 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
               onDragOver={handleDragOver}
             />
           )}
+        </div>
+      ) : (
+        <div className="flex flex-col w-[500px]" style={{height: "calc(100vh - 12px)"}}>
+          <TestWindow />
         </div>
       )}
     </div>

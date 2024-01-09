@@ -179,7 +179,7 @@ export const frontendDocOptions = [
     "title": "Get User Data",
     "import": "useAuthUser",
     "importFrom": "react-auth-kit",
-    "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const auth = useAuthUser()</span><span class='hidden'>to get a uid userId id user data info</span>"
+    "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const auth = useAuthUser()</span><span class='hidden'>to get users uid userId id user data info</span>"
   },
 ]
 

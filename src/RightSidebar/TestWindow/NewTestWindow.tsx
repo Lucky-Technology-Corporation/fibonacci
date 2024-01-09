@@ -42,18 +42,6 @@ export default function NewTestWindow({
   const parsedActiveEndpoint = new ParsedActiveEndpoint(testDoc.endpoint);
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (myRef.current && !myRef.current.contains(event.target)) {
-        hideNewTestWindow();
-      }
-    }
-    window.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      window.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
     setIsSaving(false); 
   }, [testDoc])
 
@@ -133,11 +121,7 @@ export default function NewTestWindow({
 
   return (
     <div
-      className={`z-50 absolute w-[500px] ml-[564px] bg-[#252629] border border-[#525363] rounded-lg shadow-lg pt-2`}
-      style={{
-        transition: "opacity 0.1s",
-        marginTop: "-8px",
-      }}
+      className={`mt-4`}
       ref={myRef}
     >
       <div className="flex flex-col justify-between px-4 py-2 pb-4">

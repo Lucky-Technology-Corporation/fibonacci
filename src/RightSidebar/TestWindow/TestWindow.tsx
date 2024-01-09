@@ -29,13 +29,7 @@ export type TestType = {
   endpoint: string;
 };
 
-export default function TestWindow({
-  shouldShowTestWindow,
-  setShouldShowTestWindow,
-}: {
-  shouldShowTestWindow: any;
-  setShouldShowTestWindow: any;
-}) {
+export default function TestWindow() {
   const handleNewRequestClick = () => {
     setTestDoc({
       testName: "",
@@ -45,10 +39,6 @@ export default function TestWindow({
       endpoint: activeEndpoint,
     });
     setShowNewTestWindow(true);
-  };
-
-  const handleCancelClick = () => {
-    setShouldShowTestWindow(false);
   };
 
   const { domain, activeProject, activeEndpoint, activeHelper, environment } = useContext(SwizzleContext);
@@ -121,21 +111,19 @@ export default function TestWindow({
   }
 
   useEffect(() => {
-    if (shouldShowTestWindow) {
-      api
-        .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
-        .then((response) => {
-          if (response && response.documents) {
-            setTests(response.documents);
-          } else {
-            setTests([]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching tests:", error);
-        });
-    }
-  }, [activeEndpoint, shouldShowTestWindow]);
+    api
+      .getTests(activeCollection, -1, 20, "", "asc", activeEndpoint)
+      .then((response) => {
+        if (response && response.documents) {
+          setTests(response.documents);
+        } else {
+          setTests([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching tests:", error);
+      });
+  }, [activeEndpoint]);
 
   const [showNewTestWindow, setShowNewTestWindow] = useState(false);
   const [testDoc, setTestDoc] = useState<TestType>(null);
@@ -146,15 +134,7 @@ export default function TestWindow({
     );
   }
   return (
-    <div
-      className={`scrollable-div z-50 absolute w-[500px] ml-[564px] bg-[#252629] border border-[#525363] rounded-md shadow-lg pt-2 ${
-        shouldShowTestWindow ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
-      style={{
-        transition: "opacity 0.1s",
-        marginTop: "-8px",
-      }}
-    >
+    <div className={`mt-4`}>
       <div className="flex items-center justify-between px-4 py-2 pb-1">
         <div className="flex flex-col items-start">
           <div className="flex items-center">
@@ -163,35 +143,31 @@ export default function TestWindow({
               Test
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">
+          {/* <div className="text-sm text-gray-400 mt-1">
             Mock requests in your{" "}
             <span className={environment == "prod" ? "" : "text-[#f39c12]"}>
               {environment == "prod" ? "production" : "test"}
             </span>{" "}
             environment
-          </div>
+          </div> */}
         </div>
         <div className="flex ml-auto mr-0">
           <Button
-            text="Close"
-            onClick={handleCancelClick}
-            className="mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer"
+            text="Run All"
+            onClick={runAllTests}
+            className={`${
+              tests == null || tests.length == 0 ? "hidden" : "block"
+            } ml-auto mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-auto sm:mr-1 sm:w-auto sm:text-sm cursor-pointer`}
+          />
+          <Button
+            text="+ New Test"
+            onClick={handleNewRequestClick}
+            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
           />
         </div>
       </div>
       <div className="flex space-between mt-2">
-        <Button
-          text="+ New Test"
-          onClick={handleNewRequestClick}
-          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-        />
-        <Button
-          text="Run All"
-          onClick={runAllTests}
-          className={`${
-            tests == null || tests.length == 0 ? "hidden" : "block"
-          } ml-auto mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-auto sm:mr-4 sm:w-auto sm:text-sm cursor-pointer`}
-        />
+        
       </div>
 
       <div className="px-4 pb-2 text-sm">

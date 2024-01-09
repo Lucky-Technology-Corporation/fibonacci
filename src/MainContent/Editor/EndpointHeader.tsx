@@ -261,7 +261,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Swizzle Actions</div>
           </div>
         }
-         {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action")) &&
+         {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action") && !suggestions.some(s => s.type == "ai"))  &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
             <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Code Templates</div>
@@ -298,7 +298,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           <div className="text-sm font-normal mt-0.5" dangerouslySetInnerHTML={{__html: suggestion.description}}>
           </div>
         </div>
-        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link")) &&
+        {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action") && !suggestions.some(s => s.type == "endpoint")) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
             <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Documentation</div>

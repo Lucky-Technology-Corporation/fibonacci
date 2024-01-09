@@ -378,7 +378,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 76px)" : "8px"}}>
+            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 76px)" : "406px"}}>
                     {currentLocation == "backend" ? (
                         <div className="flex flex-col">
                             <div className="text-sm font-bold m-auto">Backend</div>
