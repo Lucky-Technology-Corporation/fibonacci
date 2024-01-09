@@ -196,7 +196,7 @@ export default function FilesList({ active }: { active: boolean }) {
       if (!showCurrent && !childMatch) return null;
   
       return (
-        <div key={node.path + node.name}>
+        <div key={node.path + node.name} id={node.path + node.name}>
           <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-2 px-2 hover:bg-[#85869833] rounded cursor-pointer">
             {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
             <div className="ml-2">{node.name.replace("$", ":")}</div>
@@ -215,7 +215,6 @@ export default function FilesList({ active }: { active: boolean }) {
         (node.name.includes('.ts') || node.name.includes('.tsx'))
       ) {  
         return (
-          <>
           <FileItem
             key={node.path + node.name +"-item"}
             path={node.name}
@@ -233,7 +232,6 @@ export default function FilesList({ active }: { active: boolean }) {
             removeFromList={() => { setTimeout(() => { setShouldRefreshList(!shouldRefreshList) }, 250) }}
             editFile={() => {editFileHandler(pageInformation && pageInformation[node.path] ? pageInformation[node.path].realPath : node.name, node.path, pageInformation && pageInformation[node.path] ? pageInformation[node.path].fallbackUrl : "")}}
           />
-          </>
         );
       } 
       return null

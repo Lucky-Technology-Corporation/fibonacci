@@ -131,12 +131,12 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     if(line.split("):")[1].includes("Relative import paths need explicit file extensions in EcmaScript imports when '--moduleResolution' is 'node16' or 'nodenext'")){
                         return <span className="font-mono text-sm" key={key}><span className="text-purple-500 mr-2 cursor-pointer underline decoration-dotted" onClick={autoFixImportJs("/backend/user-dependencies/" + fileName, line.split("):")[1], lineNumber)}>[Autofix this issue]</span><span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}</span>
                     }
-                    return (<>
+                    return (
                         <span className="font-mono text-sm" key={key}>
                             <span className="text-red-500">Error in {niceEndpoint.method} {niceEndpoint.fullPath} at <span onClick={() => { setPostMessage({type: "openFile", fileName: "/backend/user-dependencies/" + fileName, line: lineNumber, column: columnNumber})}} className="cursor-pointer underline decoration-dotted">line {lineNumber}</span></span> 
                             {greyOutUnimportantLines(line.includes("):") ? line.split("):")[1] : line)}
                         </span>
-                    </>)
+                    )
                 } else {
                     const fileName = line.split("user-dependencies/")[1].split(":")[0]
                     const niceEndpoint = new ParsedActiveEndpoint(filenameToEndpoint(fileName))
@@ -164,7 +164,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             }
         }
 
-        return <span className="font-mono text-sm" key={key}>{greyOutUnimportantLines(cleanLine)}</span>
+        return <span className="font-mono text-sm" id={key} key={key}>{greyOutUnimportantLines(cleanLine)}</span>
     }
 
     function getStringAfterFirstNewline(str) {
@@ -268,7 +268,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                         allMessages.push(messageQueue.shift().replace(regex, ''));
                     }
                     var allElements = [];
-        
+                    const datetime = new Date().getTime()
                     allMessages.forEach((lineIn, index) => {
                         try{
                             var lines;
@@ -324,7 +324,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                         .filter(line => line.replace(/^\s+/, '') !== '') // Remove lines that are empty or contain only whitespace
                         .join('\n')               
     
-                        const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine, `${new Date().getTime()}_${index}`);
+                        const lineJsxElement = parseOutFilenamesAndCreateElement(filteredLine, `${datetime}_${index}`);
                         allElements.push(lineJsxElement);
                     })
                     setLog(prevLog => [...prevLog, ...allElements]);
@@ -419,7 +419,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             </div>
             <span className="font-mono text-sm">{log.map((entry, index) => {
                 return (
-                    <div key={`parent_${index}`}>{entry}</div>
+                    <div id={`parent_${index}`} key={`parent_${index}`}>{entry}</div>
                 )
             })}</span>
         </div>
