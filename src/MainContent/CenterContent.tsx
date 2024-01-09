@@ -12,12 +12,14 @@ import ObjectTableView from "./Storage/ObjectTableView";
 
 type CenterContentProps = {
   activeLogsPage: string;
+  setActiveLogsPage: any;
   isModalOpen: any;
   setIsModalOpen: any;
 };
 
 export default function CenterContent({
   activeLogsPage,
+  setActiveLogsPage,
   isModalOpen,
   setIsModalOpen,
 }: CenterContentProps) {
@@ -44,8 +46,8 @@ export default function CenterContent({
           <div className="absolute top-0 left-0 w-full h-full z-10"></div>
         )}
         <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }} className="absolute w-full z-40">
-          <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
-          <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} focusOnHeader={focusOnHeader} />
+          {/* <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} /> */}
+          <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} focusOnHeader={focusOnHeader} headerRef={headerRef} />
         </div>
         <div
           style={{
@@ -83,7 +85,7 @@ export default function CenterContent({
       </div>
       <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
         <div className={`m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] ${activeLogsPage == "assistant" ? "overflow-none" : "overflow-scroll"}`}>
-          <MonitoringPage activeLogsPage={activeLogsPage} shouldShow={selectedTab === Page.Logs} />
+          <MonitoringPage setActiveLogsPage={setActiveLogsPage} activeLogsPage={activeLogsPage} shouldShow={selectedTab === Page.Logs} />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>

@@ -3,16 +3,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import PackageInfo from "../../RightSidebar/Sections/PackageInfo";
 import Dropdown from "../../Utilities/Dropdown";
 import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import IconTextButton from "../../Utilities/IconTextButton";
 import { Page } from "../../Utilities/Page";
 import FileItem from "./FileItem";
 import FileWizard from "./FileWizard";
 
 export default function FilesList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const { getFiles, getFile, writeFile } = useEndpointApi();
+  const { getFiles, getFile, writeFile, restartFrontend } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fileTree, setFileTree] = useState(null);
   const [expandedDirs, setExpandedDirs] = useState({});
@@ -21,8 +23,10 @@ export default function FilesList({ active }: { active: boolean }) {
   const [fileToEdit, setFileToEdit] = useState<string>("");
   const [fileToEditFallback, setFileToEditFallback] = useState<string>("");
   const [pageInformation, setPageInformation] = useState(undefined)
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState<boolean>(false);
 
-  const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList, setActivePage } = useContext(SwizzleContext);
+  const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList, setActivePage, setPostMessage } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
   const methods: any = [
@@ -256,7 +260,7 @@ export default function FilesList({ active }: { active: boolean }) {
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
 
-      <div className="ml-1 mr-1">
+      <div className="ml-1 mr-1 flex">
         <Dropdown
           className=""
           onSelect={(item: any) => {
@@ -265,10 +269,24 @@ export default function FilesList({ active }: { active: boolean }) {
           }}
           children={methods}
           direction="left"
-          title={"+ New"}        
+          title={"New"}        
           selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
         />
+        <div className="flex">
+          <div className="w-10 ml-2 mt-3">
+            <IconTextButton
+              textHidden={true}
+              onClick={() => {
+                setShouldShowPackagesWindow(true);
+              }}
+              icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
+              className="p-[0.57rem]"
+              text="Packages"
+            />
+          </div>
+        </div>
       </div>
+      <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
 
       <div className="flex ml-2 my-1 mr-2 mb-1.5">
         <input
@@ -288,7 +306,7 @@ export default function FilesList({ active }: { active: boolean }) {
         />
       </div>
 
-      <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex opacity-70 cursor-pointer" onClick={() => {setShowServerFiles(!showServerFiles)}}>
+      <div className="font-semibold ml-2 mt-0 flex pt-2 pb-1 flex opacity-70 cursor-pointer" onClick={() => {setShowServerFiles(!showServerFiles)}}>
         <img src="/react.svg" className="w-3 h-3 my-auto mr-1" />
         <div className="flex items-center">Required Files</div>
         <div className="ml-2">

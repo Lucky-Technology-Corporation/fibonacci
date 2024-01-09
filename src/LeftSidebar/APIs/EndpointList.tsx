@@ -3,10 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import PackageInfo from "../../RightSidebar/Sections/PackageInfo";
+import SecretInfo from "../../RightSidebar/Sections/SecretInfo";
 import { endpointSort } from "../../Utilities/ActiveEndpointHelper";
 import Dropdown from "../../Utilities/Dropdown";
 import { filenameToEndpoint } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import IconTextButton from "../../Utilities/IconTextButton";
 import { Method } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
 import APIWizard from "./APIWizard";
@@ -26,6 +29,8 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   const [fullHelperList, setFullHelperList] = useState<any[]>([]);
   const [helperList, setHelperList] = useState<any[]>([]);
   const [fullScheduledFunctions, setFullScheduledFunctions] = useState<any[]>([]);
+  const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState<boolean>(false);
+  const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState<boolean>(false);
 
   const [isCron, setIsCron] = useState<boolean>(false);
 
@@ -179,7 +184,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   return (
     <div className={`flex-col w-full px-1 text-sm ${selectedTab == Page.Apis ? "" : "hidden"}`}>
 
-      <div className="ml-1 mr-1">
+      <div className="ml-1 mr-1 flex">
         <Dropdown
           className=""
           onSelect={(item: any) => {
@@ -195,10 +200,37 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
           }}
           children={methods}
           direction="left"
-          title={"+ New"}        
+          title={"New"}        
           selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
         />
+        <div className="flex">
+          <div className="w-10 ml-2 mt-3">
+            <IconTextButton
+              textHidden={true}
+              onClick={() => {
+                setShouldShowSecretsWindow(true);
+              }}
+              className="p-[0.57rem]"
+              icon={<img src="/lock.svg" className="w-4 h-4 m-auto" />}
+              text="Secrets"
+            />
+          </div>
+            {/* <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} /> */}
+          <div className="w-10 ml-2 mt-3">
+            <IconTextButton
+              textHidden={true}
+              onClick={() => {
+                setShouldShowPackagesWindow(true);
+              }}
+              className="p-[0.57rem]"
+              icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
+              text="Packages"
+            />
+          </div>
+        </div>
       </div>
+      <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
+      <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
 
       <div className="flex ml-2 my-1 mr-2 mb-1.5">
         <input

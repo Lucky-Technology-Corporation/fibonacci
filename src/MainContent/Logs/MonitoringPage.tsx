@@ -3,7 +3,7 @@ import AssistantPage from "./Assistant/AssistantPage";
 import LogsPage from "./LogsPage";
 import TemplatesPage from "./TemplatesPage";
 
-export default function MonitoringPage({ activeLogsPage, shouldShow }: { activeLogsPage: string, shouldShow: boolean}) {
+export default function MonitoringPage({ activeLogsPage, setActiveLogsPage, shouldShow }: { activeLogsPage: string, setActiveLogsPage: any; shouldShow: boolean}) {
   // if(!shouldShow) return null;
   return (
     <>
@@ -11,7 +11,7 @@ export default function MonitoringPage({ activeLogsPage, shouldShow }: { activeL
     {activeLogsPage == "logs" && shouldShow && <LogsPage />}
     {activeLogsPage == "assistant" && shouldShow && <AssistantPage />}
     {activeLogsPage == "templates" && shouldShow && <TemplatesPage />}
-    {activeLogsPage == "analytics" && shouldShow && <AnalyticsPage />}
+    {activeLogsPage == "analytics" && shouldShow && <AnalyticsPage setActiveLogsPage={setActiveLogsPage} />}
     </>
   )
 }

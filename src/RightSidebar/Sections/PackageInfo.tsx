@@ -232,8 +232,9 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       title={""}
       titleClass="text-md font-bold"
       isLarge={false}
-      overrideLeftMargin={420}
-      overrideTopMargin={-4}
+      overrideLeftMargin={4}
+      overrideTopMargin={0}
+      className="top-2"
       content={
         //table of packages
         <div className="overflow-scroll max-h-[70vh]">

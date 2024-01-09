@@ -3,10 +3,14 @@ import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
+import EndpointHeader from "./EndpointHeader";
+import CategoryList from "./Wysiwyg/CategoryList";
 
-export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab, focusOnHeader }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page, focusOnHeader: () => void }) {
+export default function Editor({ currentFileProperties, setCurrentFileProperties, selectedTab, focusOnHeader, headerRef }: { currentFileProperties: any, setCurrentFileProperties: (properties: any) => void, selectedTab: Page, focusOnHeader: () => void, headerRef: any }) {
   const iframeRef = useRef(null);
+  const previewIframeRef = useRef(null);
   const currentFileRef = useRef(null);
+
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [path, setPath] = useState<string | null>(null);
@@ -111,6 +115,28 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   }, [activeFile])
 
 
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [iframeRect, setIframeRect] = useState({ top: 0, left: 0, width: 0, height: 0 });
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+    if (previewIframeRef.current) {
+      setIframeRect(previewIframeRef.current.getBoundingClientRect());
+    }
+  };
+
+  const handleDragEnd = () => {
+    previewIframeRef.current.contentWindow.postMessage({ type: 'drag-coordinates', x: -1, y: -1 }, '*');
+    setIsDragging(false);
+  }
+
+  const handleDragOver = (event) => {
+    const x = event.clientX - iframeRect.left;
+    const y = event.clientY - iframeRect.top;
+    previewIframeRef.current.contentWindow.postMessage({ type: 'drag-coordinates', x, y }, '*');
+  };
+
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
   ) : (
@@ -126,14 +152,14 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
       <div style={{ 
         overflow: "hidden", 
-        height: "calc(100vh - 72px)", 
-        margin: "6px",
+        height: "100vh", 
         marginRight: "0px",
-        marginLeft: "16px",
+        marginLeft: "8px",
         borderRadius: "8px",
         width: selectedTab == Page.Hosting ? "calc(60% - 24px)" : "calc(100% - 24px)",
         pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}
       >
+        <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
         <iframe
           className="theia-iframe"
           ref={iframeRef}
@@ -142,12 +168,14 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           tabIndex={-1}
           style={{
             width: "calc(100% + 96px)",
-            height: "calc(100% - 110px)",
+            height: "calc(100% - 180px)",
             marginLeft: "-48px",
             marginRight: "-48px",
             display: "block", // This ensures the iframe takes up the full width
+            marginTop: "4px",
           }}
         />
+
         <LogWebsocketViewer
           injectedLog={injectedLog}
           setInjectedLog={setInjectedLog}
@@ -161,19 +189,40 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         />
       </div>
       {selectedTab == Page.Hosting && (
-        <>
-        <iframe
-          src={url}
-          tabIndex={-1}
-          style={{
-            height: "calc(100vh - 72px)", 
-            width: "40%",
-            backgroundColor: "#ffffffdd",
-            marginRight: "16px",
-            marginLeft: "4px",
-          }}
-        />
-        </>
+        <div className="flex flex-col w-[40%]" style={{height: "calc(100vh - 12px)"}}>
+          <div className="flex h-[88px] my-1 pt-3 flex-wrap">
+            <CategoryList handleDragStart={handleDragStart} handleDragEnd={handleDragEnd} />
+          </div>
+          <iframe
+            ref={previewIframeRef}
+            src={url}
+            tabIndex={-1}
+            style={{
+              height: "calc(100vh - 72px)", 
+              width: "100%",
+              backgroundColor: "#ffffffdd",
+              marginRight: "16px",
+              marginLeft: "4px",
+              pointerEvents: isDragging ? "none" : "auto",
+            }}
+          />
+          {isDragging && (
+            <div 
+              style={{ 
+                position: 'fixed', 
+                top: iframeRect.top, 
+                left: iframeRect.left, 
+                width: iframeRect.width, 
+                height: iframeRect.height, 
+                zIndex: 9999, 
+                cursor: 'grabbing',
+                border: '3px dashed #ff0000',
+                background: 'rgba(255,0,0,0)' // Transparent background
+              }}
+              onDragOver={handleDragOver}
+            />
+          )}
+        </div>
       )}
     </div>
   );

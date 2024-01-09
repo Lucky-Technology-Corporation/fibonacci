@@ -1,9 +1,10 @@
-import { faClock, faCloud, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBug, faClock, faCloud, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
+import useFilesystemApi from "../../API/FilesystemAPI";
 import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
 import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
@@ -11,9 +12,11 @@ import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 import { modifySwizzleImport } from "../../Utilities/EndpointParser";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import IconTextButton from "../../Utilities/IconTextButton";
 import { Method, methodToColor } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
+import { docOptions, frontendDocOptions, swizzleActionOptions } from "./HeaderDocOptions";
 import TaskCommandHeader from "./TaskCommandHeader";
 
 export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
@@ -28,6 +31,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [oldCode, setOldCode] = useState<string>("");
   const [pendingRequest, setPendingRequest] = useState<string>("");
   const [highlighted, setHighlighted] = useState<boolean>(false);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
   //save query info for re-render when we get fileErrors 
   const [ promptQuery, setPromptQuery ] = useState<string>("");
@@ -35,6 +40,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [isWaitingForErrors, setIsWaitingForErrors] = useState<boolean>(false);
 
   const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
+  const { upsertImport } = useFilesystemApi()
 
   useEffect(() => {
     if(activeEndpoint && selectedTab == Page.Apis){
@@ -44,7 +50,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       } else{
         const splitEndpoint = activeEndpoint.split("/");
         setMethod(splitEndpoint[0].toUpperCase() as Method);
-        setPath("/" + splitEndpoint[1] || "");
+        setPath("/" + splitEndpoint.slice(1).join("/") || "");
       }
     }
     if(activeFile && selectedTab == Page.Hosting){
@@ -54,7 +60,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         setPath(activeFile.replace("frontend/src/components/", ""));
       }
     }
-  }, [activeEndpoint, activeFile, activePage]);
+  }, [activeEndpoint, activeFile, activePage, selectedTab]);
 
 
   const runQuery = async (promptQuery: string, queryType: string, selectedText?: string) => {
@@ -165,242 +171,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }, [currentFileProperties])
 
 
-  const docOptions: {title: string, description: string, type: string, image: string, import?: string, link?: string}[] = [
-    {
-      "type": "link",
-      "image": "popout",
-      "link": "https://docs.swizzle.co",
-      "title": "Documentation",
-      "description": "Open the docs in a new tab",
-    },
-    {
-      "type": "doc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/users/create-a-user",
-      "title": "Create a user",
-      "import": "createUser",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let user = await createUser(optionalProperties, optionalRequestObject)</span><span class='hidden'>to create a new user santa</span>",
-    },
-    {
-      "type": "doc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/users/get-a-user",
-      "title": "Get a user",
-      "import": "getUser",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let user = await getUser(userId)</span><span class='hidden'>to get a specific user details by id</span>"
-    },
-    {
-      "type": "doc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/users/edit-a-user",
-      "title": "Edit a user",
-      "import": "editUser",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let user = await editUser(userId, properties)</span><span class='hidden'>to add properties and metadata to a user</span>"
-    },
-    {
-      "type": "doc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/users/search-users",
-      "title": "Search users",
-      "import": "searchUsers",
-      "description": "<span class='hidden'>Search, find, or get all users based on their properties or metadata with</span><span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let userArray = await searchUsers(queryObject)</span>"
-    },
-    {
-      "type": "doc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/users/get-access-tokens",
-      "title": "Get access tokens",
-      "import": "signTokens",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let { accessToken, refreshToken } = await signTokens(userId, hoursToExpire)</span><span class='hidden'>to create new access tokens for a user</span>"
-    },
-    {
-      "type": "doc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/users/refresh-access-tokens",
-      "title": "Refresh access tokens",
-      "import": "refreshTokens",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let { accessToken, refreshToken } = refreshTokens(refreshToken)</span><span class='hidden'>to create new access tokens for a user from a refresh token<span>"
-    },
-    {
-      "type": "doc",
-      "image": "files",
-      "link": "https://docs.swizzle.co/storage/save-a-file",
-      "title": "Save a file",
-      "import": "saveFile",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let unsignedUrl = await saveFile(fileName, fileData, isPrivate, allowedUserIds[])</span><span class='hidden'>to upload a file to storage</span>"
-    },
-    {
-      "type": "doc",
-      "image": "files",
-      "link": "https://docs.swizzle.co/storage/get-a-file-url",
-      "title": "Get a file URL",
-      "import": "getFileUrl",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let signedUrl = await getFileUrl(unsignedUrl)</span><span class='hidden'>to get a public URL for a private file in storage</span>"
-    },
-    {
-      "type": "doc",
-      "image": "files",
-      "link": "https://docs.swizzle.co/storage/delete-a-file",
-      "title": "Delete a file",
-      "import": "deleteFile",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let success = await deleteFile(unsignedUrl)</span><span class='hidden'>to delete a file from storage</span>"
-    },
-    {
-      "type": "doc",
-      "image": "files",
-      "link": "https://docs.swizzle.co/storage/add-user-to-file",
-      "title": "Add user to a file",
-      "import": "addUserToFile",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let success = await addUserToFile(unsignedUrl, uid)</span><span class='hidden'>to allow a user to access an unsigned URL in storage with their accessToken</span>"
-    },
-    {
-      "type": "doc",
-      "image": "files",
-      "link": "https://docs.swizzle.co/storage/remove-user-from-file",
-      "title": "Remove user from file",
-      "import": "removeUserFromFile",
-      "description": "Use <span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let success = await removeUserFromFile(unsignedUrl, uid)</span><span class='hidden'>to remove a user's access to an unsigned URL in storage</span>"
-    },
-    {
-      "type": "doc",
-      "image": "database",
-      "link": "https://docs.swizzle.co/database",
-      "title": "Search the database",
-      "import": "db",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let results = await db.collection('myCollectionName').find({ myKey: 'myValue' }).toArray();</span><span class='hidden'>to search find documents a document item in a collection database</span>"
-    },
-    {
-      "type": "doc",
-      "image": "database",
-      "link": "https://docs.swizzle.co/database",
-      "title": "Update the database",
-      "import": "db",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let result = await db.collection('myCollectionName').updateOne({ myKeyToSearch: 'myValueToSearch' }, { $set: { myKeyToUpdate: 'myNewValue' } });</span><span class='hidden'>to updated change upsert modify values documents items in the database</span>"
-    },
-    {
-      "type": "doc",
-      "image": "database",
-      "link": "https://docs.swizzle.co/database",
-      "title": "Add to database",
-      "import": "db",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let result = await db.collection('myCollectionName').insertOne(jsonDocument);</span><span class='hidden'>to add insert items documents into database</span>"
-    },
-    {
-      "type": "doc",
-      "image": "database",
-      "link": "https://docs.swizzle.co/database",
-      "title": "Count in database",
-      "import": "db",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let result = await db.collection('myCollectionName').countDocuments({ myKeyToSearch: 'myValueToSearch' })</span><span class='hidden'>to count number of items documents in database</span>"
-    },
-    {
-      "type": "doc",
-      "image": "database",
-      "link": "https://docs.swizzle.co/database",
-      "title": "Delete from database",
-      "import": "db",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let result = await db.collection('myCollectionName').deleteOne({ myKeyToSearch: 'myValueToSearch' })</span><span class='hidden'>to delete remove item from the database</span>"
-    },
-  ]
-
-  const frontendDocOptions = [
-    {
-      "type": "link",
-      "image": "popout",
-      "link": "https://docs.swizzle.co",
-      "title": "Documentation",
-      "description": "Open the documentation in a new tab",
-    },
-    {
-      "type": "externalDoc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/frontend/users/sign-in",
-      "title": "Sign In",
-      "import": "useSignIn",
-      "importFrom": "react-auth-kit",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const signIn = useSignIn()</span><span class='hidden'>to authenticate login signin sign in a user</span>"
-    },
-    {
-      "type": "externalDoc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/frontend/users/sign-out",
-      "title": "Sign Out",
-      "import": "useSignOut",
-      "importFrom": "react-auth-kit",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const signOut = useSignOut()</span><span class='hidden'>to logout signout log out sign out a user</span>"
-    },
-    {
-      "type": "externalDoc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/frontend/users/check-auth-status",
-      "title": "Check Auth Status",
-      "import": "useIsAuthenticated",
-      "importFrom": "react-auth-kit",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const isAuthenticated = useIsAuthenticated()</span><span class='hidden'>to check if a user is logged in signed in authenticated</span>"
-    },
-    {
-      "type": "externalDoc",
-      "image": "auth",
-      "link": "https://docs.swizzle.co/frontend/users/get-user-data",
-      "title": "Get User Data",
-      "import": "useAuthUser",
-      "importFrom": "react-auth-kit",
-      "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const auth = useAuthUser()</span><span class='hidden'>to get a uid userId id user data info</span>"
-    },
-  ]
-
-  const swizzleActionOptions = [
-    {
-      "type": "action",
-      "image": "save",      
-      "title": "Save",
-      "description": "Save changes to this file",
-      "filter": ""
-    },
-    {
-      "type": "action",
-      "image": "preview",
-      "title": "Preview",
-      "description": "Open a preview this page",
-      "filter": "frontend"
-    },
-    {
-      "type": "action",
-      "image": "wand",
-      "title": "Autocheck",
-      "description": "Automatically check for errors",
-      "filter": ""
-    },
-    {
-      "type": "action",
-      "image": "packages",
-      "title": "Packages",
-      "description": "Install an NPM package",
-      "filter": ""
-    },
-    {
-      "type": "action",
-      "image": "restart",
-      "title": "Restart",
-      "description": "Restart the server",
-      "filter": ""
-    },
-    {
-      "type": "action",
-      "image": "beaker",
-      "title": "Test",
-      "description": "Test this endpoint",
-      "filter": "backend"
-    },
-    {
-      "type": "action",
-      "image": "lock",
-      "title": "Secrets",
-      "description": "Manage secret environment variables",
-      "filter": "backend"
-    },
-  ]
-
   const [suggestions, setSuggestions] = useState(docOptions);
   const onSuggestionsFetchRequested = ({ value }) => {
     const ai_options = [
@@ -437,7 +207,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     } else if(selectedTab == Page.Hosting){
       const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "frontend") ).slice(0, 1)
       const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
-      const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value)).map((endpoint) => {
+      const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value) && !endpoint.startsWith("get/cron")).map((endpoint) => {
         const parsedEndpoint = new ParsedActiveEndpoint(endpoint)
         return {type: "endpoint", ...parsedEndpoint}
       })
@@ -454,6 +224,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const getSuggestionValue = suggestion => suggestion.title;
 
   const renderSuggestion = (suggestion, { query, isHighlighted }) => {
+    if(suggestion == undefined) return
     if(suggestion.type == "doc" || suggestion.type == "externalDoc" || suggestion.type == "link"){
       return(
         <div className={`w-full p-2 pl-3 hover:bg-[#30264f] ${isHighlighted && "bg-[#30264f]" } cursor-pointer`}>
@@ -493,7 +264,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
          {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action")) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
-            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Documentation</div>
+            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Code Templates</div>
           </div>
         }
         </>
@@ -557,6 +328,10 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     }
   }, [selectedText])
 
+  useEffect(() => {
+    console.log(suggestions)
+  }, [suggestions])
+
   const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
     if(suggestion.type == "ai"){
       if(suggestion.ai_type == -1){
@@ -564,15 +339,64 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         getHighlightedText()
       } else if(suggestion.ai_type == 0){
         runQuery(suggestion.title, "edit")
-      } else if(suggestion.ai_type == 1){
-        // runQuery(suggestion.title, "edit")
       } else if(suggestion.ai_type == 2){
         runQuery(suggestion.title, "db")
       }
     } else{
       if(suggestion.type == "endpoint"){
-        setPostMessage({type: "upsertImport", content: 'import api from "../Api";\n', importStatement: 'import api from "../Api";'})
-        copyText(`const result = await api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`)
+        const importsToAdd = [
+          { import: "useState", from: "react", named: true },
+          { import: "useEffect", from: "react", named: true },
+          { import: "api", from: "../Api", named: false },
+        ];
+
+        const apiCall = `api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`
+        var stateVariableName = suggestion.fullPath.split("/")
+          .slice(1)
+          .map((part, index) => index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1))
+          .join("") + "Result";
+        if(stateVariableName == "Result"){
+          stateVariableName = "result"
+        }
+
+        const setStateVariableName = "set" + stateVariableName.charAt(0).toUpperCase() + stateVariableName.slice(1);
+        const stateVariableDeclaration = `const [${stateVariableName}, ${setStateVariableName}] = useState(null);`
+        const useEffect = `useEffect(() => {
+  ${apiCall}.then((result) => {
+    ${setStateVariableName}(result.data)
+  }).catch((error) => {
+    console.error(error.message)
+  })
+}, [])`
+
+        var file = activeFile
+        if(selectedTab != Page.Hosting){
+          toast.error("Sorry, something got mixed up. Try refreshing the page.")
+          return
+        }
+        console.log("file", file)
+
+        toast.promise(upsertImport(file, importsToAdd).then((code) => {
+          if(code != null){
+            var codeWithApiCode = code.replace("return (", `${stateVariableDeclaration}\n\n${useEffect}\n\nreturn (`)
+            setPostMessage({type: "replaceText", content: codeWithApiCode})
+          }
+
+          setTimeout(() => {
+            console.log("saving")
+            setPostMessage({type: "saveFile"})
+          }, 250)
+
+        }), 
+        {
+          loading: "Adding code...",
+          success: "Code added",
+          error: (e) => {
+            console.log(e);
+            return "Failed. Make sure there are no syntax errors in your code before adding API calls."
+          },
+        });
+    
       } else if(suggestion.type == "doc"){
         const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0]
         copyText(copyable, true)
@@ -661,14 +485,35 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     )
   }
 
+
+  const toggleSearch = () => {
+    const command = isSearching ? "closeSearchView" : "openSearchView";
+    setPostMessage({ type: command });
+    setIsSearching(!isSearching);
+  }
+
+  const toggleDebug = () => {
+    const command = isDebugging ? "closeDebugger" : "openDebugger";
+    setPostMessage({ type: command });
+    setIsDebugging(!isDebugging);
+  }
+
+  const goBack = () => {
+    setPostMessage({type: "runCommand", command: "textEditor.commands.go.back"})
+  }
+
   return (
     <>
         <div className="flex-col magic-bar">
-          <div className="pt-3" style={{marginLeft: "3.25rem"}}>
+          <div className="pt-3 ml-1 flex">
+            <div className="w-6 mx-1 cursor-pointer mt-1">
+              <FontAwesomeIcon className="w-4 h-4 m-auto py-0.5 opacity-70" icon={faArrowLeft} onClick={goBack} />
+            </div>
+
             {selectedTab == Page.Hosting ? (
-              <div className="flex align-middle pr-2 font-normal font-mono">
+              <div className="flex align-middle pr-2 font-normal font-mono w-full">
                 <img src="/world.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
-                {path}
+                <div className="my-auto">{path}</div>
               </div>
             ) : (selectedTab == Page.Apis ? (
               <div className="flex align-middle pr-2 font-normal font-mono">
@@ -676,11 +521,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                   <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
                 ) : (
                   <>
-                  <FontAwesomeIcon icon={faCloud} className="w-3 h-3 my-auto mr-2" />
-                  <span className={`${methodToColor(method)} font-semibold mr-1 `}>{method}</span> 
+                    <FontAwesomeIcon icon={faCloud} className="w-3 h-3 my-auto mr-2" />
+                    <span className={`${methodToColor(method)} my-auto font-semibold mr-1 `}>{method}</span> 
                   </>
                 )}
-                {path.startsWith("/cron/") ? path.replace("/cron/", "") : path}
+                <div className="my-auto">{path.startsWith("/cron/") ? path.replace("/cron/", "") : path}</div>
               </div>
             ) : (<></>))}
           </div>
@@ -689,28 +534,34 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               (ideReady || (selectedTab != Page.Hosting && selectedTab != Page.Apis)) ? "" : "opacity-50 pointer-events-none"
             }`}
           >
-            <div className="ml-12"></div>
 
-            {/* Search shows on frontend and backend tabs */}
-            {/* <Button
-              className={`text-sm px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "" : "hidden"}`}
-              children={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
-              onClick={() => {
-                toggleSearch()
-              }}
-            /> */}
-            {/* Debug shows on backend tab */}
-            {/* <Button
-              className={`text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border ${selectedTab == Page.Apis ? "" : "hidden"}`}
-              children={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
-              onClick={() => {
-                toggleDebug()
-              }}
-            /> */}
-
-            
             {/* <div className={`w-[1px] h-[36px] bg-[#525363] mx-4 ${selectedTab == Page.Db ? "hidden" : ""}`}></div> */}
             {/* Undo shows only when isUndoVisible is true */}
+            {selectedTab != Page.Db && (
+              <div className="w-10 mr-2">
+                <IconTextButton
+                  textHidden={true}
+                  onClick={() => {
+                    toggleSearch()
+                  }}
+                  icon={<FontAwesomeIcon className="w-3 h-3 m-auto py-0.5" icon={isSearching ? faXmark : faSearch} />}
+                  text=""
+                />
+              </div>
+            )}
+            {selectedTab == Page.Apis && (
+              <div className="w-10 mr-2">
+                <IconTextButton
+                  textHidden={true}
+                  onClick={() => {
+                    toggleDebug()
+                  }}
+                  icon={<FontAwesomeIcon className="w-3 h-3 m-auto py-0.5" icon={isDebugging ? faXmark : faBug} />}
+                  text=""
+                />
+              </div>
+            )}
+
             {isUndoVisible && (
               <Button
                 className={`text-sm mr-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
@@ -756,7 +607,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                       return
                     }
                   },
-                  placeholder: `${selectedTab == Page.Apis || selectedTab == Page.Hosting ? "Update code with AI" : selectedTab == Page.Db ? "Cmd + K: search and update your database" : ""}`,
+                  placeholder: `${selectedTab == Page.Apis ? "Update code with AI" : selectedTab == Page.Hosting ? "Connect endpoints and update code" : selectedTab == Page.Db ? "Cmd + K: search and update your database" : ""}`,
                   value: prompt,
                   onChange: onPromptChange,
                   onFocus: () => { setPostMessage({type: "getSelectedText"}) },

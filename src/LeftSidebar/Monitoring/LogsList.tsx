@@ -13,6 +13,13 @@ export default function Logslist({
   return (
     <div className={`flex-col w-full mt-1 px-2 ${active ? "" : "hidden"}`}>
       <LogsItem
+        active={activePage == "analytics"}
+        name="Overview"
+        onClick={() => {
+          setActivePage("analytics");
+        }}
+      />
+      <LogsItem
         className="assistant-tab"
         active={activePage == "assistant"}
         name="Assistant"
@@ -28,13 +35,7 @@ export default function Logslist({
           setActivePage("logs");
         }}
       />
-      <LogsItem
-        active={activePage == "analytics"}
-        name="Analytics"
-        onClick={() => {
-          setActivePage("analytics");
-        }}
-      />
+      
       {/* <LogsItem
         className="templates-tab"
         active={activePage == "templates"}

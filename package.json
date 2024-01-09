@@ -44,6 +44,7 @@
     "next-intercom": "^0.1.4",
     "npm": "^9.8.1",
     "pluralize": "^8.0.0",
+    "process": "^0.11.10",
     "re-resizable": "^6.9.11",
     "react": "^18.2.0",
     "react-auth-kit": "^2.12.4",

@@ -3,6 +3,7 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
+const webpack = require('webpack');
 
 module.exports = {
     entry: "./src/main.tsx",
@@ -56,6 +57,7 @@ module.exports = {
             crypto: require.resolve('crypto-browserify'),
             stream: require.resolve('stream-browserify'),
             buffer: require.resolve('buffer'),
+            process: require.resolve("process/browser.js")
         }
     },
     plugins: [
@@ -76,6 +78,12 @@ module.exports = {
                     noErrorOnMissing: true,
                 },
             ],
+        }),
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
+        new webpack.ProvidePlugin({
+            process: 'process/browser.js',
         }),
     ],
     stats: { children: true },

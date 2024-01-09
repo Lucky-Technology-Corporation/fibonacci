@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useContext } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { addImports } from "../Utilities/ImportUpserter";
 import useEndpointApi from "./EndpointAPI";
 
 export default function useFilesystemApi() {
@@ -206,6 +207,15 @@ export default function useFilesystemApi() {
     }
   };
 
+  const upsertImport = async (file: string, importObject: any) => {
+    const fileContents = await endpointApi.getFile(file);
+    if (fileContents) {
+      const newFileContents = addImports(fileContents, importObject);
+      return newFileContents
+    }
+    return null;
+  }
+
   return {
     // createNewFile,
     // removeFile,
@@ -218,5 +228,6 @@ export default function useFilesystemApi() {
     deleteHelper,
     deletePage,
     deleteComponent,
+    upsertImport
   };
 }

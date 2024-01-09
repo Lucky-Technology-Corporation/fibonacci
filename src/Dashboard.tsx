@@ -9,7 +9,6 @@ import useDatabaseApi from "./API/DatabaseAPI";
 import useSettingsApi from "./API/SettingsAPI";
 import LeftSidebar from "./LeftSidebar/LeftSidebar";
 import CenterContent from "./MainContent/CenterContent";
-import RightSidebar from "./RightSidebar/RightSidebar";
 import SignIn from "./SignIn";
 import AddEmailModal from "./Utilities/AddEmailModal";
 import { SwizzleContext } from "./Utilities/GlobalContext";
@@ -18,7 +17,7 @@ import { Page } from "./Utilities/Page";
 export default function Dashboard() {
   const isAuthenticated = useIsAuthenticated();
   //Active logs page handler
-  const [activeLogsPage, setActiveLogsPage] = useState<string>("assistant");
+  const [activeLogsPage, setActiveLogsPage] = useState<string>("analytics");
   //Loading Modal handler
   const [isModalOpen, setIsModalOpen] = useState(false);
   //Add email modal handler
@@ -340,17 +339,18 @@ export default function Dashboard() {
             <div>
               <Toaster />
             </div>
-            <div className="grid grid-cols-[auto,auto,1fr] gap-0">
+            <div className="grid grid-cols-[auto,1fr] gap-0">
               <LeftSidebar
                 activeLogsPage={activeLogsPage}
                 setActiveLogsPage={setActiveLogsPage}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />
-              <RightSidebar />
+              {/* <RightSidebar /> */}
 
               <CenterContent
                 activeLogsPage={activeLogsPage}
+                setActiveLogsPage={setActiveLogsPage}
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />

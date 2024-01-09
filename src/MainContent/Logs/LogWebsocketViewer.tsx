@@ -348,30 +348,67 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     //     )
     // }
 
+//     const refreshSpinner = useRef(null)
+//     const spin = () => {
+//       const spinner = refreshSpinner.current
+//       if (spinner) {
+//         spinner.classList.add("spin-rotate");
+//         setTimeout(() => {
+//           spinner.classList.remove("spin-rotate");
+//         }, 500);
+//       }
+//     }
+//     {/* <div className="w-10 ml-2 mt-3">
+//     <IconTextButton
+//     textHidden={true}
+//     onClick={() => {
+//         spin()
+//         toast.promise(restartFrontend(), {
+//         loading: "Sending restart command...",
+//         success: "Restarting!",
+//         error: "Error restarting frontend",
+//         });
+//     }}
+//     className="p-[0.57rem]"
+//     icon={<img src="/restart.svg" className="w-4 h-4 m-auto" ref={refreshSpinner} />}
+//     text="Restart"
+//     />
+// </div> */}
+
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 42px)" : "72px"}}>
-                {currentLocation == "backend" ? (
-                    <div className="text-sm font-bold m-auto ml-1">Backend Logs</div>
-                ) : (
-                    <div className="text-sm font-bold m-auto ml-1">Frontend Logs</div>
-                )}
-                <Switch
-                    className="ml-1 scale-75 env-toggle"
-                    onChange={() => {
-                        if(ws){ console.log("closing"); ws.close(); }
-                        setLog([]);
-                        const newLocation = currentLocation == "frontend" ? "backend" : "frontend"
-                        setCurrentLocation(newLocation);
-                        reconnectWebsocket(newLocation)
-                    }}
-                    checked={currentLocation == "backend"}
-                    uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}
-                    checkedIcon={<img src="/cloud.svg" className="w-4 ml-2.5 pt-1" />}
-                    offColor="#333336"
-                    onColor="#333336"
-                />
+            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 76px)" : "8px"}}>
+                    {currentLocation == "backend" ? (
+                        <div className="flex flex-col">
+                            <div className="text-sm font-bold m-auto">Backend</div>
+                            <div className="underline cursor-pointer" onClick={() => {endpointApi.restartBackend()}}>
+                                Restart
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col">
+                            <div className="text-sm font-bold m-auto">Frontend</div>
+                            <div className="underline cursor-pointer" onClick={() => {endpointApi.restartFrontend()}}>
+                                Restart
+                            </div>
+                        </div>
+                    )}
+                    <Switch
+                        className="ml-1 my-auto scale-75 env-toggle"
+                        onChange={() => {
+                            if(ws){ console.log("closing"); ws.close(); }
+                            setLog([]);
+                            const newLocation = currentLocation == "frontend" ? "backend" : "frontend"
+                            setCurrentLocation(newLocation);
+                            reconnectWebsocket(newLocation)
+                        }}
+                        checked={currentLocation == "backend"}
+                        uncheckedIcon={<img src="/world.svg" className="w-4 ml-1.5 pt-1" />}
+                        checkedIcon={<img src="/cloud.svg" className="w-4 ml-2.5 pt-1" />}
+                        offColor="#333336"
+                        onColor="#333336"
+                    />
             </div>
             <span className="font-mono text-sm">{log.map((entry, index) => {
                 return (

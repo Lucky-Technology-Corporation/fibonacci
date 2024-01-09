@@ -262,8 +262,8 @@ export default function AssistantPage() {
       <div className="flex flex-col align-center justify-center overflow-scroll">
         {messages == null || messages.length == 0 ? (
           <div>
-            <img src="logo_white.png" className="w-20 h-20 mx-auto mt-28 pulsate" />
-            <div className="w-full mt-4 text-center opacity-70">Waiting for instructions</div>
+            <img src="logo_white.png" className="w-20 h-18 mx-auto mt-28 pulsate" />
+            <div className="w-full mt-4 text-center opacity-70">Assistant is in <b>beta</b><br/>The output may need tweaks to work</div>
           </div>
         ) : (
           <>

@@ -143,7 +143,7 @@ export default function RightSidebar() {
       ${ideReady ? "" : "opacity-50 pointer-events-none"}
       `}
     >
-      <div className="flex flex-col items-center pt-4 h-full px-4 pr-0">
+      <div className="flex flex-col items-center pt-4 h-full pl-3 pr-0">
         {selectedTab == Page.Hosting && (
           <>
 
