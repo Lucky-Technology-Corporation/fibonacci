@@ -10,7 +10,6 @@ import IconTextButton from "../Utilities/IconTextButton";
 import { Page } from "../Utilities/Page";
 import PackageInfo from "./Sections/PackageInfo";
 import SecretInfo from "./Sections/SecretInfo";
-import TestWindow from "./TestWindow/TestWindow";
 
 export default function RightSidebar() {
   const programmaticDbUpdateRef = useRef(false);
@@ -282,10 +281,10 @@ export default function RightSidebar() {
               text="Test"
               className={`tester-button ${isHelper && "pointer-events-none opacity-30 w-full"}`}
             />
-            <TestWindow
+            {/* <TestWindow
               shouldShowTestWindow={shouldShowTestWindow}
               setShouldShowTestWindow={setShouldShowTestWindow}
-            />
+            /> */}
             <div className="h-4" />
             <IconTextButton
               textHidden={true}
