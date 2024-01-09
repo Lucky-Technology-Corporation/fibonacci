@@ -26,8 +26,13 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     //Restart websocket on tab change, endpoint change, or project change
     useEffect(() => {
         //Don't reconnect if we're already on the right tab
-        if(ws && ws.OPEN && currentLocation == "backend" && selectedTab == Page.Apis){ return } 
-        else if(ws && ws.OPEN && currentLocation == "frontend" && selectedTab == Page.Hosting){ return }
+        // console.log("ws", ws)
+        // console.log("ws_open", ws ? ws.OPEN : "false")
+        // console.log("currentLocation", currentLocation)
+        // console.log("selectedTab", selectedTab)
+
+        // if(ws && ws.OPEN && currentLocation == "backend" && selectedTab == Page.Apis){ return } 
+        // else if(ws && ws.OPEN && currentLocation == "frontend" && selectedTab == Page.Hosting){ return }
 
         //Close and reset
         if(ws){ ws.close() }
@@ -43,8 +48,10 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
             return
         };
 
+
         //Set our location
         const newLocation = (selectedTab == Page.Hosting ? "frontend" : "backend");
+
         setCurrentLocation(newLocation)
         reconnectWebsocket(newLocation)
 
@@ -397,7 +404,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                     <Switch
                         className="ml-1 my-auto scale-75 env-toggle"
                         onChange={() => {
-                            if(ws){ console.log("closing"); ws.close(); }
+                            if(ws){ console.log("ws 2"); ws.close(); }
                             setLog([]);
                             const newLocation = currentLocation == "frontend" ? "backend" : "frontend"
                             setCurrentLocation(newLocation);

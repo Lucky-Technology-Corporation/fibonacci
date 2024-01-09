@@ -506,9 +506,11 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
     <>
         <div className="flex-col magic-bar">
           <div className="pt-3 ml-1 flex">
-            <div className="w-6 mx-1 cursor-pointer mt-1">
-              <FontAwesomeIcon className="w-4 h-4 m-auto py-0.5 opacity-70" icon={faArrowLeft} onClick={goBack} />
-            </div>
+            {selectedTab != Page.Db && (
+              <div className="w-6 mx-1 cursor-pointer mt-1">
+                <FontAwesomeIcon className="w-4 h-4 m-auto py-0.5 opacity-70" icon={faArrowLeft} onClick={goBack} />
+              </div>
+            )}
 
             {selectedTab == Page.Hosting ? (
               <div className="flex align-middle pr-2 font-normal font-mono w-full">
@@ -572,7 +574,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
               />
             )}
 
-            <div className={`grow ${selectedTab == Page.Db ? "mr-32" : ""}`}>
+            <div className={`grow ${selectedTab == Page.Db ? `mr-32 ml-4 ${!activeCollection && "hidden"}` : ""}`}>
               <Autosuggest
                 ref={storeInputRef}
                 suggestions={suggestions}
