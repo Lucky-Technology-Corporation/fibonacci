@@ -5,18 +5,21 @@ import Task from "./Task";
 export default function MessageList( {messages, setMessages, setPath} : {messages: any[], setMessages: any, setPath: any}){
 
     const removeTaskFromMessage = (messageIndex: number, taskIndex: number) => {
+        console.log("removing task", messageIndex, taskIndex)
         const newMessages = [...messages]
         newMessages[messageIndex].tasks.splice(taskIndex, 1)
         setMessages(newMessages)
     }
 
     const editTaskInMessage = (messageIndex: number, taskIndex: number, newTask: any) => {
+        console.log("editing task", messageIndex, taskIndex, newTask)
         const newMessages = [...messages]
         newMessages[messageIndex].tasks[taskIndex] = newTask
         setMessages(newMessages)
     }
 
     function removeQuotes(str) {
+        if (typeof str !== 'string') return str;
         if (str.startsWith('"') && str.endsWith('"')) {
             return str.slice(1, -1);
         }
@@ -31,11 +34,6 @@ export default function MessageList( {messages, setMessages, setPath} : {message
             <div className="w-1/2 h-full flex flex-col mx-4">
                 <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
                 <div className="flex"> 
-                    {/* <Button
-                        onClick={() => {}}
-                        children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
-                        className="ml-0 pl-0 mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
-                    /> */}
                     <div>
                         <div className="flex">
                             <img src="/cloud.svg" className="w-4 h-4 my-auto mr-1.5" />
@@ -64,19 +62,21 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             ))
                         }
                         {message.role == "assistant" && (
-                            message.tasks.filter(t => t.type == "CreateEndpoint").map((task, taskIndex) => (
-                                <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
-                                    <div className="flex flex-col justify-center items-center">
-                                    <Task 
-                                        key={taskIndex + "-task"}
-                                        task={task} 
-                                        removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
-                                        editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
-                                        allTasks={messages.map((message) => message.tasks).flat()}
-                                        setPath={setPath}
-                                    />
+                            message.tasks.map((task, taskIndex) => (
+                                (task.type == "CreateEndpoint") ? (
+                                    <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
+                                        <div className="flex flex-col justify-center items-center">
+                                        <Task 
+                                            key={taskIndex + "-task"}
+                                            task={task} 
+                                            removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
+                                            editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
+                                            allTasks={messages.map((message) => message.tasks).flat()}
+                                            setPath={setPath}
+                                        />
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (<></>)
                             ))
                         )}
                     </> 
@@ -88,11 +88,6 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                 <div className="ml-1 mt-0.5 mb-2 flex align-bottom justify-between w-full">
                     <div>
                         <div className="flex"> 
-                            {/* <Button
-                                onClick={() => {}}
-                                children={<FontAwesomeIcon icon={faPlus} className="text-sm py-1 w-4 h-4" />}
-                                className="ml-0 pl-0 mr-1 my-2 text-sm px-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer"
-                            /> */}
                             <div className="w-full grow">
                                 <div className="flex">
                                     <img src="/world.svg" className="w-4 h-4 my-auto mr-1.5" />
@@ -104,38 +99,26 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             </div>
                         </div>
                     </div>
-                    {/* <Button
-                        onClick={() => { setPath("appCode") }}
-                        text="+"
-                        className="mr-1.5 text-sm px-3 my-2 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
-                    /> */}
+
                 </div>
                 {messages.map((message, messageIndex) => (
                     <>
-                        {/* {message.role == "assistant" && 
-                            (message.tasks.length == 0 && (
-                                <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
-                                <div className="flex items-top mb-0.5 mt-1 ml-2 font-bold text-violet-300">
-                                    <FontAwesomeIcon icon={faRobot} className="text-sm mt-0.5 mr-1" />
-                                    <span className="text-sm ml-0">"{removeQuotes(message.content)}"</span>
-                                </div>
-                                </div>
-                            ))
-                        } */}
                         {message.role == "assistant" && (
-                            message.tasks.filter(t => t.type == "CreatePage").map((task, taskIndex) => (
-                                <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
-                                    <div className="flex flex-col justify-center items-center">
-                                    <Task 
-                                        key={taskIndex + "-task"}
-                                        task={task} 
-                                        removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
-                                        editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
-                                        allTasks={messages.map((message) => message.tasks).flat()}
-                                        setPath={setPath}
-                                    />
+                            message.tasks.map((task, taskIndex) => (
+                                (task.type == "CreatePage") ? (
+                                    <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
+                                        <div className="flex flex-col justify-center items-center">
+                                        <Task 
+                                            key={taskIndex + "-task"}
+                                            task={task} 
+                                            removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
+                                            editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
+                                            allTasks={messages.map((message) => message.tasks).flat()}
+                                            setPath={setPath}
+                                        />
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (<></>)
                             ))
                         )}
                     </> 

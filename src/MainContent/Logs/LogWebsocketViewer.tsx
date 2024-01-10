@@ -1,4 +1,5 @@
 import { CSSProperties, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import Switch from "react-switch";
 import useEndpointApi from "../../API/EndpointAPI";
 import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
@@ -385,18 +386,18 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 76px)" : "406px"}}>
+            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 76px)" : "356px"}}>
                     {currentLocation == "backend" ? (
                         <div className="flex flex-col">
                             <div className="text-sm font-bold m-auto">Backend</div>
-                            <div className="underline cursor-pointer" onClick={() => {endpointApi.restartBackend()}}>
+                            <div className="underline cursor-pointer" onClick={() => {toast("Restarting..."); endpointApi.restartBackend()}}>
                                 Restart
                             </div>
                         </div>
                     ) : (
                         <div className="flex flex-col">
                             <div className="text-sm font-bold m-auto">Frontend</div>
-                            <div className="underline cursor-pointer" onClick={() => {endpointApi.restartFrontend()}}>
+                            <div className="underline cursor-pointer" onClick={() => {toast("Restarting..."); endpointApi.restartFrontend()}}>
                                 Restart
                             </div>
                         </div>

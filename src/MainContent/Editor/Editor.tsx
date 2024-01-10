@@ -16,6 +16,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [path, setPath] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [previewComponent, setPreviewComponent] = useState<string>("");
   const [injectedLog, setInjectedLog] = useState<any>([]);
   const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
@@ -126,7 +127,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
   useEffect(() => {
     if(activeFile != undefined && activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
-      const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase()
+      const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase().replace(/\$/g, ":")
       setPath("/" + path)
       setUrl(testDomain + "/" + path)
     } else if(activeFile != undefined && activeFile.includes("frontend/src/components/")){
@@ -160,6 +161,23 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     previewIframeRef.current.contentWindow.postMessage({ type: 'drag-coordinates', x, y }, '*');
   };
 
+  const closePreview = () => {
+    setIsSidebarOpen(false)
+  }
+  const getParentWidth = () => {
+    if(selectedTab == Page.Hosting){
+      if(isSidebarOpen){
+        return "calc(60% - 24px)"
+      } else{
+        return "calc(100% - 24px)"
+      }
+    } else{
+      return "calc(100% - 24px)"
+    }
+  }
+  const getLogsWidth = () => {
+  }
+
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
   ) : (
@@ -179,7 +197,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         marginRight: "0px",
         marginLeft: "8px",
         borderRadius: "8px",
-        width: selectedTab == Page.Hosting ? "calc(60% - 24px)" : "calc(100% - 24px)",
+        width: getParentWidth(),
         pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}
       >
         <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
@@ -205,21 +223,18 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           location={"backend"} 
           style={{
             height: "200px",
-            width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 412px)",
+            width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 366px)",
             bottom: "24px",
             position: "absolute",
           }}
         />
       </div>
       {selectedTab == Page.Hosting ? (
-        <div className="flex flex-col w-[40%]" style={{height: "calc(100vh - 12px)"}}>
-          {/* <div className="flex h-[88px] my-1 pt-3 flex-wrap">
-            <CategoryList handleDragStart={handleDragStart} handleDragEnd={handleDragEnd} />
-          </div> */}
+        <div className={`flex flex-col ${isSidebarOpen ? "w-[40%]" : "w-0 hidden"}`} style={{height: "calc(100vh - 12px)"}}>
           {(activeFile || "").includes("frontend/src/components") && (
             <div className="flex h-[88px] my-1 pt-3 flex-wrap no-focus-ring">
               <div className="max-w-[120px] my-auto">
-                <div className="font-bold mb-2">Setup preview</div>
+                <div className="font-bold mb-2">Preview Component <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
                 <Button
                   text="Update"
                   onClick={() => {
@@ -236,6 +251,20 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
                   setPreviewComponent(e.target.value)
                 }}
               />
+            </div>
+          )}
+          {(activeFile || "").includes("frontend/src/pages") && (
+            <div className="pt-3 px-1 flex-wrap no-focus-ring">
+              <div className="mb-1 font-bold">Preview URL <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
+              <div className="flex flex-row h-8">
+                <input className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2" value={path} onChange={(e) => { setPath(e.target.value) }} />
+                <Button
+                  text="Update"
+                  onClick={() => {
+                    setUrl(testDomain + path)
+                  }}
+                />
+              </div>
             </div>
           )}
           <iframe

@@ -83,7 +83,7 @@ export const pathToFile = (path: string) => {
   if (path.endsWith("/")) {
     path = path.substring(0, path.length - 1);
   }
-  path = path.replace(":", "$");
+  path = path.replace(/:/g, "$");
 
   if (!path.endsWith(".tsx")) {
     path += ".tsx";

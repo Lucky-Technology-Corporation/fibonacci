@@ -234,6 +234,7 @@ export default function useFilesystemApi() {
         isNamed = true
         componentName = componentContents.split("export const ")[1].split("=")[0].trim()
       } 
+      componentName = componentName.replace("{", "").replace("}", "").replace(";", "").trim()
 
       var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0]
       if(firstPart.includes("import ")){

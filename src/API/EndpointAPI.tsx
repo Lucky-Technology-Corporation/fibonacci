@@ -3,14 +3,15 @@ import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import { useAuthHeader } from "react-auth-kit";
 import { toast } from "react-hot-toast";
-import { formatPath } from "../Utilities/EndpointParser";
+import { formatPath, pathToFile } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import { Page } from "../Utilities/Page";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useEndpointApi() {
   const authHeader = useAuthHeader();
-  const { setActivePage, testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
+  const { setSelectedTab, setActivePage, testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
     useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
@@ -546,18 +547,28 @@ export default function useEndpointApi() {
             } else if(task.type == "CreatePage"){
               const page = task.inputs.path
               console.log("setting page after codegen to", page)
+              setSelectedTab(Page.Hosting)
 
-              var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
-              setActiveFile("frontend/src/pages/" + pageRelativePath)
-              setActivePage(formatPath(page.path, page.name, true))
+              if(page.path) { //this isn't necessary when the planner makes pages, maybe its for edits?
+                var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
+                setActivePage(formatPath(page.path, page.name, true))
+                setActiveFile("frontend/src/pages/" + pageRelativePath)
+              }else{
+                // var pageRelativePath = page.replace(/^\//, '');
+                var pageRelativePath = page
+                console.log("going for", pathToFile(pageRelativePath))
+                setActivePage(pageRelativePath)
+                setActiveFile("frontend/src/pages/" + pathToFile(pageRelativePath))
+              }
             }
           } else{
               toast.error("An error occured")
           }
           return "Done"
         },
-        error: () => {
-            return "An error occured"
+        error: (e) => {
+          console.log("failed task", e)
+          return "An error occured"
         },
     });
   }
