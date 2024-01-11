@@ -29,7 +29,7 @@ export type TestType = {
   endpoint: string;
 };
 
-export default function TestWindow() {
+export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebarOpen: boolean, setIsSidebarOpen: any}) {
   const handleNewRequestClick = () => {
     setTestDoc({
       testName: "",
@@ -140,9 +140,12 @@ export default function TestWindow() {
           <div className="flex items-center">
             <FontAwesomeIcon icon={faFlask} className="mr-2" />
             <div className="font-bold" style={{ fontSize: "18px" }}>
-              Test
+              Tests
             </div>
           </div>
+          {isSidebarOpen && (
+            <a className="cursor-pointer mt-1" onClick={() => {setIsSidebarOpen(false)}}>(close)</a>
+          )}
           {/* <div className="text-sm text-gray-400 mt-1">
             Mock requests in your{" "}
             <span className={environment == "prod" ? "" : "text-[#f39c12]"}>

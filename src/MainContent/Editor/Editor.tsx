@@ -176,6 +176,19 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
   }
   const getLogsWidth = () => {
+    if(selectedTab == Page.Hosting){
+      if(isSidebarOpen){
+        return "calc(60% - 32px)"
+      } else{
+        return "calc(100% - 32px)"
+      }
+    } else{
+      if(isSidebarOpen){
+        return "calc(100% - 366px)"
+      } else{
+        return "calc(100% - 32px)"
+      }
+    }
   }
 
   return testDomain == undefined ? (
@@ -190,6 +203,12 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         Switch back to Test View in the top left to edit your code.<br/><br/>Then, Deploy your code to update the production app.
         </div>
       </div>
+
+      {!isSidebarOpen && (
+        <div className="absolute top-4 right-4 z-50">
+            <a className="cursor-pointer" onClick={() => {setIsSidebarOpen(true)}}>Show {selectedTab == Page.Hosting ? "Preview" : "Tests"}</a>
+        </div>
+      )}
 
       <div style={{ 
         overflow: "hidden", 
@@ -220,10 +239,11 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         <LogWebsocketViewer
           injectedLog={injectedLog}
           setInjectedLog={setInjectedLog}
+          isSidebarOpen={isSidebarOpen}
           location={"backend"} 
           style={{
             height: "200px",
-            width: selectedTab == Page.Hosting ? "calc(60% - 32px)" : "calc(100% - 366px)",
+            width: getLogsWidth(),
             bottom: "24px",
             position: "absolute",
           }}
@@ -234,7 +254,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           {(activeFile || "").includes("frontend/src/components") && (
             <div className="flex h-[88px] my-1 pt-3 flex-wrap no-focus-ring">
               <div className="max-w-[120px] my-auto">
-                <div className="font-bold mb-2">Preview Component <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
+                <div className="font-bold mb-2">Preview <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
                 <Button
                   text="Update"
                   onClick={() => {
@@ -257,7 +277,15 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
             <div className="pt-3 px-1 flex-wrap no-focus-ring">
               <div className="mb-1 font-bold">Preview URL <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
               <div className="flex flex-row h-8">
-                <input className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2" value={path} onChange={(e) => { setPath(e.target.value) }} />
+                <input className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2" 
+                  value={path} 
+                  onChange={(e) => { setPath(e.target.value) }}
+                  onKeyDown={(e) => {
+                    if(e.key == "Enter"){
+                      setUrl(testDomain + path)
+                    }
+                  }}
+                />
                 <Button
                   text="Update"
                   onClick={() => {
@@ -300,8 +328,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           )}
         </div>
       ) : (
-        <div className="flex flex-col w-[500px]" style={{height: "calc(100vh - 12px)"}}>
-          <TestWindow />
+        <div className={`flex flex-col ${isSidebarOpen ? "w-[500px]" : "w-0 hidden"}`} style={{height: "calc(100vh - 12px)"}}>
+          <TestWindow isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen}/>
         </div>
       )}
     </div>

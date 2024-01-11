@@ -11,7 +11,8 @@ type LogWebsocketViewerProps = {
     location: "frontend" | "backend";
     style: CSSProperties;
     injectedLog: any
-    setInjectedLog: any
+    setInjectedLog: any;
+    isSidebarOpen: boolean;
 };
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
@@ -383,10 +384,26 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 //     />
 // </div> */}
 
+const getPosition = () => {
+    if(selectedTab == Page.Hosting){
+        if(props.isSidebarOpen){
+            return "calc(40% - 76px)"
+        } else{ 
+            return "8px"
+        }
+    } else{
+        if(props.isSidebarOpen){
+            return "356px"
+        } else{ 
+            return "8px"
+        }
+    }
+}
+
     return (
         <>        
         <div ref={divRef} style={props.style} className="overflow-y-scroll border-t border-gray-700 py-1 mr-4 bg-[#1e1e1e]">
-            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: selectedTab == Page.Hosting ? "calc(40% - 76px)" : "356px"}}>
+            <div className="flex mt-1 z-40 fixed right-0 rounded mt-[-4px] p-1 bg-[#1e1e1e]" style={{marginRight: getPosition()}}>
                     {currentLocation == "backend" ? (
                         <div className="flex flex-col">
                             <div className="text-sm font-bold m-auto">Backend</div>
