@@ -206,7 +206,8 @@ export default function AnalyticsPage({setActiveLogsPage}: {setActiveLogsPage: a
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
         <div className="mx-4">
-          Use the <a href="#" onClick={() => {setActiveLogsPage("assistant")}} rel="nofollow">Assistant</a> to set up a project without manually coding everything yourself. If you learn by reading, head over to <a href="https://docs.swizzle.co/" target="_blank" rel="nofollow">the docs</a>. 
+          {/* Use the <a href="#" onClick={() => {setActiveLogsPage("assistant")}} rel="nofollow">Assistant</a> to set up a project without manually coding everything yourself.  */}
+          If you learn by reading, head over to <a href="https://docs.swizzle.co/" target="_blank" rel="nofollow">the docs</a>. 
           {/* Otherwise, <a href="#" onClick={() => { setCurrentStep(0); setIsOpen(true)}}>start the guided tour</a>. */}
         </div>
         <div className="mx-4 mt-2">

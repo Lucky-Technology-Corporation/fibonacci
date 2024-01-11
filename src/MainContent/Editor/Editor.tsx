@@ -19,6 +19,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [previewComponent, setPreviewComponent] = useState<string>("");
   const [injectedLog, setInjectedLog] = useState<any>([]);
+  const [isDebugging, setIsDebugging] = useState<boolean>(false);
+
   const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
   const { getFermatJwt } = useEndpointApi();
   const { patchPreviewComponent, setPreviewComponentFromPath } = useFilesystemApi();
@@ -191,6 +193,27 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
   }
 
+  const [offset, setOffset] = useState(200)
+  useEffect(() => {
+    if(isDebugging){
+      updateOffsetTo(8, 200)
+    } else{
+      updateOffsetTo(200, 8)
+    }
+  }, [isDebugging])
+
+  const updateOffsetTo = (newOffset, newHeight) => {
+    if(newHeight <= newOffset) {
+      setOffset(newOffset)
+      return
+    };
+    setOffset(newHeight)
+    setTimeout(() => {
+      updateOffsetTo(newOffset, newHeight - 5)
+    }, 10)
+  }
+
+
   return testDomain == undefined ? (
     <div className="m-auto mt-4">Something went wrong</div>
   ) : (
@@ -219,7 +242,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         width: getParentWidth(),
         pointerEvents: environment == "test" ? (selectedTab == Page.Apis || selectedTab == Page.Hosting ? "auto" : "none") : "none" }}
       >
-        <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} />
+        <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} isDebugging={isDebugging} setIsDebugging={setIsDebugging} />
+
         <iframe
           className="theia-iframe"
           ref={iframeRef}
@@ -228,7 +252,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           tabIndex={-1}
           style={{
             width: "calc(100% + 96px)",
-            height: "calc(100% - 200px)",
+            height: "calc(100% - " + offset + "px)",
+            // height: isDebugging ? "calc(100% - 8px)" : "calc(100% - 200px)",
             marginLeft: "-48px",
             marginRight: "-48px",
             display: "block", // This ensures the iframe takes up the full width
@@ -246,6 +271,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
             width: getLogsWidth(),
             bottom: "24px",
             position: "absolute",
+            display: isDebugging ? "none" : ""
           }}
         />
       </div>

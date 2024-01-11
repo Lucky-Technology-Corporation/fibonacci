@@ -19,7 +19,7 @@ import AIResponseWithChat from "./AIResponseWithChat";
 import { docOptions, frontendDocOptions, swizzleActionOptions } from "./HeaderDocOptions";
 import TaskCommandHeader from "./TaskCommandHeader";
 
-export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string}) {
+export default function EndpointHeader({selectedTab, currentFileProperties, setCurrentFileProperties, headerRef, activeCollection, isDebugging, setIsDebugging}: {selectedTab: Page, currentFileProperties: any, setCurrentFileProperties: any, headerRef: any, activeCollection?: string, isDebugging: boolean, setIsDebugging: any}) {
   const { taskQueue, setFileErrors, activeEndpoint, activeFile, ideReady, setPostMessage, fullEndpointList, selectedText, setSelectedText, setCurrentDbQuery, fileErrors, setSwizzleActionDispatch, activePage } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
@@ -32,7 +32,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [pendingRequest, setPendingRequest] = useState<string>("");
   const [highlighted, setHighlighted] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
   //save query info for re-render when we get fileErrors 
   const [ promptQuery, setPromptQuery ] = useState<string>("");
@@ -551,7 +550,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                 />
               </div>
             )}
-            {selectedTab == Page.Apis && (
+            {(selectedTab == Page.Apis || isDebugging) && (
               <div className="w-10 mr-2">
                 <IconTextButton
                   textHidden={true}
