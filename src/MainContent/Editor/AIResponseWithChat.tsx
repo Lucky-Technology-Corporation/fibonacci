@@ -4,7 +4,7 @@ import useEndpointApi from "../../API/EndpointAPI";
 import Button from "../../Utilities/Button";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
-export default function AIResponseWithChat({descriptionIn, operationIn, setResponse, setCurrentDbQuery, historyIn, activeCollection, selectedText}: {descriptionIn: string, operationIn: string, setResponse: (response: any) => void, setCurrentDbQuery?: (query: string) => void, historyIn: any[], activeCollection?: string, selectedText?: string}){
+export default function AIResponseWithChat({descriptionIn, operationIn, historyIn, activeCollection, selectedText, onApprove}: {descriptionIn: string, operationIn: string, historyIn: any[], activeCollection?: string, selectedText?: string, onApprove: () => void}){
     const [description, setDescription] = useState<string>(descriptionIn);
     const [operation, setOperation] = useState<string>(operationIn);
     const [history, setHistory] = useState<any[]>(historyIn);
@@ -53,13 +53,7 @@ export default function AIResponseWithChat({descriptionIn, operationIn, setRespo
                 <Button
                     text="Approve"
                     className="text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border flex-shrink-0 flex-grow-0"
-                    onClick={() => {
-                        setResponse(null);
-                        setPostMessage({
-                            type: "replaceSelectedText",
-                            content: operation,
-                        })
-                    }}
+                    onClick={onApprove}
                 />
             )}
         </div>
@@ -69,10 +63,7 @@ export default function AIResponseWithChat({descriptionIn, operationIn, setRespo
                 <Button
                     text="Run"
                     className="text-sm ml-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border flex-shrink-0 flex-grow-0"
-                    onClick={() => {
-                        setResponse(null);
-                        setCurrentDbQuery(operation)
-                    }}
+                    onClick={onApprove}
                 />
             )}
         </div>

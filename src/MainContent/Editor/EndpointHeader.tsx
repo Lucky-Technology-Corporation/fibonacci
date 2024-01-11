@@ -32,13 +32,16 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   const [pendingRequest, setPendingRequest] = useState<string>("");
   const [highlighted, setHighlighted] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
+  const [didRunAutocheck, setDidRunAutocheck] = useState(false);
+
 
   //save query info for re-render when we get fileErrors 
   const [ promptQuery, setPromptQuery ] = useState<string>("");
   const [ queryType, setQueryType ] = useState<string>("");
   const [isWaitingForErrors, setIsWaitingForErrors] = useState<boolean>(false);
 
-  const { promptAiEditor, checkIfAllEndpointsExist, promptDbHelper } = useEndpointApi();
+  const { promptAiEditor, getAutocheckResponse, promptDbHelper } = useEndpointApi();
   const { upsertImport } = useFilesystemApi()
 
   useEffect(() => {
@@ -75,10 +78,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             <AIResponseWithChat 
               descriptionIn={data.pending_operation_description}
               operationIn={data.pending_operation} 
-              setResponse={setResponse} 
-              setCurrentDbQuery={setCurrentDbQuery} 
               historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.pending_operation}]}
               activeCollection={activeCollection}
+              onApprove={() => {
+                setResponse(null);
+                setCurrentDbQuery(data.pending_operation)
+              }}
             />)
           return "Done";
         },
@@ -109,29 +114,27 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       loading: "Thinking...",
       success: (data) => {
         if(queryType == "edit"){
-          //Replace the text
-          setPostMessage({
-            type: "replaceText",
-            content: data.new_code,
-          })
-      
-          //TODO: Update currentFileProperties here
-          //Update auth-required and imports
 
-          //Add undo button
-          setupUndo(data.old_code)
-
-          setTimeout(() => {
-            setPostMessage({
-              type: "saveFile"
-            })
-          }, 100)
-
-          //TODO: finish this function later to add backend endpoints if needed
-          if(selectedTab == Page.Hosting){
-            checkIfAllEndpointsExist(data.new_code)
-          }
-
+          setResponse(
+            <AIResponseWithChat 
+              descriptionIn={"The selected code will be replaced with the following"}
+              operationIn={data.new_code} 
+              historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.new_code}]}
+              selectedText={selectedText}
+              onApprove={() => {
+                setResponse(null);
+                setPostMessage({
+                  type: "replaceText",
+                  content: data.new_code,
+                })
+                setupUndo(data.old_code)
+                setTimeout(() => {
+                  setPostMessage({
+                    type: "saveFile"
+                  })
+                }, 100)
+              }}
+          />)
         } else if(queryType == "snippet"){
           setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />)
         } else if(queryType == "selection"){
@@ -140,9 +143,15 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             <AIResponseWithChat 
               descriptionIn={"The selected code will be replaced with the following"}
               operationIn={data.new_code} 
-              setResponse={setResponse} 
               historyIn={[{role: "user", content: promptQuery}, {role: "assistant", content: data.new_code}]}
               selectedText={selectedText}
+              onApprove={() => {
+                setResponse(null);
+                setPostMessage({
+                    type: "replaceSelectedText",
+                    content: data.new_code,
+                })
+              }}
             />)
         }
         return "Done";
@@ -176,15 +185,15 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       {
         "type": "ai",
         "image": "ai_selection",
-        "title": value,
-        "description": "Ask AI to update selected code",
+        "title": "Update selected code",
+        "description": value,
         "ai_type": -1
       },
       {
         "type": "ai",
         "image": "wand",
-        "title": value,
-        "description": "Ask AI",
+        "title": "Ask AI",
+        "description": value,
         "ai_type": 0
       },
     ]
@@ -193,19 +202,19 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       {
         "type": "ai",
         "image": "ai_snippet",
-        "title": value,
-        "description": "Ask AI",
+        "title": "Ask AI",
+        "description": value,
         "ai_type": 2,
       },
     ]
 
     if(selectedTab == Page.Apis){
-      const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "backend") ).slice(0, 1)
-      const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
+      const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "backend") )
+      const docs = docOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
       setSuggestions([...ai_options, ...actions, ...docs])
     } else if(selectedTab == Page.Hosting){
-      const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "frontend") ).slice(0, 1)
-      const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase())).slice(0, 1)
+      const actions = swizzleActionOptions.filter((action) => (action.title.toLowerCase().includes(value.toLowerCase()) || action.description.toLowerCase().includes(value.toLowerCase())) && (action.filter == "" || action.filter == "frontend") )
+      const docs = frontendDocOptions.filter((doc) => doc.title.toLowerCase().includes(value.toLowerCase()) || doc.description.toLowerCase().includes(value.toLowerCase()))
       const filteredList = fullEndpointList.filter(endpoint => endpoint.includes(value) && !endpoint.startsWith("get/cron")).map((endpoint) => {
         const parsedEndpoint = new ParsedActiveEndpoint(endpoint)
         return {type: "endpoint", ...parsedEndpoint}
@@ -254,18 +263,19 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {suggestion.description}
           </div>
         </div>
-        {(suggestions.some(s => s.type == "action") && suggestion.ai_type == 0) &&
+        {/* This is a little confusing UI wise, come back later maybe */}
+        {/* {(suggestions.some(s => s.type == "action") && suggestion.ai_type == 0) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
-            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Swizzle Actions</div>
+            <div className="mt-2 pl-3 pr-3 pb-1 text-xs opacity-70">Swizzle Actions</div>
           </div>
         }
-         {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action") && !suggestions.some(s => s.type == "ai"))  &&
+         {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action")) &&
           <div className="">
             <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
-            <div className="mt-2 pl-3 pr-3 pb-1 text-sm opacity-70">Code Templates</div>
+            <div className="mt-2 pl-3 pr-3 pb-1 text-xs opacity-70">Code Templates</div>
           </div>
-        }
+        } */}
         </>
       )
     } else if(suggestion.type == "endpoint"){
@@ -326,10 +336,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       runQuery(pendingRequest, "selection", selectedText)
     }
   }, [selectedText])
-
-  useEffect(() => {
-    console.log(suggestions)
-  }, [suggestions])
 
   const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
     if(suggestion.type == "ai"){
@@ -437,9 +443,33 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       } else if(suggestion.type == "link"){
         window.open(suggestion.link, '_blank');
       } else if(suggestion.type == "action"){
+        console.log("action", suggestion)
         if(suggestion.title == "Save"){
           setPostMessage({type: "saveFile"})
+        } else if(suggestion.title == "Autocheck"){
+          runAutocheck()
+        } else if(suggestion.title == "Switch Auth"){
+          var toImport = ""
+          if(currentFileProperties.hasPassportAuth){
+            toImport = "optionalAuthentication"
+            setPostMessage({type: "findAndReplace", findText: "requiredAuthentication, async", replaceText: "optionalAuthentication, async"})
+          } else {
+            toImport = "requiredAuthentication"
+            setPostMessage({type: "findAndReplace", findText: "optionalAuthentication, async", replaceText: "requiredAuthentication, async"})
+          }
+          setTimeout(() => {
+            var newImportStatement = currentFileProperties.importStatement;
+            newImportStatement = modifySwizzleImport(newImportStatement, toImport, 'add');
+            const message = {
+              findText: currentFileProperties.importStatement,
+              replaceText: newImportStatement,
+              type: "findAndReplace",
+            };
+            setPostMessage(message);
+            setCurrentFileProperties({...currentFileProperties, importStatement: newImportStatement, hasPassportAuth: !currentFileProperties.hasPassportAuth})    
+          }, 250)
         } else{
+          console.log("dispatch")
           setSwizzleActionDispatch(suggestion.title)
         }
       }
@@ -477,6 +507,48 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       window.removeEventListener('keydown', keyHandler);
     };
   }, []);
+
+  const runAutocheck = () => {
+    setDidRunAutocheck(true)
+    setPostMessage({
+      type: "getFileErrors"
+    })
+  }
+
+  useEffect(() => {
+    if(!didRunAutocheck) { 
+      return
+    }
+    if(fileErrors != ""){
+      toast.promise(getAutocheckResponse(fileErrors), {
+        loading: "Running autocheck...",
+        success: (data) => {
+          if (data == "") {
+            toast.error("Error running autocheck");
+            return;
+          }
+          setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+          return "Done";
+        },
+        error: "Error running autocheck",
+      });
+    } else{
+      toast.promise(getAutocheckResponse(), {
+        loading: "Running autocheck...",
+        success: (data) => {
+          if (data == "") {
+            toast.error("Error running autocheck");
+            return;
+          }
+          setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+          return "Done";
+        },
+        error: "Error running autocheck",
+      });
+    }
+    setDidRunAutocheck(false)
+  }, [fileErrors])
+
 
   if(taskQueue.length > 0){
     return (
@@ -636,6 +708,12 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         content={response}
         closeModal={() => {
           setResponse(null);
+        }}
+      />
+      <FloatingModal
+        content={autocheckResponse}
+        closeModal={() => {
+          setAutocheckResponse(null);
         }}
       />
     </>

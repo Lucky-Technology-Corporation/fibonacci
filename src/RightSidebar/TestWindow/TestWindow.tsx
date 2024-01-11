@@ -1,4 +1,4 @@
-import { faFlask, faPencil, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faBroom, faFlask, faPencil, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
@@ -169,7 +169,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
           />
         </div>
       </div>
-      <div className="flex space-between mt-2">
+      <div className="flex space-between mt-2 border-b border-gray-600">
         
       </div>
 
@@ -232,6 +232,14 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                     <div className="flex items-center">
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
                       <span>{statusText[testDoc._id]}</span>
+                      
+                      <FontAwesomeIcon icon={faBroom} className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" onClick={() => {
+                        setTestResponses((prevResponses) => ({
+                          ...prevResponses,
+                          [testDoc._id]: null,
+                        }));
+                      }}/>
+
                     </div>
                   </div>
                 </div>

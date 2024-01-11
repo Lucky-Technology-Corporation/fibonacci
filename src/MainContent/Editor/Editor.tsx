@@ -193,25 +193,29 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
   }
 
-  const [offset, setOffset] = useState(200)
+  const [heightString, setHeightString] = useState("calc(100% - 200px)")
   useEffect(() => {
     if(isDebugging){
-      updateOffsetTo(8, 200)
+      //This is horrible but its the only way to prevent theia from pushing everything up. im doing it twice just in case the debugger takes a second
+      setHeightString("calc(100% - 8px)")
+      setTimeout(() => {
+        setHeightString(null)
+      }, 950)
+      setTimeout(() => {
+        setHeightString("calc(100% - 8px)")
+      }, 1000)
+      setTimeout(() => {
+        setHeightString(null)
+      }, 1950)
+      setTimeout(() => {
+        setHeightString("calc(100% - 8px)")
+      }, 2000)
     } else{
-      updateOffsetTo(200, 8)
+      setHeightString("calc(100% - 200px)")
     }
   }, [isDebugging])
 
-  const updateOffsetTo = (newOffset, newHeight) => {
-    if(newHeight <= newOffset) {
-      setOffset(newOffset)
-      return
-    };
-    setOffset(newHeight)
-    setTimeout(() => {
-      updateOffsetTo(newOffset, newHeight - 5)
-    }, 10)
-  }
+
 
 
   return testDomain == undefined ? (
@@ -252,7 +256,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           tabIndex={-1}
           style={{
             width: "calc(100% + 96px)",
-            height: "calc(100% - " + offset + "px)",
+            height: heightString,
             // height: isDebugging ? "calc(100% - 8px)" : "calc(100% - 200px)",
             marginLeft: "-48px",
             marginRight: "-48px",

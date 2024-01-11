@@ -93,7 +93,7 @@ export const docOptions: {title: string, description: string, type: string, imag
     "link": "https://docs.swizzle.co/storage/remove-user-from-file",
     "title": "Remove user from file",
     "import": "removeUserFromFile",
-    "description": "Use <span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let success = await removeUserFromFile(unsignedUrl, uid)</span><span class='hidden'>to remove a user's access to an unsigned URL in storage</span>"
+    "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>let success = await removeUserFromFile(unsignedUrl, uid)</span><span class='hidden'>to remove a user's access to an unsigned URL in storage</span>"
   },
   {
     "type": "doc",
@@ -167,10 +167,10 @@ export const frontendDocOptions = [
     "type": "externalDoc",
     "image": "auth",
     "link": "https://docs.swizzle.co/frontend/users/check-auth-status",
-    "title": "Check Auth Status",
+    "title": "Check Login Status",
     "import": "useIsAuthenticated",
     "importFrom": "react-auth-kit",
-    "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const isAuthenticated = useIsAuthenticated()</span><span class='hidden'>to check if a user is logged in signed in authenticated</span>"
+    "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const isAuthenticated = useIsAuthenticated()</span><span class='hidden'>to check if a user is logged in signed in authenticated auth status</span>"
   },
   {
     "type": "externalDoc",
@@ -193,23 +193,16 @@ export const swizzleActionOptions = [
   },
   {
     "type": "action",
-    "image": "preview",
-    "title": "Preview",
-    "description": "Open a preview this page",
-    "filter": "frontend"
-  },
-  {
-    "type": "action",
     "image": "wand",
     "title": "Autocheck",
-    "description": "Automatically check for errors",
+    "description": "Run the error checker",
     "filter": ""
   },
   {
     "type": "action",
-    "image": "packages",
+    "image": "box",
     "title": "Packages",
-    "description": "Install an NPM package",
+    "description": "Install NPM package",
     "filter": ""
   },
   {
@@ -221,16 +214,16 @@ export const swizzleActionOptions = [
   },
   {
     "type": "action",
-    "image": "beaker",
-    "title": "Test",
-    "description": "Test this endpoint",
+    "image": "lock",
+    "title": "Secrets",
+    "description": "Manage secret environment variables",
     "filter": "backend"
   },
   {
     "type": "action",
-    "image": "lock",
-    "title": "Secrets",
-    "description": "Manage secret environment variables",
+    "image": "auth",
+    "title": "Switch Auth",
+    "description": "Require/don't require authentication",
     "filter": "backend"
   },
 ]
