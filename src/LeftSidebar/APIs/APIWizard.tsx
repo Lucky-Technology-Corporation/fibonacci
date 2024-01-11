@@ -309,7 +309,7 @@ export default function APIWizard({
                           }
                         })
                       }}
-                      className={`${validUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
+                      className={`${validUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
                       disabled={!validUrl}
                     >
                       {validUrl ? "Next" : "Invalid input"}

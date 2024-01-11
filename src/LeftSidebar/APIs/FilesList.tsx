@@ -197,9 +197,9 @@ export default function FilesList({ active }: { active: boolean }) {
   
       return (
         <div key={node.path + node.name} id={node.path + node.name}>
-          <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-2 px-2 hover:bg-[#85869833] rounded cursor-pointer">
+          <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-1 px-2 hover:bg-[#85869833] rounded cursor-pointer">
             {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
-            <div className="ml-2">{node.name.replace("$", ":")}</div>
+            <div className="ml-2 font-mono text-xs">/{node.name.replace("$", ":")}</div>
           </div>
           {expandedDirs[fullPath] && (
             <div className="ml-4">
@@ -219,7 +219,7 @@ export default function FilesList({ active }: { active: boolean }) {
             key={node.path + node.name +"-item"}
             path={node.name}
             fullPath={node.path}
-            pagePath={pageInformation && pageInformation[node.path] ? pageInformation[node.path].realPath : undefined}
+            pagePath={pageInformation && pageInformation[node.path] ? ("/" + /[^/]*$/.exec(pageInformation[node.path].realPath)[0]) : undefined} //get the last part of the path
             isPrivate={pageInformation && pageInformation[node.path] ? pageInformation[node.path].requiresAuth : false}
             fallbackUrl={pageInformation && pageInformation[node.path] ? pageInformation[node.path].fallbackUrl : undefined}
             active={"frontend/src/" + (fullPath.endsWith('/') ? fullPath.slice(0, -1) : fullPath) === activeFile}

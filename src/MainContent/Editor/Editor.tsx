@@ -1,3 +1,5 @@
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
@@ -283,14 +285,14 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
         <div className={`flex flex-col ${isSidebarOpen ? "w-[40%]" : "w-0 hidden"}`} style={{height: "calc(100vh - 12px)"}}>
           {(activeFile || "").includes("frontend/src/components") && (
             <div className="flex h-[88px] my-1 pt-3 flex-wrap no-focus-ring">
-              <div className="max-w-[120px] my-auto">
-                <div className="font-bold mb-2">Preview <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
+              <div className="max-w-[120px] my-auto ml-1">
+                <div className="font-bold mb-2"><FontAwesomeIcon icon={faXmark} className="w-3 h-3 mr-1 ml-1 cursor-pointer" onClick={closePreview}/>Preview</div>
                 <Button
                   text="Update"
                   onClick={() => {
                     patchPreviewComponent(previewComponent);
                   }}
-                  className="mt-2 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="mt-1 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-sm font-medium text-[#D9D9D9] hover:bg-[#525363]"
                 />
               </div>
               <textarea
@@ -305,7 +307,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           )}
           {(activeFile || "").includes("frontend/src/pages") && (
             <div className="pt-3 px-1 flex-wrap no-focus-ring">
-              <div className="mb-1 font-bold">Preview URL <a className="cursor-pointer" onClick={closePreview}>(close)</a></div>
+              <div className="mb-1 font-bold"><FontAwesomeIcon icon={faXmark} className="w-3 h-3 mr-1 cursor-pointer" onClick={closePreview}/> Preview</div>
               <div className="flex flex-row h-8">
                 <input className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2" 
                   value={path} 

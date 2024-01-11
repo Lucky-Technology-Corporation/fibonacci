@@ -192,8 +192,8 @@ export default function FileWizard({
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
-        <div className="inline-block align-bottom bg-[#32333b] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
-          <div className="bg-[#32333b] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="inline-block align-bottom bg-[#181922] border-[#525363] border w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
+          <div className="bg-[#181922] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               <>
                 <div className="flex justify-between">
@@ -283,7 +283,7 @@ export default function FileWizard({
                         </div>
                       </>
                     )}
-                    <div className="bg-[#32333b] py-3 pt-0 mt-3 sm:flex sm:flex-row-reverse">
+                    <div className="bg-[#181922] py-3 pt-0 mt-3 sm:flex sm:flex-row-reverse">
                       <button
                         type="button"
                         onClick={() => {
@@ -291,7 +291,7 @@ export default function FileWizard({
                         }}
                         className={`${
                           validPageUrl && validFallbackUrl ? "" : "opacity-70"
-                        } w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
+                        } w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
                         disabled={!validPageUrl || !validFallbackUrl}
                       >
                         {validPageUrl && validFallbackUrl ? "Next" : "Invalid URL"}
@@ -302,7 +302,7 @@ export default function FileWizard({
                           setOverrideRender(null);
                           setIsVisible(false);
                         }}
-                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#181922] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                       >
                         Cancel
                       </button>

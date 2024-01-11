@@ -1,4 +1,4 @@
-import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
@@ -126,7 +126,7 @@ export default function NewTestWindow({
     >
       <div className="flex flex-col justify-between px-4 py-2 pb-4">
         <div className="flex items-center pb-2">
-          <FontAwesomeIcon icon={faPencilAlt} className="mr-2" />
+          <FontAwesomeIcon icon={faFlask} className="mr-2" />
           <input
             type="text"
             className="text-sm font-semibold w-full p-1 bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] mr-2"
@@ -138,7 +138,7 @@ export default function NewTestWindow({
           />
         </div>
 
-        <div className="font-bold my-2">Request URL</div>
+        {/* <div className="font-bold my-2">Request URL</div> */}
 
         <div className="flex w-full mb-2">
           <div
@@ -180,14 +180,21 @@ export default function NewTestWindow({
             }
           })}
         </div>
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>
           Query String
         </div>
         <div className="flex w-full mb-2">
           <GroupedInput valueList={queryParams} setValueList={setQueryParameters} isQuery={true} />
         </div>
-        
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
+
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>
+          Headers
+        </div>
+        <div className="mt-1 mb-2">
+            <GroupedInput valueList={headerList} setValueList={setHeaderList} isQuery={false} />
+        </div>
+
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>
           Authentication
         </div>
         <div className="mt-1 mb-2">
@@ -203,14 +210,7 @@ export default function NewTestWindow({
           />
         </div>
 
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold`}>
-          Headers
-        </div>
-        <div className="mt-1 mb-2">
-            <GroupedInput valueList={headerList} setValueList={setHeaderList} isQuery={false} />
-        </div>
-
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] font-bold ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
           Body
         </div>
         <div className={`mb-2 ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>

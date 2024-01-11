@@ -1,9 +1,8 @@
-import { faBroom, faFlask, faPencil, faPlay, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faForward, faMinimize, faPencil, faSpinner, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import LoadingIcons from "react-loading-icons";
 import useTestApi from "../../API/TestingAPI";
 import Button from "../../Utilities/Button";
 import Dot from "../../Utilities/Dot";
@@ -135,17 +134,17 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
   }
   return (
     <div className={`mt-4`}>
-      <div className="flex items-center justify-between px-4 py-2 pb-1">
+      <div className="flex items-center justify-between px-4 pl-2 py-2 pb-1">
         <div className="flex flex-col items-start">
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faFlask} className="mr-2" />
-            <div className="font-bold" style={{ fontSize: "18px" }}>
+            {isSidebarOpen && (
+              <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mr-1 cursor-pointer" onClick={() => {setIsSidebarOpen(false)}} />
+            )}
+            {/* <FontAwesomeIcon icon={faFlask} className="mr-2" /> */}
+            <div className="font-bold text-base">
               Tests
             </div>
           </div>
-          {isSidebarOpen && (
-            <a className="cursor-pointer mt-1" onClick={() => {setIsSidebarOpen(false)}}>(close)</a>
-          )}
           {/* <div className="text-sm text-gray-400 mt-1">
             Mock requests in your{" "}
             <span className={environment == "prod" ? "" : "text-[#f39c12]"}>
@@ -160,20 +159,19 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
             onClick={runAllTests}
             className={`${
               tests == null || tests.length == 0 ? "hidden" : "block"
-            } ml-auto mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-auto sm:mr-1 sm:w-auto sm:text-sm cursor-pointer`}
+            } ml-auto inline-flex justify-center rounded border border-gray-600 shadow-sm px-2 py-1 bg-[#32333b] font-medium hover:bg-[#525363] text-[#D9D9D9] mt-0 ml-auto mr-1 w-auto text-sm cursor-pointer`}
           />
           <Button
-            text="+ New Test"
+            text="+ New"
             onClick={handleNewRequestClick}
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            className="inline-flex justify-center rounded border border-gray-600 shadow-sm px-2 py-1 bg-[#32333b] cursor-pointer font-medium text-[#D9D9D9] hover:bg-[#525363] mt-0 ml-3 w-auto text-sm"
           />
         </div>
       </div>
-      <div className="flex space-between mt-2 border-b border-gray-600">
-        
-      </div>
 
-      <div className="px-4 pb-2 text-sm">
+      <div className="flex space-between mt-2 ml-2 border-b border-gray-600"></div>
+
+      <div className="pr-4 pl-2 pb-2 text-sm">
         {tests?.map((testDoc, index) => (
           <div className="flex flex-col" key={index}>
             <div className="flex items-center justify-between mt-4 pb-2">
@@ -184,14 +182,14 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                       runSingleTest(testDoc);
                     }
                   }}
-                  className="py-1 px-1 font-medium rounded flex justify-center items-center cursor-pointer"
+                  className="p-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
                   children={
                     loadingTests.includes(testDoc._id) ? (
                       <div>
-                        <LoadingIcons.Circles style={{ width: "10px", height: "12px" }} />
+                        <FontAwesomeIcon icon={faSpinner} />
                       </div>
                     ) : (
-                      <FontAwesomeIcon icon={faPlay} style={{ color: "#41d373" }} />
+                      <FontAwesomeIcon icon={faForward} />
                     )
                   }
                   text=""
@@ -233,7 +231,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
                       <span>{statusText[testDoc._id]}</span>
                       
-                      <FontAwesomeIcon icon={faBroom} className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" onClick={() => {
+                      <FontAwesomeIcon icon={faMinimize} className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" onClick={() => {
                         setTestResponses((prevResponses) => ({
                           ...prevResponses,
                           [testDoc._id]: null,
