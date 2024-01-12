@@ -19,7 +19,7 @@ export default function ProjectSelector({
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
   const deploymentApi = useDeploymentApi();
-  const { addEmailToAccount } = useSettingsApi()
+  const { addEmailToAccount, hasAddedPaymentMethod } = useSettingsApi()
   const POLLING_INTERVAL = 5000;
   const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();
@@ -40,6 +40,8 @@ export default function ProjectSelector({
     setTestDeployStatus,
     setProdDeployStatus,
     setIdeReady,
+    hasPaymentMethod,
+    setHasPaymentMethod,
   } = useContext(SwizzleContext);
 
   const startPolling = async (projectId) => {
@@ -222,6 +224,11 @@ export default function ProjectSelector({
     }
   };
 
+  const checkIfHasPaymentMethod = async () => {
+    const hasPaymentMethod = await hasAddedPaymentMethod()
+    setHasPaymentMethod(hasPaymentMethod)
+  }
+
   useEffect(() => {
     if (projects && activeProject == "" && projects.length > 0) {
       var storedActiveProject = sessionStorage.getItem("activeProject");
@@ -237,6 +244,14 @@ export default function ProjectSelector({
       }
     }
   }, [projects]);
+
+  useEffect(() => {
+    if(projects && projects.length > 0 && activeProject != ""){
+      if(hasPaymentMethod == null){
+        checkIfHasPaymentMethod()
+      }
+    }
+  }, [activeProject])
 
   if (projects == null) return <div className="text-sm mt-3">Loading...</div>;
 
@@ -283,16 +298,7 @@ export default function ProjectSelector({
       <FullPageModal
         isVisible={isVisible}
         setIsVisible={setIsVisible}
-        // regexPattern={/^[a-zA-Z][a-zA-Z0-9\s]{1,64}$/}
-        // errorMessage="Names must start a letter and not contain special characters."
         modalDetails={{
-          // title: didSave ? "Thanks!" : "Yikes!",
-          // description: didSave ? "Your ETA is 5-7 days" : "Our infrastructure is at capacity. We'll send you an email when we're ready for you to create a project.",
-          // placeholder: "your.name@gmail.com",
-          // confirmText: didSave ? "Cool" : "Notify me",
-          // confirmHandler: saveEmail,
-          // shouldShowInput: didSave ? false : true,
-          // shouldHideCancel: true,
           title: "New project",
           description: "Let's get started! What would you like to name your project?",
           placeholder: "My awesome project",

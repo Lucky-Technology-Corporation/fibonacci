@@ -25,6 +25,8 @@ export default function FilesList({ active }: { active: boolean }) {
   const [pageInformation, setPageInformation] = useState(undefined)
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState<boolean>(false);
+  const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
+  const [folderPath, setFolderPath] = useState<string>("");
 
   const { testDomain, selectedTab, activeFile, setActiveFile, shouldRefreshList, setShouldRefreshList, setActivePage, setPostMessage } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
@@ -73,7 +75,6 @@ export default function FilesList({ active }: { active: boolean }) {
               pageInformationLocal[fullPath] = {"component": componentName, "requiresAuth": isPageProtected, "fallbackUrl": fallbackUrl, "realPath": realPath}
             }
           }
-          console.log("pageInformationLocal", pageInformationLocal)
           setPageInformation(pageInformationLocal)
         }
       })
@@ -183,8 +184,16 @@ export default function FilesList({ active }: { active: boolean }) {
 
     let showCurrent = searchActive || !searchFilter || parentPath.toLowerCase().includes(searchFilter.toLowerCase()) || node.name.toLowerCase().includes(searchFilter.toLowerCase());
 
+    const hasValidChildren = (node) => {
+      if (!node.isDir || !node.children || node.children.length === 0) {
+        return false; // Not a directory or no children
+      }
+      // Check if any child is a non-empty directory or a file
+      return node.children.some(child => !child.isDir || hasValidChildren(child));
+    };
+
     if (node.isDir) {
-      if (node.children == undefined || node.children.length === 0) return null; // Skip empty folders
+      if (!hasValidChildren(node)) return null;
 
       let childMatch = false;
       const children = node.children.map((child) => {
@@ -199,7 +208,7 @@ export default function FilesList({ active }: { active: boolean }) {
         <div key={node.path + node.name} id={node.path + node.name}>
           <div onClick={() => toggleExpand(fullPath)} className="flex my-1 py-1 px-2 hover:bg-[#85869833] rounded cursor-pointer">
             {expandedDirs[fullPath] ? <FontAwesomeIcon icon={faFolderOpen} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faFolderClosed} className="w-3 h-3 my-auto" />} 
-            <div className="ml-2 font-mono text-xs">/{node.name.replace("$", ":")}</div>
+            <div className="ml-2 font-mono text-xs">{node.name.replace("(", ":").replace(")", "")}</div>
           </div>
           {expandedDirs[fullPath] && (
             <div className="ml-4">
@@ -286,7 +295,7 @@ export default function FilesList({ active }: { active: boolean }) {
       </div>
       <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
 
-      <div className="flex ml-2 my-1 mr-2 mb-1.5">
+      <div className="flex ml-2 my-1 mr-2 mb-3">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
           placeholder="Filter"
@@ -398,7 +407,6 @@ export default function FilesList({ active }: { active: boolean }) {
         files={getFilePathArray()}
         fileType={fileType}
       />
-
     </div>
   );
 }

@@ -38,11 +38,16 @@ export function modifySwizzleImport(importStatement: string, newImport: string, 
 export function formatPath(fullPath: string, path: string, allComponents: boolean = false) {
   if ((fullPath || "").includes("frontend/src/pages")) {
     var p = path;
+    
+    if(path.startsWith("frontend/src/pages")) {
+      p = path.split("frontend/src/pages")[1];
+    }
+
     var p = p.replace(".tsx", "").replace(/\./g, "/").toLowerCase();
     if (!p.startsWith("/")) {
       p = "/" + p;
     }
-    p = p.replace(/\$/g, ":");
+    p = p.replace(/\(([^)]+)\)/g, ':$1');
     p = p.replace("_", "/");
     if (p == "/swizzlehomepage") {
       p = "/";
@@ -52,10 +57,17 @@ export function formatPath(fullPath: string, path: string, allComponents: boolea
       const pathAfterPages = fullPath.split("/pages")[1];
       const numberOfLevels = pathAfterPages.match(/\//g);
       if (numberOfLevels.length > 1) {
-        const prependPath = splitAtLast(pathAfterPages, "/")[0].replace(/\$/g, ":");
+        const prependPath = splitAtLast(pathAfterPages, "/")[0].replace(/\(([^)]+)\)/g, ':$1');
         return prependPath + p;
       }
     }
+
+    p = p.replace(/\/\//g, '/')
+    if(!p.startsWith("/")) {
+      p = "/" + p;
+    }
+
+    p = decodeURIComponent(p);
 
     return p;
   } else {
@@ -83,7 +95,7 @@ export const pathToFile = (path: string) => {
   if (path.endsWith("/")) {
     path = path.substring(0, path.length - 1);
   }
-  path = path.replace(/:/g, "$");
+  path = path.replace(/:([^\/]+)/g, '($1)');
 
   if (!path.endsWith(".tsx")) {
     path += ".tsx";

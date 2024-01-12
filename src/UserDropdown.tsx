@@ -1,6 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { useAuthUser, useSignOut } from "react-auth-kit";
 import toast from "react-hot-toast";
 import useSettingsApi from "./API/SettingsAPI";
@@ -17,10 +17,16 @@ export default function UserDropdown() {
   const auth = useAuthUser();
   const {deleteProject} = useSettingsApi()
 
-  const { setActiveProject, setActiveProjectName, activeProject, activeProjectName } = useContext(SwizzleContext);
+  const { setActiveProject, setActiveProjectName, activeProject, activeProjectName, hasPaymentMethod } = useContext(SwizzleContext);
 
   const [inviteVisible, setInviteVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if(hasPaymentMethod != null && !hasPaymentMethod){
+      setIsVisible(true)
+    }
+  }, [hasPaymentMethod])
 
   return (
     <>
@@ -89,7 +95,6 @@ export default function UserDropdown() {
                     onClick={() => {
                       const c = prompt(`Are you sure you want to delete this project? Type the project name to confirm:\n\n${activeProjectName}`);
                       if (c == activeProjectName) {
-                        console.log(activeProject)
                         toast.promise(deleteProject(activeProject), {
                           loading: "Deleting project...",
                           success: () => {

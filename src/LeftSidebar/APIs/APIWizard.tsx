@@ -271,16 +271,19 @@ export default function APIWizard({
                     value={inputValue}
                     onChange={(e) => {
                       if(endpointPathIfEditing == "/"){ return }
-                      var regex = /^(\/|(((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))?(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))*)$/
+                      var regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
+                      var slashedUrl = e.target.value
                       if(isCron){
                         regex = /^[a-zA-Z0-9]+$/
+                      } else{
+                        if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
                       }
-                      if(!regex.test(e.target.value)){
+                      if(!regex.test(slashedUrl)){
                         setValidUrl(false)
                       } else{
                         setValidUrl(true)
                       }
-                      setInputValue(e.target.value);
+                      setInputValue(slashedUrl);
                     }}
                     disabled={endpointPathIfEditing == "/"}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"

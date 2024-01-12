@@ -16,7 +16,6 @@ export default function AuthSettings({ active, className = "" }: { active: boole
       <Dropdown
         className=""
         onSelect={(item: any) => {
-          console.log(item)
           setSelectedTemplateId(item);
           setIsVisible(true);
         }}

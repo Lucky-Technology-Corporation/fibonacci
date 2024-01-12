@@ -130,7 +130,10 @@ export default function LeftSidebar({
         setSelectedTab(Page.Hosting)
       }
       const newFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-      setActiveFile(newFile);
+      const uriDecoded = decodeURIComponent(newFile);
+      if(uriDecoded != activeFile){
+        setActiveFile(newFile);
+      }
     }
   }, [currentFileProperties]);
 

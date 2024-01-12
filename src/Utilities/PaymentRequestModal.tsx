@@ -1,6 +1,8 @@
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { useContext } from 'react';
 import CheckoutForm from './CheckoutForm';
+import { SwizzleContext } from './GlobalContext';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK);
 
@@ -12,6 +14,7 @@ export default function PaymentRequestModal({
   isVisible: boolean;
   setIsVisible?: (isVisible: boolean) => void;
 }) {
+  const { hasPaymentMethod } = useContext(SwizzleContext);
 
   return (
     <div
@@ -35,13 +38,14 @@ export default function PaymentRequestModal({
                 Update payment method
               </h3>
               <div className="mt-1">
-                <div className="text-sm text-[#D9D9D9]">Only pay for what you use!
-                  <ul className='list-disc ml-4 my-2'>
+                <div className="text-sm text-[#D9D9D9]">$9 / month per project{hasPaymentMethod ? ". To cancel charges, delete your project." : "after 7-day free trial"}</div>
+                  {/* <ul className='list-disc ml-4 my-2'>
                     <li>$0.50 / 100k requests</li>
                     <li>$0.25 / GB storage</li>
                     <li>MongoDB serverless pricing (<a href="https://www.mongodb.com/docs/atlas/billing/serverless-instance-costs/" target='_blank' rel="noreferrer" className='font-normal underline text-gray-200'>details</a>)</li>
                   </ul>
-                </div>
+                  To stop charges, delete your project.
+                </div> */}
               </div>
               <Elements stripe={stripePromise}>
                 <CheckoutForm setIsVisible={setIsVisible} />

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useContext } from "react";
+import { pathToFile } from "../Utilities/EndpointParser";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import { addImports } from "../Utilities/ImportUpserter";
 import useEndpointApi from "./EndpointAPI";
@@ -121,13 +122,14 @@ export default function useFilesystemApi() {
       if (path.startsWith("/")) {
         path = path.substring(1);
       }
-      const componentName = path
-        .replace(/\//g, "_")
-        .replace(".tsx", "")
-        .replace(".ts", "")
-        .replace(/\./g, "_")
-        .replace(/^(.)/, (match, p1) => p1.toUpperCase())
-        .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
+      const componentName = /[^/]*$/.exec(pathToFile(path))[0] //path after last slash
+      // const componentName = path
+      //   .replace(/\//g, "_")
+      //   .replace(".tsx", "")
+      //   .replace(".ts", "")
+      //   .replace(/\./g, "_")
+      //   .replace(/^(.)/, (match, p1) => p1.toUpperCase())
+      //   .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
 
       const newRoute = `<SwizzleRoute path="${page}" element={<${componentName} />} />`;
 

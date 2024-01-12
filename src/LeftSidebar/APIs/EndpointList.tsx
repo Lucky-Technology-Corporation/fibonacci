@@ -94,7 +94,6 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
 
   useEffect(() => {
     if(selectedTab == Page.Apis && activeEndpoint == undefined && endpoints && endpoints.length > 0){
-      console.log("selected tab", "SETTING", endpoints[0])
       setActiveEndpoint(endpoints[0])
     }
   }, [selectedTab])
@@ -150,7 +149,6 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
       data.scheduled_functions.forEach((func: any) => {
         scheduledFunctions.push({path: func.endpoint, cron: func.schedule, id: func.id})
       })
-      console.log("scheduled functions", scheduledFunctions)
       setFullScheduledFunctions(scheduledFunctions)
     })
   }, [activeProject])
@@ -232,7 +230,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
       <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
       <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
 
-      <div className="flex ml-2 my-1 mr-2 mb-1.5">
+      <div className="flex ml-2 my-1 mr-2 mb-3">
         <input
           className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
           placeholder="Filter"

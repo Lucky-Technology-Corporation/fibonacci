@@ -48,7 +48,6 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
             gtagReportConversion()
           }
           setHasPaymentMethod(true)
-          if(setIsVisible == undefined) return;
           setIsVisible(false)
         }
       }
@@ -72,6 +71,18 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
         },
         iconStyle: "solid" as "solid",
       }      
+
+      const openCodeFlow = () => {
+        const input = prompt("Enter your code")
+        if(input == null || input == ""){ return }
+        const code = input.trim().toLowerCase()
+        if(code == "iamspecial"){
+          setHasPaymentMethod(true)
+          setIsVisible(false)
+        } else{
+          alert("Invalid code")
+        }
+      }
 
     
     return (
@@ -97,13 +108,14 @@ export default function CheckoutForm({setIsVisible}: {setIsVisible?: (isVisible:
             <CardElement options={CARD_OPTIONS} />
         </div>
         <div className='flex'>
-            <div className={`my-auto ${setIsVisible == undefined ? "hidden" : ""}`}>
+            <div className={`my-auto ${!hasPaymentMethod ? "hidden" : ""}`}>
                 <a href="#" onClick={() => setIsVisible(false)} className='text-gray-400 text-sm'>Cancel</a>
+                <a onClick={() => {openCodeFlow()}} className='text-gray-400 text-sm ml-3 cursor-pointer'>I have a code</a>
             </div>
             <button type="submit" disabled={!stripe || loading} className='ml-auto mr-0'>
                 <Button
-                    className={`${loading ? "opacity-70" : ""} w-auto text-sm inline-flex justify-center rounded-md shadow-sm px-4 py-2 bg-gradient-to-r from-indigo-700 to-violet-700 hover:to-violet-600 text-base font-bold text-white hover:bg-[#85869866]`}
-                    children={loading ? "Loading..." : setIsVisible == undefined ? "Start 7-day free trial" : "Save Payment Method"}
+                    className={`${loading ? "opacity-70" : ""} w-auto text-sm inline-flex justify-center rounded-md shadow-sm px-4 py-2 bg-indigo-700 hover:bg-indigo-600 text-base font-bold text-white hover:bg-[#85869866]`}
+                    children={loading ? "Loading..." : hasPaymentMethod == false ? "Start 7-day free trial" : "Save Payment Method"}
                     onClick={() => {}}
                 />
             </button>

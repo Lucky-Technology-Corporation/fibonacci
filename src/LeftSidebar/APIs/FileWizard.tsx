@@ -234,13 +234,16 @@ export default function FileWizard({
                           }
                           if (fileType == "page") {
                             const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/;
-                            if (!regex.test(e.target.value)) {
+                            var slashedUrl = e.target.value
+                            if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
+
+                            if (!regex.test(slashedUrl)) {
                               setValidPageUrl(false);
                             } else {
                               setValidPageUrl(true);
                             }
                           }
-                          setInputValue(e.target.value);
+                          setInputValue(slashedUrl);
                         }}
                         disabled={fileType == "page" && pathIfEditing == "/"}
                         className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
@@ -260,17 +263,20 @@ export default function FileWizard({
                             type="text"
                             value={fallbackInputValue}
                             onChange={(e) => {
-                              if (e.target.value == "") {
+                              if (e.target.value == "" || e.target.value == "/") {
                                 setValidFallbackUrl(true);
                                 return;
                               }
                               const regex = /^\/:?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/;
+                              var slashedUrl = e.target.value
+                              if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
+
                               if (!regex.test(e.target.value)) {
                                 setValidFallbackUrl(false);
                               } else {
                                 setValidFallbackUrl(true);
                               }
-                              setFallbackInputValue(e.target.value);
+                              setFallbackInputValue(slashedUrl);
                             }}
                             className="w-full bg-transparent border-[#525363] border rounded outline-0 focus:border-[#68697a] p-2"
                             placeholder={`/login`}

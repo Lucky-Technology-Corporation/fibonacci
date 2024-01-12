@@ -5,6 +5,7 @@ import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import TestWindow from "../../RightSidebar/TestWindow/TestWindow";
 import Button from "../../Utilities/Button";
+import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
@@ -131,9 +132,9 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
 
   useEffect(() => {
     if(activeFile != undefined && activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")){
-      const path = (activeFile.includes("SwizzleHomePage.tsx")) ? "" : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase().replace(/\$/g, ":")
-      setPath("/" + path)
-      setUrl(testDomain + "/" + path)
+      const path = formatPath(activeFile, activeFile)
+      setPath(path)
+      setUrl(testDomain + path)
     } else if(activeFile != undefined && activeFile.includes("frontend/src/components/")){
       setPreviewComponentFromPath(activeFile).then((component) => {
         setPreviewComponent(component)
@@ -321,7 +322,11 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
                 <Button
                   text="Update"
                   onClick={() => {
-                    setUrl(testDomain + path)
+                    if(testDomain + path == url){
+                      setUrl(testDomain + path + "?refresh=" + Math.random())
+                    } else{
+                      setUrl(testDomain + path)
+                    }
                   }}
                 />
               </div>

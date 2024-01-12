@@ -422,7 +422,7 @@ const getPosition = () => {
                     <Switch
                         className="ml-1 my-auto scale-75 env-toggle"
                         onChange={() => {
-                            if(ws){ console.log("ws 2"); ws.close(); }
+                            if(ws){ ws.close(); }
                             setLog([]);
                             const newLocation = currentLocation == "frontend" ? "backend" : "frontend"
                             setCurrentLocation(newLocation);

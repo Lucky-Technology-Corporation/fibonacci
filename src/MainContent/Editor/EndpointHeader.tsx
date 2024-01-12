@@ -9,7 +9,7 @@ import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
 import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
 import { replaceCodeBlocks } from "../../Utilities/DataCaster";
-import { modifySwizzleImport } from "../../Utilities/EndpointParser";
+import { endpointToFilename } from "../../Utilities/EndpointParser";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import IconTextButton from "../../Utilities/IconTextButton";
@@ -379,23 +379,21 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           toast.error("Sorry, something got mixed up. Try refreshing the page.")
           return
         }
-        console.log("file", file)
 
         toast.promise(upsertImport(file, importsToAdd).then((code) => {
           if(code != null){
-            var codeWithApiCode = code.replace("return (", `${stateVariableDeclaration}\n\n${useEffect}\n\nreturn (`)
-            setPostMessage({type: "replaceText", content: codeWithApiCode})
+            copyText(`${stateVariableDeclaration}\n\n${useEffect}`, true)
+            setPostMessage({type: "replaceText", content: code})
           }
 
           setTimeout(() => {
-            console.log("saving")
             setPostMessage({type: "saveFile"})
           }, 250)
 
         }), 
         {
-          loading: "Adding code...",
-          success: "Code added",
+          loading: "Thinking...",
+          success: "Copied code to clipboard",
           error: (e) => {
             console.log(e);
             return "Failed. Make sure there are no syntax errors in your code before adding API calls."
@@ -415,15 +413,16 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             </span>
           ));          
         }
-        var newImportStatement = currentFileProperties.importStatement;
-        newImportStatement = modifySwizzleImport(newImportStatement, suggestion.import, 'add');
-        const message = {
-          findText: currentFileProperties.importStatement,
-          replaceText: newImportStatement,
-          type: "findAndReplace",
-        };
-        setPostMessage(message);
-        setCurrentFileProperties({...currentFileProperties, importStatement: newImportStatement})
+        const importsToAdd = [ { import: suggestion.import, from: "swizzle-js", named: true } ];
+        const file = "backend/user-dependencies/" + endpointToFilename(activeEndpoint)
+        upsertImport(file, importsToAdd).then((code) => {
+          if(code != null){
+            setPostMessage({type: "replaceText", content: code})
+          }
+          setTimeout(() => {
+            setPostMessage({type: "saveFile"})
+          }, 250)
+        })
       } else if(suggestion.type == "externalDoc"){
         const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0]
         copyText(copyable, true)
@@ -443,7 +442,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       } else if(suggestion.type == "link"){
         window.open(suggestion.link, '_blank');
       } else if(suggestion.type == "action"){
-        console.log("action", suggestion)
         if(suggestion.title == "Save"){
           setPostMessage({type: "saveFile"})
         } else if(suggestion.title == "Autocheck"){
@@ -452,24 +450,31 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
           var toImport = ""
           if(currentFileProperties.hasPassportAuth){
             toImport = "optionalAuthentication"
-            setPostMessage({type: "findAndReplace", findText: "requiredAuthentication, async", replaceText: "optionalAuthentication, async"})
           } else {
             toImport = "requiredAuthentication"
-            setPostMessage({type: "findAndReplace", findText: "optionalAuthentication, async", replaceText: "requiredAuthentication, async"})
           }
-          setTimeout(() => {
-            var newImportStatement = currentFileProperties.importStatement;
-            newImportStatement = modifySwizzleImport(newImportStatement, toImport, 'add');
-            const message = {
-              findText: currentFileProperties.importStatement,
-              replaceText: newImportStatement,
-              type: "findAndReplace",
-            };
-            setPostMessage(message);
-            setCurrentFileProperties({...currentFileProperties, importStatement: newImportStatement, hasPassportAuth: !currentFileProperties.hasPassportAuth})    
-          }, 250)
+     
+          const importsToAdd = [ { import: toImport, from: "swizzle-js", named: true } ];
+          const file = "backend/user-dependencies/" + endpointToFilename(activeEndpoint)
+          upsertImport(file, importsToAdd).then((code) => {
+            var codeWithMiddlewareReplaced = ""
+            if(code.includes("requiredAuthentication, async")){
+              codeWithMiddlewareReplaced = code.replace("requiredAuthentication, async", "optionalAuthentication, async")
+            } else{
+              codeWithMiddlewareReplaced = code.replace("optionalAuthentication, async", "requiredAuthentication, async")
+            }
+
+            if(code != null){
+              setPostMessage({type: "replaceText", content: codeWithMiddlewareReplaced})
+            }
+            
+            setTimeout(() => {
+              setPostMessage({type: "saveFile"})
+            }, 500)
+
+            setCurrentFileProperties({...currentFileProperties, hasPassportAuth: !currentFileProperties.hasPassportAuth})
+          })
         } else{
-          console.log("dispatch")
           setSwizzleActionDispatch(suggestion.title)
         }
       }
@@ -663,7 +668,6 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                 inputProps={{
                   onKeyDown: (event) => {
                     if(event.key == "Enter"){
-                      console.log("highlighted", highlighted)
                       if(selectedTab == Page.Db){
                         runQuery(prompt, "db")
                         return

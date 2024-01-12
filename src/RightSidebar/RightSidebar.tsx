@@ -95,7 +95,6 @@ export default function RightSidebar() {
   }, [fileErrors])
 
   useEffect(() => {
-    console.log("swizzleActionDispatch", swizzleActionDispatch)
    if(swizzleActionDispatch == "Autocheck"){
       runAutocheck()
     } else if(swizzleActionDispatch == "Packages"){
