@@ -218,7 +218,9 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
   }, [isDebugging])
 
-
+  const reloadPreviewWindow = () => {
+    previewIframeRef.current.contentWindow.location.reload()
+  }
 
 
   return testDomain == undefined ? (
@@ -273,6 +275,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
           setInjectedLog={setInjectedLog}
           isSidebarOpen={isSidebarOpen}
           location={"backend"} 
+          reloadPreviewWindow={reloadPreviewWindow}
           style={{
             height: "200px",
             width: getLogsWidth(),

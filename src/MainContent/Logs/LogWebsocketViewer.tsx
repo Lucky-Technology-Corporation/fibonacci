@@ -13,6 +13,7 @@ type LogWebsocketViewerProps = {
     injectedLog: any
     setInjectedLog: any;
     isSidebarOpen: boolean;
+    reloadPreviewWindow: () => void;
 };
 
 export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
@@ -22,6 +23,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const {testDomain, activeProject, activeEndpoint, setPostMessage, selectedTab} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const [currentLocation, setCurrentLocation] = useState<string>("backend");
+    const [didRestartRecently, setDidRestartRecently] = useState<boolean>(false);
 
     const isReconnecting = useRef(false);
 
@@ -85,7 +87,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
         } else if(errorMethod.includes("info")){
             color = "text-blue-400"
         }
-        const newLine = <span className={`font-mono text-sm ${color}`} key={`injected-${timestamp}`}>{"["+errorMethod+"] " + props.injectedLog.message}</span>
+        const newLine = <span className={`font-mono text-sm ${color}`} key={`injected-${timestamp}`}>{"[react "+errorMethod+"] " + props.injectedLog.message}</span>
         setLog(prevLog => [...prevLog, newLine]);
         props.setInjectedLog("")
     }, [props.injectedLog])
@@ -245,6 +247,14 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     }
 
     useEffect(() => {
+        if(didRestartRecently){
+            setTimeout(() => {
+                setDidRestartRecently(false)
+            }, 10000);
+        }
+    }, [didRestartRecently])
+
+    useEffect(() => {
         if(ws){
             let messageQueue = [];
 
@@ -284,6 +294,18 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     
                             for(var i = 0; i < lines.length; i++){
                                 var currentLine = lines[i];
+                                if(currentLine.includes("ERROR in src/RouteList.tsx")){
+                                    if(!didRestartRecently){
+                                        setDidRestartRecently(true)
+                                        toast("Restarting frontend to refresh route list cache...")
+                                        endpointApi.restartFrontend()
+                                    }
+                                }
+
+                                if(didRestartRecently && currentLine.includes("No issues found.")){
+                                    props.reloadPreviewWindow()
+                                }
+
                                 if (
                                     (currentLine.includes("0.0.0.0:9229") ||
                                     currentLine.includes("For help, see: https://nodejs.org/en/docs/inspector") ||
