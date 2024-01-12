@@ -47,10 +47,15 @@ export function addImports(code: string, imports: Import[]): string {
     } catch(e) {
         var newCode = code;
         for(let i = 0; i < imports.length; i++) {
-            const regex = new RegExp(`^import.*?(['"]${imports[i].from}['"]);?\\s*$`);
-            const importStatement = code.split("\n").find(line => regex.test(line));
+            const regex = new RegExp(`^import.*?(['"]${imports[i].from}['"]);?\\s*(.*?)$`);
+            const importStatement = code.split("\n").find(line => regex.test(line)) || "";
+            console.log(importStatement)
             if (importStatement == "") {
-                newCode = `import { ${imports[i].import} } from '${imports[i].from}';\n` + code;
+                if(imports[i].named) {
+                    newCode = `import { ${imports[i].import} } from '${imports[i].from}';\n` + code;
+                } else {
+                    newCode = `import ${imports[i].import} from '${imports[i].from}';\n` + code;
+                }
             } else {
                 var newImportStatement = importStatement;
                 if(!importStatement.includes(imports[i].import)) {
@@ -61,9 +66,11 @@ export function addImports(code: string, imports: Import[]): string {
                             var importStatementParts = importStatement.split(" from ")
                             newImportStatement = importStatementParts[0] + ", { " + imports[i].import + " } from " + importStatementParts[1]
                         }
+                        newCode = newCode.replace(importStatement, newImportStatement);
+                    } else{
+                        newCode = `import ${imports[i].import} from '${imports[i].from}';\n` + code;   
                     }
                 }
-                newCode = newCode.replace(importStatement, newImportStatement);
             }
         }
         return newCode;

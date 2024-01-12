@@ -52,13 +52,14 @@ export default function APIWizard({
     if (newEndpointPath == undefined) {
       return;
     }
-    if(!checkForConflicts(newEndpointPath)){
-      return
-    }
 
     var methodToUse = selectedMethod
     if(isCron){
       methodToUse = "get"
+    }
+
+    if(!checkForConflicts(methodToUse.toLowerCase() + "/" + newEndpointPath)){
+      throw "That endpoint already exists"
     }
 
     //If we're editing an existing endpoint, copy the contents over to a new file
@@ -112,9 +113,10 @@ export default function APIWizard({
   }
 
   const checkForConflicts = (inputValue: string) => {
-    if (endpoints.includes(inputValue)) {
-      toast.error("That endpoint already exists");
-      return false
+    if(endpointPathIfEditing == ""){
+      if (endpoints.includes(inputValue)) {
+        return false
+      }
     }
     return true
   }
@@ -147,7 +149,7 @@ export default function APIWizard({
     }
 
     if(cleanInputValue.endsWith("/d") || cleanInputValue.includes("/d/")){
-      toast.error("/d cannot be used in endpoints")
+      throw "The /d path is reserved for built-in endpoints. Please choose a different path."
       return
     }
 
@@ -293,7 +295,9 @@ export default function APIWizard({
                         toast.promise(createHandler(), {
                           "loading": "Loading...",
                           "success": "Done",
-                          "error": "An error occured"
+                          "error": (e) => {
+                            return e || "An error occured"
+                          }
                         })
                       }
                     }}

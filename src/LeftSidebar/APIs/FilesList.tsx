@@ -150,7 +150,7 @@ export default function FilesList({ active }: { active: boolean }) {
     const type = fullPath.includes("/src/pages") ? "page" : "file"
     setFileType(type)
     setFileToEditFallback(fallbackPath)
-
+    setPostMessage({type: "saveFile"})
     if(type == "page"){
       setFileToEdit(path)
     } else{

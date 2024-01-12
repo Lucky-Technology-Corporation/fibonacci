@@ -349,10 +349,21 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       }
     } else{
       if(suggestion.type == "endpoint"){
+        var apiDepth = "../"
+        if(activeFile.includes("frontend/src")){
+          const pathParts = (activeFile.split("frontend/src")[1]).split("/")
+          const pathLength = pathParts.length - 3
+          console.log(pathLength)
+          console.log(pathParts)
+          for (let i = 0; i < pathLength; i++) {
+            apiDepth += "../"
+          }
+        }
+
         const importsToAdd = [
           { import: "useState", from: "react", named: true },
           { import: "useEffect", from: "react", named: true },
-          { import: "api", from: "../Api", named: false },
+          { import: "api", from: apiDepth+"Api", named: false },
         ];
 
         const apiCall = `api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`

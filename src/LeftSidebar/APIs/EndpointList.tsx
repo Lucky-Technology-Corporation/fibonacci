@@ -42,11 +42,12 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
     { id: "cron", name: "+ Scheduled Job"}
   ];
 
-  const { activeProject, testDomain, selectedTab, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList } =
+  const { activeProject, testDomain, selectedTab, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList, setPostMessage } =
     useContext(SwizzleContext);
 
 
   const editFileHandler = (path: string, isCron: boolean = false) => {
+    setPostMessage({type: "saveFile"})
     setIsCron(isCron)
     setEndpointToEdit(path)
   }

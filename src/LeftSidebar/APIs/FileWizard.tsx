@@ -232,9 +232,9 @@ export default function FileWizard({
                           if (fileType == "page" && pathIfEditing == "/") {
                             return;
                           }
+                          var slashedUrl = e.target.value
                           if (fileType == "page") {
                             const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/;
-                            var slashedUrl = e.target.value
                             if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
 
                             if (!regex.test(slashedUrl)) {
