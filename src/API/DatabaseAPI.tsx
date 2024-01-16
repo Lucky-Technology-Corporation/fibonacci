@@ -88,12 +88,12 @@ export default function useDatabaseApi() {
     }
   };
 
-  const createUser = async (email: string, password: string, fullName: string) => {
+  const createUser = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
       if (activeProject == "") return;
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/user?env=${environment}`,
-        { email, password, fullName },
+        { email, password, firstName, lastName },
         {
           withCredentials: true,
         },

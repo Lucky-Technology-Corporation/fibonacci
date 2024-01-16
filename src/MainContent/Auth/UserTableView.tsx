@@ -46,6 +46,8 @@ export default function UserTableView() {
     "isAnonymous",
     "subscription",
     "countryCode",
+    "isVerified",
+    "emailVerificationCode"
   ];
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
@@ -223,7 +225,7 @@ export default function UserTableView() {
               {/* country flag */}
               {/* <th className="w-6"></th> */}
               {/* Subscription info */}
-              <th className="w-36"></th>
+              <th className="w-24 py-1.5 text-left">isVerified</th>
               {keys
                 .filter((k) => hiddenColumns.indexOf(k) == -1)
                 .map((key, index) => (
@@ -253,7 +255,7 @@ export default function UserTableView() {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
                 shouldHideFields={hiddenColumns}
-                shouldBlockEdits={["_id", "createdAt", "isAnonymous", "subscription"]}
+                shouldBlockEdits={["_id", "createdAt", "isAnonymous", "subscription", "isVerified"]}
                 shouldShowStrikethrough={hiddenRows.includes(row._id) || row._deactivated == true}
               />
             ))}

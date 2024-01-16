@@ -101,21 +101,13 @@ export default function UserRow({
         {rowValues["countryCode"] && <img src={`https://flagsapi.com/${rowValues["countryCode"]}/flat/48.png`} />}
       </td> */}
       <td className="flex">
-        {(rowValues["subscription"] ?? "").includes("subscribed") ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">
-            Subscribed
-          </div>
-        ) : (rowValues["subscription"] ?? "").includes("churned") ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
-            Expiring
-          </div>
-        ) : rowValues["subscription"] == "canceled" ? (
-          <div className="m-auto inline-flex items-center rounded-md bg-red-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-red-300 ring-1 ring-inset ring-red-300/20">
-            Canceled
+        {(rowValues["isVerified"] ?? false) == true ? (
+          <div className="rounded-md bg-green-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-green-300 ring-1 ring-inset ring-green-300/20">
+            true
           </div>
         ) : (
-          <div className="m-auto inline-flex items-center rounded-md bg-gray-500 bg-opacity-50 px-2 mt-1 py-0.5 text-xs font-medium text-gray-300 ring-1 ring-inset ring-gray-500/10">
-            Not subscribed
+          <div className="rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
+            false
           </div>
         )}
       </td>

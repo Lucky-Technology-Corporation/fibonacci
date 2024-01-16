@@ -15,6 +15,7 @@ export default function UserWizard({
 
   const {createUser} = useDatabaseApi();
   const [nameValue, setNameValue] = useState("");
+  const [lastNameValue, setLastNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
 
@@ -38,6 +39,7 @@ export default function UserWizard({
         emailValue,
         hashedPassword,
         nameValue,
+        lastNameValue
       )
 
       handleRefresh()
@@ -80,7 +82,18 @@ export default function UserWizard({
                       setNameValue(e.target.value);
                     }}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                    placeholder={"Full Name"}
+                    placeholder={"First Name"}
+                  />
+                </div>
+                <div className="mt-3 mb-2 flex">
+                  <input
+                    type="text"
+                    value={lastNameValue}
+                    onChange={(e) => {
+                      setLastNameValue(e.target.value);
+                    }}
+                    className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
+                    placeholder={"Last Name"}
                   />
                 </div>
                 <div className="mt-3 mb-2 flex">

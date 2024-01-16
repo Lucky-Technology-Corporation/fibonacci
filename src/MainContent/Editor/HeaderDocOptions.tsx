@@ -227,3 +227,6 @@ export const swizzleActionOptions = [
     "filter": "backend"
   },
 ]
+
+export const prelineComponents = [
+]

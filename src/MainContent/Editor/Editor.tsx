@@ -81,6 +81,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
     }
 
     if(event.data.type === "openAi"){
+      console.log(event.data)
       focusOnHeader()
     }
 
