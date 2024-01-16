@@ -26,6 +26,8 @@ export default function MessageList( {messages, setMessages, setPath} : {message
         return str;
     }    
 
+    const message = messages[0]
+
     if(!messages) return <></>
 
     return (
@@ -49,11 +51,11 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                     </div>
                 </div>
                 </div>
-                {messages.map((message, messageIndex) => (
+                {/* {messages.map((message, messageIndex) => ( */}
                     <>
                         {message.role == "assistant" && 
                             (message.tasks.length == 0 && (
-                                <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
+                                <div className="flex flex-col leading-normal mb-0.5" key={0}>
                                 <div className="flex items-top mb-0.5 mt-1 ml-2 font-bold text-violet-300">
                                     <FontAwesomeIcon icon={faRobot} className="text-sm mt-0.5 mr-1" />
                                     <span className="text-sm ml-0">"{removeQuotes(message.content)}"</span>
@@ -64,13 +66,13 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                         {message.role == "assistant" && (
                             message.tasks.map((task, taskIndex) => (
                                 (task.type == "CreateEndpoint") ? (
-                                    <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
+                                    <div className="flex flex-col leading-normal mb-0.5" key={taskIndex}>
                                         <div className="flex flex-col justify-center items-center">
                                         <Task 
                                             key={taskIndex + "-task"}
                                             task={task} 
-                                            removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
-                                            editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
+                                            removeTask={() => { removeTaskFromMessage(0, taskIndex) }} 
+                                            editTask={(newTask: any) => { editTaskInMessage(0, taskIndex, newTask) }} 
                                             allTasks={messages.map((message) => message.tasks).flat()}
                                             setPath={setPath}
                                         />
@@ -80,7 +82,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             ))
                         )}
                     </> 
-                ))}
+                {/* ))} */}
             </div>   
 
 
@@ -101,18 +103,18 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                     </div>
 
                 </div>
-                {messages.map((message, messageIndex) => (
+                {/* {messages.map((message, messageIndex) => ( */}
                     <>
                         {message.role == "assistant" && (
                             message.tasks.map((task, taskIndex) => (
                                 (task.type == "CreatePage") ? (
-                                    <div className="flex flex-col leading-normal mb-0.5" key={messageIndex}>
+                                    <div className="flex flex-col leading-normal mb-0.5" key={taskIndex}>
                                         <div className="flex flex-col justify-center items-center">
                                         <Task 
                                             key={taskIndex + "-task"}
                                             task={task} 
-                                            removeTask={() => { removeTaskFromMessage(messageIndex, taskIndex) }} 
-                                            editTask={(newTask: any) => { editTaskInMessage(messageIndex, taskIndex, newTask) }} 
+                                            removeTask={() => { removeTaskFromMessage(0, taskIndex) }} 
+                                            editTask={(newTask: any) => { editTaskInMessage(0, taskIndex, newTask) }} 
                                             allTasks={messages.map((message) => message.tasks).flat()}
                                             setPath={setPath}
                                         />
@@ -122,7 +124,7 @@ export default function MessageList( {messages, setMessages, setPath} : {message
                             ))
                         )}
                     </> 
-                ))}
+                {/* ))} */}
             </div>     
         </div>
     )

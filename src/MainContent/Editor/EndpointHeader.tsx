@@ -110,6 +110,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
   }, [fileErrors])
 
   const runQueryFromState = () => {
+    console.log(promptQuery)
     toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, fileErrors), {
       loading: "Thinking...",
       success: (data) => {
@@ -185,15 +186,15 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       {
         "type": "ai",
         "image": "ai_selection",
-        "title": "Update selected code",
-        "description": value,
+        "title": value,
+        "description": "Update selected code",
         "ai_type": -1
       },
       {
         "type": "ai",
         "image": "wand",
-        "title": "Ask AI",
-        "description": value,
+        "title": value,
+        "description": "Ask AI",
         "ai_type": 0
       },
     ]
@@ -202,8 +203,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       {
         "type": "ai",
         "image": "ai_snippet",
-        "title": "Ask AI",
-        "description": value,
+        "title": value,
+        "description": "Ask AI",
         "ai_type": 2,
       },
     ]
@@ -343,7 +344,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
         setPendingRequest(suggestion.title)
         getHighlightedText()
       } else if(suggestion.ai_type == 0){
-        runQuery(suggestion.title, "edit")
+        runQuery(suggestion.title, "snippet")
       } else if(suggestion.ai_type == 2){
         runQuery(suggestion.title, "db")
       }
@@ -688,7 +689,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                           runQuery(prompt, "selection", selectedText)
                         }
                         else {
-                          runQuery(prompt, "edit")
+                          runQuery(prompt, "snippet")
                         }
                       }
                       setPrompt("")

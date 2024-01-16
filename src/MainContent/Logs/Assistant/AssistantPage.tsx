@@ -34,11 +34,18 @@ export default function AssistantPage() {
       //TODO: show user auth modal then move forward
     }
 
-    var endpointsToBuild = messages.filter(message => message.role == "assistant").map(message => message.tasks).flat().filter(task => task.type == "CreateEndpoint")
+    // var endpointsToBuild = messages.filter(message => message.role == "assistant").map(message => message.tasks).flat().filter(task => task.type == "CreateEndpoint")
+    var endpointsToBuild =  messages[0].tasks.filter(task => task.type == "CreateEndpoint")
     endpointsToBuild = endpointsToBuild.filter((v, i, a) => a.findIndex(t => (t.inputs.path === v.inputs.path && t.inputs.method === v.inputs.method)) === i)
 
-    var pagesToBuild = messages.filter(message => message.role == "assistant").map(message => message.tasks).flat().filter(task => task.type == "CreatePage")
+    // var pagesToBuild = messages.filter(message => message.role == "assistant").map(message => message.tasks).flat().filter(task => task.type == "CreatePage")
+    var pagesToBuild = messages[0].tasks.filter(task => task.type == "CreatePage")
     pagesToBuild = pagesToBuild.filter((v, i, a) => a.findIndex(t => (t.inputs.path === v.inputs.path)) === i)
+    for(var i = 0; i < pagesToBuild.length; i++){
+      if(pagesToBuild[i].inputs.path == "/"){
+        pagesToBuild[i].inputs.path = "/newhome"
+      }
+    }
 
     if(endpointsToBuild.length == 0 && pagesToBuild.length == 0){
       toast.error("No new endpoints or pages to build")
@@ -91,46 +98,42 @@ export default function AssistantPage() {
     newTasks = filterUniqueTasks(newTasks); 
 
     //deal with overwriting tasks in previous messages
-    var uniqueMessages = []
-    for(var i = 0; i < messageSaved.length; i++){
-      if(messageSaved[i].role == "assistant"){ //for each old assistant message
-        const tasks = messageSaved[i].tasks
-        console.log("tasks", tasks)
-        for(var j = 0; j < tasks.length; j++){ //for each task in the old assistant message
-          console.log("task", tasks[j])
-          if(tasks[j].type == "CreateEndpoint"){
-            console.log("checking for", tasks[j].inputs.path, tasks[j].inputs.method)
-            const newTaskWithSamePathAndMethod = sortedEndpoints.filter(task => task.inputs.path == tasks[j].inputs.path && task.inputs.method == tasks[j].inputs.method)
-            console.log("sortedEndpoints", sortedEndpoints)
-            console.log("array of the same tasks", newTaskWithSamePathAndMethod)
-            if(newTaskWithSamePathAndMethod.length == 0){
-              //there is no new task with the same path and method, so we can keep the old one
-              uniqueMessages.push(messageSaved[i])
-            }
-          } else if(tasks[j].type == "CreatePage"){
-            console.log("checking for page", tasks[j].inputs.path)
-            const newTaskWithSamePath = sortedPages.filter(task => task.inputs.path == tasks[j].inputs.path)
-            console.log("array of the same tasks", newTaskWithSamePath)
-            if(newTaskWithSamePath.length == 0){
-              //there is no new task with the same path and method, so we can keep the old one
-              uniqueMessages.push(messageSaved[i])
-            }
-          }
-        }
-      }
-    }
-    console.log("old messages", messageSaved)
-    console.log("filtered old messages", uniqueMessages)
-    console.log("new tasks", newTasks)
+    // var uniqueMessages = []
+    // for(var i = 0; i < messageSaved.length; i++){
+    //   if(messageSaved[i].role == "assistant"){ //for each old assistant message
+    //     const tasks = messageSaved[i].tasks
+    //     console.log("tasks", tasks)
+    //     for(var j = 0; j < tasks.length; j++){ //for each task in the old assistant message
+    //       console.log("task", tasks[j])
+    //       if(tasks[j].type == "CreateEndpoint"){
+    //         console.log("checking for", tasks[j].inputs.path, tasks[j].inputs.method)
+    //         const newTaskWithSamePathAndMethod = sortedEndpoints.filter(task => task.inputs.path == tasks[j].inputs.path && task.inputs.method == tasks[j].inputs.method)
+    //         console.log("sortedEndpoints", sortedEndpoints)
+    //         console.log("array of the same tasks", newTaskWithSamePathAndMethod)
+    //         if(newTaskWithSamePathAndMethod.length == 0){
+    //           //there is no new task with the same path and method, so we can keep the old one
+    //           uniqueMessages.push(messageSaved[i])
+    //         }
+    //       } else if(tasks[j].type == "CreatePage"){
+    //         console.log("checking for page", tasks[j].inputs.path)
+    //         const newTaskWithSamePath = sortedPages.filter(task => task.inputs.path == tasks[j].inputs.path)
+    //         console.log("array of the same tasks", newTaskWithSamePath)
+    //         if(newTaskWithSamePath.length == 0){
+    //           //there is no new task with the same path and method, so we can keep the old one
+    //           uniqueMessages.push(messageSaved[i])
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    // console.log("old messages", messageSaved)
+    // console.log("filtered old messages", uniqueMessages)
+    // console.log("new tasks", newTasks)
 
-    setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...uniqueMessages])
+    setMessages([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...messageSaved])
     // setHistory([...history, {role: "user", content: aiPrompt}, {role: "assistant", content: JSON.stringify(rawResponse.openai_message)}])
 
-    toast.promise(callUpdateSchema([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...uniqueMessages]), {
-      loading: "Updating schema...",
-      success: "Done",
-      error: "An error occured",
-    })
+    return callUpdateSchema([{role: "assistant", tasks: newTasks}, {role: "user", content: aiPrompt}, ...messageSaved])
 
   }
 

@@ -19,14 +19,14 @@ export default function Logslist({
           setActivePage("analytics");
         }}
       />
-      {/* <LogsItem
+      <LogsItem
         className="assistant-tab"
         active={activePage == "assistant"}
         name="Assistant"
         onClick={() => {
           setActivePage("assistant");
         }}
-      /> */}
+      />
       <LogsItem
         className="logs-tab"
         active={activePage == "logs"}

@@ -1,4 +1,4 @@
-import { faForward, faMinimize, faPencil, faSpinner, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faMaximize, faMinimize, faPencil, faPlay, faSpinner, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
@@ -48,6 +48,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
   const [testResponses, setTestResponses] = useState({});
   const [loadingTests, setLoadingTests] = useState([]);
   const [runningAllTests, setRunningAllTests] = useState(false);
+  const [hideTestResults, setHideTestResults] = useState({});
 
   const api = useTestApi();
 
@@ -182,14 +183,14 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                       runSingleTest(testDoc);
                     }
                   }}
-                  className="p-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  className="p-2 font-medium rounded flex justify-center items-center cursor-pointer opacity-70 hover:opacity-100"
                   children={
                     loadingTests.includes(testDoc._id) ? (
                       <div>
                         <FontAwesomeIcon icon={faSpinner} />
                       </div>
                     ) : (
-                      <FontAwesomeIcon icon={faForward} />
+                      <FontAwesomeIcon icon={faPlay} />
                     )
                   }
                   text=""
@@ -199,7 +200,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
               <div className="flex space-x-2">
                 <Button
                   text=""
-                  className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer opacity-70 hover:opacity-100"
                   children={<FontAwesomeIcon icon={faPencil} style={{ color: "#D9D9D9" }} />}
                   onClick={() => {
                     setTestDoc(testDoc);
@@ -208,7 +209,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                 />
                 <Button
                   text=""
-                  className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                  className="p-2 ml-2 font-medium rounded flex justify-center items-center cursor-pointer opacity-70 hover:opacity-100"
                   children={<FontAwesomeIcon style={{ color: "#D9D9D9" }} icon={faTrash} />}
                   onClick={() => {
                     setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
@@ -231,19 +232,26 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
                       <span>{statusText[testDoc._id]}</span>
                       
-                      <FontAwesomeIcon icon={faMinimize} className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" onClick={() => {
-                        setTestResponses((prevResponses) => ({
+                      <FontAwesomeIcon icon={hideTestResults[testDoc._id] ? faMaximize : faMinimize} className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" onClick={() => {
+                        // setTestResponses((prevResponses) => ({
+                        //   ...prevResponses,
+                        //   [testDoc._id]: null,
+                        // }));
+                        const newShowState = hideTestResults[testDoc._id] ? false : true;
+                        setHideTestResults((prevResponses) => ({
                           ...prevResponses,
-                          [testDoc._id]: null,
+                          [testDoc._id]: newShowState,
                         }));
                       }}/>
 
                     </div>
                   </div>
                 </div>
-                <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">
+                {hideTestResults[testDoc._id] ? <></> : (
+                  <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">
                   {testResponses[testDoc._id]}
-                </pre>
+                  </pre>
+                )}
               </div>
             )}
           </div>

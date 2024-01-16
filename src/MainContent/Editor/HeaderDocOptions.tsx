@@ -229,4 +229,14 @@ export const swizzleActionOptions = [
 ]
 
 export const prelineComponents = [
+  {
+    "type": "component",
+    "image": "auth",
+    "link": "https://docs.swizzle.co/users/create-a-user",
+    "title": "Example",
+    "description": "Example",
+    "variants": [
+      {"bordered": "Border example"}
+    ]
+  },
 ]
