@@ -101,6 +101,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
       await runSingleTest(testDoc);
     }
     setRunningAllTests(false);
+    setHideTestResults({})
   };
 
   function getColorByStatus(statusCode: number) {
