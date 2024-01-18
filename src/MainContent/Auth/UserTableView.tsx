@@ -199,7 +199,7 @@ export default function UserTableView() {
     <div>
       <div className={`flex pr-2 h-8`}>
         <SearchBar
-          keys={keys}
+          keys={keys.filter((k) => hiddenColumns.indexOf(k) == -1)}
           filterName={filterName}
           setFilterName={setFilterName}
           searchQuery={searchQuery}

@@ -36,11 +36,30 @@ export default function FileWizard({
   const [validFallbackUrl, setValidFallbackUrl] = useState<boolean>(true);
 
   const createHandler = async () => {
-    const editingSameFile = inputValue === pathIfEditing;
-    const newFileName = pathToFile(inputValue);
+
+    var cleanInputValue = inputValue
+    var cleanFallbackInputValue = fallbackInputValue
+    if(cleanInputValue.endsWith("/")){
+      cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1)
+    }
+    if(cleanFallbackInputValue.endsWith("/")){
+      cleanFallbackInputValue = cleanFallbackInputValue.substring(0, cleanFallbackInputValue.length - 1)
+    }
+
+
+    if(fileType == "page"){
+      if(cleanInputValue.startsWith("/d") || cleanFallbackInputValue.startsWith("/d") || cleanInputValue.endsWith("/d") || cleanFallbackInputValue.endsWith("/d")) {
+        toast.error("The /d path is reserved for built-in endpoints. Please choose a different path");
+        return;
+      }
+    }
+    
+    const editingSameFile = cleanInputValue === pathIfEditing;
+    const newFileName = pathToFile(cleanInputValue);
     const hasConflicts = !editingSameFile && checkForConflicts(newFileName);
 
     if (hasConflicts) {
+      toast.error("That " + fileType + " already exists. You cannot overwrite it before changing its name or deleting it.")
       return;
     }
 
@@ -63,16 +82,16 @@ export default function FileWizard({
     }
 
     if (fileType == "page") {
-      await filesystemApi.createNewPage(inputValue, authRequired, fallbackInputValue, content);
+      await filesystemApi.createNewPage(cleanInputValue, authRequired, cleanFallbackInputValue, content);
     } else if (fileType == "file") {
-      await filesystemApi.createNewComponent(inputValue, content);
+      await filesystemApi.createNewComponent(cleanInputValue, content);
     }
 
     if (pathIfEditing != "" && !editingSameFile) {
       await runDeleteProcess(pathIfEditing);
     }
 
-    setShouldRefreshList(!shouldRefreshList);
+    setShouldRefreshList(prev => !prev);
     setIsVisible(false);
   };
 

@@ -88,8 +88,10 @@ export default function APIWizard({
       } else{
         contentsToCopy = contentsToCopy.replace(/requiredAuthentication/g, "optionalAuthentication")
       }
-      //Note this only works with single quotes right now
+
+      //replace both single and double quotes
       contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
+      contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}("/${pathToDelete}"`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
     }
 
     //Make the new file
@@ -144,19 +146,17 @@ export default function APIWizard({
     }
 
     if(!isCron && cleanInputValue.startsWith("/cron")){
-      toast.error("/cron is reserved for scheduled jobs")
+      throw "/cron is reserved for scheduled jobs"
       return
     }
 
     if(cleanInputValue.endsWith("/d") || cleanInputValue.includes("/d/")){
       throw "The /d path is reserved for built-in endpoints. Please choose a different path."
-      return
     }
 
     const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
     if(!regex.test(cleanInputValue)){
-      toast.error("Invalid path.")
-      return
+      throw "Invalid path"
     }
 
     if (cleanInputValue.endsWith(".ts")) {

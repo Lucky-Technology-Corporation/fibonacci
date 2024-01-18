@@ -100,6 +100,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   }, [selectedTab])
 
   useEffect(() => {
+    console.log("refreshing endpoint list", testDomain, activeProject)
     if(testDomain == undefined || activeProject == undefined){ return }
 
     getFiles("endpoints")

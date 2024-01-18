@@ -10,8 +10,15 @@ export function endpointToFilename(path: string): string {
 }
 
 export function filenameToEndpoint(filename: string): string {
-  return decodeURIComponent(filename).replace(".ts", "").replace(/\./g, "/").replace(/\(/g, ":").replace(/\)/g, "");
+  return replaceLastOccurrence(decodeURIComponent(filename), ".ts", "").replace(/\./g, "/").replace(/\(/g, ":").replace(/\)/g, "");
 }
+
+function replaceLastOccurrence(str, target, replacement) {
+  const lastIndex = str.lastIndexOf(target);
+  if (lastIndex === -1) return str;
+  return str.slice(0, lastIndex) + replacement + str.slice(lastIndex + target.length);
+}
+
 
 export function modifySwizzleImport(importStatement: string, newImport: string, action = "add") {
   if (importStatement == "") {

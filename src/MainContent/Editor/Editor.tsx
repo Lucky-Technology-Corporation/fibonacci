@@ -1,11 +1,12 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
 import TestWindow from "../../RightSidebar/TestWindow/TestWindow";
 import Button from "../../Utilities/Button";
-import { formatPath } from "../../Utilities/EndpointParser";
+import { endpointToFilename, filenameToEndpoint, formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
@@ -15,6 +16,8 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const iframeRef = useRef(null);
   const previewIframeRef = useRef(null);
   const currentFileRef = useRef(null);
+  const renameRef = useRef(null);
+  const endpointListRef = useRef([])
 
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
@@ -24,9 +27,9 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const [injectedLog, setInjectedLog] = useState<any>([]);
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
-  const { testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setActiveFile, setActiveEndpoint, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
-  const { getFermatJwt } = useEndpointApi();
-  const { patchPreviewComponent, setPreviewComponentFromPath } = useFilesystemApi();
+  const { setActiveEndpoint, fullEndpointList, testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setShouldRefreshList, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
+  const { getFermatJwt, getFile, writeFile } = useEndpointApi();
+  const { patchPreviewComponent, setPreviewComponentFromPath, deleteEndpoint, createNewEndpoint } = useFilesystemApi();
 
   useEffect(() => {
     if (postMessage == null) return;
@@ -97,28 +100,121 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
       var unwrappedRoot = event.data.message.replace("div#root > ", "")
       setCurrentSelector(unwrappedRoot)
     }
+
+    if(event.data.type == "routerLine"){
+      reactToRouterLineEvent(event)
+    }
   };
 
-  // useEffect(() => {
-  //   if(currentSelector == "") return;
-  //   if(activeFile == undefined || activeFile == "") return;
-  //   findSelector(activeFile, currentSelector).then((selector) => {
-  //     console.log(selector)
-  //   })
-  // }, [currentSelector])
+  const reactToRouterLineEvent = async (event) => {
+    const line = event.data.routerLine || ""
+    const uri = event.data.fileUri || ""
+    if(line == ""){ return }
+    if(uri.includes("backend/user-dependencies")){
+      //split method and path
+      const parts = line.split("router.")[1].split("(")
+      const method = parts[0]
+      
+      //extract path out of the quotes and remove the leading slash if it exists
+      var path = parts[1].split("', ")[0].replace(/'/g, "").replace(/"/g, "")
+      var noSlashPath = path
+      var doesNeedLeadingSlash = false
 
-  //Resend the file name when ready
+      if(noSlashPath.endsWith("/")){ noSlashPath = noSlashPath.split("/").slice(0, -1).join("/") }
+      if(noSlashPath.startsWith("/")){ noSlashPath = noSlashPath.split("/").slice(1).join("/") } 
+      else{ doesNeedLeadingSlash = true }
+
+      //get current file name from the postMessage uri
+      const currentFileName = decodeURIComponent(uri.split("backend/user-dependencies/").slice(1).join("/"))
+
+      const correctFileName = endpointToFilename(method + "/" + noSlashPath)
+      //send auth info just in case
+      const authRequired = line.includes("requiredAuthentication")
+      //get the file state (open or closed)
+      const fileState = event.data.fileState || "closed"
+      //if the current file name is not the correct file name, we need to rename it
+      if(currentFileName != correctFileName){
+        renameFile(currentFileName, correctFileName, authRequired, fileState, path, method)
+      } else{
+        if(doesNeedLeadingSlash && path != "/"){
+          addLeadingSlash(currentFileName, method, path)
+        }
+      }
+    }
+  }
+
+  const addLeadingSlash = async (fileName, routeMethod, routePath) =>{
+    const fileNameOnServer = "backend/user-dependencies/" + fileName
+    var contentsToCopy = await getFile(fileNameOnServer)
+    contentsToCopy = contentsToCopy.replace(`router.${routeMethod}('${routePath}'`, `router.${routeMethod}('/${routePath}'`)
+    await writeFile(fileNameOnServer, contentsToCopy)
+  }
+
+  const renameFile = async (oldName, newName, authRequired, fileState, originalPath, originalMethod) => {
+    //prevent infinite loop
+    // if(renameRef.current == oldName + "-" + newName){ return } 
+    // renameRef.current = oldName + "-" + newName
+    
+    const fileNameOnServer = "backend/user-dependencies/" + oldName
+    var contentsToCopy = await getFile(fileNameOnServer)
+
+    const methodToDelete = oldName.split(".")[0].toUpperCase()
+    const pathToDelete = filenameToEndpoint(oldName).split("/").slice(1).join("/")
+
+    const methodToAdd = newName.split(".")[0].toUpperCase()
+    const pathToAdd = filenameToEndpoint(newName).split("/").slice(1).join("/")
+
+    //Check for problems with the new path
+    const regex = /^(\/|(\/?((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
+    if(!regex.test(originalPath)){
+      toast.error(originalPath + " is an invalid path. Reverting to " + pathToDelete)
+      //replace route with old route
+      contentsToCopy = contentsToCopy.replace(`router.${originalMethod}('${originalPath}'`, `router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`)
+      await writeFile(fileNameOnServer, contentsToCopy)
+      return
+    }
+
+    if(newName.includes(".d.")){
+      newName = newName.replace(".d.", ".")
+      toast.error("URLs cannot contain /d/")
+      contentsToCopy = contentsToCopy.replace(`router.${originalMethod}('${originalPath}'`, `router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`)
+      await writeFile(fileNameOnServer, contentsToCopy)
+      return
+    }
+
+    if(endpointListRef.current.includes(methodToAdd.toLowerCase() + "/" + pathToAdd)){
+      toast.error(originalPath + " already exists. Reverting to " + pathToDelete)
+      contentsToCopy = contentsToCopy.replace(`router.${originalMethod}('${originalPath}'`, `router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`)
+      await writeFile(fileNameOnServer, contentsToCopy)
+      return
+    }
+
+    if(!originalPath.startsWith("/")){
+      contentsToCopy = contentsToCopy.replace(`router.${originalMethod.toLowerCase()}('${originalPath}'`, `router.${originalMethod.toLowerCase()}('/${originalPath}'`)
+    }
+
+    //Close the file if it was open
+    if(fileState == 'open'){
+      setPostMessage({
+        type: "removeFile",
+        fileName: "/" + fileNameOnServer,
+      });
+    }
+
+    await createNewEndpoint(pathToAdd, methodToAdd, authRequired, contentsToCopy) //authRequired has no effect when contentsToCopy is not null, but its here for safety
+    await deleteEndpoint(methodToDelete.toLowerCase(), pathToDelete)
+    
+    setShouldRefreshList(prev => !prev)
+
+    //Only reopen the file if it was open before
+    if(fileState == 'open'){
+      setActiveEndpoint(methodToAdd.toLowerCase() + "/" + pathToAdd)
+    }
+  }
+
   useEffect(() => {
-    window.addEventListener("message", messageHandler);
-
-    //On unmount, save the file and remove the event listener
-    return () => {
-      window.removeEventListener("message", messageHandler);
-      const message = { type: "saveFile" };
-      postMessageToIframe(message);
-      setIdeReady(false);
-    };
-  }, []);
+    endpointListRef.current = fullEndpointList
+  }, [fullEndpointList])
 
   useEffect(() => {
     if (testDomain == undefined || activeProject == undefined || testDomain == "" || activeProject == "") return;
@@ -129,6 +225,17 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
       setTheiaUrl(`${testDomain.replace("https://", "https://pascal.")}?jwt=${fermatJwt.replace("Bearer ", "")}`);
     };
     getUrl();
+
+    window.addEventListener("message", messageHandler);
+    renameRef.current = null
+    //On unmount, save the file and remove the event listener
+    return () => {
+      window.removeEventListener("message", messageHandler);
+      const message = { type: "saveFile" };
+      postMessageToIframe(message);
+      setIdeReady(false);
+    };
+
   }, [activeProject, testDomain]);
 
   useEffect(() => {
@@ -296,6 +403,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
                   text="Update"
                   onClick={() => {
                     patchPreviewComponent(previewComponent);
+                    setUrl(testDomain + "/d/component_preview?refresh=" + Math.random())
                   }}
                   className="mt-1 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-1 bg-[#32333b] cursor-pointer text-sm font-medium text-[#D9D9D9] hover:bg-[#525363]"
                 />

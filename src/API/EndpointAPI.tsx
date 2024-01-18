@@ -84,16 +84,23 @@ export default function useEndpointApi() {
     }
   };
 
-  const getFile = async (fileName: string) => {
+  const getFile = async (fileName: string, testDomainInput?: string) => {
+    var realTestDomain = null
+    if(testDomainInput != null){
+      realTestDomain = testDomainInput
+    } else{
+      realTestDomain = testDomain
+    }
+    
     try {
-      if (testDomain == null || testDomain == undefined || testDomain == "") {
+      if (realTestDomain == null || realTestDomain == undefined || realTestDomain == "") {
         return [];
       }
-      if (testDomain.includes("localhost")) {
+      if (realTestDomain.includes("localhost")) {
         return [];
       }
       const response = await axios.get(
-        `${testDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`,
+        `${realTestDomain.replace("https://", "https://fermat.")}/code/file_contents?path=code/${fileName}`,
         {
           headers: {
             Authorization: await getFermatJwt(),

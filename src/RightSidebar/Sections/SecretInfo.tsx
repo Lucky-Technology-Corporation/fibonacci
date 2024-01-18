@@ -117,9 +117,15 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
 
   const createNewSecret = () => {
     if (secrets.find((secret) => secret.name == newSecretName) != null) {
-      toast.error("A secret with that name already exists");
-      return Promise.reject();
+      throw "A secret with that name already exists";
     }
+    if(newSecretName.startsWith("SWIZZLE_")) {
+      throw "Secret names cannot start with SWIZZLE_";
+    }
+    if(newSecretName.includes(" ")) {
+      throw "Secret names cannot contain spaces";
+    }
+
     setSecrets([
       ...secrets,
       {

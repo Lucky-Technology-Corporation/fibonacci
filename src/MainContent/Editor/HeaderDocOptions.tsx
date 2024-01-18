@@ -151,7 +151,7 @@ export const frontendDocOptions = [
     "link": "https://docs.swizzle.co/frontend/users/sign-in",
     "title": "Sign In",
     "import": "useSignIn",
-    "importFrom": "react-auth-kit",
+    "importFrom": "react-auth-kit/hooks/useSignIn",
     "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const signIn = useSignIn()</span><span class='hidden'>to authenticate login signin sign in a user</span>"
   },
   {
@@ -160,7 +160,7 @@ export const frontendDocOptions = [
     "link": "https://docs.swizzle.co/frontend/users/sign-out",
     "title": "Sign Out",
     "import": "useSignOut",
-    "importFrom": "react-auth-kit",
+    "importFrom": "react-auth-kit/hooks/useSignOut",
     "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const signOut = useSignOut()</span><span class='hidden'>to logout signout log out sign out a user</span>"
   },
   {
@@ -169,16 +169,16 @@ export const frontendDocOptions = [
     "link": "https://docs.swizzle.co/frontend/users/check-auth-status",
     "title": "Check Login Status",
     "import": "useIsAuthenticated",
-    "importFrom": "react-auth-kit",
+    "importFrom": "react-auth-kit/hooks/useIsAuthenticated",
     "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const isAuthenticated = useIsAuthenticated()</span><span class='hidden'>to check if a user is logged in signed in authenticated auth status</span>"
   },
   {
     "type": "externalDoc",
     "image": "auth",
     "link": "https://docs.swizzle.co/frontend/users/get-user-data",
-    "title": "Get User Data",
+    "title": "Get Current User",
     "import": "useAuthUser",
-    "importFrom": "react-auth-kit",
+    "importFrom": "react-auth-kit/hooks/useAuthUser",
     "description": "<span class='font-mono cursor-pointer text-xs max-w-[400px] block overflow-hidden whitespace-nowrap text-ellipsis'>const auth = useAuthUser()</span><span class='hidden'>to get users uid userId id user data info</span>"
   },
 ]

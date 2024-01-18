@@ -252,8 +252,13 @@ export default function useFilesystemApi() {
 
       const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1]
       const newAssembly = firstPart + `{/* Component Preview Area Start */}\n<` + componentName + ` />\n{/* Component Preview Area End */}` + secondPart
-      await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
+      const file = await endpointApi.getFile("frontend/src/ComponentPreview.tsx")
+      
+      if(file.includes(`<` + componentName)){
+        return "<" + componentName + " />"
+      }
 
+      await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
       return "<" + componentName + " />"
     }
     return "";
