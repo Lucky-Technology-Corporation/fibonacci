@@ -11,7 +11,7 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useEndpointApi() {
   const authHeader = useAuthHeader();
-  const { setSelectedTab, setActivePage, testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
+  const { setFrontendRestarting, setSelectedTab, setActivePage, testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
     useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
@@ -200,6 +200,7 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
+      setFrontendRestarting(true)
       const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_frontend`, {}, {
         headers: {
           Authorization: await getFermatJwt(),

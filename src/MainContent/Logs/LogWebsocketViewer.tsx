@@ -20,7 +20,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     const [log, setLog] = useState([]);
     const [ws, setWs] = useState<WebSocket>(null);
     const endpointApi = useEndpointApi();
-    const {testDomain, activeProject, activeEndpoint, setPostMessage, selectedTab} = useContext(SwizzleContext);
+    const {testDomain, activeProject, activeEndpoint, setPostMessage, selectedTab, setFrontendRestarting} = useContext(SwizzleContext);
     const divRef = useRef(null);
     const [currentLocation, setCurrentLocation] = useState<string>("backend");
     const [didRestartRecently, setDidRestartRecently] = useState<boolean>(false);
@@ -318,7 +318,15 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
                                     currentLine.includes("[nodemon] watching extensions: ts") ||
                                     currentLine.includes("[nodemon] 3.0.1") ||
                                     currentLine.includes("npm WARN exec The following package was not found and will be installed")
-                                ){ continue }        
+                                ){ continue }      
+                                
+                                if(currentLine.includes("asset bundle.js" && currentLine.includes("[emitted]"))){
+                                    setFrontendRestarting(true)
+                                }
+
+                                if(currentLine.includes("Rebuilding..." || currentLine.includes("Done in "))){
+                                    setFrontendRestarting(false)
+                                }
     
                                 try{
                                     const parsed = JSON.parse(currentLine);

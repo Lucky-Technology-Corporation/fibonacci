@@ -89,6 +89,8 @@ export default function APIWizard({
         contentsToCopy = contentsToCopy.replace(/requiredAuthentication/g, "optionalAuthentication")
       }
 
+      contentsToCopy = deduplicateImportStatements(contentsToCopy)
+
       //replace both single and double quotes
       contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
       contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}("/${pathToDelete}"`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
@@ -112,6 +114,31 @@ export default function APIWizard({
 
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
+  }
+
+  const deduplicateImportStatements = (contents: string) => {
+    const lines = contents.split("\n")
+    var newContents = ""
+    for(let i = 0; i < lines.length; i++){
+      if(lines[i].startsWith("import")){
+        if(lines[i].includes("{") && lines[i].includes("}")){
+          const importList = lines[i].split("{")[1].split("}")[0].split(",")
+          var newImports = []
+          var newImportString = ""
+          importList.forEach((imp) => {
+            const trimmedImport = imp.trim()
+            if(!newImports.includes(trimmedImport)){
+              newImportString += trimmedImport + ", "
+              newImports.push(trimmedImport)
+            }
+          })
+          newContents += lines[i].split("{")[0] + "{" + newImportString.slice(0, -2) + "}" + lines[i].split("}")[1] + "\n"
+        }
+      } else{
+        newContents += lines[i] + "\n"
+      }
+    }
+    return newContents
   }
 
   const checkForConflicts = (inputValue: string) => {

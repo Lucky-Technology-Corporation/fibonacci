@@ -78,6 +78,8 @@ export interface SwizzleContextType {
   setTaskQueue: Dispatch<SetStateAction<any>>;
   fullTaskQueue: any;
   setFullTaskQueue: Dispatch<SetStateAction<any>>;
+  frontendRestarting: boolean;
+  setFrontendRestarting: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -114,6 +116,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [swizzleActionDispatch, setSwizzleActionDispatch] = useState<any>(null)
   const [fileErrors, setFileErrors] = useState<string>("")
   const [activePage, setActivePage] = useState<string>(undefined)
+  const [frontendRestarting, setFrontendRestarting] = useState<boolean>(false)
 
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
@@ -200,7 +203,9 @@ export const GlobalContextProvider = ({ children }) => {
         taskQueue,
         setTaskQueue,
         fullTaskQueue,
-        setFullTaskQueue
+        setFullTaskQueue,
+        frontendRestarting,
+        setFrontendRestarting
       }}
     >
       {children}

@@ -6,12 +6,14 @@ export default function Checkbox({
   checkedLabel,
   isChecked,
   setIsChecked,
+  onChange,
 }: {
   id: string;
   label: string;
   checkedLabel?: string;
   isChecked: boolean;
   setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
     <>
@@ -22,6 +24,9 @@ export default function Checkbox({
         style={{ display: "none" }}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           setIsChecked(e.target.checked);
+          if (onChange) {
+            onChange(e);
+          }
         }}
         checked={isChecked}
       />

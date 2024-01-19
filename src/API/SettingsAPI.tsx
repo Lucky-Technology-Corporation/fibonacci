@@ -2,6 +2,7 @@ import axios from "axios";
 import { useContext } from "react";
 import { useAuthHeader, useSignOut } from "react-auth-kit";
 import { SwizzleContext } from "../Utilities/GlobalContext";
+import useEndpointApi from "./EndpointAPI";
 
 const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -9,6 +10,7 @@ export default function useSettingsApi() {
   const authHeader = useAuthHeader();
   const signOut = useSignOut()
   const { environment, activeProject } = useContext(SwizzleContext);
+  const endpointApi = useEndpointApi()
 
   const checkIfAccountNeedsEmail = async () => {  
     try {
@@ -126,6 +128,7 @@ export default function useSettingsApi() {
           withCredentials: true,
         },
       );
+      endpointApi.restartBackend()
       return response.data;
     } catch (e: any) {
       console.error(e);

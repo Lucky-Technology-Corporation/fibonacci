@@ -27,7 +27,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
   const [injectedLog, setInjectedLog] = useState<any>([]);
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
-  const { setActiveEndpoint, fullEndpointList, testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setShouldRefreshList, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
+  const { frontendRestarting, setActiveEndpoint, fullEndpointList, testDomain, postMessage, setPostMessage, setIdeReady, ideReady, activeProject, activeFile, setShouldRefreshList, environment, refreshTheia, setRefreshTheia, setSelectedText, setFileErrors } = useContext(SwizzleContext);
   const { getFermatJwt, getFile, writeFile } = useEndpointApi();
   const { patchPreviewComponent, setPreviewComponentFromPath, deleteEndpoint, createNewEndpoint } = useFilesystemApi();
 
@@ -459,21 +459,21 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
               borderRadius: "8px"
             }}
           />
-          {isDragging && (
+          {frontendRestarting && (
             <div 
               style={{ 
                 position: 'fixed', 
-                top: iframeRect.top, 
-                left: iframeRect.left, 
-                width: iframeRect.width, 
-                height: iframeRect.height, 
+                top: "8px", 
+                right: "0px", 
+                width: "calc(40vw - 82px)", 
+                height: "100vh", 
                 zIndex: 9999, 
-                cursor: 'grabbing',
-                border: '3px dashed #ff0000',
-                background: 'rgba(255,0,0,0)' // Transparent background
+                background: '#000000aa', // Transparent background
+                color: '#fff'
               }}
-              onDragOver={handleDragOver}
-            />
+            >
+              <div className="mt-40 w-full text-center font-bold text-lg">Restarting...</div>
+            </div>
           )}
         </div>
       ) : (

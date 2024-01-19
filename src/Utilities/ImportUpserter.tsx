@@ -45,6 +45,7 @@ export function addImports(code: string, imports: Import[]): string {
 
         return generate(ast, { retainLines: true }).code;
     } catch(e) {
+        console.log("insert error", e)
         var newCode = code;
         for(let i = 0; i < imports.length; i++) {
             const regex = new RegExp(`^import.*?(['"]${imports[i].from}['"]);?\\s*(.*?)$`);
