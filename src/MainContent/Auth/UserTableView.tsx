@@ -9,13 +9,14 @@ import NiceInfo from "../../Utilities/NiceInfo";
 import Pagination from "../../Utilities/Pagination";
 import RowDetail from "../Database/RowDetail";
 import SearchBar from "../Shared/SearchBar";
+import EditAuthMethodView from "./EditAuthMethodView";
 import UserRow from "./UserRow";
 import UserWizard from "./UserWizard";
 
 export default function UserTableView() {
   const { getDocuments, runQuery } = useDatabaseApi();
 
-  const { activeProject, activeProjectName, environment } = useContext(SwizzleContext);
+  const { activeProject, activeProjectName, environment, activeAuthPage } = useContext(SwizzleContext);
 
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -187,6 +188,10 @@ export default function UserTableView() {
     setCurrentPage(0);
     setSortedByColumn(key);
   };
+
+  if(activeAuthPage != "list"){
+    return <EditAuthMethodView method={activeAuthPage} />
+  }
 
   if (error) {
     return <NiceInfo title="Failed to load data" subtitle="Check your connection and try again" />;

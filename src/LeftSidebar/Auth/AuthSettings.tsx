@@ -14,17 +14,14 @@ export default function AuthSettings({ active, className = "" }: { active: boole
   ];
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [authMethods, setAuthMethods] = useState<any[]>([]);
-  const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
-  const [activePage, setActivePage] = useState<string>("list");
   const [allowingNewSignups, setAllowingNewSignups] = useState<boolean>(null);
-  const { testDomain } = useContext(SwizzleContext);
+  const { testDomain, activeAuthPage, setActiveAuthPage, shouldRefreshAuth, setShouldRefreshAuth } = useContext(SwizzleContext);
 
   const { getSecrets, saveSecrets } = useSettingsApi();
 
   useEffect(() => {
     getSecrets().then((secrets) => {
       if (secrets == null) return;
-      console.log(secrets.test)
       setAuthMethods([]);
       Object.keys(secrets.test).forEach((secretKey: string) => {
         if(secretKey == "GOOGLE_APP_ID"){
@@ -42,10 +39,10 @@ export default function AuthSettings({ active, className = "" }: { active: boole
         }
       })
     });
-  }, [active, shouldRefresh, testDomain]);
+  }, [active, shouldRefreshAuth, testDomain]);
 
   const selectedAuthMethod = (methodId: string) => {
-    setActivePage(methodId);
+    setActiveAuthPage(methodId);
   }
 
   const changeAllowNewSignups = (value: boolean) => {
@@ -80,7 +77,7 @@ export default function AuthSettings({ active, className = "" }: { active: boole
       </div>
       <div
         className={`text-sm flex-1 p-1.5 py-1.5 mt-1.5 my-1 ${
-          (activePage == "list") ? "bg-[#85869822]" : ""
+          (activeAuthPage == "list") ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={() => { selectedAuthMethod("list") }}
       >
@@ -106,7 +103,7 @@ export default function AuthSettings({ active, className = "" }: { active: boole
         return (
         <div
           className={`text-sm flex-1 p-1.5 py-1.5 my-1 ${
-            (activePage == method.id) ? "bg-[#85869822]" : ""
+            (activeAuthPage == method.id) ? "bg-[#85869822]" : ""
           } hover:bg-[#85869833] cursor-pointer rounded`}
           onClick={() => selectedAuthMethod(method.id)}
         >
@@ -118,7 +115,7 @@ export default function AuthSettings({ active, className = "" }: { active: boole
         setIsVisible={setIsVisible}
         authId={selectedTemplateId}
         authName={methods.find((method: any) => method.id === selectedTemplateId)?.name}
-        setShouldRefresh={setShouldRefresh}
+        setShouldRefresh={setShouldRefreshAuth}
       />
     </div>
   );

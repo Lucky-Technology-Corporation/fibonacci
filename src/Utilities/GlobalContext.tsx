@@ -80,6 +80,10 @@ export interface SwizzleContextType {
   setFullTaskQueue: Dispatch<SetStateAction<any>>;
   frontendRestarting: boolean;
   setFrontendRestarting: Dispatch<SetStateAction<boolean>>;
+  activeAuthPage: string;
+  setActiveAuthPage: Dispatch<SetStateAction<string>>;
+  shouldRefreshAuth: boolean;
+  setShouldRefreshAuth: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -117,6 +121,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [fileErrors, setFileErrors] = useState<string>("")
   const [activePage, setActivePage] = useState<string>(undefined)
   const [frontendRestarting, setFrontendRestarting] = useState<boolean>(false)
+  const [activeAuthPage, setActiveAuthPage] = useState<string>("list")
+  const [shouldRefreshAuth, setShouldRefreshAuth] = useState<boolean>(false)
 
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
@@ -205,7 +211,11 @@ export const GlobalContextProvider = ({ children }) => {
         fullTaskQueue,
         setFullTaskQueue,
         frontendRestarting,
-        setFrontendRestarting
+        setFrontendRestarting,
+        activeAuthPage,
+        setActiveAuthPage,
+        shouldRefreshAuth,
+        setShouldRefreshAuth
       }}
     >
       {children}

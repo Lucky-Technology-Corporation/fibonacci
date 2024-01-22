@@ -21,7 +21,11 @@ export default function AuthWizard({
   const { saveSecrets } = useSettingsApi();
 
   useEffect(() => {
-    
+    if(authId == "email"){
+      setInputState({
+        SWIZZLE_EMAIL_PASSWORD: "true",
+      });
+    }
   }, [isVisible]);
 
 
@@ -46,6 +50,7 @@ export default function AuthWizard({
   }
 
   const renderInputsFor = (authId: string) => {
+    console.log("render for", authId)
     if(authId === "google") {
       return (
         <div className="mt-4" key={"GOOGLE_APP_ID"}>
@@ -62,18 +67,20 @@ export default function AuthWizard({
         </div>
       )
     } else if(authId == "facebook"){
-      <div className="mt-4" key={"FACEBOOK_APP_ID"}>
-        <div className="text-gray-300">Facebook App ID</div>
-        <div className="text-gray-400">Get this from the Facebook developer portal</div>
-        <input
-          className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
-          placeholder={""}
-          value={inputState["FACEBOOK_APP_ID"] || ""}
-          onChange={(e) =>
-            setInputState((prevState) => ({ ...prevState, ["FACEBOOK_APP_ID"]: e.target.value }))
-          }
-        />
-      </div>
+      return(
+        <div className="mt-4" key={"FACEBOOK_APP_ID"}>
+          <div className="text-gray-300">Facebook App ID</div>
+          <div className="text-gray-400">Get this from the Facebook developer portal</div>
+          <input
+            className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
+            placeholder={""}
+            value={inputState["FACEBOOK_APP_ID"] || ""}
+            onChange={(e) =>
+              setInputState((prevState) => ({ ...prevState, ["FACEBOOK_APP_ID"]: e.target.value }))
+            }
+          />
+        </div>
+      )
     }
   }
 

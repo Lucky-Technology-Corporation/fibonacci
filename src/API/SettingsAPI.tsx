@@ -147,6 +147,7 @@ export default function useSettingsApi() {
           withCredentials: true,
         },
       );
+      endpointApi.restartBackend()
       return response.data;
     } catch (e: any) {
       console.error(e);
