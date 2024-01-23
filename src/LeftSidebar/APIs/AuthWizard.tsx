@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSettingsApi from "../../API/SettingsAPI";
+import { SwizzleContext } from "../../Utilities/GlobalContext";
 
 export default function AuthWizard({
   isVisible,
@@ -19,7 +20,8 @@ export default function AuthWizard({
   const [inputState, setInputState] = useState({});
   const [isCreating, setIsCreating] = useState(false);
   const { saveSecrets } = useSettingsApi();
-
+  const { setActiveAuthPage } = useContext(SwizzleContext);
+  
   useEffect(() => {
     if(authId == "email"){
       setInputState({
@@ -47,6 +49,7 @@ export default function AuthWizard({
     };
     await saveSecrets(secrets);
     setShouldRefresh(r => !r)
+    setActiveAuthPage(authId)
   }
 
   const renderInputsFor = (authId: string) => {

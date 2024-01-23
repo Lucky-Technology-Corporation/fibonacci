@@ -418,7 +418,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
               />
             </div>
           )}
-          {(activeFile || "").includes("frontend/src/pages") && (
+          {(selectedTab == Page.Hosting && (activeFile || "").includes("frontend/") && !(activeFile || "").includes("frontend/src/components")) && (
             <div className="pt-3 px-1 flex-wrap no-focus-ring">
               <div className="mb-1 font-bold"><FontAwesomeIcon icon={faXmark} className="w-3 h-3 mr-1 cursor-pointer" onClick={closePreview}/> Preview</div>
               <div className="flex flex-row h-8">

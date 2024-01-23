@@ -29,6 +29,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
   const [newSecretTestValue, setNewSecretTestValue] = useState<string>("");
   const [newSecretProductionValue, setNewSecretProductionValue] = useState<string>("");
 
+  const authSecrets = ["GOOGLE_APP_ID", "FACEBOOK_APP_ID", "SWIZZLE_EMAIL_PASSWORD", "DOMAIN", "TOKEN_EXPIRY", "ALLOW_NEW_SIGNUPS"];
   useEffect(() => {
     if (isVisible) {
       getSecrets().then((secrets) => {
@@ -40,7 +41,8 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
             testValue: secrets.test[key],
             productionValue: secrets.prod[key] == true ? "(hidden for security)" : secrets.prod[key],
           }))
-          .filter((secret) => !secret.name.startsWith("SWIZZLE_"));
+          .filter((secret) => !secret.name.startsWith("SWIZZLE_"))
+          .filter((secret) => !authSecrets.includes(secret.name))
 
         setSecrets(shapedSecretArray);
         setRemoteSavedSecrets(shapedSecretArray);
