@@ -240,8 +240,8 @@ export default function LeftSidebar({
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
         
-        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="left">
+        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="right">
           <div className="w-full">
             <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
               <SectionTitle
@@ -279,8 +279,8 @@ export default function LeftSidebar({
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
         
-        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="left">
+        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
+        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="right">
           <div className="w-full">
             <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
               <SectionTitle
