@@ -19,7 +19,7 @@ export default function AuthWizard({
 
   const [inputState, setInputState] = useState({});
   const [isCreating, setIsCreating] = useState(false);
-  const { saveSecrets } = useSettingsApi();
+  const { saveSecrets, getSecrets } = useSettingsApi();
   const { setActiveAuthPage } = useContext(SwizzleContext);
   
   useEffect(() => {
@@ -27,21 +27,29 @@ export default function AuthWizard({
       setInputState({
         SWIZZLE_EMAIL_PASSWORD: "true",
       });
+    } else if(authId == "google"){
+      setInputState({
+        GOOGLE_APP_ID: "",
+      });
+    } else if(authId == "facebook"){
+      setInputState({
+        FACEBOOK_APP_ID: "",
+      });
     }
   }, [isVisible]);
 
 
-  const isAllInputsFilled = () => {
-    for (const key in inputState) {
-      const value = inputState[key];
-      if (value === "" || value === null || value === undefined) {
-        return false;
+  async function addAuthMethod() {
+    if(authId == "google" || authId == "facebook"){
+      var authIdKey = authId == "google" ? "GOOGLE_APP_ID" : "FACEBOOK_APP_ID";
+      const existingSecrets = await getSecrets();
+      if(existingSecrets){
+        if(existingSecrets.test[authIdKey] || existingSecrets.prod[authIdKey]){
+          setActiveAuthPage(authId)
+          throw 'This auth method already exists'
+        }
       }
     }
-    return true;
-  };  
-
-  async function addAuthMethod() {
     //add secrets
     const secrets = {
       test: inputState,
@@ -52,40 +60,40 @@ export default function AuthWizard({
     setActiveAuthPage(authId)
   }
 
-  const renderInputsFor = (authId: string) => {
-    console.log("render for", authId)
-    if(authId === "google") {
-      return (
-        <div className="mt-4" key={"GOOGLE_APP_ID"}>
-          <div className="text-gray-300">Google Client ID</div>
-          <div className="text-gray-400">Get this from the <a href='https://console.cloud.google.com/apis/credentials' target='_blank'>Google Cloud Console</a></div>
-          <input
-            className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
-            placeholder={""}
-            value={inputState["GOOGLE_APP_ID"] || ""}
-            onChange={(e) =>
-              setInputState((prevState) => ({ ...prevState, ["GOOGLE_APP_ID"]: e.target.value }))
-            }
-          />
-        </div>
-      )
-    } else if(authId == "facebook"){
-      return(
-        <div className="mt-4" key={"FACEBOOK_APP_ID"}>
-          <div className="text-gray-300">Facebook App ID</div>
-          <div className="text-gray-400">Get this from the Facebook developer portal</div>
-          <input
-            className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
-            placeholder={""}
-            value={inputState["FACEBOOK_APP_ID"] || ""}
-            onChange={(e) =>
-              setInputState((prevState) => ({ ...prevState, ["FACEBOOK_APP_ID"]: e.target.value }))
-            }
-          />
-        </div>
-      )
-    }
-  }
+  // const renderInputsFor = (authId: string) => {
+  //   console.log("render for", authId)
+  //   if(authId === "google") {
+  //     return (
+  //       <div className="mt-4" key={"GOOGLE_APP_ID"}>
+  //         <div className="text-gray-300">Google Client ID</div>
+  //         <div className="text-gray-400">Get this from the <a href='https://console.cloud.google.com/apis/credentials' target='_blank'>Google Cloud Console</a></div>
+  //         <input
+  //           className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
+  //           placeholder={""}
+  //           value={inputState["GOOGLE_APP_ID"] || ""}
+  //           onChange={(e) =>
+  //             setInputState((prevState) => ({ ...prevState, ["GOOGLE_APP_ID"]: e.target.value }))
+  //           }
+  //         />
+  //       </div>
+  //     )
+  //   } else if(authId == "facebook"){
+  //     return(
+  //       <div className="mt-4" key={"FACEBOOK_APP_ID"}>
+  //         <div className="text-gray-300">Facebook App ID</div>
+  //         <div className="text-gray-400">Get this from the Facebook developer portal</div>
+  //         <input
+  //           className="w-full mt-2 bg-transparent border rounded outline-0 p-2 border-[#525363] focus:border-[#68697a]"
+  //           placeholder={""}
+  //           value={inputState["FACEBOOK_APP_ID"] || ""}
+  //           onChange={(e) =>
+  //             setInputState((prevState) => ({ ...prevState, ["FACEBOOK_APP_ID"]: e.target.value }))
+  //           }
+  //         />
+  //       </div>
+  //     )
+  //   }
+  // }
 
   return (
     <div
@@ -106,16 +114,12 @@ export default function AuthWizard({
                   <h3 className="text-lg mb-2 leading-6 font-medium text-[#D9D9D9]" id="modal-title">
                     Add {authName}
                   </h3>
-                  {renderInputsFor(authId)}
+                  {/* {renderInputsFor(authId)} */}
 
                   <div className="bg-[#181922] py-3 pt-0 mt-4 sm:flex sm:flex-row-reverse">
                     <button
                       type="button"
                       onClick={() => {
-                        if (!isAllInputsFilled()) {
-                          toast.error("Please fill in all the inputs.");
-                          return;
-                        }
                         setIsCreating(true)
                         toast.promise(addAuthMethod(), {
                           loading: "Adding...",
@@ -125,7 +129,12 @@ export default function AuthWizard({
                             setIsVisible(false);
                             return "Added";
                           },
-                          error: "An error occurred",
+                          error: (e) => { 
+                            setIsCreating(false)
+                            setInputState({});
+                            setIsVisible(false);
+                            return e 
+                          },
                         });
                       }}
                       disabled={isCreating}

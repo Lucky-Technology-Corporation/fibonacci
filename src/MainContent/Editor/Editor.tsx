@@ -459,7 +459,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
               borderRadius: "8px"
             }}
           />
-          {frontendRestarting && (
+          {/* {frontendRestarting && (
             <div 
               style={{ 
                 position: 'fixed', 
@@ -474,7 +474,7 @@ export default function Editor({ currentFileProperties, setCurrentFileProperties
             >
               <div className="mt-40 w-full text-center font-bold text-lg">Restarting...</div>
             </div>
-          )}
+          )} */}
         </div>
       ) : (
         <div className={`flex flex-col ${isSidebarOpen ? "w-[500px]" : "w-0 hidden"}`} style={{height: "calc(100vh - 12px)"}}>

@@ -96,8 +96,8 @@ export default function EditAuthMethodView({method}: {method: string}){
   if(method == "google"){
     return (
       <div className="flex flex-col items-center justify-center h-full mr-4">
-        <div className="text-lg font-bold">Credentials</div>
-        <div className="text-sm text-gray-400 mb-1">Get these values <b>from</b> the <a href='https://console.cloud.google.com/apis/credentials' target='_blank'>Google Cloud Console</a></div>
+        <div className="text-lg font-bold">Google Credentials</div>
+        <div className="text-sm text-gray-400 mb-1">Get these values <b>from</b> the <a href='https://docs.swizzle.co/frontend/users/google-setup' target='_blank'>Google Cloud Console</a></div>
         <div className="flex flex-col items-center justify-center mt-4">
           <div>
             <div className="text-sm font-medium">Google Client ID</div>
@@ -136,8 +136,8 @@ export default function EditAuthMethodView({method}: {method: string}){
   } else if(method == "facebook"){
     return (
       <div className="flex flex-col items-center justify-center h-full mr-4">
-        <div className="text-lg font-bold">Credentials</div>
-        <div className="text-sm text-gray-400 mb-1">Get these values <b>from</b> the <a href='https://developers.facebook.com/apps' target='_blank'>Facebook Developer Portal</a></div>
+        <div className="text-lg font-bold">Facebook Credentials</div>
+        <div className="text-sm text-gray-400 mb-1">Get these values <b>from</b> the <a href='https://docs.swizzle.co/frontend/users/facebook-setup' target='_blank'>Facebook Developer Portal</a></div>
         <div className="flex flex-col items-center justify-center mt-4">
           <div>
             <div className="text-sm font-medium">Facebook App ID</div>
