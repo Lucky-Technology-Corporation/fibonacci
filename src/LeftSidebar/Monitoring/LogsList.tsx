@@ -35,7 +35,7 @@ export default function Logslist({
           setActivePage("logs");
         }}
       />
-      
+
       {/* <LogsItem
         className="templates-tab"
         active={activePage == "templates"}

@@ -25,7 +25,6 @@ export default function RowDetail({
   openNewDocumentWithData?: (data: any) => void;
   deleteFunction?: (data: any) => Promise<any>;
 }) {
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { deleteDocument, updateDocument } = useDatabaseApi();
 
@@ -165,7 +164,11 @@ export default function RowDetail({
               </tr>
             </>
           )}
-          <tr onClick={() => {setShowDeleteModal(true)}}>
+          <tr
+            onClick={() => {
+              setShowDeleteModal(true);
+            }}
+          >
             <td className="px-4 py-2 p-1 flex hover:bg-[#85869833]">
               <div className="">{getAction()}</div>
             </td>
@@ -177,10 +180,16 @@ export default function RowDetail({
         open={showDeleteModal}
         setOpen={setShowDeleteModal}
         title="Are you sure?"
-        subtitle={deleteAction == "deactivate" ? (data._deactivated ? "Are you sure you want to reactivate this user?" : "Are you sure you want to deactivate this user?") : "Are you sure you want to delete this document?"}
+        subtitle={
+          deleteAction == "deactivate"
+            ? data._deactivated
+              ? "Are you sure you want to reactivate this user?"
+              : "Are you sure you want to deactivate this user?"
+            : "Are you sure you want to delete this document?"
+        }
         confirmButtonText="Confirm"
-        confirmButtonAction={() => { 
-          runDeleteDocument()
+        confirmButtonAction={() => {
+          runDeleteDocument();
         }}
       />
     </div>

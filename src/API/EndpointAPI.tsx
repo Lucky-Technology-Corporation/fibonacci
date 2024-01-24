@@ -11,8 +11,24 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useEndpointApi() {
   const authHeader = useAuthHeader();
-  const { setFrontendRestarting, setSelectedTab, setActivePage, testDomain, setActiveEndpoint, setActiveFile, environment, activeProject, setFermatJwt, fermatJwt, openUri, fullEndpointList, taskQueue, setTaskQueue, shouldRefreshList, setShouldRefreshList } =
-    useContext(SwizzleContext);
+  const {
+    setFrontendRestarting,
+    setSelectedTab,
+    setActivePage,
+    testDomain,
+    setActiveEndpoint,
+    setActiveFile,
+    environment,
+    activeProject,
+    setFermatJwt,
+    fermatJwt,
+    openUri,
+    fullEndpointList,
+    taskQueue,
+    setTaskQueue,
+    shouldRefreshList,
+    setShouldRefreshList,
+  } = useContext(SwizzleContext);
 
   const npmSearch = async (query: string) => {
     const response = await axios.get(`https://registry.npmjs.com/-/v1/search?text=${query}&size=10`);
@@ -74,9 +90,13 @@ export default function useEndpointApi() {
 
   const deploy = async () => {
     try {
-      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`, {}, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/release`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
       return response.data;
     } catch (e) {
       console.error(e);
@@ -85,13 +105,13 @@ export default function useEndpointApi() {
   };
 
   const getFile = async (fileName: string, testDomainInput?: string) => {
-    var realTestDomain = null
-    if(testDomainInput != null){
-      realTestDomain = testDomainInput
-    } else{
-      realTestDomain = testDomain
+    var realTestDomain = null;
+    if (testDomainInput != null) {
+      realTestDomain = testDomainInput;
+    } else {
+      realTestDomain = testDomain;
     }
-    
+
     try {
       if (realTestDomain == null || realTestDomain == undefined || realTestDomain == "") {
         return [];
@@ -148,13 +168,13 @@ export default function useEndpointApi() {
         return false;
       }
 
-      var filePath = ""
-      if(location == "backend"){
-        filePath = "/backend/user-dependencies/" + fileName
-      } else if(location == "frontend"){
-        filePath = "/frontend/src/" + fileName
-      } else if(location == "helpers"){
-        filePath = "/backend/helpers/" + fileName
+      var filePath = "";
+      if (location == "backend") {
+        filePath = "/backend/user-dependencies/" + fileName;
+      } else if (location == "frontend") {
+        filePath = "/frontend/src/" + fileName;
+      } else if (location == "helpers") {
+        filePath = "/backend/helpers/" + fileName;
       }
 
       const response = await axios.delete(
@@ -170,7 +190,7 @@ export default function useEndpointApi() {
       console.error(e);
       return false;
     }
-  }
+  };
 
   const removeRouteFromList = async (path: string) => {
     try {
@@ -180,19 +200,21 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/serverts/delete`, 
-      {
-        filename: path
-      }, 
-      {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/serverts/delete`,
+        {
+          filename: path,
+        },
+        {
+          withCredentials: true,
+        },
+      );
       return response.data;
     } catch (e) {
       console.error(e);
       return [];
     }
-  }
+  };
 
   const restartBackend = async () => {
     try {
@@ -202,17 +224,21 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_backend`, {}, {
-        headers: {
-          Authorization: await getFermatJwt(),
+      const response = await axios.post(
+        `${testDomain.replace("https://", "https://fermat.")}/restart_backend`,
+        {},
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e) {
       console.error(e);
       return [];
     }
-  }
+  };
 
   const restartFrontend = async () => {
     try {
@@ -222,18 +248,22 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      setFrontendRestarting(true)
-      const response = await axios.post(`${testDomain.replace("https://", "https://fermat.")}/restart_frontend`, {}, {
-        headers: {
-          Authorization: await getFermatJwt(),
+      setFrontendRestarting(true);
+      const response = await axios.post(
+        `${testDomain.replace("https://", "https://fermat.")}/restart_frontend`,
+        {},
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e) {
       console.error(e);
       return [];
     }
-  }
+  };
 
   const promptDbHelper = async (userQuery: string, collection: string, history?: any[]) => {
     try {
@@ -257,10 +287,16 @@ export default function useEndpointApi() {
     }
   };
 
-
-  const promptAiEditor = async (userQuery: string, queryType: string, selectedText?: string, history?: any[], path?: string, fileErrors?: string) => {
+  const promptAiEditor = async (
+    userQuery: string,
+    queryType: string,
+    selectedText?: string,
+    history?: any[],
+    path?: string,
+    fileErrors?: string,
+  ) => {
     try {
-      const filePath = path ? path : openUri.replace("/swizzle/code/", "")
+      const filePath = path ? path : openUri.replace("/swizzle/code/", "");
 
       var body = {
         prompt: userQuery,
@@ -274,7 +310,7 @@ export default function useEndpointApi() {
         error_message: fileErrors,
       };
 
-      sessionStorage.setItem(("ai" + activeProject + "_" + filePath + "_file"), userQuery)
+      sessionStorage.setItem("ai" + activeProject + "_" + filePath + "_file", userQuery);
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/edit?env=${environment}`,
@@ -309,11 +345,10 @@ export default function useEndpointApi() {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const promptAiPlanner = async (userQuery: string, history?: any[]) => {
     try {
-
       var body = {
         prompt: userQuery,
         fermat_domain: testDomain.replace("https://", "https://fermat."),
@@ -337,7 +372,6 @@ export default function useEndpointApi() {
 
   const promptAiTaskEdit = async (task: any, prompt: string) => {
     try {
-
       var body = {
         prompt: prompt,
         task: task,
@@ -355,7 +389,7 @@ export default function useEndpointApi() {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const aiTaskExecute = async (task: any, allTasks: any) => {
     try {
@@ -364,19 +398,15 @@ export default function useEndpointApi() {
         full_task_summary: allTasks,
       };
 
-      const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/execute`,
-        body,
-        {
-          withCredentials: true,
-        },
-      );
+      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/execute`, body, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (e) {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const getCodeFromFigma = async (figmaUrl: string, language: string) => {
     const figmaFileId = figmaUrl.split("file/")[1].split("/")[0];
@@ -402,9 +432,9 @@ export default function useEndpointApi() {
     try {
       const fileName = openUri.replace("/swizzle/code/", "");
       const fileContents = await getFile(fileName);
-      
-      if(fileName.includes("frontend/src")){
-        const neededEndpoints = checkIfAllEndpointsExist(fileContents)
+
+      if (fileName.includes("frontend/src")) {
+        const neededEndpoints = checkIfAllEndpointsExist(fileContents);
       }
 
       const response = await axios.post(
@@ -415,7 +445,7 @@ export default function useEndpointApi() {
           diagnostics: thisFilesErrors,
         },
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -433,11 +463,14 @@ export default function useEndpointApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code/${location}/package.json`, {
-        headers: {
-          Authorization: await getFermatJwt(),
+      const response = await axios.get(
+        `${testDomain.replace("https://", "https://fermat.")}/code/${location}/package.json`,
+        {
+          headers: {
+            Authorization: await getFermatJwt(),
+          },
         },
-      });
+      );
       return response.data;
     } catch (e) {
       console.error(e);
@@ -479,7 +512,7 @@ export default function useEndpointApi() {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/schema?env=${environment}`,
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -487,17 +520,17 @@ export default function useEndpointApi() {
       console.error(e);
       return "";
     }
-  }
+  };
 
   const setSchema = async (schema) => {
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/schema?env=${environment}`,
         {
-          schema: schema
+          schema: schema,
         },
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -505,49 +538,49 @@ export default function useEndpointApi() {
       console.error(e);
       return "";
     }
-  }
+  };
 
   const checkIfAllEndpointsExist = (data: string) => {
     const regex = /api\.(get|post)\((.*?)\)/g;
-    const matches = []
+    const matches = [];
     let match;
 
     while ((match = regex.exec(data)) !== null) {
       matches.push(match[2]);
     }
-    var neededEndpoints = []
-    for(var urlInQuotes of matches){
-      const url = urlInQuotes.replace(/^['"]|['"]$/g, '');
+    var neededEndpoints = [];
+    for (var urlInQuotes of matches) {
+      const url = urlInQuotes.replace(/^['"]|['"]$/g, "");
 
-      const doesMatch = doesUrlMatch(url, fullEndpointList)
-      if(!doesMatch){
-        console.warn("Endpoint " + url + " does not exist")
-        console.log("Do you want me to create " + url + " for you?")
+      const doesMatch = doesUrlMatch(url, fullEndpointList);
+      if (!doesMatch) {
+        console.warn("Endpoint " + url + " does not exist");
+        console.log("Do you want me to create " + url + " for you?");
         //OFFER TO CREATE THIS ENDPOINT IN THE BACKEND
-        neededEndpoints.push(url)
+        neededEndpoints.push(url);
       }
     }
-    return neededEndpoints
-  }
+    return neededEndpoints;
+  };
 
   function doesUrlMatch(url, patterns) {
     // Normalize and split the URL to be checked
-    const urlParts = url.split('/').filter(part => part);
+    const urlParts = url.split("/").filter((part) => part);
 
     // Iterate through each pattern
-    return patterns.some(pattern => {
-        // Normalize and split the pattern
-        const patternParts = pattern.split('/').filter(part => part);
+    return patterns.some((pattern) => {
+      // Normalize and split the pattern
+      const patternParts = pattern.split("/").filter((part) => part);
 
-        // Check if the parts match, considering path parameters
-        if (urlParts.length !== patternParts.length) {
-            return false; // Different lengths, can't match
-        }
+      // Check if the parts match, considering path parameters
+      if (urlParts.length !== patternParts.length) {
+        return false; // Different lengths, can't match
+      }
 
-        return patternParts.every((part, index) => {
-            // Compare each part, path parameters are always a match
-            return part.startsWith(':') || part === urlParts[index];
-        });
+      return patternParts.every((part, index) => {
+        // Compare each part, path parameters are always a match
+        return part.startsWith(":") || part === urlParts[index];
+      });
     });
   }
 
@@ -558,50 +591,57 @@ export default function useEndpointApi() {
     // } else{
     //   console.log("executing task", task)
     // }
-    console.log("executing task", task)
-    
-    setTaskQueue(taskQueue.slice(1))
+    console.log("executing task", task);
 
-    return toast.promise(aiTaskExecute(task, allTasks.filter(v => v != null)), {
+    setTaskQueue(taskQueue.slice(1));
+
+    return toast.promise(
+      aiTaskExecute(
+        task,
+        allTasks.filter((v) => v != null),
+      ),
+      {
         loading: "Thinking...",
         success: (response: any) => {
-          if(response.status == "TASK_WAITING_FOR_APPROVAL"){
-            console.log("ai is asking for approval on", response.task.code)
-          } else if(response.status == "TASK_SUCCEEDED"){
-            console.log("succeeded on", task)
-            setShouldRefreshList(!shouldRefreshList)
-            if(task.type == "CreateEndpoint"){
-              const endpoint = task.inputs.method.toLowerCase() + task.inputs.path
-              console.log("setting endpoint after codegen to", endpoint)
-              setActiveEndpoint(endpoint)
-            } else if(task.type == "CreatePage"){
-              const page = task.inputs.path
-              console.log("setting page after codegen to", page)
-              setSelectedTab(Page.Hosting)
+          if (response.status == "TASK_WAITING_FOR_APPROVAL") {
+            console.log("ai is asking for approval on", response.task.code);
+          } else if (response.status == "TASK_SUCCEEDED") {
+            console.log("succeeded on", task);
+            setShouldRefreshList(!shouldRefreshList);
+            if (task.type == "CreateEndpoint") {
+              const endpoint = task.inputs.method.toLowerCase() + task.inputs.path;
+              console.log("setting endpoint after codegen to", endpoint);
+              setActiveEndpoint(endpoint);
+            } else if (task.type == "CreatePage") {
+              const page = task.inputs.path;
+              console.log("setting page after codegen to", page);
+              setSelectedTab(Page.Hosting);
 
-              if(page.path) { //this isn't necessary when the planner makes pages, maybe its for edits?
-                var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path
-                setActivePage(formatPath(page.path, page.name, true))
-                setActiveFile("frontend/src/pages/" + pageRelativePath)
-              }else{
+              if (page.path) {
+                //this isn't necessary when the planner makes pages, maybe its for edits?
+                var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path;
+                setActivePage(formatPath(page.path, page.name, true));
+                setActiveFile("frontend/src/pages/" + pageRelativePath);
+              } else {
                 // var pageRelativePath = page.replace(/^\//, '');
-                var pageRelativePath = page
-                console.log("going for", pathToFile(pageRelativePath))
-                setActivePage(pageRelativePath)
-                setActiveFile("frontend/src/pages/" + pathToFile(pageRelativePath))
+                var pageRelativePath = page;
+                console.log("going for", pathToFile(pageRelativePath));
+                setActivePage(pageRelativePath);
+                setActiveFile("frontend/src/pages/" + pathToFile(pageRelativePath));
               }
             }
-          } else{
-              toast.error("An error occured")
+          } else {
+            toast.error("An error occured");
           }
-          return "Done"
+          return "Done";
         },
         error: (e) => {
-          console.log("failed task", e)
-          return "An error occured"
+          console.log("failed task", e);
+          return "An error occured";
         },
-    });
-  }
+      },
+    );
+  };
 
   const scheduleFunction = async (path: string, schedule: string) => {
     try {
@@ -611,10 +651,10 @@ export default function useEndpointApi() {
           endpoint: path,
           schedule: schedule,
           http_method: "get",
-          description: ""
+          description: "",
         },
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -622,14 +662,14 @@ export default function useEndpointApi() {
       console.error(e);
       return "";
     }
-  }
+  };
 
   const getScheduledFunctions = async () => {
     try {
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/scheduledFunctions/list?env=${environment}`,
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -637,14 +677,14 @@ export default function useEndpointApi() {
       console.error(e);
       return "";
     }
-  }
+  };
 
   const removeScheduledFunction = async (id: string) => {
     try {
       const response = await axios.delete(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/scheduledFunctions/${id}?env=${environment}`,
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -652,7 +692,7 @@ export default function useEndpointApi() {
       console.error(e);
       return "";
     }
-  }
+  };
 
   const updateScheduledFunction = async (id: string, path: string, schedule: string) => {
     try {
@@ -662,10 +702,10 @@ export default function useEndpointApi() {
           endpoint: path,
           schedule: schedule,
           http_method: "get",
-          description: ""
+          description: "",
         },
         {
-          withCredentials: true
+          withCredentials: true,
         },
       );
       return response.data;
@@ -673,7 +713,7 @@ export default function useEndpointApi() {
       console.error(e);
       return "";
     }
-  }
+  };
 
   return {
     checkIfAllEndpointsExist,
@@ -703,6 +743,6 @@ export default function useEndpointApi() {
     getScheduledFunctions,
     removeScheduledFunction,
     updateScheduledFunction,
-    removeRouteFromList
+    removeRouteFromList,
   };
 }

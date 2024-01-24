@@ -74,21 +74,21 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
         setTotalDocs(data.pagination.total_documents);
-        if(filterName == null){
-          setFilterName(data.keys.sort()[0])
+        if (filterName == null) {
+          setFilterName(data.keys.sort()[0]);
         }
       })
       .catch((e) => {
         console.error(e);
-        toast.error("Something went wrong")
+        toast.error("Something went wrong");
         setError(e);
       });
   };
 
   const handleRefresh = () => {
     if (!activeCollection || activeCollection == "") return;
-    setCurrentDbQuery("")
-    setDidSearch(false)
+    setCurrentDbQuery("");
+    setDidSearch(false);
     setIsRefreshing(true);
     fetchData(0);
     setIsRefreshing(false);
@@ -157,61 +157,63 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
   useEffect(() => {
     if (!activeCollection || activeCollection == "") return;
     if (didSearch) {
-      toast("Search results can't be sorted manually yet. Ask the AI to return sorted results if needed.")
+      toast("Search results can't be sorted manually yet. Ask the AI to return sorted results if needed.");
     } else {
       fetchData(currentPage);
     }
   }, [currentPage, sortedByColumn, sortDirection]);
 
   useEffect(() => {
-    if(!currentDbQuery || currentDbQuery == "") return;
-    if(currentDbQuery == "_reset"){
-      handleRefresh()
-      return
+    if (!currentDbQuery || currentDbQuery == "") return;
+    if (currentDbQuery == "_reset") {
+      handleRefresh();
+      return;
     }
     toast.promise(runMongoQuery(currentDbQuery, activeCollection), {
       loading: "Running query...",
       success: (data) => {
-        if(data.search_results == null && data.updated_count == 0 && data.count_result == 0){
-          setCurrentDbQuery("")
-          return "No results were matched"
+        if (data.search_results == null && data.updated_count == 0 && data.count_result == 0) {
+          setCurrentDbQuery("");
+          return "No results were matched";
         }
-        if(data.search_results){
+        if (data.search_results) {
           setDidSearch(true);
 
           //check for duplicate ids. this happens on aggregate queries
-          var searchResultsWithUniqueIds = data.search_results
-          if(searchResultsWithUniqueIds.map(doc => doc._id).length != new Set(searchResultsWithUniqueIds.map(doc => doc._id)).size){
+          var searchResultsWithUniqueIds = data.search_results;
+          if (
+            searchResultsWithUniqueIds.map((doc) => doc._id).length !=
+            new Set(searchResultsWithUniqueIds.map((doc) => doc._id)).size
+          ) {
             searchResultsWithUniqueIds = searchResultsWithUniqueIds.map((doc: any) => {
               doc._id = Math.random().toString(36).substring(7);
               return doc;
-            })
+            });
           }
-          
+
           setData(searchResultsWithUniqueIds || []);
           setTotalDocs(searchResultsWithUniqueIds.length);
           //get all keys from search_results
-          const allKeys = data.search_results.map((doc: any) => Object.keys(doc)).flat() as string[]
-          const uniqueKeys = [...new Set(allKeys)]
-          setKeys(uniqueKeys.sort())
-        } else{
-          handleRefresh()
+          const allKeys = data.search_results.map((doc: any) => Object.keys(doc)).flat() as string[];
+          const uniqueKeys = [...new Set(allKeys)];
+          setKeys(uniqueKeys.sort());
+        } else {
+          handleRefresh();
         }
-        if(data.updated_count){
-          toast.success("Updated " + data.updated_count + " documents")
+        if (data.updated_count) {
+          toast.success("Updated " + data.updated_count + " documents");
         }
-        if(data.count_result){
-          toast.success("Found " + data.count_result + " documents")
+        if (data.count_result) {
+          toast.success("Found " + data.count_result + " documents");
         }
         return "Complete!";
       },
       error: (data) => {
-        setCurrentDbQuery("")
-        return "Failed to run query"
-      }
+        setCurrentDbQuery("");
+        return "Failed to run query";
+      },
     });
-  }, [currentDbQuery])
-
+  }, [currentDbQuery]);
 
   const showDetailView = (rowData: any, x: number, y: number) => {
     setRowDetailData(rowData);
@@ -272,7 +274,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         title="Delete collection"
         subtitle="Are you sure you want to delete this collection?"
         confirmButtonText="Delete"
-        confirmButtonAction={() => { 
+        confirmButtonAction={() => {
           toast.promise(deleteCollection(activeCollection), {
             loading: "Deleting collection...",
             success: () => {
@@ -285,7 +287,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       />
 
       <div className="text-sm w-64 absolute top-4 right-3">
-          <DatabaseEditorHint isVisible={shouldShowSaveHint} />
+        <DatabaseEditorHint isVisible={shouldShowSaveHint} />
       </div>
       <div className={`absolute top-5 right-10 flex mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
         <Button
@@ -303,22 +305,21 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           <thead className="bg-[#85869822]">
             <tr className={`font-mono text-xs ${keys.length == 0 ? "hidden" : ""}`}>
               <th className="text-left py-1.5 w-6"></th>
-              {keys
-                .map((key, index) => (
-                  <th
-                    className={`cursor-pointer text-left py-1.5`}
-                    style={{
-                      minWidth: `${getEstimatedColumnWidth(keys.length, key)}px`,
-                    }}
-                    key={index + 1}
-                    onClick={() => didClickSortColumn(key)}
-                  >
-                    {key == "_swizzle_uid" ? "userId" : key}
-                    {sortedByColumn === key && (
-                      <FontAwesomeIcon icon={sortDirection === "asc" ? faArrowUp : faArrowDown} className="ml-5" />
-                    )}
-                  </th>
-                ))}
+              {keys.map((key, index) => (
+                <th
+                  className={`cursor-pointer text-left py-1.5`}
+                  style={{
+                    minWidth: `${getEstimatedColumnWidth(keys.length, key)}px`,
+                  }}
+                  key={index + 1}
+                  onClick={() => didClickSortColumn(key)}
+                >
+                  {key == "_swizzle_uid" ? "userId" : key}
+                  {sortedByColumn === key && (
+                    <FontAwesomeIcon icon={sortDirection === "asc" ? faArrowUp : faArrowDown} className="ml-5" />
+                  )}
+                </th>
+              ))}
             </tr>
           </thead>
 
@@ -379,7 +380,12 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="text-lg font-bold mt-4 mb-4">😟 No documents</div>
           {!didSearch ? (
-            <Button text="Delete this collection" onClick={() => {setShowDeleteModal(true)}} />
+            <Button
+              text="Delete this collection"
+              onClick={() => {
+                setShowDeleteModal(true);
+              }}
+            />
           ) : (
             <Button
               text="Reset search"

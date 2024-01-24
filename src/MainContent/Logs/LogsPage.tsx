@@ -179,7 +179,7 @@ export default function LogsPage() {
             </div> */}
       </div>
       <div className={`flex pr-2 h-9 mb-4`}>
-        {filterQuery != null && filterQuery != ""  ?
+        {filterQuery != null && filterQuery != "" ? (
           <Button
             className="ml-4 px-2 py-4 mt-0.5 font-medium rounded-md flex justify-center items-center cursor-pointer"
             children={<FontAwesomeIcon icon={faXmark} className="w-4 h-4" />}
@@ -193,8 +193,9 @@ export default function LogsPage() {
               });
             }}
           />
-          : <div className="w-2"></div>
-        }
+        ) : (
+          <div className="w-2"></div>
+        )}
         <Dropdown
           className="fixed"
           selectorClass="ml-2"
@@ -211,7 +212,7 @@ export default function LogsPage() {
           placeholder={"Filter by " + searchTypes.filter((type) => type.id == filterName)[0].name.toLowerCase() + "..."}
           value={searchQuery}
           onChange={(e) => {
-            if(filterName == "responseCode"){
+            if (filterName == "responseCode") {
               setSearchQuery(e.target.value.replace(/[^0-9]/g, ""));
               return;
             }
@@ -244,7 +245,15 @@ export default function LogsPage() {
           </thead>
           <tbody className="overflow-y-scroll">
             {(messages || []).map((message, index) => {
-              return <LogRow key={"log-"+index} message={message} freshLogs={freshLogs} setModalText={setModalText} autofixButtonClassName={index == 0 ? "autofix-button" : ""} />;
+              return (
+                <LogRow
+                  key={"log-" + index}
+                  message={message}
+                  freshLogs={freshLogs}
+                  setModalText={setModalText}
+                  autofixButtonClassName={index == 0 ? "autofix-button" : ""}
+                />
+              );
             })}
             <tr></tr>
           </tbody>

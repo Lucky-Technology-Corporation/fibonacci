@@ -25,7 +25,16 @@ export default function RightSidebar() {
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
 
   const [didRunAutocheck, setDidRunAutocheck] = useState(false);
-  const { ideReady, setPostMessage, currentFileProperties, selectedTab, swizzleActionDispatch, setSwizzleActionDispatch, postMessage, fileErrors } = useContext(SwizzleContext);
+  const {
+    ideReady,
+    setPostMessage,
+    currentFileProperties,
+    selectedTab,
+    swizzleActionDispatch,
+    setSwizzleActionDispatch,
+    postMessage,
+    fileErrors,
+  } = useContext(SwizzleContext);
   const { getAutocheckResponse, restartFrontend, restartBackend } = useEndpointApi();
 
   useEffect(() => {
@@ -41,30 +50,30 @@ export default function RightSidebar() {
     programmaticDbUpdateRef.current = true;
   }, [currentFileProperties]);
 
-  const refreshSpinner = useRef(null)
+  const refreshSpinner = useRef(null);
   const spin = () => {
-    const spinner = refreshSpinner.current
+    const spinner = refreshSpinner.current;
     if (spinner) {
       spinner.classList.add("spin-rotate");
       setTimeout(() => {
         spinner.classList.remove("spin-rotate");
       }, 500);
     }
-  }
+  };
 
   const runAutocheck = () => {
-    toast("Getting file errors...")
-    setDidRunAutocheck(true)
+    toast("Getting file errors...");
+    setDidRunAutocheck(true);
     setPostMessage({
-      type: "getFileErrors"
-    })
-  }
+      type: "getFileErrors",
+    });
+  };
 
   useEffect(() => {
-    if(!didRunAutocheck) { 
-      return
+    if (!didRunAutocheck) {
+      return;
     }
-    if(fileErrors != ""){
+    if (fileErrors != "") {
       toast.promise(getAutocheckResponse(fileErrors), {
         loading: "Running autocheck...",
         success: (data) => {
@@ -72,12 +81,14 @@ export default function RightSidebar() {
             toast.error("Error running autocheck");
             return;
           }
-          setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+          setAutocheckResponse(
+            <div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />,
+          );
           return "Done";
         },
         error: "Error running autocheck",
       });
-    } else{
+    } else {
       toast.promise(getAutocheckResponse(), {
         loading: "Running autocheck...",
         success: (data) => {
@@ -85,56 +96,55 @@ export default function RightSidebar() {
             toast.error("Error running autocheck");
             return;
           }
-          setAutocheckResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />);
+          setAutocheckResponse(
+            <div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />,
+          );
           return "Done";
         },
         error: "Error running autocheck",
       });
     }
-    setDidRunAutocheck(false)
-  }, [fileErrors])
+    setDidRunAutocheck(false);
+  }, [fileErrors]);
 
   useEffect(() => {
-   if(swizzleActionDispatch == "Autocheck"){
-      runAutocheck()
-    } else if(swizzleActionDispatch == "Packages"){
+    if (swizzleActionDispatch == "Autocheck") {
+      runAutocheck();
+    } else if (swizzleActionDispatch == "Packages") {
       setShouldShowPackagesWindow(true);
-    } else if(swizzleActionDispatch == "Restart"){
-      if(selectedTab == Page.Apis){
+    } else if (swizzleActionDispatch == "Restart") {
+      if (selectedTab == Page.Apis) {
         toast.promise(restartBackend(), {
           loading: "Restarting backend...",
           success: "Restarted!",
           error: "Error restarting backend",
         });
-      } else if(selectedTab == Page.Hosting){
+      } else if (selectedTab == Page.Hosting) {
         toast.promise(restartFrontend(), {
           loading: "Sending restart command...",
           success: "Restarting!",
           error: "Error restarting frontend",
         });
       }
-    } else if(swizzleActionDispatch == "Test"){
+    } else if (swizzleActionDispatch == "Test") {
       setShouldShowTestWindow(true);
-    } else if(swizzleActionDispatch == "Secrets"){
+    } else if (swizzleActionDispatch == "Secrets") {
       setShouldShowSecretsWindow(true);
-    } 
-    setSwizzleActionDispatch(null)
-
-  }, [swizzleActionDispatch])
-
+    }
+    setSwizzleActionDispatch(null);
+  }, [swizzleActionDispatch]);
 
   const toggleSearch = () => {
     const command = isSearching ? "closeSearchView" : "openSearchView";
     setPostMessage({ type: command });
     setIsSearching(!isSearching);
-  }
-
+  };
 
   const toggleDebug = () => {
     const command = isDebugging ? "closeDebugger" : "openDebugger";
     setPostMessage({ type: command });
     setIsDebugging(!isDebugging);
-  }
+  };
 
   return (
     <div
@@ -145,35 +155,34 @@ export default function RightSidebar() {
       <div className="flex flex-col items-center pt-4 h-full pl-3 pr-0">
         {selectedTab == Page.Hosting && (
           <>
-
             <IconTextButton
               textHidden={true}
               onClick={() => {
                 setPostMessage({
                   type: "saveFile",
-                })
+                });
               }}
               icon={<img src="/save.svg" className="w-4 h-4 m-auto" />}
               text="Save"
             />
 
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
 
             <IconTextButton
               textHidden={true}
               onClick={() => {
-                toggleSearch()
+                toggleSearch();
               }}
               icon={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
               text="Search"
             />
 
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-            
+
             <IconTextButton
               textHidden={true}
               onClick={runAutocheck}
@@ -187,9 +196,9 @@ export default function RightSidebar() {
               }}
             />
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-            
+
             <IconTextButton
               textHidden={true}
               onClick={() => {
@@ -198,12 +207,16 @@ export default function RightSidebar() {
               icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
               text="Packages"
             />
-            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="frontend" />
+            <PackageInfo
+              isVisible={shouldShowPackagesWindow}
+              setIsVisible={setShouldShowPackagesWindow}
+              location="frontend"
+            />
             <div className="h-4" />
             <IconTextButton
               textHidden={true}
               onClick={() => {
-                spin()
+                spin();
                 toast.promise(restartFrontend(), {
                   loading: "Sending restart command...",
                   success: "Restarting!",
@@ -214,7 +227,7 @@ export default function RightSidebar() {
               text="Restart"
             />
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
               textHidden={true}
@@ -229,47 +242,45 @@ export default function RightSidebar() {
         )}
         {selectedTab == Page.Apis && (
           <>
-
             <IconTextButton
               textHidden={true}
               onClick={() => {
                 setPostMessage({
                   type: "saveFile",
-                })
+                });
               }}
               icon={<img src="/save.svg" className="w-4 h-4 m-auto" />}
               text="Save"
             />
 
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
 
             <IconTextButton
               textHidden={true}
               onClick={() => {
-                toggleSearch()
+                toggleSearch();
               }}
               icon={<FontAwesomeIcon icon={isSearching ? faXmark : faSearch} />}
               text="Search"
             />
 
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
-            
 
             <IconTextButton
               textHidden={true}
               onClick={() => {
-                toggleDebug()
+                toggleDebug();
               }}
               icon={<FontAwesomeIcon icon={isDebugging ? faXmark : faBug} />}
               text="Debugger"
             />
 
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
 
             <IconTextButton
@@ -300,7 +311,7 @@ export default function RightSidebar() {
               }}
             />
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
               textHidden={true}
@@ -322,12 +333,16 @@ export default function RightSidebar() {
               text="Packages"
               className="packages-button"
             />
-            <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
+            <PackageInfo
+              isVisible={shouldShowPackagesWindow}
+              setIsVisible={setShouldShowPackagesWindow}
+              location="backend"
+            />
             <div className="h-4" />
             <IconTextButton
               textHidden={true}
               onClick={() => {
-                spin()
+                spin();
                 toast.promise(restartBackend(), {
                   loading: "Restarting backend...",
                   success: "Restarted!",
@@ -339,7 +354,7 @@ export default function RightSidebar() {
               className="restart-button"
             />
             <div className="h-3" />
-            <div style={{height: "1px"}} className="bg-gray-600 w-full"></div>
+            <div style={{ height: "1px" }} className="bg-gray-600 w-full"></div>
             <div className="h-3" />
             <IconTextButton
               textHidden={true}

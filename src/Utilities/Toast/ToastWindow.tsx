@@ -73,17 +73,15 @@ export default function ToastWindow({
 
   const titleClassSet = titleClass ? titleClass : "text-sm font-bold font-mono";
 
-
   const [leftPosition, setLeftPosition] = useState(0);
   useEffect(() => {
-    const startingPosition = mousePosition.x - 220
-    if(startingPosition + 400 > window.innerWidth) {
-      setLeftPosition(startingPosition - 400)
-    }else{
-      setLeftPosition(startingPosition)
+    const startingPosition = mousePosition.x - 220;
+    if (startingPosition + 400 > window.innerWidth) {
+      setLeftPosition(startingPosition - 400);
+    } else {
+      setLeftPosition(startingPosition);
     }
-
-  }, [mousePosition])
+  }, [mousePosition]);
 
   return (
     <div
@@ -94,7 +92,7 @@ export default function ToastWindow({
       }`}
       style={{
         transition: "opacity 0.1s",
-        top: isExpandable && (mousePosition.y + 16) + "px",
+        top: isExpandable && mousePosition.y + 16 + "px",
         left: isExpandable && leftPosition + "px",
         marginLeft: getMargin(),
         marginTop: getTopMargin(),

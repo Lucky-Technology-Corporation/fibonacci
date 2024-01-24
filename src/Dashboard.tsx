@@ -28,7 +28,7 @@ export default function Dashboard() {
   //Initialization code...
   const { isFree, projects, setProjects, activeProject, testDomain, ideReady } = useContext(SwizzleContext);
   const { getProjects } = useDatabaseApi();
-  const { checkIfAccountNeedsEmail, pingProjectActive } = useSettingsApi()
+  const { checkIfAccountNeedsEmail, pingProjectActive } = useSettingsApi();
   const auth = useAuthUser();
 
   const onboardingSteps = [
@@ -57,8 +57,14 @@ export default function Dashboard() {
       selector: ".autofix-button",
       title: "Autofix",
       position: "right" as Position,
-      content: <div className="text-left text-sm">Click this button on broken requests.
-      <br/><br/>AI will automatically analyze your code & error logs to find the issue for you.</div>,
+      content: (
+        <div className="text-left text-sm">
+          Click this button on broken requests.
+          <br />
+          <br />
+          AI will automatically analyze your code & error logs to find the issue for you.
+        </div>
+      ),
     },
     // {
     //   selector: ".templates-tab",
@@ -252,8 +258,8 @@ export default function Dashboard() {
   };
 
   const prepareNextStep = (nextStep: number) => {
-    if(nextStep == 1){
-      setActiveLogsPage("logs")
+    if (nextStep == 1) {
+      setActiveLogsPage("logs");
     } else if (nextStep == 3) {
       setSelectedTab(Page.Auth);
     } else if (nextStep == 5) {
@@ -282,26 +288,24 @@ export default function Dashboard() {
         console.error(e);
       }
     };
-    
+
     checkIfAccountNeedsEmail().then((needsEmail) => {
-      if(!needsEmail || !needsEmail.email || needsEmail.email == ""){
+      if (!needsEmail || !needsEmail.email || needsEmail.email == "") {
         setNeedsEmail(true);
       }
-    })
+    });
 
     fetchProjects();
-
   }, []);
 
   useEffect(() => {
     //Start pinging the project active endpoint every 2 minutes
     const interval = setInterval(() => {
-      pingProjectActive()
-    }, 120000); 
+      pingProjectActive();
+    }, 120000);
 
     return () => clearInterval(interval); // Cleanup on component unmount
-  }, [activeProject])    
-  
+  }, [activeProject]);
 
   if (isAuthenticated()) {
     if (projects) {
@@ -354,7 +358,6 @@ export default function Dashboard() {
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
               />
-
 
               {/* <InProgressDeploymentModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} /> */}
 

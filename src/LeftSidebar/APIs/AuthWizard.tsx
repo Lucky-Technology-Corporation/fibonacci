@@ -8,7 +8,7 @@ export default function AuthWizard({
   setIsVisible,
   authId,
   authName,
-  setShouldRefresh
+  setShouldRefresh,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
@@ -16,37 +16,35 @@ export default function AuthWizard({
   authName: string;
   setShouldRefresh: any;
 }) {
-
   const [inputState, setInputState] = useState({});
   const [isCreating, setIsCreating] = useState(false);
   const { saveSecrets, getSecrets } = useSettingsApi();
   const { setActiveAuthPage } = useContext(SwizzleContext);
-  
+
   useEffect(() => {
-    if(authId == "email"){
+    if (authId == "email") {
       setInputState({
         SWIZZLE_EMAIL_PASSWORD: "true",
       });
-    } else if(authId == "google"){
+    } else if (authId == "google") {
       setInputState({
         GOOGLE_APP_ID: "",
       });
-    } else if(authId == "facebook"){
+    } else if (authId == "facebook") {
       setInputState({
         FACEBOOK_APP_ID: "",
       });
     }
   }, [isVisible]);
 
-
   async function addAuthMethod() {
-    if(authId == "google" || authId == "facebook"){
+    if (authId == "google" || authId == "facebook") {
       var authIdKey = authId == "google" ? "GOOGLE_APP_ID" : "FACEBOOK_APP_ID";
       const existingSecrets = await getSecrets();
-      if(existingSecrets){
-        if(existingSecrets.test[authIdKey] || existingSecrets.prod[authIdKey]){
-          setActiveAuthPage(authId)
-          throw 'This auth method already exists'
+      if (existingSecrets) {
+        if (existingSecrets.test[authIdKey] || existingSecrets.prod[authIdKey]) {
+          setActiveAuthPage(authId);
+          throw "This auth method already exists";
         }
       }
     }
@@ -56,8 +54,8 @@ export default function AuthWizard({
       prod: inputState,
     };
     await saveSecrets(secrets);
-    setShouldRefresh(r => !r)
-    setActiveAuthPage(authId)
+    setShouldRefresh((r) => !r);
+    setActiveAuthPage(authId);
   }
 
   // const renderInputsFor = (authId: string) => {
@@ -111,49 +109,49 @@ export default function AuthWizard({
         <div className="inline-block align-bottom bg-[#181922] w-4/12 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle">
           <div className="border-[#525363] border bg-[#181922] rounded-lg px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
-                  <h3 className="text-lg mb-2 leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                    Add {authName}
-                  </h3>
-                  {/* {renderInputsFor(authId)} */}
+              <h3 className="text-lg mb-2 leading-6 font-medium text-[#D9D9D9]" id="modal-title">
+                Add {authName}
+              </h3>
+              {/* {renderInputsFor(authId)} */}
 
-                  <div className="bg-[#181922] py-3 pt-0 mt-4 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsCreating(true)
-                        toast.promise(addAuthMethod(), {
-                          loading: "Adding...",
-                          success: () => {
-                            setIsCreating(false)
-                            setInputState({});
-                            setIsVisible(false);
-                            return "Added";
-                          },
-                          error: (e) => { 
-                            setIsCreating(false)
-                            setInputState({});
-                            setIsVisible(false);
-                            return e 
-                          },
-                        });
-                      }}
-                      disabled={isCreating}
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Create
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsVisible(false);
+              <div className="bg-[#181922] py-3 pt-0 mt-4 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreating(true);
+                    toast.promise(addAuthMethod(), {
+                      loading: "Adding...",
+                      success: () => {
+                        setIsCreating(false);
                         setInputState({});
-                      }}
-                      disabled={isCreating}
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                        setIsVisible(false);
+                        return "Added";
+                      },
+                      error: (e) => {
+                        setIsCreating(false);
+                        setInputState({});
+                        setIsVisible(false);
+                        return e;
+                      },
+                    });
+                  }}
+                  disabled={isCreating}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Create
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsVisible(false);
+                    setInputState({});
+                  }}
+                  disabled={isCreating}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#32333b] text-base font-medium text-[#D9D9D9] hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

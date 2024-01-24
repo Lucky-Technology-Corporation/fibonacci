@@ -36,30 +36,35 @@ export default function FileWizard({
   const [validFallbackUrl, setValidFallbackUrl] = useState<boolean>(true);
 
   const createHandler = async () => {
-
-    var cleanInputValue = inputValue
-    var cleanFallbackInputValue = fallbackInputValue
-    if(cleanInputValue.endsWith("/")){
-      cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1)
+    var cleanInputValue = inputValue;
+    var cleanFallbackInputValue = fallbackInputValue;
+    if (cleanInputValue.endsWith("/")) {
+      cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1);
     }
-    if(cleanFallbackInputValue.endsWith("/")){
-      cleanFallbackInputValue = cleanFallbackInputValue.substring(0, cleanFallbackInputValue.length - 1)
+    if (cleanFallbackInputValue.endsWith("/")) {
+      cleanFallbackInputValue = cleanFallbackInputValue.substring(0, cleanFallbackInputValue.length - 1);
     }
 
-
-    if(fileType == "page"){
-      if(cleanInputValue.startsWith("/d") || cleanFallbackInputValue.startsWith("/d") || cleanInputValue.endsWith("/d") || cleanFallbackInputValue.endsWith("/d")) {
+    if (fileType == "page") {
+      if (
+        cleanInputValue.startsWith("/d") ||
+        cleanFallbackInputValue.startsWith("/d") ||
+        cleanInputValue.endsWith("/d") ||
+        cleanFallbackInputValue.endsWith("/d")
+      ) {
         toast.error("The /d path is reserved for built-in endpoints. Please choose a different path");
         return;
       }
     }
-    
+
     const editingSameFile = cleanInputValue === pathIfEditing;
     const newFileName = pathToFile(cleanInputValue);
     const hasConflicts = !editingSameFile && checkForConflicts(newFileName);
 
     if (hasConflicts) {
-      toast.error("That " + fileType + " already exists. You cannot overwrite it before changing its name or deleting it.")
+      toast.error(
+        "That " + fileType + " already exists. You cannot overwrite it before changing its name or deleting it.",
+      );
       return;
     }
 
@@ -91,7 +96,7 @@ export default function FileWizard({
       await runDeleteProcess(pathIfEditing);
     }
 
-    setShouldRefreshList(prev => !prev);
+    setShouldRefreshList((prev) => !prev);
     setIsVisible(false);
   };
 
@@ -251,10 +256,12 @@ export default function FileWizard({
                           if (fileType == "page" && pathIfEditing == "/") {
                             return;
                           }
-                          var slashedUrl = e.target.value
+                          var slashedUrl = e.target.value;
                           if (fileType == "page") {
                             const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/;
-                            if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
+                            if (!slashedUrl.startsWith("/")) {
+                              slashedUrl = "/" + slashedUrl;
+                            }
 
                             if (!regex.test(slashedUrl)) {
                               setValidPageUrl(false);
@@ -287,8 +294,10 @@ export default function FileWizard({
                                 return;
                               }
                               const regex = /^\/:?([a-zA-Z0-9-_]+(\/(:?[a-zA-Z0-9-_]+)*)*)$/;
-                              var slashedUrl = e.target.value
-                              if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
+                              var slashedUrl = e.target.value;
+                              if (!slashedUrl.startsWith("/")) {
+                                slashedUrl = "/" + slashedUrl;
+                              }
 
                               if (!regex.test(e.target.value)) {
                                 setValidFallbackUrl(false);

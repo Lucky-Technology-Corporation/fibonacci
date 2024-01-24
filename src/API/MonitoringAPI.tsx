@@ -37,7 +37,7 @@ export default function useMonitoringApi() {
 
   const analyzeError = async (requestDetails: any) => {
     try {
-      var currentFile = endpointToFilename(requestDetails.method.toLowerCase() + requestDetails.url)
+      var currentFile = endpointToFilename(requestDetails.method.toLowerCase() + requestDetails.url);
 
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/assistant/ask?env=${environment}`,

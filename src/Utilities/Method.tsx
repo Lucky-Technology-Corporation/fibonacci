@@ -5,11 +5,11 @@ export enum Method {
   DELETE = "DELETE",
   PATCH = "PATCH",
   HELPER = "Helper",
-  TRIGGER = "Trigger"
+  TRIGGER = "Trigger",
 }
 export const methodToColor = (method?: Method, methodString?: string) => {
-  if(methodString){
-    method = methodString as Method
+  if (methodString) {
+    method = methodString as Method;
   }
   switch (method) {
     case Method.GET:

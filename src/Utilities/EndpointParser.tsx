@@ -10,7 +10,10 @@ export function endpointToFilename(path: string): string {
 }
 
 export function filenameToEndpoint(filename: string): string {
-  return replaceLastOccurrence(decodeURIComponent(filename), ".ts", "").replace(/\./g, "/").replace(/\(/g, ":").replace(/\)/g, "");
+  return replaceLastOccurrence(decodeURIComponent(filename), ".ts", "")
+    .replace(/\./g, "/")
+    .replace(/\(/g, ":")
+    .replace(/\)/g, "");
 }
 
 function replaceLastOccurrence(str, target, replacement) {
@@ -18,7 +21,6 @@ function replaceLastOccurrence(str, target, replacement) {
   if (lastIndex === -1) return str;
   return str.slice(0, lastIndex) + replacement + str.slice(lastIndex + target.length);
 }
-
 
 export function modifySwizzleImport(importStatement: string, newImport: string, action = "add") {
   if (importStatement == "") {
@@ -45,8 +47,8 @@ export function modifySwizzleImport(importStatement: string, newImport: string, 
 export function formatPath(fullPath: string, path: string, allComponents: boolean = false) {
   if ((fullPath || "").includes("frontend/src/pages")) {
     var p = path;
-    
-    if(path.startsWith("frontend/src/pages")) {
+
+    if (path.startsWith("frontend/src/pages")) {
       p = path.split("frontend/src/pages")[1];
     }
 
@@ -54,7 +56,7 @@ export function formatPath(fullPath: string, path: string, allComponents: boolea
     if (!p.startsWith("/")) {
       p = "/" + p;
     }
-    p = p.replace(/\(([^)]+)\)/g, ':$1');
+    p = p.replace(/\(([^)]+)\)/g, ":$1");
     p = p.replace("_", "/");
     if (p == "/swizzlehomepage") {
       p = "/";
@@ -64,13 +66,13 @@ export function formatPath(fullPath: string, path: string, allComponents: boolea
       const pathAfterPages = fullPath.split("/pages")[1];
       const numberOfLevels = pathAfterPages.match(/\//g);
       if (numberOfLevels.length > 1) {
-        const prependPath = splitAtLast(pathAfterPages, "/")[0].replace(/\(([^)]+)\)/g, ':$1');
+        const prependPath = splitAtLast(pathAfterPages, "/")[0].replace(/\(([^)]+)\)/g, ":$1");
         return prependPath + p;
       }
     }
 
-    p = p.replace(/\/\//g, '/')
-    if(!p.startsWith("/")) {
+    p = p.replace(/\/\//g, "/");
+    if (!p.startsWith("/")) {
       p = "/" + p;
     }
 
@@ -102,7 +104,7 @@ export const pathToFile = (path: string) => {
   if (path.endsWith("/")) {
     path = path.substring(0, path.length - 1);
   }
-  path = path.replace(/:([^\/]+)/g, '($1)');
+  path = path.replace(/:([^\/]+)/g, "($1)");
 
   if (!path.endsWith(".tsx")) {
     path += ".tsx";

@@ -1,35 +1,35 @@
 /* Crontab */
-.ant-select-selector{
+.ant-select-selector {
   background-color: #333336 !important;
   color: white !important;
   border: 1px solid #525363 !important;
   border-radius: 4px !important;
 }
-.ant-select-selection-item{
+.ant-select-selection-item {
   color: white !important;
 }
-.ant-select-arrow{
+.ant-select-arrow {
   color: white !important;
 }
-.ant-select-open{
+.ant-select-open {
   color: white !important;
 }
-.react-js-cron-select{
+.react-js-cron-select {
   background-color: #333336;
   color: white;
 }
-.react-js-cron-select-dropdown{
+.react-js-cron-select-dropdown {
   background-color: #333336;
   color: white;
 }
-.ant-select-item-option-content{
+.ant-select-item-option-content {
   color: white;
 }
-.ant-select-item-option-selected{
+.ant-select-item-option-selected {
   background-color: #6e6e6e !important;
   color: white;
 }
-.ant-select-clear{
+.ant-select-clear {
   color: white !important;
   background-color: black !important;
 }
@@ -201,7 +201,7 @@ body {
     0 0 20px #ffe692dd;
 }
 
-.glow-red{
+.glow-red {
   box-shadow:
     0 0 10px #f87171,
     0 0 20px #f87171,
@@ -226,37 +226,36 @@ body {
   overflow-y: auto; /* or 'scroll' if you always want to display the scrollbar */
 }
 
-
 .spin-rotate {
-    animation: spin-rotate 0.5s ease-in-out infinite;
+  animation: spin-rotate 0.5s ease-in-out infinite;
 }
 
 @keyframes spin-rotate {
-    0% {
-        transform: rotate(0deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
 
-    100% {
-        transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .pulsate {
-    animation: pulsate 3s ease-out;
-    animation-iteration-count: infinite;
-    opacity: 0.4;
+  animation: pulsate 3s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0.4;
 }
 
 @keyframes pulsate {
-    0% {
-        opacity: 0.4;
-    }
+  0% {
+    opacity: 0.4;
+  }
 
-    50% {
-        opacity: 0.8;
-    }
+  50% {
+    opacity: 0.8;
+  }
 
-    100% {
-        opacity: 0.4;
-    }
+  100% {
+    opacity: 0.4;
+  }
 }

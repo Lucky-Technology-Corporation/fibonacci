@@ -48,7 +48,7 @@ export default function UserTableView() {
     "subscription",
     "countryCode",
     "isVerified",
-    "emailVerificationCode"
+    "emailVerificationCode",
   ];
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
@@ -80,7 +80,7 @@ export default function UserTableView() {
 
   //SSL is a paid feature so we're removing this for now
   const addFlags = async (data: any) => {
-    try{
+    try {
       if (!data || !data.documents) {
         return;
       }
@@ -101,9 +101,9 @@ export default function UserTableView() {
         data.documents[i].countryCode = flagData[i].countryCode;
       }
       return data;
-    } catch(e){
-      console.log(e)
-      return data
+    } catch (e) {
+      console.log(e);
+      return data;
     }
   };
 
@@ -189,8 +189,8 @@ export default function UserTableView() {
     setSortedByColumn(key);
   };
 
-  if(activeAuthPage != "list"){
-    return <EditAuthMethodView method={activeAuthPage} />
+  if (activeAuthPage != "list") {
+    return <EditAuthMethodView method={activeAuthPage} />;
   }
 
   if (error) {
@@ -216,8 +216,10 @@ export default function UserTableView() {
         <div className="w-[1px] bg-[#85869833] mx-4 h-10 my-auto"></div>
         <div>
           <Button
-            className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border" 
-            onClick={() => {setIsCreatingUser(true)}}
+            className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            onClick={() => {
+              setIsCreatingUser(true);
+            }}
             text="Create User"
           />
         </div>
@@ -294,11 +296,7 @@ export default function UserTableView() {
           )}
         </div>
       </div>
-      <UserWizard
-        isVisible={isCreatingUser}
-        setIsVisible={setIsCreatingUser}
-        handleRefresh={handleRefresh}
-      />
+      <UserWizard isVisible={isCreatingUser} setIsVisible={setIsCreatingUser} handleRefresh={handleRefresh} />
     </div>
   );
 }

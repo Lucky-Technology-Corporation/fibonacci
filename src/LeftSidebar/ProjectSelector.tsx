@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
-import { Helmet } from 'react-helmet';
+import { Helmet } from "react-helmet";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../API/DatabaseAPI";
 import useDeploymentApi from "../API/DeploymentAPI";
@@ -19,7 +19,7 @@ export default function ProjectSelector({
   const [isVisible, setIsVisible] = useState(false);
   const { refreshFermatJwt } = useEndpointApi();
   const deploymentApi = useDeploymentApi();
-  const { addEmailToAccount, hasAddedPaymentMethod } = useSettingsApi()
+  const { addEmailToAccount, hasAddedPaymentMethod } = useSettingsApi();
   const POLLING_INTERVAL = 5000;
   const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();
@@ -77,34 +77,33 @@ export default function ProjectSelector({
     }
 
     try {
-      if(didSave){ 
-        toast("😎")
-        return 
+      if (didSave) {
+        toast("😎");
+        return;
       }
-      setDidSave(true)
+      setDidSave(true);
       await addEmailToAccount(email);
       toast.success("We'll let you know when we're ready for you!");
       setTimeout(() => {
-        setIsVisible(true)
-      }, 250)
+        setIsVisible(true);
+      }, 250);
     } catch (e) {
       console.error(e);
       toast.error("Failed to add email to waitlist");
     }
-  }
+  };
 
   const gtagReportConversion = () => {
     const callback = () => {
-      console.log("Conversion reported")
+      console.log("Conversion reported");
     };
 
     // Send a conversion event to Google Analytics
-    (window as any).gtag('event', 'conversion', {
-      send_to: 'AW-1031579973/QuwbCIHgyoAYEMXS8usD',
+    (window as any).gtag("event", "conversion", {
+      send_to: "AW-1031579973/QuwbCIHgyoAYEMXS8usD",
       event_callback: callback,
     });
   };
-
 
   const createNewProject = (projectName: string) => {
     if (projectName.includes("_") || projectName.includes("-")) {
@@ -115,7 +114,7 @@ export default function ProjectSelector({
     toast.promise(createProject(projectName), {
       loading: "Provisioning resources...",
       success: () => {
-        gtagReportConversion()
+        gtagReportConversion();
         //play sound
         var audio = new Audio("/deploy.mp3");
         audio.play();
@@ -136,7 +135,7 @@ export default function ProjectSelector({
     if (project == null) {
       project = projects[0];
     }
-    setIdeReady(false)
+    setIdeReady(false);
     const deploymentStatus = await checkDeploymentStatus(project.id);
     switch (deploymentStatus) {
       case "DEPLOYMENT_FAILURE":
@@ -224,9 +223,9 @@ export default function ProjectSelector({
   };
 
   const checkIfHasPaymentMethod = async () => {
-    const hasPaymentMethod = await hasAddedPaymentMethod()
-    setHasPaymentMethod(hasPaymentMethod)
-  }
+    const hasPaymentMethod = await hasAddedPaymentMethod();
+    setHasPaymentMethod(hasPaymentMethod);
+  };
 
   useEffect(() => {
     if (projects && activeProject == "" && projects.length > 0) {
@@ -245,12 +244,12 @@ export default function ProjectSelector({
   }, [projects]);
 
   useEffect(() => {
-    if(projects && projects.length > 0 && activeProject != ""){
-      if(hasPaymentMethod == null){
-        checkIfHasPaymentMethod()
+    if (projects && projects.length > 0 && activeProject != "") {
+      if (hasPaymentMethod == null) {
+        checkIfHasPaymentMethod();
       }
     }
-  }, [activeProject])
+  }, [activeProject]);
 
   if (projects == null) return <div className="text-sm mt-3">Loading...</div>;
 

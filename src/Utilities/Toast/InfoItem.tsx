@@ -79,8 +79,8 @@ export default function InfoItem({
         className="py-1 flex items-center mt-1 cursor-pointer"
         onMouseEnter={() => {
           const rect = elementRef.current.getBoundingClientRect();
-          setMousePosition({ x: rect.left, y: rect.top + 8 })
-          showHintWindow()
+          setMousePosition({ x: rect.left, y: rect.top + 8 });
+          showHintWindow();
         }}
         onMouseLeave={hideHintWindow}
         onClick={onClick}

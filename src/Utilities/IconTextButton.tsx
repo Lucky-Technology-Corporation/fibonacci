@@ -22,18 +22,25 @@ export default function IconTextButton({
   return (
     <>
       <Tooltip id={`my-tooltip-${text}`} className={`fixed z-50 ${!textHidden && "hidden"}`} />
-      <a className="text-gray-200 hover:text-white w-full" data-tooltip-id={`my-tooltip-${text}`} data-tooltip-content={text} data-tooltip-place="top">
-      <Button
-        className={`${className} w-full p-2 rounded flex justify-center items-center cursor-pointer ${!highlightState && "bg-[#85869833]"} hover:bg-[#85869855] border-[#525363] border`}
-        onClick={onClick}
-        style={{backgroundColor: highlightState ? highlightColor : ""}}
+      <a
+        className="text-gray-200 hover:text-white w-full"
+        data-tooltip-id={`my-tooltip-${text}`}
+        data-tooltip-content={text}
+        data-tooltip-place="top"
       >
-        {/* center close to each other */}
-        <div className="flex justify-center items-center space-x-2">
-            {icon}          
-          {!textHidden && <span className="ml-2">{text}</span>}
-        </div>
-      </Button>
+        <Button
+          className={`${className} w-full p-2 rounded flex justify-center items-center cursor-pointer ${
+            !highlightState && "bg-[#85869833]"
+          } hover:bg-[#85869855] border-[#525363] border`}
+          onClick={onClick}
+          style={{ backgroundColor: highlightState ? highlightColor : "" }}
+        >
+          {/* center close to each other */}
+          <div className="flex justify-center items-center space-x-2">
+            {icon}
+            {!textHidden && <span className="ml-2">{text}</span>}
+          </div>
+        </Button>
       </a>
     </>
   );

@@ -8,24 +8,21 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export default function useSettingsApi() {
   const authHeader = useAuthHeader();
-  const signOut = useSignOut()
+  const signOut = useSignOut();
   const { environment, activeProject } = useContext(SwizzleContext);
-  const endpointApi = useEndpointApi()
+  const endpointApi = useEndpointApi();
 
-  const checkIfAccountNeedsEmail = async () => {  
+  const checkIfAccountNeedsEmail = async () => {
     try {
-      const response = await axios.get(
-        `${NEXT_PUBLIC_BASE_URL}/login/email`,
-        {
-          withCredentials: true,
-        },
-      );
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/login/email`, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (e: any) {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const addEmailToAccount = async (email: string, projectType?: string) => {
     try {
@@ -41,7 +38,7 @@ export default function useSettingsApi() {
       );
       return response.data;
     } catch (e: any) {
-      if(e.response.status == 401){
+      if (e.response.status == 401) {
         signOut();
         const urlParams = new URLSearchParams(window.location.search);
         const signedIn = urlParams.get("signed_in");
@@ -52,7 +49,7 @@ export default function useSettingsApi() {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const updateBilling = async (should_override: boolean = false) => {
     var override_to_payment_method_update = should_override ? "true" : "false";
@@ -69,15 +66,12 @@ export default function useSettingsApi() {
       return null;
     }
   };
-  
+
   const deleteProject = async (projectId: string) => {
     try {
-      const response = await axios.delete(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${projectId}`,
-        {
-          withCredentials: true,
-        },
-      );
+      const response = await axios.delete(`${NEXT_PUBLIC_BASE_URL}/projects/${projectId}`, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (e: any) {
       console.error(e);
@@ -128,7 +122,7 @@ export default function useSettingsApi() {
           withCredentials: true,
         },
       );
-      endpointApi.restartBackend()
+      endpointApi.restartBackend();
       return response.data;
     } catch (e: any) {
       console.error(e);
@@ -147,7 +141,7 @@ export default function useSettingsApi() {
           withCredentials: true,
         },
       );
-      endpointApi.restartBackend()
+      endpointApi.restartBackend();
       return response.data;
     } catch (e: any) {
       console.error(e);
@@ -169,25 +163,24 @@ export default function useSettingsApi() {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const hasAddedPaymentMethod = async () => {
     try {
-      const response = await axios.get(
-        `${NEXT_PUBLIC_BASE_URL}/billing`,
-        {
-          withCredentials: true,
-        },
-      );
-      return (response.data.hasPaymentMethod);
+      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/billing`, {
+        withCredentials: true,
+      });
+      return response.data.hasPaymentMethod;
     } catch (e: any) {
       console.error(e);
       return false;
     }
-  }
+  };
 
   const pingProjectActive = async () => {
-    if(activeProject == null || activeProject == ""){ return false }
+    if (activeProject == null || activeProject == "") {
+      return false;
+    }
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/active?env=${environment}`,
@@ -201,7 +194,7 @@ export default function useSettingsApi() {
       console.error(e);
       return false;
     }
-  }
+  };
 
   return {
     updateApns,
@@ -214,7 +207,6 @@ export default function useSettingsApi() {
     deleteProject,
     addEmailToAccount,
     checkIfAccountNeedsEmail,
-    pingProjectActive
+    pingProjectActive,
   };
 }
-

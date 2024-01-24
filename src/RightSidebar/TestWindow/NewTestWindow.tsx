@@ -42,8 +42,8 @@ export default function NewTestWindow({
   const parsedActiveEndpoint = new ParsedActiveEndpoint(testDoc.endpoint);
 
   useEffect(() => {
-    setIsSaving(false); 
-  }, [testDoc])
+    setIsSaving(false);
+  }, [testDoc]);
 
   const saveTest = async () => {
     if (testName == "") {
@@ -67,11 +67,8 @@ export default function NewTestWindow({
       .forEach(({ key, value }) => (transformedQueryParams[key] = value));
 
     const transformedHeaders = {};
-    headerList
-      .filter(({ key, value }) => key !== "")
-      .forEach(({ key, value }) => (transformedHeaders[key] = value));
+    headerList.filter(({ key, value }) => key !== "").forEach(({ key, value }) => (transformedHeaders[key] = value));
 
-        
     const documentToCreate: TestType = {
       testName,
       pathParams,
@@ -115,15 +112,11 @@ export default function NewTestWindow({
     }
 
     hideNewTestWindow();
-    setIsSaving(false); 
+    setIsSaving(false);
   };
 
-
   return (
-    <div
-      className={`mt-4`}
-      ref={myRef}
-    >
+    <div className={`mt-4`} ref={myRef}>
       <div className="flex flex-col justify-between px-4 py-2 pb-4">
         <div className="flex items-center pb-2">
           <FontAwesomeIcon icon={faFlask} className="mr-2" />
@@ -180,23 +173,17 @@ export default function NewTestWindow({
             }
           })}
         </div>
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>
-          Query String
-        </div>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>Query String</div>
         <div className="flex w-full mb-2">
           <GroupedInput valueList={queryParams} setValueList={setQueryParameters} isQuery={true} />
         </div>
 
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>
-          Headers
-        </div>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>Headers</div>
         <div className="mt-1 mb-2">
-            <GroupedInput valueList={headerList} setValueList={setHeaderList} isQuery={false} />
+          <GroupedInput valueList={headerList} setValueList={setHeaderList} isQuery={false} />
         </div>
 
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>
-          Authentication
-        </div>
+        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a]`}>Authentication</div>
         <div className="mt-1 mb-2">
           <Checkbox id="userid" label="Simulate user" isChecked={isUserIdChecked} setIsChecked={setIsUserIdChecked} />
           <UserIdInfo
@@ -210,7 +197,11 @@ export default function NewTestWindow({
           />
         </div>
 
-        <div className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
+        <div
+          className={`text-s py-1 pr-2 bg-transparent rounded outline-0 focus:border-[#68697a] ${
+            parsedActiveEndpoint.method != "GET" ? "" : "hidden"
+          }`}
+        >
           Body
         </div>
         <div className={`mb-2 ${parsedActiveEndpoint.method != "GET" ? "" : "hidden"}`}>
@@ -235,8 +226,14 @@ export default function NewTestWindow({
         />
         <Button
           text="Save"
-          onClick={() => { if(!isSaving){ saveTest() } }}
-          className={`${isSaving ? "opacity-50" : ""} mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
+          onClick={() => {
+            if (!isSaving) {
+              saveTest();
+            }
+          }}
+          className={`${
+            isSaving ? "opacity-50" : ""
+          } mt-2 inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#44464f] text-base font-medium text-white hover:bg-[#525363]  sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm cursor-pointer`}
         />
       </div>
     </div>

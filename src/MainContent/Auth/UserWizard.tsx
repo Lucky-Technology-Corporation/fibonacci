@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
@@ -6,14 +6,13 @@ import useDatabaseApi from "../../API/DatabaseAPI";
 export default function UserWizard({
   isVisible,
   setIsVisible,
-  handleRefresh
+  handleRefresh,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   handleRefresh: () => void;
 }) {
-
-  const {createUser} = useDatabaseApi();
+  const { createUser } = useDatabaseApi();
   const [nameValue, setNameValue] = useState("");
   const [lastNameValue, setLastNameValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
@@ -28,30 +27,25 @@ export default function UserWizard({
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(passwordValue, salt);
 
-    if(emailValue == ""){
-      throw new Error("Error. Email cannot be empty.")
-    } else if(passwordValue == ""){
-      throw new Error("Error. Password cannot be empty.")
+    if (emailValue == "") {
+      throw new Error("Error. Email cannot be empty.");
+    } else if (passwordValue == "") {
+      throw new Error("Error. Password cannot be empty.");
     }
 
-    try{
-      const response = await createUser(
-        emailValue,
-        hashedPassword,
-        nameValue,
-        lastNameValue
-      )
+    try {
+      const response = await createUser(emailValue, hashedPassword, nameValue, lastNameValue);
 
-      handleRefresh()
+      handleRefresh();
       setIsVisible(false);
     } catch (e: any) {
       console.log("error", e);
-      if(e.response.status == 400) {
-        throw new Error("Error. This user may already exist.")
+      if (e.response.status == 400) {
+        throw new Error("Error. This user may already exist.");
       }
-      throw new Error("Error. Something went wrong.")
+      throw new Error("Error. Something went wrong.");
     }
-  }
+  };
 
   return (
     <div
@@ -71,7 +65,7 @@ export default function UserWizard({
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               <>
                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                New user
+                  New user
                 </h3>
                 <span className="text-sm leading-6">Create a new user manually</span>
                 <div className="mt-3 mb-2 flex">
@@ -126,7 +120,9 @@ export default function UserWizard({
                         toast.promise(createHandler(), {
                           loading: "Creating user...",
                           success: "User created!",
-                          error: (err) => { return err.message }
+                          error: (err) => {
+                            return err.message;
+                          },
                         });
                       }}
                       className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}

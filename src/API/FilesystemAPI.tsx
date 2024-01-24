@@ -122,7 +122,7 @@ export default function useFilesystemApi() {
       if (path.startsWith("/")) {
         path = path.substring(1);
       }
-      const componentName = /[^/]*$/.exec(pathToFile(path))[0] //path after last slash
+      const componentName = /[^/]*$/.exec(pathToFile(path))[0]; //path after last slash
       // const componentName = path
       //   .replace(/\//g, "_")
       //   .replace(".tsx", "")
@@ -213,64 +213,73 @@ export default function useFilesystemApi() {
     const fileContents = await endpointApi.getFile(file);
     if (fileContents) {
       const newFileContents = addImports(fileContents, importObject);
-      return newFileContents
+      return newFileContents;
     }
     return null;
-  }
+  };
 
   const setPreviewComponentFromPath = async (componentPath: string) => {
     const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
     const componentContents = await endpointApi.getFile(componentPath);
     if (fileContents) {
+      var componentName = "";
+      var isNamed = false;
+      if (componentContents.includes("export default function ")) {
+        componentName = componentContents.split("export default function ")[1].split("(")[0].trim();
+      } else if (componentContents.includes("export default ")) {
+        componentName = componentContents.split("export default ")[1].split(/\s/)[0];
+      } else if (componentContents.includes("export function ")) {
+        isNamed = true;
+        componentName = componentContents.split("export function ")[1].split("(")[0].trim();
+      } else if (componentContents.includes("export const ")) {
+        isNamed = true;
+        componentName = componentContents.split("export const ")[1].split("=")[0].trim();
+      }
+      componentName = componentName.replace("{", "").replace("}", "").replace(";", "").trim();
 
-      var componentName = ""
-      var isNamed = false
-      if(componentContents.includes("export default function ")){
-        componentName = componentContents.split("export default function ")[1].split("(")[0].trim()
-      } else if(componentContents.includes("export default ")){
-        componentName = componentContents.split("export default ")[1].split(/\s/)[0]
-      } else if(componentContents.includes("export function ")){
-        isNamed = true
-        componentName = componentContents.split("export function ")[1].split("(")[0].trim()
-      } else if(componentContents.includes("export const ")){
-        isNamed = true
-        componentName = componentContents.split("export const ")[1].split("=")[0].trim()
-      } 
-      componentName = componentName.replace("{", "").replace("}", "").replace(";", "").trim()
-
-      var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0]
-      if(firstPart.includes("import ")){
+      var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
+      if (firstPart.includes("import ")) {
         const regex = /^import.*\n/gm;
-        firstPart = firstPart.replace(regex, "")
+        firstPart = firstPart.replace(regex, "");
       }
-      const relativePath = "./" + componentPath.split("frontend/src/")[1].replace(".tsx", "")
-      if(isNamed){
-        firstPart = "import { " + componentName + " } from '" + relativePath + "';\n" + firstPart
-      } else{
-        firstPart = "import " + componentName + " from '" + relativePath + "';\n" + firstPart
+      const relativePath = "./" + componentPath.split("frontend/src/")[1].replace(".tsx", "");
+      if (isNamed) {
+        firstPart = "import { " + componentName + " } from '" + relativePath + "';\n" + firstPart;
+      } else {
+        firstPart = "import " + componentName + " from '" + relativePath + "';\n" + firstPart;
       }
 
-      const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1]
-      const newAssembly = firstPart + `{/* Component Preview Area Start */}\n<` + componentName + ` />\n{/* Component Preview Area End */}` + secondPart
-      const file = await endpointApi.getFile("frontend/src/ComponentPreview.tsx")
-      
-      if(file.includes(`<` + componentName)){
-        return "<" + componentName + " />"
+      const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
+      const newAssembly =
+        firstPart +
+        `{/* Component Preview Area Start */}\n<` +
+        componentName +
+        ` />\n{/* Component Preview Area End */}` +
+        secondPart;
+      const file = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
+
+      if (file.includes(`<` + componentName)) {
+        return "<" + componentName + " />";
       }
 
       await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
-      return "<" + componentName + " />"
+      return "<" + componentName + " />";
     }
     return "";
   };
 
   const patchPreviewComponent = async (componentJsx: string) => {
     const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
-    const firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0]
-    const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1]
-    const newAssembly = firstPart + `{/* Component Preview Area Start */}\n` + componentJsx + ` \n{/* Component Preview Area End */}` + secondPart
+    const firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
+    const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
+    const newAssembly =
+      firstPart +
+      `{/* Component Preview Area Start */}\n` +
+      componentJsx +
+      ` \n{/* Component Preview Area End */}` +
+      secondPart;
     await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
-  }
+  };
 
   //this is kind of a failed experiment
   const findSelector = async (file: string, selector: string) => {
@@ -281,11 +290,9 @@ export default function useFilesystemApi() {
     // const elements = selector.split('>').map(s => s.trim());
     // let lastMatch = '';
     // let regexPattern = '';
-
     // for (let i = 0; i < elements.length; i++) {
     //     const el = elements[i];
     //     let elRegex;
-        
     //     if (el.includes(':nth-of-type')) {
     //         const match = el.match(/(\w+):nth-of-type\((\d+)\)/);
     //         if (match) {
@@ -297,23 +304,19 @@ export default function useFilesystemApi() {
     //     } else {
     //         elRegex = `<${el}[^>]*>`;
     //     }
-
     //     if (elRegex) {
     //         regexPattern += elRegex;
     //         if (i < elements.length - 1) {
     //             regexPattern += '[\\s\\S]*?';
     //         }
-            
     //         const regex = new RegExp(regexPattern, 'g');
     //         const matches = [...code.matchAll(regex)];
-
     //         if (matches.length > 0) {
     //             lastMatch = matches[matches.length - 1][0];
     //         } else if (i === elements.length - 1) {
     //             // When no match is found at the last element, look for a React component at that position
     //             const componentRegex = new RegExp(`<(\\w+)[^>]*>[\\s\\S]*?</\\1>`, 'g');
     //             const componentMatches = [...code.matchAll(componentRegex)];
-
     //             if (componentMatches.length > 0) {
     //                 lastMatch = componentMatches[componentMatches.length - 1][0];
     //             }
@@ -323,13 +326,11 @@ export default function useFilesystemApi() {
     //         }
     //     }
     // }
-
     // if (lastMatch) {
     //     return '/* START HIGHLIGHT */' + lastMatch + '/* END HIGHLIGHT */';
     // }
-
     // return 'Component not found.';
-  }
+  };
 
   return {
     // createNewFile,
@@ -346,6 +347,6 @@ export default function useFilesystemApi() {
     deleteHelper,
     deletePage,
     deleteComponent,
-    upsertImport
+    upsertImport,
   };
 }

@@ -15,18 +15,18 @@ export default function FileItem({
   isPrivate = false,
   fallbackUrl = "",
   editFile,
-  pagePath
+  pagePath,
 }: {
   active?: boolean;
   path: string;
   onClick?: () => void;
-  disableDelete?: boolean
-  removeFromList?: () => void
-  fullPath?: string
-  isPrivate?: boolean
-  fallbackUrl?: string
-  editFile?: () => void
-  pagePath?: string
+  disableDelete?: boolean;
+  removeFromList?: () => void;
+  fullPath?: string;
+  isPrivate?: boolean;
+  fallbackUrl?: string;
+  editFile?: () => void;
+  pagePath?: string;
 }) {
   const [showContextMenu, setShowContextMenu] = useState(false);
 
@@ -37,28 +37,40 @@ export default function FileItem({
           active ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
-        onContextMenu={(e) => { e.preventDefault(); onClick(); setShowContextMenu(true);}}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          onClick();
+          setShowContextMenu(true);
+        }}
       >
         <div className="flex relative">
-          <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>{pagePath ? pagePath : formatPath(fullPath, path)}</div>
+          <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>
+            {pagePath ? pagePath : formatPath(fullPath, path)}
+          </div>
           {isPrivate ? (
             <>
-            <Tooltip id="my-tooltip" className="fixed z-50" />
-            <a className="ml-1 text-blue-200 opacity-70" data-tooltip-id="my-tooltip" data-tooltip-content={`Unauthenticated redirect: ${fallbackUrl}`}>
-              <FontAwesomeIcon
-                className={`h-2 mb-0.5 ml-0.5`}
-                icon={faLock}
-              />  
-            </a>
+              <Tooltip id="my-tooltip" className="fixed z-50" />
+              <a
+                className="ml-1 text-blue-200 opacity-70"
+                data-tooltip-id="my-tooltip"
+                data-tooltip-content={`Unauthenticated redirect: ${fallbackUrl}`}
+              >
+                <FontAwesomeIcon className={`h-2 mb-0.5 ml-0.5`} icon={faLock} />
+              </a>
             </>
-          ) : <div className=""></div>}
+          ) : (
+            <div className=""></div>
+          )}
 
           <FontAwesomeIcon
             icon={faEllipsisV}
             className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
-            onClick={(e) =>{ e.preventDefault(); setShowContextMenu(!showContextMenu)}}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowContextMenu(!showContextMenu);
+            }}
           />
-          
+
           <FileContextMenu
             showContextMenu={showContextMenu}
             setShowContextMenu={setShowContextMenu}
@@ -68,7 +80,6 @@ export default function FileItem({
             isPrivate={isPrivate}
             editFile={editFile}
           />
-
         </div>
       </div>
     </>

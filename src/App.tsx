@@ -6,7 +6,6 @@ import Dashboard from "./Dashboard";
 import { GlobalContextProvider } from "./Utilities/GlobalContext";
 
 function App() {
-
   // useEffect(() => {
   //   loadIntercom({
   //     appId: "cxvvsphp",
@@ -20,7 +19,7 @@ function App() {
 
   return (
     <AuthProvider
-      authType={"cookie"} 
+      authType={"cookie"}
       authName={"_auth"}
       cookieDomain={window.location.hostname}
       cookieSecure={window.location.protocol === "https:"}

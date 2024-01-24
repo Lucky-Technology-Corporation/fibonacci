@@ -183,13 +183,13 @@ export default function ObjectTableView() {
     return <NiceInfo title="Drop to upload" subtitle="Your file will be uploaded to the public storage bucket" />;
   }
 
-  if(prodDeployStatus != "DEPLOYMENT_SUCCESS") {
+  if (prodDeployStatus != "DEPLOYMENT_SUCCESS") {
     return (
       <NiceInfo
         title="Production deployment in progress..."
         subtitle="Storage requires certain production resources. The deployment will be completed shortly."
       />
-    )
+    );
   }
 
   return (
@@ -217,7 +217,11 @@ export default function ObjectTableView() {
         />
         <div className="w-[1px] bg-[#85869833] mx-4 h-10 my-auto"></div>
         <div>
-          <Button className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"  text={"Upload"} onClick={uploadFileHandler} />
+          <Button
+            className="text-sm px-5 py-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+            text={"Upload"}
+            onClick={uploadFileHandler}
+          />
           <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
         </div>
       </div>
@@ -254,7 +258,11 @@ export default function ObjectTableView() {
                 rowKey={row._id}
                 keys={keys}
                 data={Object.entries(row).reduce((result, [key, value]) => {
-                  const fileURL = domain ? `${domain.replace("https://", "https://api.")}/swizzle/storage/${value}.${row.fileExtension || row.fileName.split(".").pop()}` : "";
+                  const fileURL = domain
+                    ? `${domain.replace("https://", "https://api.")}/swizzle/storage/${value}.${
+                        row.fileExtension || row.fileName.split(".").pop()
+                      }`
+                    : "";
                   return {
                     ...result,
                     [key]: key === "_id" ? fileURL : value,

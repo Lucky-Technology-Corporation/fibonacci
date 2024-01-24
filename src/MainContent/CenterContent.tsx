@@ -23,18 +23,30 @@ export default function CenterContent({
   isModalOpen,
   setIsModalOpen,
 }: CenterContentProps) {
-  const { activeEndpoint, activeFile, activeHelper, shouldOverlay, selectedTab, currentFileProperties, setCurrentFileProperties, activeCollection } = useContext(SwizzleContext);
+  const {
+    activeEndpoint,
+    activeFile,
+    activeHelper,
+    shouldOverlay,
+    selectedTab,
+    currentFileProperties,
+    setCurrentFileProperties,
+    activeCollection,
+  } = useContext(SwizzleContext);
 
   const headerRef = useRef(null);
   const focusOnHeader = () => {
     if (headerRef.current) {
       headerRef.current.focus();
     }
-  }
-  
-  return (
-    <div className={`relative m-0 text-sm whitespace-pre-line max-h-[100vh] ${selectedTab == Page.Logs && activeLogsPage == "assistant" ? "!overflow-scroll" : ""}`}>
+  };
 
+  return (
+    <div
+      className={`relative m-0 text-sm whitespace-pre-line max-h-[100vh] ${
+        selectedTab == Page.Logs && activeLogsPage == "assistant" ? "!overflow-scroll" : ""
+      }`}
+    >
       <div
         style={{
           opacity: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "1" : "0",
@@ -45,9 +57,18 @@ export default function CenterContent({
         {(shouldOverlay || (selectedTab !== Page.Apis && selectedTab !== Page.Hosting)) && (
           <div className="absolute top-0 left-0 w-full h-full z-10"></div>
         )}
-        <div style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }} className="absolute w-full z-40">
+        <div
+          style={{ opacity: activeEndpoint || activeFile || activeHelper ? "1" : "0" }}
+          className="absolute w-full z-40"
+        >
           {/* <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} /> */}
-          <Editor currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} selectedTab={selectedTab} focusOnHeader={focusOnHeader} headerRef={headerRef} />
+          <Editor
+            currentFileProperties={currentFileProperties}
+            setCurrentFileProperties={setCurrentFileProperties}
+            selectedTab={selectedTab}
+            focusOnHeader={focusOnHeader}
+            headerRef={headerRef}
+          />
         </div>
         <div
           style={{
@@ -74,7 +95,15 @@ export default function CenterContent({
       </div>
       <div style={{ display: selectedTab === Page.Db ? "block" : "none" }}>
         <div className="m-4 mt-2 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
-          <EndpointHeader selectedTab={selectedTab} currentFileProperties={currentFileProperties} setCurrentFileProperties={setCurrentFileProperties} headerRef={headerRef} activeCollection={activeCollection} isDebugging={false} setIsDebugging={() => {}} />
+          <EndpointHeader
+            selectedTab={selectedTab}
+            currentFileProperties={currentFileProperties}
+            setCurrentFileProperties={setCurrentFileProperties}
+            headerRef={headerRef}
+            activeCollection={activeCollection}
+            isDebugging={false}
+            setIsDebugging={() => {}}
+          />
           <DatabaseView activeCollection={activeCollection} />
         </div>
       </div>
@@ -84,8 +113,16 @@ export default function CenterContent({
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Logs ? "block" : "none" }}>
-        <div className={`m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] ${activeLogsPage == "assistant" ? "overflow-none" : "overflow-scroll"}`}>
-          <MonitoringPage setActiveLogsPage={setActiveLogsPage} activeLogsPage={activeLogsPage} shouldShow={selectedTab === Page.Logs} />
+        <div
+          className={`m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] ${
+            activeLogsPage == "assistant" ? "overflow-none" : "overflow-scroll"
+          }`}
+        >
+          <MonitoringPage
+            setActiveLogsPage={setActiveLogsPage}
+            activeLogsPage={activeLogsPage}
+            shouldShow={selectedTab === Page.Logs}
+          />
         </div>
       </div>
       <div style={{ display: selectedTab === Page.Notifications ? "block" : "none" }}>

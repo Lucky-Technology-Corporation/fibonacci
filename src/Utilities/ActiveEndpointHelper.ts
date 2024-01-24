@@ -5,7 +5,7 @@ export class ParsedActiveEndpoint {
   fullPath: string;
 
   constructor(activeEndpoint: string) {
-    if(!activeEndpoint || activeEndpoint.length === 0 || !activeEndpoint.includes("/")) {
+    if (!activeEndpoint || activeEndpoint.length === 0 || !activeEndpoint.includes("/")) {
       this.method = "";
       this.pathParams = [];
       this.pathComponents = [];
@@ -78,18 +78,18 @@ export function enumeratePathParams(parts: string[]): (string | [string, number]
   return result;
 }
 
-export function endpointSort(aIn, bIn){
-  const isASwizzle = aIn.startsWith('get/cron');
-  const isBSwizzle = bIn.startsWith('get/cron');
+export function endpointSort(aIn, bIn) {
+  const isASwizzle = aIn.startsWith("get/cron");
+  const isBSwizzle = bIn.startsWith("get/cron");
 
-  var a = aIn.replace(/^(get|post)/, '');
-  var b = bIn.replace(/^(get|post)/, '');
+  var a = aIn.replace(/^(get|post)/, "");
+  var b = bIn.replace(/^(get|post)/, "");
 
   if (isASwizzle && !isBSwizzle) {
-      return 1; // a goes after b
+    return 1; // a goes after b
   } else if (!isASwizzle && isBSwizzle) {
-      return -1; // a goes before b
+    return -1; // a goes before b
   } else {
-      return a.localeCompare(b); // normal alphabetical sort
-  }        
+    return a.localeCompare(b); // normal alphabetical sort
+  }
 }

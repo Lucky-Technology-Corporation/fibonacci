@@ -8,7 +8,7 @@ export default function HelperWizard({
   setIsVisible,
   setHelpers,
   setFullHelpers,
-  helpers
+  helpers,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
@@ -16,34 +16,34 @@ export default function HelperWizard({
   setFullHelpers: React.Dispatch<React.SetStateAction<any[]>>;
   helpers: any[];
 }) {
-  const filesystemApi = useFilesystemApi()
+  const filesystemApi = useFilesystemApi();
   const [inputValue, setInputValue] = useState("");
   const { shouldRefreshList, setShouldRefreshList } = useContext(SwizzleContext);
 
   const createHandler = async () => {
     const fileName = cleanInputValue(inputValue);
-    if(!checkForConflicts(fileName)){
-      return
+    if (!checkForConflicts(fileName)) {
+      return;
     }
 
     await filesystemApi.createNewHelper(inputValue);
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
-  }
+  };
 
   const checkForConflicts = (inputValue: string) => {
     if (helpers.includes(inputValue)) {
       toast.error("That helper already exists");
-      return false
+      return false;
     }
-    return true
-  }
+    return true;
+  };
 
   const cleanInputValue = (inputValue: string) => {
-    var cleanInputValue = inputValue.split(".")[0]
+    var cleanInputValue = inputValue.split(".")[0];
     const fileName = cleanInputValue + ".ts";
-    return fileName
-  }
+    return fileName;
+  };
 
   useEffect(() => {
     if (isVisible) {
@@ -79,7 +79,7 @@ export default function HelperWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
-                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_]/g, "")
+                      const sanitizedValue = e.target.value.replace(/[^a-zA-Z0-9-_]/g, "");
                       setInputValue(sanitizedValue.trim());
                     }}
                     className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"

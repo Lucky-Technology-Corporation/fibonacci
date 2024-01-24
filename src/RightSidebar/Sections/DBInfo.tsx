@@ -32,11 +32,7 @@ export default function DBInfo({ show }: { show: boolean }) {
             content: (
               <div className="text-gray-400">
                 You can interact with your MongoDB instance easily.{" "}
-                <a
-                  href="https://docs.swizzle.co/database"
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <a href="https://docs.swizzle.co/database" target="_blank" rel="noreferrer">
                   Learn more
                 </a>
                 <div className="w-full h-2"></div>

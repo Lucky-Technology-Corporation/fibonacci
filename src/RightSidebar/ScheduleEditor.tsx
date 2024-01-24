@@ -4,21 +4,28 @@ import { useContext, useState } from "react";
 import Button from "../Utilities/Button";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 
-export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleChecked}: {isVisible: boolean, setIsVisible: any, setIsScheduleChecked: any}) {
-
+export default function ScheduleEditor({
+  isVisible,
+  setIsVisible,
+  setIsScheduleChecked,
+}: {
+  isVisible: boolean;
+  setIsVisible: any;
+  setIsScheduleChecked: any;
+}) {
   const { activeEndpoint } = useContext(SwizzleContext);
-  const [value, setValue] = useState('30 5 * * 1,6')
+  const [value, setValue] = useState("30 5 * * 1,6");
 
   const handleSave = () => {
     //Setup cron for activeEndpoint
 
-    if(value == ""){
-      setIsScheduleChecked(false)
-    } else{
-      setIsScheduleChecked(true)
+    if (value == "") {
+      setIsScheduleChecked(false);
+    } else {
+      setIsScheduleChecked(true);
     }
-    setIsVisible(false)
-  }
+    setIsVisible(false);
+  };
 
   return (
     <div
@@ -38,9 +45,7 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
               Schedule
             </div>
           </div>
-          <div className="text-sm text-gray-400 mt-1">
-            Edit the schedule for this job
-          </div>
+          <div className="text-sm text-gray-400 mt-1">Edit the schedule for this job</div>
         </div>
         <div className="flex ml-auto mr-0">
           <Button
@@ -52,11 +57,11 @@ export default function ScheduleEditor({isVisible, setIsVisible, setIsScheduleCh
       </div>
 
       <div className="px-4 pb-2 text-sm mt-2">
-        <input 
+        <input
           type="text"
           value={value}
           onChange={(e) => {
-            setValue(e.target.value)
+            setValue(e.target.value);
           }}
           className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
           placeholder="0 0 * * *"

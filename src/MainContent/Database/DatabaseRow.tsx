@@ -62,8 +62,10 @@ export default function DatabaseRow({
 
   const setupEditing = (key: string) => {
     if (shouldBlockEdits.includes(key)) return;
-    if(currentDbQuery && currentDbQuery != "" && !currentDbQuery.includes("find(")){
-      toast.error('You cannot edit documents displayed by an aggregation query. Search for the document to edit or refresh the database to make edits.');
+    if (currentDbQuery && currentDbQuery != "" && !currentDbQuery.includes("find(")) {
+      toast.error(
+        "You cannot edit documents displayed by an aggregation query. Search for the document to edit or refresh the database to make edits.",
+      );
       return;
     }
     setEditing(key);
@@ -114,7 +116,7 @@ export default function DatabaseRow({
         .filter((k) => !shouldHideFields.includes(k))
         .map((key, index) => {
           const originalValue = rowValues[key];
-          const isObject = typeof originalValue === "object" && originalValue !== null
+          const isObject = typeof originalValue === "object" && originalValue !== null;
 
           let value = originalValue;
           if (typeof originalValue === "string") {
@@ -175,7 +177,9 @@ export default function DatabaseRow({
                   //     setupEditing(key);
                   //   }
                   // }}
-                  value={editing === key ? pendingInputValue : value === false ? "false" : value === 0 ? "0" : value || ""}
+                  value={
+                    editing === key ? pendingInputValue : value === false ? "false" : value === 0 ? "0" : value || ""
+                  }
                   onClick={() => {
                     if (!shouldBlockEdits.includes(key)) {
                       setupEditing(key);

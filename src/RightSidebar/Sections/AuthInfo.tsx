@@ -2,7 +2,7 @@ import { copyText } from "../../Utilities/Copyable";
 import { getTableHelper } from "../../Utilities/TableHelper";
 import InfoItem from "../../Utilities/Toast/InfoItem";
 
-export default function AuthInfo({ show, isAuthChecked }: { show: boolean, isAuthChecked: boolean }) {
+export default function AuthInfo({ show, isAuthChecked }: { show: boolean; isAuthChecked: boolean }) {
   const handleRowClick = (row: { name: string; description?: string }) => {
     copyText(row.name);
   };
@@ -41,10 +41,12 @@ export default function AuthInfo({ show, isAuthChecked }: { show: boolean, isAut
                   <span className="font-bold font-mono">null</span>.<div className="h-4"></div>
                 </div>
                 <div className={isAuthChecked ? "" : "hidden"}>
-                  If the request is made from a client that has signed in,{" "}
-                  the endpoint will not excecute and return a 401 error.<div className="h-4"></div>
+                  If the request is made from a client that has signed in, the endpoint will not excecute and return a
+                  401 error.<div className="h-4"></div>
                 </div>
-                If a user is signed in (the request includes the header <span className="font-mono text-xs">{`Authorization: Bearer <token>`}</span>), you can access the following properties:
+                If a user is signed in (the request includes the header{" "}
+                <span className="font-mono text-xs">{`Authorization: Bearer <token>`}</span>), you can access the
+                following properties:
                 {getTableHelper(
                   [
                     {

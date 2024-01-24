@@ -16,7 +16,11 @@ type DeploymentLog = {
   endedAtTime: string;
 };
 
-export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployInfo, setShouldCancelHide }: DeployInfoProps) {
+export default function DeployInfo({
+  shouldShowDeployInfo,
+  setShouldShowDeployInfo,
+  setShouldCancelHide,
+}: DeployInfoProps) {
   const api = useDeploymentApi();
   const myRef = useRef<HTMLDivElement>(null);
   const [logs, setLogs] = useState<DeploymentLog[]>([]);
@@ -24,24 +28,23 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
   const fetchBuildData = async () => {
     const response = await api.listProjectBuilds(0, 20);
     if (response && Array.isArray(response.builds)) {
-        const deploymentLogs: DeploymentLog[] = response.builds.map((build) => {
-          const startDateObj = new Date(build.started_at);
-          const endDateObj = new Date(build.ended_at);
-          return {
-            buildNumber: build.build_number,
-            status: build.status,
-            startedAtDate: `${startDateObj.getMonth() + 1}/${startDateObj.getDate()}/${startDateObj.getFullYear()}`,
-            startedAtTime: `${startDateObj.getHours()}:${String(startDateObj.getMinutes()).padStart(2, "0")}`,
-            endedAtDate: `${endDateObj.getMonth() + 1}/${endDateObj.getDate()}/${endDateObj.getFullYear()}`,
-            endedAtTime: `${endDateObj.getHours()}:${String(endDateObj.getMinutes()).padStart(2, "0")}`,
-          };
-        });
-        setLogs(deploymentLogs);
+      const deploymentLogs: DeploymentLog[] = response.builds.map((build) => {
+        const startDateObj = new Date(build.started_at);
+        const endDateObj = new Date(build.ended_at);
+        return {
+          buildNumber: build.build_number,
+          status: build.status,
+          startedAtDate: `${startDateObj.getMonth() + 1}/${startDateObj.getDate()}/${startDateObj.getFullYear()}`,
+          startedAtTime: `${startDateObj.getHours()}:${String(startDateObj.getMinutes()).padStart(2, "0")}`,
+          endedAtDate: `${endDateObj.getMonth() + 1}/${endDateObj.getDate()}/${endDateObj.getFullYear()}`,
+          endedAtTime: `${endDateObj.getHours()}:${String(endDateObj.getMinutes()).padStart(2, "0")}`,
+        };
+      });
+      setLogs(deploymentLogs);
     } else {
-        console.error("Unexpected response format:", response);
+      console.error("Unexpected response format:", response);
     }
-};
-
+  };
 
   useEffect(() => {
     if (shouldShowDeployInfo) {
@@ -63,11 +66,17 @@ export default function DeployInfo({ shouldShowDeployInfo, setShouldShowDeployIn
 
   return (
     <div
-      className={`z-50 w-[370px] text-sm bg-[#252629] border border-gray-700 rounded-lg shadow-lg pt-2 pb-2 ${shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      className={`z-50 w-[370px] text-sm bg-[#252629] border border-gray-700 rounded-lg shadow-lg pt-2 pb-2 ${
+        shouldShowDeployInfo ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
       style={{ transition: "opacity 0.2s", marginTop: "0px" }}
       ref={myRef}
-      onMouseEnter={() =>  { setShouldCancelHide(true)}}
-      onMouseLeave={() => { setShouldCancelHide(false); } }
+      onMouseEnter={() => {
+        setShouldCancelHide(true);
+      }}
+      onMouseLeave={() => {
+        setShouldCancelHide(false);
+      }}
     >
       {logs.length === 0 ? (
         <div className="text-center p-4 text-sm">No deployments yet</div>

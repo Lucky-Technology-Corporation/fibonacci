@@ -115,21 +115,21 @@ export const GlobalContextProvider = ({ children }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [fullEndpointList, setFullEndpointList] = useState<any[]>([]);
   const [refreshTheia, setRefreshTheia] = useState(false);
-  const [selectedText, setSelectedText] = useState("")
-  const [currentDbQuery, setCurrentDbQuery] = useState("")
-  const [swizzleActionDispatch, setSwizzleActionDispatch] = useState<any>(null)
-  const [fileErrors, setFileErrors] = useState<string>("")
-  const [activePage, setActivePage] = useState<string>(undefined)
-  const [frontendRestarting, setFrontendRestarting] = useState<boolean>(false)
-  const [activeAuthPage, setActiveAuthPage] = useState<string>("list")
-  const [shouldRefreshAuth, setShouldRefreshAuth] = useState<boolean>(false)
+  const [selectedText, setSelectedText] = useState("");
+  const [currentDbQuery, setCurrentDbQuery] = useState("");
+  const [swizzleActionDispatch, setSwizzleActionDispatch] = useState<any>(null);
+  const [fileErrors, setFileErrors] = useState<string>("");
+  const [activePage, setActivePage] = useState<string>(undefined);
+  const [frontendRestarting, setFrontendRestarting] = useState<boolean>(false);
+  const [activeAuthPage, setActiveAuthPage] = useState<string>("list");
+  const [shouldRefreshAuth, setShouldRefreshAuth] = useState<boolean>(false);
 
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
   //Current file properties handler
   const [currentFileProperties, setCurrentFileProperties] = useState<any>({});
   //Active collection handler
-  const [activeCollection, setActiveCollection] = useState<string>("");  
+  const [activeCollection, setActiveCollection] = useState<string>("");
 
   //Code generation task list
   const [taskQueue, setTaskQueue] = useState<any>([]);
@@ -215,7 +215,7 @@ export const GlobalContextProvider = ({ children }) => {
         activeAuthPage,
         setActiveAuthPage,
         shouldRefreshAuth,
-        setShouldRefreshAuth
+        setShouldRefreshAuth,
       }}
     >
       {children}

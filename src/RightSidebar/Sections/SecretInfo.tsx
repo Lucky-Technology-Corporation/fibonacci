@@ -29,7 +29,14 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
   const [newSecretTestValue, setNewSecretTestValue] = useState<string>("");
   const [newSecretProductionValue, setNewSecretProductionValue] = useState<string>("");
 
-  const authSecrets = ["GOOGLE_APP_ID", "FACEBOOK_APP_ID", "SWIZZLE_EMAIL_PASSWORD", "DOMAIN", "TOKEN_EXPIRY", "ALLOW_NEW_SIGNUPS"];
+  const authSecrets = [
+    "GOOGLE_APP_ID",
+    "FACEBOOK_APP_ID",
+    "SWIZZLE_EMAIL_PASSWORD",
+    "DOMAIN",
+    "TOKEN_EXPIRY",
+    "ALLOW_NEW_SIGNUPS",
+  ];
   useEffect(() => {
     if (isVisible) {
       getSecrets().then((secrets) => {
@@ -42,7 +49,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
             productionValue: secrets.prod[key] == true ? "(hidden for security)" : secrets.prod[key],
           }))
           .filter((secret) => !secret.name.startsWith("SWIZZLE_"))
-          .filter((secret) => !authSecrets.includes(secret.name))
+          .filter((secret) => !authSecrets.includes(secret.name));
 
         setSecrets(shapedSecretArray);
         setRemoteSavedSecrets(shapedSecretArray);
@@ -121,10 +128,10 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     if (secrets.find((secret) => secret.name == newSecretName) != null) {
       throw "A secret with that name already exists";
     }
-    if(newSecretName.startsWith("SWIZZLE_")) {
+    if (newSecretName.startsWith("SWIZZLE_")) {
       throw "Secret names cannot start with SWIZZLE_";
     }
-    if(newSecretName.includes(" ")) {
+    if (newSecretName.includes(" ")) {
       throw "Secret names cannot contain spaces";
     }
 
@@ -191,7 +198,12 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
                 return (
                   <div key={secret.name} className="flex flex-col w-full mb-4">
                     <div className="flex justify-between items-center pb-2">
-                      <span className="font-bold flex-1 cursor-pointer" onClick={() => copyText(`process.env.${secret.name}`)}>process.env.{secret.name}</span>
+                      <span
+                        className="font-bold flex-1 cursor-pointer"
+                        onClick={() => copyText(`process.env.${secret.name}`)}
+                      >
+                        process.env.{secret.name}
+                      </span>
                       <div className="opacity-70 hover:opacity-100 cursor-pointer">
                         <FontAwesomeIcon
                           icon={faTrash}

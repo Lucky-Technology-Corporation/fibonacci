@@ -15,7 +15,7 @@ import InfoItem from "../../Utilities/Toast/InfoItem";
 export default function LogRow({
   message,
   freshLogs,
-  setModalText, 
+  setModalText,
   autofixButtonClassName,
 }: {
   message: any;
@@ -31,7 +31,7 @@ export default function LogRow({
   useEffect(() => {
     setIsExpanded(false);
     setHeaders(message.request.headers);
-    delete message.request.headers
+    delete message.request.headers;
   }, [message]);
 
   const formatDate = (inputDateStr: string) => {
@@ -48,44 +48,72 @@ export default function LogRow({
   };
 
   const forbiddenHeaders = [
-    "Accept-Charset", "Accept-Encoding", "Access-Control-Request-Headers",
-    "Access-Control-Request-Method", "Connection", "Content-Length",
-    "Cookie", "Cookie2", "Date", "DNT", "Expect", "Host",
-    "Keep-Alive", "Origin", "Proxy-", "Sec-", "Referer",
-    "TE", "Trailer", "Transfer-Encoding", "Upgrade", "Via", "User-Agent"
-  ].map(h => h.toLowerCase());
+    "Accept-Charset",
+    "Accept-Encoding",
+    "Access-Control-Request-Headers",
+    "Access-Control-Request-Method",
+    "Connection",
+    "Content-Length",
+    "Cookie",
+    "Cookie2",
+    "Date",
+    "DNT",
+    "Expect",
+    "Host",
+    "Keep-Alive",
+    "Origin",
+    "Proxy-",
+    "Sec-",
+    "Referer",
+    "TE",
+    "Trailer",
+    "Transfer-Encoding",
+    "Upgrade",
+    "Via",
+    "User-Agent",
+  ].map((h) => h.toLowerCase());
 
   function filterHeaders(headers) {
     const filteredHeaders = {};
     for (const [key, value] of Object.entries(headers)) {
       const keyLower = key.toLowerCase();
-      if (!forbiddenHeaders.some(forbidden => forbidden.toLowerCase() === keyLower) && !keyLower.startsWith('proxy-') && !keyLower.startsWith('sec-')) {
+      if (
+        !forbiddenHeaders.some((forbidden) => forbidden.toLowerCase() === keyLower) &&
+        !keyLower.startsWith("proxy-") &&
+        !keyLower.startsWith("sec-")
+      ) {
         filteredHeaders[key] = value;
       }
     }
     return filteredHeaders;
   }
   const retryRequest = async () => {
-    try{
+    try {
       if (message.method == "GET") {
-        await axios.get(domain.replace("https://", "https://api.") + message.url, { headers: filterHeaders(message.headers) });
+        await axios.get(domain.replace("https://", "https://api.") + message.url, {
+          headers: filterHeaders(message.headers),
+        });
       } else if (message.method == "POST") {
-        await axios.post(domain.replace("https://", "https://api.") + message.url, message.request, { headers: filterHeaders(message.headers) });
+        await axios.post(domain.replace("https://", "https://api.") + message.url, message.request, {
+          headers: filterHeaders(message.headers),
+        });
       } else if (message.method == "PUT") {
-        await axios.put(domain.replace("https://", "https://api.") + message.url, message.request, { headers: filterHeaders(message.headers) });
+        await axios.put(domain.replace("https://", "https://api.") + message.url, message.request, {
+          headers: filterHeaders(message.headers),
+        });
       } else if (message.method == "DELETE") {
-        await axios.delete(domain.replace("https://", "https://api.") + message.url, { headers: filterHeaders(message.headers) });
+        await axios.delete(domain.replace("https://", "https://api.") + message.url, {
+          headers: filterHeaders(message.headers),
+        });
       }
       return freshLogs();
-    } catch(e){
+    } catch (e) {
       return freshLogs();
     }
   };
 
   const explainError = async (text) => {
-    setModalText(<div>
-     {text}
-    </div>);
+    setModalText(<div>{text}</div>);
   };
 
   const fixRequest = async () => {
@@ -97,16 +125,14 @@ export default function LogRow({
   };
 
   const getIconForLevel = (level: string) => {
-    if(level == "error"){
-      return <img src="/error.svg" className="w-4 h-4" />
+    if (level == "error") {
+      return <img src="/error.svg" className="w-4 h-4" />;
+    } else if (level == "warn") {
+      return <img src="/warn.svg" className="w-4 h-4" />;
+    } else {
+      return <img src="/log.svg" className="w-4 h-4" />;
     }
-    else if(level == "warn"){
-      return <img src="/warn.svg" className="w-4 h-4" />
-    }
-    else{
-      return <img src="/log.svg" className="w-4 h-4" />
-    }
-  }
+  };
 
   return (
     <>
@@ -122,15 +148,15 @@ export default function LogRow({
           <IconButton
             icon={<FontAwesomeIcon icon={faRotateRight} className="py-1" />}
             onClick={(e) => {
-              e.stopPropagation()
+              e.stopPropagation();
               toast.promise(retryRequest(), {
                 loading: "Retrying request...",
                 success: () => {
                   return "Retried successfully";
                 },
                 error: () => {
-                  return "Retried and got an error"
-                }
+                  return "Retried and got an error";
+                },
               });
             }}
           />
@@ -139,33 +165,41 @@ export default function LogRow({
           <IconButton
             icon={<FontAwesomeIcon icon={faWrench} className={`py-1 ${autofixButtonClassName}`} />}
             onClick={(e) => {
-              e.stopPropagation()
-              if(message.responseCode < 400){
-                toast("This request didn't return an error.")
-              } else if(message.responseCode == 404){
-                  const endpointPath = message.method.toLowerCase() + message.url.split("?")[0]
-                  var exists = fullEndpointList.includes(endpointPath)
-                  if(message.url.includes("/swizzle/storage")){
-                    explainError(`A 404 error means something doesn't exist. 
+              e.stopPropagation();
+              if (message.responseCode < 400) {
+                toast("This request didn't return an error.");
+              } else if (message.responseCode == 404) {
+                const endpointPath = message.method.toLowerCase() + message.url.split("?")[0];
+                var exists = fullEndpointList.includes(endpointPath);
+                if (message.url.includes("/swizzle/storage")) {
+                  explainError(`A 404 error means something doesn't exist. 
                     It looks like you're trying to access a file in your storage bucket. Make sure:
                     - The file actually exists in Files.\n
                     - The file is publicly accessible, or the user requesting the file has permission to access it.\n
                     - You are including the extension in the URL (e.g. /swizzle/storage/0000000.png)
-                    `)
-                  } else {
-                    explainError(`A 404 error means something doesn't exist.\n 
-                      ${!exists ? `The endpoint ${message.method} ${message.url.split("?")[0]} doesn't exist in your project files. Check that you're using the correct method and don't have any typos.` 
-                      : `However, ${message.method} ${message.url.split("?")[0]} does indeed exist in your project files. There could be a few reasons for this:\n
+                    `);
+                } else {
+                  explainError(`A 404 error means something doesn't exist.\n 
+                      ${
+                        !exists
+                          ? `The endpoint ${message.method} ${
+                              message.url.split("?")[0]
+                            } doesn't exist in your project files. Check that you're using the correct method and don't have any typos.`
+                          : `However, ${message.method} ${
+                              message.url.split("?")[0]
+                            } does indeed exist in your project files. There could be a few reasons for this:\n
                         ${environment == "test" && "- The test server was restarting. Try again in a few seconds."}
                         - You're returning a 404 in your code manually.
                         - You need to save the file.
                         - The file didn't exist when this request was made, but does now.
                         ${environment == "prod" ? "- You haven't deployed your changes to Production." : ""}`
-                    }`)
-                  }
-              } else if(message.responseCode == 401){
-                explainError(`A 401 error means "Permission Denied". This is not neccessarily an error - if someone who isn't logged in makes a request to an endpoint that has "Require Authentication" set, the server will respond with a 401.\n\nIf this 401 was not intended, make sure the client was properly authenticated (the user is signed into the frontend).\n\nIf you're calling your backend from a mobile app or frontend not hosted on Swizzle, make sure you are adding the header "Authorization: Bearer <jwt>" and the JWT is correct and not expired.`)
-              } else{
+                      }`);
+                }
+              } else if (message.responseCode == 401) {
+                explainError(
+                  `A 401 error means "Permission Denied". This is not neccessarily an error - if someone who isn't logged in makes a request to an endpoint that has "Require Authentication" set, the server will respond with a 401.\n\nIf this 401 was not intended, make sure the client was properly authenticated (the user is signed into the frontend).\n\nIf you're calling your backend from a mobile app or frontend not hosted on Swizzle, make sure you are adding the header "Authorization: Bearer <jwt>" and the JWT is correct and not expired.`,
+                );
+              } else {
                 toast.promise(fixRequest(), {
                   loading: "Looking at your code...",
                   success: "Found an answer",
@@ -182,46 +216,51 @@ export default function LogRow({
         </td>
         <td className="text-left pl-4 font-bold">
           <div className="flex">
-            <Dot color={message.responseCode >= 500 ? "red" : (message.responseCode >= 400 ? "yellow" : "green")} className="ml-0 mr-2" />
+            <Dot
+              color={message.responseCode >= 500 ? "red" : message.responseCode >= 400 ? "yellow" : "green"}
+              className="ml-0 mr-2"
+            />
             <div>{message.responseCode}</div>
           </div>
         </td>
         <td className={`text-left pl-4 ${message.userId == null ? "" : ""}`}>{message.userId || "None"}</td>
         <td className="text-left pl-4 flex mt-2">
           <>
-          <InfoItem
-            content={<div className="text-xs font-mono underline decoration-dotted">Request</div>}
-            toast={{
-              title: "Request details",
-              content: (
-                <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
-                  {JSON.stringify(message.request, null, 2)}
-                </div>
-              ),
-              isExpandable: true,
-            }}
-            onClick={() => {
-              copyText(JSON.stringify(message.request, null, 2));
-            }}
-            position="bottom-center"
-          />
-          &nbsp;&nbsp;
-          <div className="pt-1.5">(</div><InfoItem
-            content={<div className="text-xs font-mono underline decoration-dotted">headers</div>}
-            toast={{
-              title: "Headers",
-              content: (
-                <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
-                  {JSON.stringify(headers, null, 2)}
-                </div>
-              ),
-              isExpandable: true,
-            }}
-            onClick={() => {
-              copyText(JSON.stringify(headers, null, 2));
-            }}
-            position="bottom-center"
-          /><div className="pt-1.5">)</div>
+            <InfoItem
+              content={<div className="text-xs font-mono underline decoration-dotted">Request</div>}
+              toast={{
+                title: "Request details",
+                content: (
+                  <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
+                    {JSON.stringify(message.request, null, 2)}
+                  </div>
+                ),
+                isExpandable: true,
+              }}
+              onClick={() => {
+                copyText(JSON.stringify(message.request, null, 2));
+              }}
+              position="bottom-center"
+            />
+            &nbsp;&nbsp;
+            <div className="pt-1.5">(</div>
+            <InfoItem
+              content={<div className="text-xs font-mono underline decoration-dotted">headers</div>}
+              toast={{
+                title: "Headers",
+                content: (
+                  <div className="text-gray-400 text-xs max-w-358 font-mono whitespace-pre-wrap word-break break-all">
+                    {JSON.stringify(headers, null, 2)}
+                  </div>
+                ),
+                isExpandable: true,
+              }}
+              onClick={() => {
+                copyText(JSON.stringify(headers, null, 2));
+              }}
+              position="bottom-center"
+            />
+            <div className="pt-1.5">)</div>
           </>
         </td>
         <td className="text-left pl-4">
@@ -254,16 +293,24 @@ export default function LogRow({
       </tr>
       <tr className={`${isExpanded ? "" : "hidden"} border-b border-[#4C4F6B]`}>
         <td colSpan={9} className="text-left pl-6 text-xs py-3 word-wrap max-w-full font-mono">
-          <div className="font-mono">{(message.logs || []).map((logString, index) => {
-            var log = JSON.parse(logString);
-            return (
-              <div className={`mb-1 flex`} key={"message-" + index}>
-                <div className="mr-2">{new Date(log.timestamp).toLocaleTimeString()}</div>
-                <div className="mr-2">{getIconForLevel(log.level)}</div>
-                <div className={log.level == "error" ? "text-red-400" : log.level == "warn" ? "text-yellow-400" : "text-[#d2d3e0]"}>{log.text}</div>
-              </div>
-            )
-          })}</div>
+          <div className="font-mono">
+            {(message.logs || []).map((logString, index) => {
+              var log = JSON.parse(logString);
+              return (
+                <div className={`mb-1 flex`} key={"message-" + index}>
+                  <div className="mr-2">{new Date(log.timestamp).toLocaleTimeString()}</div>
+                  <div className="mr-2">{getIconForLevel(log.level)}</div>
+                  <div
+                    className={
+                      log.level == "error" ? "text-red-400" : log.level == "warn" ? "text-yellow-400" : "text-[#d2d3e0]"
+                    }
+                  >
+                    {log.text}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </td>
       </tr>
     </>

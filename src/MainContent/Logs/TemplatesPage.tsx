@@ -16,41 +16,43 @@ export default function TemplatesPage() {
   const [isVisible, setIsVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    async function runFetcher(){
+    async function runFetcher() {
       var response = await api.getTemplates();
-      if(response == null) return;
+      if (response == null) return;
       setTemplates(response);
     }
-    if(activeProject == "") return;
-    runFetcher()
-  }, [activeProject])
+    if (activeProject == "") return;
+    runFetcher();
+  }, [activeProject]);
 
   const getTemplates = () => {
-    return (
-      templates.map((template, index) => {
-        if(searchQuery == "" || template.name.toLowerCase().includes(searchQuery.toLowerCase())){
-          if(template.type == "dropin"){
-            return (
-              <Card key={index} className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0" style={{ width: 'calc(33.333% - 1rem)' }}>
-                <div className="font-semibold text-lg flex">
-                  <img src={template.icon_url || "/puzzle.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
-                  <div className="my-auto mr-auto">{template.name}</div>
-                  <Button
-                    text="Import"
-                    onClick={() => {
-                      setSelectedTemplate(template);
-                      setIsVisible(true);
-                    }}
-                  />
-                </div>
-                <div className="mt-2">{template.description}</div>
-              </Card>
-            )
-          }
+    return templates.map((template, index) => {
+      if (searchQuery == "" || template.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        if (template.type == "dropin") {
+          return (
+            <Card
+              key={index}
+              className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0"
+              style={{ width: "calc(33.333% - 1rem)" }}
+            >
+              <div className="font-semibold text-lg flex">
+                <img src={template.icon_url || "/puzzle.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
+                <div className="my-auto mr-auto">{template.name}</div>
+                <Button
+                  text="Import"
+                  onClick={() => {
+                    setSelectedTemplate(template);
+                    setIsVisible(true);
+                  }}
+                />
+              </div>
+              <div className="mt-2">{template.description}</div>
+            </Card>
+          );
         }
-      })
-    )
-  }
+      }
+    });
+  };
 
   return (
     <div className="h-full overflow-scroll min-h-[50vh]">
@@ -74,27 +76,25 @@ export default function TemplatesPage() {
 
       <div className="px-4 pl-3 pt-1 flex flex-row flex-wrap no-focus-ring">
         {getTemplates()}
-        <Card className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0" style={{ width: 'calc(33.333% - 1rem)' }}>
+        <Card
+          className="dark-tremor h-90 !bg-[#32333b63] !rounded-md m-2 flex-grow-0 flex-shrink-0"
+          style={{ width: "calc(33.333% - 1rem)" }}
+        >
           <div className="font-semibold text-lg flex">
             <img src={"/email.svg"} className="w-6 h-6 mr-2 rounded my-auto" />
             <div className="my-auto mr-auto">Something else</div>
             <Button
               text="Request"
               onClick={() => {
-                window.open("mailto:team@swizzle.co?subject=New Template Request", "_blank")
+                window.open("mailto:team@swizzle.co?subject=New Template Request", "_blank");
               }}
             />
           </div>
           <div className="mt-2">Request a new template from the Swizzle team</div>
         </Card>
       </div>
-      
-      <TemplateInputTaker 
-        template={selectedTemplate}
-        isVisible={isVisible}
-        setIsVisible={setIsVisible}
-      />
-      
+
+      <TemplateInputTaker template={selectedTemplate} isVisible={isVisible} setIsVisible={setIsVisible} />
     </div>
   );
 }

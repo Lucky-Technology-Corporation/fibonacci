@@ -33,7 +33,7 @@ export default function CollectionList({
   };
 
   const createNewCollection = (collectionName: string) => {
-    if(collectionName.startsWith("_")) {
+    if (collectionName.startsWith("_")) {
       toast.error("Collection names cannot start with an underscore");
       return;
     }

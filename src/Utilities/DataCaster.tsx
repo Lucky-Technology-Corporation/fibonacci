@@ -41,33 +41,33 @@ export function castValues(input: any): any {
 }
 
 const filenameToEnglish = (filename: string) => {
-  if(filename.startsWith("get")) {
+  if (filename.startsWith("get")) {
     return "GET " + filename.slice(3);
-  } else if(filename.startsWith("post")) {
+  } else if (filename.startsWith("post")) {
     return "POST " + filename.slice(4);
-  } else if(filename.startsWith("put")) {
+  } else if (filename.startsWith("put")) {
     return "PUT " + filename.slice(3);
-  } else if(filename.startsWith("delete")) {
+  } else if (filename.startsWith("delete")) {
     return "DELETE " + filename.slice(6);
   }
-}
+};
 
 export function replaceCodeBlocks(str: string) {
   const regex = /(`+)([^\n`]+?)\1|(`{3,})(?:[a-zA-Z]*)\n?([\s\S]*?)\3/g;
   let lastIndex = 0;
-  let result = '';
+  let result = "";
 
   let match;
   while ((match = regex.exec(str)) !== null) {
-    result += str.slice(lastIndex, match.index).replace(/\n/g, '<br>');
+    result += str.slice(lastIndex, match.index).replace(/\n/g, "<br>");
     const code = match[2] || match[4];
     const escapedCode = code.replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
     result += `<span style="font-family: monospace;">${escapedCode}</span>`;
     lastIndex = regex.lastIndex;
   }
 
-  result += str.slice(lastIndex).replace(/\n/g, '<br>');
-  
+  result += str.slice(lastIndex).replace(/\n/g, "<br>");
+
   const filepathRegex = /\/swizzle\/code\/backend\/user-dependencies\/([^\/\s]+)/g;
   result = result.replace(filepathRegex, (_, filename) => filenameToEnglish(filenameToEndpoint(filename)));
 

@@ -29,15 +29,31 @@ type LeftSidebarProps = {
 export default function LeftSidebar({
   activeLogsPage,
   setActiveLogsPage,
-  isModalOpen, 
+  isModalOpen,
   setIsModalOpen,
 }: LeftSidebarProps) {
-  const { setEnvironment, environment, setActiveEndpoint, setActiveFile, activeEndpoint, activeFile, setPostMessage, activeProject, ideReady, setOpenUri, setRefreshTheia, currentFileProperties, selectedTab, setSelectedTab, activeCollection, setActiveCollection } =
-    useContext(SwizzleContext);
+  const {
+    setEnvironment,
+    environment,
+    setActiveEndpoint,
+    setActiveFile,
+    activeEndpoint,
+    activeFile,
+    setPostMessage,
+    activeProject,
+    ideReady,
+    setOpenUri,
+    setRefreshTheia,
+    currentFileProperties,
+    selectedTab,
+    setSelectedTab,
+    activeCollection,
+    setActiveCollection,
+  } = useContext(SwizzleContext);
 
-  const [refreshHidden, setRefreshHidden] = useState(true)
-  const { getProjectDeploymentStatus } = useDeploymentApi()
-  
+  const [refreshHidden, setRefreshHidden] = useState(true);
+  const { getProjectDeploymentStatus } = useDeploymentApi();
+
   useEffect(() => {
     openActiveEndpoint();
   }, [activeEndpoint]);
@@ -54,15 +70,14 @@ export default function LeftSidebar({
     }
   }, [selectedTab]);
 
-
   const openActiveFile = () => {
     if (currentFileProperties && currentFileProperties.fileUri) {
       const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       if (currentFile == activeFile) {
-        return
-      };
+        return;
+      }
     }
-    if(activeFile == undefined || activeFile == "") return;
+    if (activeFile == undefined || activeFile == "") return;
     setPostMessage({
       type: "openFile",
       fileName: `/${activeFile}`,
@@ -71,7 +86,7 @@ export default function LeftSidebar({
 
   const openActiveEndpoint = () => {
     if (activeEndpoint == undefined || activeEndpoint == "") return;
-    var fileName = endpointToFilename(activeEndpoint)
+    var fileName = endpointToFilename(activeEndpoint);
 
     if (fileName.startsWith("!helper!")) {
       //Check if we're already on the helper
@@ -85,13 +100,13 @@ export default function LeftSidebar({
         type: "openFile",
         fileName: `/backend/helpers/${fileName}`,
       });
-    } else if(fileName.startsWith("!trigger!")){
+    } else if (fileName.startsWith("!trigger!")) {
       var triggerFileName = activeEndpoint.replace("!trigger!", "");
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
         if (currentFile == triggerFileName) return;
       }
-      console.log("open", triggerFileName)
+      console.log("open", triggerFileName);
       setPostMessage({
         type: "openFile",
         fileName: `${triggerFileName}`,
@@ -100,10 +115,10 @@ export default function LeftSidebar({
       //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
         const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
-        const currentEndpoint = filenameToEndpoint(currentFile)
+        const currentEndpoint = filenameToEndpoint(currentFile);
         if (currentEndpoint.replace("backend/user-dependencies/", "") == activeEndpoint) {
-          return
-        };
+          return;
+        }
       }
       //Open the endpoint
       setPostMessage({
@@ -114,67 +129,71 @@ export default function LeftSidebar({
   };
 
   useEffect(() => {
-    if (currentFileProperties == undefined || currentFileProperties.fileUri == undefined || !currentFileProperties.fileUri.startsWith("file:///")) {
+    if (
+      currentFileProperties == undefined ||
+      currentFileProperties.fileUri == undefined ||
+      !currentFileProperties.fileUri.startsWith("file:///")
+    ) {
       return;
     }
-    
-    setOpenUri(currentFileProperties.fileUri.replace("file://", ""))
+
+    setOpenUri(currentFileProperties.fileUri.replace("file://", ""));
 
     if (currentFileProperties.fileUri.includes("backend")) {
-      if(selectedTab != Page.Apis){
-        setSelectedTab(Page.Apis)
+      if (selectedTab != Page.Apis) {
+        setSelectedTab(Page.Apis);
       }
       if (currentFileProperties.fileUri.includes("backend/helpers/")) {
-        const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("helpers/")[1])
-        setActiveEndpoint("!helper!"+newEndpoint);
-      } else if(currentFileProperties.fileUri.includes("user-dependencies/")){
-        const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("user-dependencies/")[1])
+        const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("helpers/")[1]);
+        setActiveEndpoint("!helper!" + newEndpoint);
+      } else if (currentFileProperties.fileUri.includes("user-dependencies/")) {
+        const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("user-dependencies/")[1]);
         setActiveEndpoint(newEndpoint);
-      } else if(currentFileProperties.fileUri.includes("swizzle-dependencies/")){
+      } else if (currentFileProperties.fileUri.includes("swizzle-dependencies/")) {
         //no op
-      }else{
-        setActiveEndpoint(null)
+      } else {
+        setActiveEndpoint(null);
       }
     }
 
     if (currentFileProperties.fileUri.includes("frontend/src")) {
-      if(selectedTab != Page.Hosting){
-        setSelectedTab(Page.Hosting)
+      if (selectedTab != Page.Hosting) {
+        setSelectedTab(Page.Hosting);
       }
       const newFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
       const uriDecoded = decodeURIComponent(newFile);
-      if(uriDecoded != activeFile){
+      if (uriDecoded != activeFile) {
         setActiveFile(newFile);
       }
     }
   }, [currentFileProperties]);
 
   const changeEnvironment = async (env) => {
-    const status = await getProjectDeploymentStatus(activeProject, env)
+    const status = await getProjectDeploymentStatus(activeProject, env);
     if (status == "DEPLOYMENT_SUCCESS") {
       setEnvironment(env);
-      return Promise.resolve()
+      return Promise.resolve();
     } else {
-      return Promise.reject("Still deploying to " + (env == 'test' ? "test" : "production"));
+      return Promise.reject("Still deploying to " + (env == "test" ? "test" : "production"));
     }
-  }
+  };
 
-  const refreshSpinner = useRef(null)
+  const refreshSpinner = useRef(null);
   const spin = () => {
-    const spinner = refreshSpinner.current
+    const spinner = refreshSpinner.current;
     if (spinner) {
       spinner.classList.add("spin-rotate");
       setTimeout(() => {
         spinner.classList.remove("spin-rotate");
       }, 500);
     }
-  }
+  };
 
   useEffect(() => {
     setTimeout(() => {
-      setRefreshHidden(false)
+      setRefreshHidden(false);
     }, 10000);
-  }, [])
+  }, []);
 
   return (
     <div className="leftSidebar pt-1 min-w-[240px] border-r border-gray-700 bg-[#1e1e1e] !overflow-scroll">
@@ -195,12 +214,12 @@ export default function LeftSidebar({
               toast.promise(changeEnvironment(environment == "test" ? "prod" : "test"), {
                 loading: "Switching environment...",
                 success: () => {
-                  return "Switched to " + (environment == 'test' ? "production" : "test");
+                  return "Switched to " + (environment == "test" ? "production" : "test");
                 },
                 error: (e) => {
-                  return e
-                }
-              })
+                  return e;
+                },
+              });
             }}
             checked={environment == "test"}
             uncheckedIcon={<FontAwesomeIcon icon={faBox} className="ml-1.5" />}
@@ -213,9 +232,7 @@ export default function LeftSidebar({
         </div>
 
         <div className="flex mt-2">
-          <ProjectSelector
-            isModalOpen={isModalOpen}
-            setIsModalOpen={setIsModalOpen} />
+          <ProjectSelector isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
           <DeployButton />
         </div>
 
@@ -224,8 +241,11 @@ export default function LeftSidebar({
           text="Project"
           active={selectedTab == Page.Logs}
           onClick={() => {
-            if(selectedTab == Page.Logs){ setSelectedTab(null) }
-            else { setSelectedTab(Page.Logs); }
+            if (selectedTab == Page.Logs) {
+              setSelectedTab(null);
+            } else {
+              setSelectedTab(Page.Logs);
+            }
           }}
         />
         <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
@@ -233,27 +253,39 @@ export default function LeftSidebar({
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
-        
+
         <div className="auth-method w-full">
-        <SectionTitle
-          icon="/auth.svg"
-          text="Users"
-          active={selectedTab == Page.Auth}
-          onClick={() => {
-            if(selectedTab == Page.Auth){ setSelectedTab(null) }
-            else { setSelectedTab(Page.Auth); }
-          }}
-          className="user-tab"
-        />
-        <AuthSettings active={selectedTab == Page.Auth} className="" />
+          <SectionTitle
+            icon="/auth.svg"
+            text="Users"
+            active={selectedTab == Page.Auth}
+            onClick={() => {
+              if (selectedTab == Page.Auth) {
+                setSelectedTab(null);
+              } else {
+                setSelectedTab(Page.Auth);
+              }
+            }}
+            className="user-tab"
+          />
+          <AuthSettings active={selectedTab == Page.Auth} className="" />
         </div>
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
-        
-        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="right">
+
+        <Tooltip
+          id="backend-tab-tooltip"
+          className={`fixed z-50 ${ideReady && "hidden"}`}
+          style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
+        />
+        <a
+          className="w-full"
+          data-tooltip-id="backend-tab-tooltip"
+          data-tooltip-content={"Your IDE is loading..."}
+          data-tooltip-place="right"
+        >
           <div className="w-full">
             <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
               <SectionTitle
@@ -261,8 +293,11 @@ export default function LeftSidebar({
                 text="Backend"
                 active={selectedTab == Page.Apis}
                 onClick={() => {
-                  if(selectedTab == Page.Apis){ setSelectedTab(null) }
-                  else { setSelectedTab(Page.Apis); }
+                  if (selectedTab == Page.Apis) {
+                    setSelectedTab(null);
+                  } else {
+                    setSelectedTab(Page.Apis);
+                  }
                 }}
                 className="backend-tab"
               />
@@ -271,14 +306,20 @@ export default function LeftSidebar({
               <Button
                 moreClasses="ml-auto mr-1 z-40 mt-[-30px] mt-1 text-white cursor-hover !px-2 !bg-[#333336] !hover:bg-[#fff]"
                 text="Reload"
-                children={refreshHidden ? <FontAwesomeIcon icon={faSpinner} color="#ddd" /> : <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />}
-                onClick={() => { 
-                  setRefreshTheia(true)
-                  toast("Reloading IDE...")
-                  spin()
-                  setRefreshHidden(true)
+                children={
+                  refreshHidden ? (
+                    <FontAwesomeIcon icon={faSpinner} color="#ddd" />
+                  ) : (
+                    <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />
+                  )
+                }
+                onClick={() => {
+                  setRefreshTheia(true);
+                  toast("Reloading IDE...");
+                  spin();
+                  setRefreshHidden(true);
                   setTimeout(() => {
-                    setRefreshHidden(false)
+                    setRefreshHidden(false);
                   }, 10000);
                 }}
               />
@@ -290,9 +331,18 @@ export default function LeftSidebar({
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
-        
-        <Tooltip id="backend-tab-tooltip" className={`fixed z-50 ${ideReady && "hidden"}`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
-        <a className="w-full" data-tooltip-id="backend-tab-tooltip" data-tooltip-content={"Your IDE is loading..."} data-tooltip-place="right">
+
+        <Tooltip
+          id="backend-tab-tooltip"
+          className={`fixed z-50 ${ideReady && "hidden"}`}
+          style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
+        />
+        <a
+          className="w-full"
+          data-tooltip-id="backend-tab-tooltip"
+          data-tooltip-content={"Your IDE is loading..."}
+          data-tooltip-place="right"
+        >
           <div className="w-full">
             <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
               <SectionTitle
@@ -300,8 +350,11 @@ export default function LeftSidebar({
                 text="Frontend"
                 active={selectedTab == Page.Hosting}
                 onClick={() => {
-                  if(selectedTab == Page.Hosting){ setSelectedTab(null) }
-                  else { setSelectedTab(Page.Hosting); }
+                  if (selectedTab == Page.Hosting) {
+                    setSelectedTab(null);
+                  } else {
+                    setSelectedTab(Page.Hosting);
+                  }
                 }}
                 className="frontend-tab"
               />
@@ -310,14 +363,20 @@ export default function LeftSidebar({
               <Button
                 moreClasses="ml-auto mr-1 z-40 mt-[-30px] mt-1 text-white cursor-hover !px-2 !bg-[#333336] !hover:bg-[#fff]"
                 text="Reload"
-                children={refreshHidden ? <FontAwesomeIcon icon={faSpinner} color="#ddd" /> : <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />}
-                onClick={() => { 
-                  setRefreshTheia(true)
-                  toast("Reloading IDE...")
-                  spin()
-                  setRefreshHidden(true)
+                children={
+                  refreshHidden ? (
+                    <FontAwesomeIcon icon={faSpinner} color="#ddd" />
+                  ) : (
+                    <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />
+                  )
+                }
+                onClick={() => {
+                  setRefreshTheia(true);
+                  toast("Reloading IDE...");
+                  spin();
+                  setRefreshHidden(true);
                   setTimeout(() => {
-                    setRefreshHidden(false)
+                    setRefreshHidden(false);
                   }, 10000);
                 }}
               />
@@ -326,19 +385,20 @@ export default function LeftSidebar({
         </a>
         <FilesList active={selectedTab == Page.Hosting} />
 
-
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
-
 
         <SectionTitle
           icon="/database.svg"
           text="Database"
           active={selectedTab == Page.Db}
           onClick={() => {
-            if(selectedTab == Page.Db){ setSelectedTab(null) }
-            else { setSelectedTab(Page.Db); }
+            if (selectedTab == Page.Db) {
+              setSelectedTab(null);
+            } else {
+              setSelectedTab(Page.Db);
+            }
           }}
           className="database-tab"
         />
@@ -353,12 +413,14 @@ export default function LeftSidebar({
           text="Files"
           active={selectedTab == Page.Storage}
           onClick={() => {
-            if(selectedTab == Page.Storage){ setSelectedTab(null) }
-            else { setSelectedTab(Page.Storage); }
+            if (selectedTab == Page.Storage) {
+              setSelectedTab(null);
+            } else {
+              setSelectedTab(Page.Storage);
+            }
           }}
           className="files-tab"
         />
-
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>

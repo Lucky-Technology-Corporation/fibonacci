@@ -3,9 +3,12 @@ import Button from "./Button";
 
 export default function FloatingModal({ content, closeModal }: { content: ReactNode; closeModal: () => void }) {
   return (
-    <div className={`absolute top-0 left-0 w-full h-full z-50 bg-black bg-opacity-30 ${content == undefined ? "hidden" : ""}`}
-        onClick={() => closeModal()}
-        style={{transition: "display 0.2s"}}
+    <div
+      className={`absolute top-0 left-0 w-full h-full z-50 bg-black bg-opacity-30 ${
+        content == undefined ? "hidden" : ""
+      }`}
+      onClick={() => closeModal()}
+      style={{ transition: "display 0.2s" }}
     >
       <div
         className={`${
@@ -14,7 +17,10 @@ export default function FloatingModal({ content, closeModal }: { content: ReactN
         style={{ left: "25%" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute left-4 top-4 text-lg flex"><img src="/wand.svg" className="w-4 h-4 mr-2 my-auto" />AI Response</div>
+        <div className="absolute left-4 top-4 text-lg flex">
+          <img src="/wand.svg" className="w-4 h-4 mr-2 my-auto" />
+          AI Response
+        </div>
         <Button
           className="absolute right-6 top-4 text-md cursor-pointer font-bold"
           text="Close"

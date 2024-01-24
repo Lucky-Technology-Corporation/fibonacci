@@ -5,7 +5,7 @@ import Dropdown from "../../Utilities/Dropdown";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import AuthWizard from "../APIs/AuthWizard";
 
-export default function AuthSettings({ active, className = "" }: { active: boolean, className?: string }) {
+export default function AuthSettings({ active, className = "" }: { active: boolean; className?: string }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const methods: any = [
     { id: "google", name: "Google Login" },
@@ -15,7 +15,8 @@ export default function AuthSettings({ active, className = "" }: { active: boole
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [authMethods, setAuthMethods] = useState<any[]>([]);
   const [allowingNewSignups, setAllowingNewSignups] = useState<boolean>(null);
-  const { testDomain, activeAuthPage, setActiveAuthPage, shouldRefreshAuth, setShouldRefreshAuth } = useContext(SwizzleContext);
+  const { testDomain, activeAuthPage, setActiveAuthPage, shouldRefreshAuth, setShouldRefreshAuth } =
+    useContext(SwizzleContext);
 
   const { getSecrets, saveSecrets } = useSettingsApi();
 
@@ -24,66 +25,69 @@ export default function AuthSettings({ active, className = "" }: { active: boole
       if (secrets == null) return;
       setAuthMethods([]);
       Object.keys(secrets.test).forEach((secretKey: string) => {
-        if(secretKey == "GOOGLE_APP_ID"){
+        if (secretKey == "GOOGLE_APP_ID") {
           setAuthMethods((methods) => [...methods, { id: "google", name: "Google Login" }]);
-        } else if(secretKey == "FACEBOOK_APP_ID"){
+        } else if (secretKey == "FACEBOOK_APP_ID") {
           setAuthMethods((methods) => [...methods, { id: "facebook", name: "Facebook Login" }]);
-        } else if(secretKey == "SWIZZLE_EMAIL_PASSWORD"){
+        } else if (secretKey == "SWIZZLE_EMAIL_PASSWORD") {
           setAuthMethods((methods) => [...methods, { id: "email", name: "Email/Password Login" }]);
-        } else if(secretKey == "ALLOW_NEW_SIGNUPS"){
-          if(secrets.test[secretKey] == "false"){
+        } else if (secretKey == "ALLOW_NEW_SIGNUPS") {
+          if (secrets.test[secretKey] == "false") {
             setAllowingNewSignups(false);
-          } else{ 
+          } else {
             setAllowingNewSignups(true);
           }
         }
-      })
+      });
     });
   }, [active, shouldRefreshAuth, testDomain]);
 
   const selectedAuthMethod = (methodId: string) => {
     setActiveAuthPage(methodId);
-  }
+  };
 
   const changeAllowNewSignups = (value: boolean) => {
     setAllowingNewSignups(value);
     let secrets = {
       test: {
-        ALLOW_NEW_SIGNUPS: value.toString()
+        ALLOW_NEW_SIGNUPS: value.toString(),
       },
       prod: {
-        ALLOW_NEW_SIGNUPS: value.toString()
-      }
-    }
+        ALLOW_NEW_SIGNUPS: value.toString(),
+      },
+    };
     saveSecrets(secrets);
-  }
-
-
+  };
 
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-2 text-sm ${active ? "" : "hidden"} ${className}`}>
       <div
         className={`text-sm flex-1 p-1.5 py-1.5 mt-1.5 my-1 cursor-pointer rounded`}
-        onClick={() => { selectedAuthMethod("list") }}
+        onClick={() => {
+          selectedAuthMethod("list");
+        }}
       >
         <Checkbox
           id={"allow_new_signups"}
           label={"Allow New Signups"}
           isChecked={allowingNewSignups}
           setIsChecked={setAllowingNewSignups}
-          onChange={(e) => { changeAllowNewSignups(e.target.checked) }}
+          onChange={(e) => {
+            changeAllowNewSignups(e.target.checked);
+          }}
         />
       </div>
       <div
         className={`text-sm flex-1 p-1.5 py-1.5 mt-1.5 my-1 ${
-          (activeAuthPage == "list") ? "bg-[#85869822]" : ""
+          activeAuthPage == "list" ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
-        onClick={() => { selectedAuthMethod("list") }}
+        onClick={() => {
+          selectedAuthMethod("list");
+        }}
       >
         All Users
       </div>
-
 
       <Dropdown
         className=""
@@ -93,23 +97,22 @@ export default function AuthSettings({ active, className = "" }: { active: boole
         }}
         children={methods}
         direction="left"
-        title={"+ Add Provider"}        
+        title={"+ Add Provider"}
         selectorClass="w-full py-1.5 !mt-1 !mb-1"
       />
 
-
-
       {authMethods.map((method) => {
         return (
-        <div
-          className={`text-sm flex-1 p-1.5 py-1.5 my-1 ${
-            (activeAuthPage == method.id) ? "bg-[#85869822]" : ""
-          } hover:bg-[#85869833] cursor-pointer rounded`}
-          onClick={() => selectedAuthMethod(method.id)}
-        >
-          {method.name}
-        </div>
-      )})}
+          <div
+            className={`text-sm flex-1 p-1.5 py-1.5 my-1 ${
+              activeAuthPage == method.id ? "bg-[#85869822]" : ""
+            } hover:bg-[#85869833] cursor-pointer rounded`}
+            onClick={() => selectedAuthMethod(method.id)}
+          >
+            {method.name}
+          </div>
+        );
+      })}
       <AuthWizard
         isVisible={isVisible}
         setIsVisible={setIsVisible}

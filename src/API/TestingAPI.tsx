@@ -39,7 +39,7 @@ export default function useTestApi() {
 
     const endpoint = new ParsedActiveEndpoint(activeEndpoint);
     // TODO: Get params from input
-    var domainToUse = environment == "test" ? testDomain : prodDomain
+    var domainToUse = environment == "test" ? testDomain : prodDomain;
     const url = `${domainToUse.replace("https://", "https://api.")}${endpoint.getEndpointWithParams(
       testDoc.pathParams,
     )}`;
@@ -68,12 +68,21 @@ export default function useTestApi() {
     }
   };
 
-  const execTest = async (url: string, method: Method, params: QueryParams, headerInput: QueryParams, body?: object, token?: string) => {
+  const execTest = async (
+    url: string,
+    method: Method,
+    params: QueryParams,
+    headerInput: QueryParams,
+    body?: object,
+    token?: string,
+  ) => {
     try {
       // console.debug(
       //   `Exec test with URL = ${url}, method = ${method}, params = ${params}, body = ${body}, token = ${token}`,
       // );
-      const headers = token ? { Authorization: token, "swizzle-test": "true", ...headerInput } : { "swizzle-test": "true", ...headerInput };
+      const headers = token
+        ? { Authorization: token, "swizzle-test": "true", ...headerInput }
+        : { "swizzle-test": "true", ...headerInput };
       const response = await axios.request({
         url,
         method,

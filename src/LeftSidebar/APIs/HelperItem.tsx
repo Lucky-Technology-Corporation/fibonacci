@@ -14,15 +14,14 @@ export default function HelperItem({
   active?: boolean;
   path: string;
   onClick?: () => void;
-  removeFromList?: () => void
+  removeFromList?: () => void;
 }) {
-
   const [showContextMenu, setShowContextMenu] = useState(false);
-  const {setPostMessage, setShouldRefreshList, shouldRefreshList} = useContext(SwizzleContext)
-  const { deleteFile } = useEndpointApi()
+  const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
+  const { deleteFile } = useEndpointApi();
 
   const runDeleteProcess = async (fileName: string) => {
-    try{
+    try {
       //close file
       setPostMessage({
         type: "removeFile",
@@ -32,13 +31,13 @@ export default function HelperItem({
       //TODO: clean up all imports in all other files here. this is not implemented right now though.
       // await removeFile("/backend/helpers/" + fileName + ".ts")
       //delete file
-      await deleteFile(fileName + ".ts", "helpers")
-      removeFromList()
-    } catch(e){
-      throw "Error deleting endpoint"
+      await deleteFile(fileName + ".ts", "helpers");
+      removeFromList();
+    } catch (e) {
+      throw "Error deleting endpoint";
     }
-  }
-  
+  };
+
   return (
     <>
       <div
@@ -46,7 +45,11 @@ export default function HelperItem({
           active ? "bg-[#85869822]" : ""
         } hover:bg-[#85869833] cursor-pointer rounded`}
         onClick={onClick}
-        onContextMenu={(e) => { e.preventDefault(); onClick(); setShowContextMenu(true);}}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          onClick();
+          setShowContextMenu(true);
+        }}
       >
         <div className="flex relative">
           <div className="font-normal">{path}</div>
@@ -54,17 +57,21 @@ export default function HelperItem({
           <FontAwesomeIcon
             icon={faEllipsisV}
             className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
-            onClick={(e) =>{ e.preventDefault(); setShowContextMenu(!showContextMenu)}}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowContextMenu(!showContextMenu);
+            }}
           />
 
           <EndpointContextMenu
             showContextMenu={showContextMenu}
             setShowContextMenu={setShowContextMenu}
             path={path}
-            runDeleteProcess={() => { runDeleteProcess(path) } }
+            runDeleteProcess={() => {
+              runDeleteProcess(path);
+            }}
             editFile={null}
           />
-
         </div>
       </div>
     </>

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import CategoryLabel from "./CategoryLabel";
 
-export default function CategoryList({handleDragStart, handleDragEnd}: {handleDragStart: any, handleDragEnd: any}){
+export default function CategoryList({ handleDragStart, handleDragEnd }: { handleDragStart: any; handleDragEnd: any }) {
   const [isShowingCategory, setIsShowingCategory] = useState("");
 
   return (
@@ -45,5 +45,5 @@ export default function CategoryList({handleDragStart, handleDragEnd}: {handleDr
         handleDragEnd={handleDragEnd}
       />
     </>
-  )
+  );
 }

@@ -15,23 +15,23 @@ function classNames(...classes: string[]) {
 export default function UserDropdown() {
   const signOut = useSignOut();
   const auth = useAuthUser();
-  const {deleteProject} = useSettingsApi()
+  const { deleteProject } = useSettingsApi();
 
-  const { setActiveProject, setActiveProjectName, activeProject, activeProjectName, hasPaymentMethod } = useContext(SwizzleContext);
+  const { setActiveProject, setActiveProjectName, activeProject, activeProjectName, hasPaymentMethod } =
+    useContext(SwizzleContext);
 
   const [inviteVisible, setInviteVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if(hasPaymentMethod != null && !hasPaymentMethod){
-      setIsVisible(true)
+    if (hasPaymentMethod != null && !hasPaymentMethod) {
+      setIsVisible(true);
     }
-  }, [hasPaymentMethod])
+  }, [hasPaymentMethod]);
 
   return (
     <>
       <Menu as="div" className="mx-auto w-44 mb-4 inline-block text-left">
-
         <div>
           <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm bg-[#33333c] ring-1 ring-inset ring-[#525363]">
             {auth()?.user}
@@ -50,7 +50,7 @@ export default function UserDropdown() {
         >
           <Menu.Items className="absolute mx-auto bottom-12 z-10 mb-2 w-44 origin-top-right rounded-md shadow-lg bg-[#32333b] ring-1 ring-inset ring-[#525363] focus:outline-none">
             <div className="py-1">
-            <Menu.Item>
+              <Menu.Item>
                 {({ active }) => (
                   <a
                     href="#"
@@ -76,7 +76,7 @@ export default function UserDropdown() {
                       "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
                     )}
                     onClick={() => {
-                      setIsVisible(true)
+                      setIsVisible(true);
                     }}
                   >
                     Billing
@@ -93,22 +93,26 @@ export default function UserDropdown() {
                       "block px-4 py-2 text-sm hover:text-white hover:bg-[#32333b00]",
                     )}
                     onClick={() => {
-                      const c = prompt(`Are you sure you want to delete this project? Type the project name to confirm:\n\n${activeProjectName}`);
+                      const c = prompt(
+                        `Are you sure you want to delete this project? Type the project name to confirm:\n\n${activeProjectName}`,
+                      );
                       if (c == activeProjectName) {
                         toast.promise(deleteProject(activeProject), {
                           loading: "Deleting project...",
                           success: () => {
                             setTimeout(() => {
                               window.location.reload();
-                            }, 500)
-                            return "Project deleted!"
+                            }, 500);
+                            return "Project deleted!";
                           },
                           error: "Error deleting project",
                         });
-                      } else if(c == ""){
-                        toast("Project not deleted.")
-                      } else{
-                        toast.error(`Project name did not match. To avoid accidental deletion, please type the project name: "${activeProjectName}" exactly.`)
+                      } else if (c == "") {
+                        toast("Project not deleted.");
+                      } else {
+                        toast.error(
+                          `Project name did not match. To avoid accidental deletion, please type the project name: "${activeProjectName}" exactly.`,
+                        );
                       }
                     }}
                   >
@@ -153,10 +157,7 @@ export default function UserDropdown() {
         }}
       />
 
-        <PaymentRequestModal 
-          isVisible={isVisible}
-          setIsVisible={setIsVisible}
-        />
+      <PaymentRequestModal isVisible={isVisible} setIsVisible={setIsVisible} />
     </>
   );
 }

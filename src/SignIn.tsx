@@ -47,7 +47,7 @@ export default function SignIn() {
       // setTimeout(() => {
       //   location.href= "/"
       // }, 150);
-      console.log("signed in")
+      console.log("signed in");
     } else {
       toast.error("Couldn't sign in");
     }
@@ -59,7 +59,7 @@ export default function SignIn() {
     const urlParams = new URLSearchParams(window.location.search);
     const signedIn = urlParams.get("signed_in");
     if (signedIn && signedIn.length > 0) {
-      signInWithJWT()
+      signInWithJWT();
     }
   }, []);
 

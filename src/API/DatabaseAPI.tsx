@@ -101,9 +101,9 @@ export default function useDatabaseApi() {
       return response.data;
     } catch (e: any) {
       console.error(e);
-      throw e
+      throw e;
     }
-  }
+  };
 
   const createDocument = async (activeCollection: string, data: any) => {
     var newDocument = data;
@@ -279,7 +279,7 @@ export default function useDatabaseApi() {
     } catch (e: any) {
       console.error(e);
       if (e.response && e.response.status == 401) {
-        console.log("signing out")
+        console.log("signing out");
         signOut();
         const urlParams = new URLSearchParams(window.location.search);
         const signedIn = urlParams.get("signed_in");
@@ -303,6 +303,6 @@ export default function useDatabaseApi() {
     deleteCollection,
     runQuery,
     runMongoQuery,
-    createUser
+    createUser,
   };
 }

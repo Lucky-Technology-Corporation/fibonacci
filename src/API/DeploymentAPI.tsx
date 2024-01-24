@@ -29,7 +29,7 @@ export default function useDeploymentApi() {
     useContext(SwizzleContext);
 
   const listProjectBuilds = async (page, pageSize) => {
-    try{
+    try {
       if (activeProject == "") return;
       const response = await axios.get(
         `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/build/list?page=${page}&page_size=${pageSize}`,
@@ -38,11 +38,11 @@ export default function useDeploymentApi() {
         },
       );
       return response.data;
-    } catch(e){
-      if(e.response.status == 404){
-        location.reload()
+    } catch (e) {
+      if (e.response.status == 404) {
+        location.reload();
       }
-      return null
+      return null;
     }
   };
 
@@ -62,7 +62,12 @@ export default function useDeploymentApi() {
     return response.data.deployment_status;
   };
 
-  const updatePackage = async (packages: string[], action: "install" | "remove", location: "frontend" | "backend", extraArgument?: string) => {
+  const updatePackage = async (
+    packages: string[],
+    action: "install" | "remove",
+    location: "frontend" | "backend",
+    extraArgument?: string,
+  ) => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
         return [];
@@ -70,15 +75,15 @@ export default function useDeploymentApi() {
       if (testDomain.includes("localhost")) {
         return [];
       }
-      
+
       var body = {
         packages: packages,
+      };
+      if (action == "install") {
+        body["save"] = true;
       }
-      if(action == "install"){
-        body["save"] = true
-      }
-      if(extraArgument){
-        body["extra_argument"] = extraArgument
+      if (extraArgument) {
+        body["extra_argument"] = extraArgument;
       }
 
       const response = await axios.post(

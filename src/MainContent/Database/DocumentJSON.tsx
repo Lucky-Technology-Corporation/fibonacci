@@ -3,7 +3,7 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
-import '/json-styles.css';
+import "/json-styles.css";
 
 export default function DocumentJSON({
   document,
@@ -33,15 +33,15 @@ export default function DocumentJSON({
   useEffect(() => {
     try {
       const parsedData = JSON.parse(data);
-      if(!justEditingJson){
-        if (typeof parsedData === 'object' && !Array.isArray(parsedData)) {
+      if (!justEditingJson) {
+        if (typeof parsedData === "object" && !Array.isArray(parsedData)) {
           setIsValid(true);
-        } else if (Array.isArray(parsedData) && parsedData.every(item => typeof item === 'object')) {
+        } else if (Array.isArray(parsedData) && parsedData.every((item) => typeof item === "object")) {
           setIsValid(true);
         } else {
           setIsValid(false);
         }
-      } else{
+      } else {
         setIsValid(true);
       }
     } catch (e) {
@@ -202,11 +202,13 @@ export default function DocumentJSON({
                 </div>
               ) : (
                 <>
-                <div className="flex">
-                  <XMarkIcon className="w-6 h-6 mr-1 text-red-400" />
-                  <div className="text-base text-red-400">Invalid JSON</div>
-                </div>
-                <div className="text-sm opacity-70">Your input must be an object with keys and values, or an array of objects with keys and values</div>
+                  <div className="flex">
+                    <XMarkIcon className="w-6 h-6 mr-1 text-red-400" />
+                    <div className="text-base text-red-400">Invalid JSON</div>
+                  </div>
+                  <div className="text-sm opacity-70">
+                    Your input must be an object with keys and values, or an array of objects with keys and values
+                  </div>
                 </>
               )}
             </div>

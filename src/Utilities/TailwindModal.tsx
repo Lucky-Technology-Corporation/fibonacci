@@ -1,10 +1,23 @@
-import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
-import { Fragment, useRef } from 'react'
+import { Dialog, Transition } from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { Fragment, useRef } from "react";
 
-export default function TailwindModal({title, subtitle, confirmButtonText, confirmButtonAction, open, setOpen}: {title: string, subtitle: string, confirmButtonText: string, confirmButtonAction: any, open: boolean, setOpen: any}) {
-
-  const cancelButtonRef = useRef(null)
+export default function TailwindModal({
+  title,
+  subtitle,
+  confirmButtonText,
+  confirmButtonAction,
+  open,
+  setOpen,
+}: {
+  title: string;
+  subtitle: string;
+  confirmButtonText: string;
+  confirmButtonAction: any;
+  open: boolean;
+  setOpen: any;
+}) {
+  const cancelButtonRef = useRef(null);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -43,9 +56,7 @@ export default function TailwindModal({title, subtitle, confirmButtonText, confi
                         {title}
                       </Dialog.Title>
                       <div className="mt-2">
-                        <p className="text-sm text-gray-500">
-                          {subtitle}
-                        </p>
+                        <p className="text-sm text-gray-500">{subtitle}</p>
                       </div>
                     </div>
                   </div>
@@ -54,7 +65,10 @@ export default function TailwindModal({title, subtitle, confirmButtonText, confi
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={() => { setOpen(false); confirmButtonAction(); }}
+                    onClick={() => {
+                      setOpen(false);
+                      confirmButtonAction();
+                    }}
                   >
                     {confirmButtonText}
                   </button>
@@ -73,5 +87,5 @@ export default function TailwindModal({title, subtitle, confirmButtonText, confi
         </div>
       </Dialog>
     </Transition.Root>
-  )
+  );
 }

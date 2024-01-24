@@ -1,4 +1,4 @@
-import cronstrue from 'cronstrue';
+import cronstrue from "cronstrue";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
@@ -17,28 +17,28 @@ export default function APIWizard({
   endpointPathIfEditing = "",
   currentFileProperties,
   isCron = false,
-  fullScheduledFunctions
+  fullScheduledFunctions,
 }: {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
   setEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
   setFullEndpoints: React.Dispatch<React.SetStateAction<any[]>>;
   endpoints: any[];
-  endpointPathIfEditing?: string
-  currentFileProperties?: any
+  endpointPathIfEditing?: string;
+  currentFileProperties?: any;
   isCron: boolean;
-  fullScheduledFunctions?: any[]
+  fullScheduledFunctions?: any[];
 }) {
   const endpointApi = useEndpointApi();
-  const filesystemApi = useFilesystemApi()
+  const filesystemApi = useFilesystemApi();
   const [inputValue, setInputValue] = useState("");
   const [selectedMethod, setSelectedMethod] = useState<string>("get");
-  const [validUrl, setValidUrl] = useState<boolean>(true)
+  const [validUrl, setValidUrl] = useState<boolean>(true);
   const { shouldRefreshList, setShouldRefreshList, setPostMessage } = useContext(SwizzleContext);
   const [authRequired, setAuthRequired] = useState<boolean>(false);
 
-  const [cronExpression, setCronExpression] = useState<string>("")
-  const [cronIdIfEditing, setCronIdIfEditing] = useState<string>("")
+  const [cronExpression, setCronExpression] = useState<string>("");
+  const [cronIdIfEditing, setCronIdIfEditing] = useState<string>("");
 
   const methods: any = [
     { id: "get", name: "GET" },
@@ -53,182 +53,189 @@ export default function APIWizard({
       return;
     }
 
-    var methodToUse = selectedMethod
-    if(isCron){
-      methodToUse = "get"
+    var methodToUse = selectedMethod;
+    if (isCron) {
+      methodToUse = "get";
     }
 
-    if(!checkForConflicts(methodToUse.toLowerCase() + "/" + newEndpointPath)){
-      throw "That endpoint already exists"
+    if (!checkForConflicts(methodToUse.toLowerCase() + "/" + newEndpointPath)) {
+      throw "That endpoint already exists";
     }
 
     //If we're editing an existing endpoint, copy the contents over to a new file
-    var contentsToCopy = ""
-    if(endpointPathIfEditing != ""){
+    var contentsToCopy = "";
+    if (endpointPathIfEditing != "") {
       setPostMessage({
-        type: "saveFile"
+        type: "saveFile",
       });
 
-      const fileNameOnServer = "backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing)
-      contentsToCopy = await endpointApi.getFile(fileNameOnServer)
+      const fileNameOnServer = "backend/user-dependencies/" + endpointToFilename(endpointPathIfEditing);
+      contentsToCopy = await endpointApi.getFile(fileNameOnServer);
 
-      const methodToDelete = endpointPathIfEditing.split("/")[0].toUpperCase()
-      const pathToDelete = endpointPathIfEditing.split("/").slice(1).join("/")
-      const fileName = endpointToFilename(endpointPathIfEditing)
+      const methodToDelete = endpointPathIfEditing.split("/")[0].toUpperCase();
+      const pathToDelete = endpointPathIfEditing.split("/").slice(1).join("/");
+      const fileName = endpointToFilename(endpointPathIfEditing);
 
       setPostMessage({
         type: "removeFile",
         fileName: "/backend/user-dependencies/" + fileName,
       });
 
-      await filesystemApi.deleteEndpoint(methodToDelete, pathToDelete)
+      await filesystemApi.deleteEndpoint(methodToDelete, pathToDelete);
 
-      if(authRequired){
-        contentsToCopy = contentsToCopy.replace(/optionalAuthentication/g, "requiredAuthentication")
-      } else{
-        contentsToCopy = contentsToCopy.replace(/requiredAuthentication/g, "optionalAuthentication")
+      if (authRequired) {
+        contentsToCopy = contentsToCopy.replace(/optionalAuthentication/g, "requiredAuthentication");
+      } else {
+        contentsToCopy = contentsToCopy.replace(/requiredAuthentication/g, "optionalAuthentication");
       }
 
-      contentsToCopy = deduplicateImportStatements(contentsToCopy)
+      contentsToCopy = deduplicateImportStatements(contentsToCopy);
 
       //replace both single and double quotes
-      contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
-      contentsToCopy = contentsToCopy.replace(`router.${methodToDelete.toLowerCase()}("/${pathToDelete}"`, `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`)
+      contentsToCopy = contentsToCopy.replace(
+        `router.${methodToDelete.toLowerCase()}('/${pathToDelete}'`,
+        `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`,
+      );
+      contentsToCopy = contentsToCopy.replace(
+        `router.${methodToDelete.toLowerCase()}("/${pathToDelete}"`,
+        `router.${methodToUse.toLowerCase()}('/${newEndpointPath}'`,
+      );
     }
 
     //Make the new file
-    await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy)
+    await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy);
 
-    if(isCron){
-      if(endpointPathIfEditing != ""){
-        await endpointApi.updateScheduledFunction(cronIdIfEditing, newEndpointPath, cronExpression)
-      } else{
-        await endpointApi.scheduleFunction(newEndpointPath, cronExpression)
+    if (isCron) {
+      if (endpointPathIfEditing != "") {
+        await endpointApi.updateScheduledFunction(cronIdIfEditing, newEndpointPath, cronExpression);
+      } else {
+        await endpointApi.scheduleFunction(newEndpointPath, cronExpression);
       }
     }
 
     setPostMessage({
       type: "openFile",
       fileName: "/backend/user-dependencies/" + endpointToFilename(methodToUse + "/" + newEndpointPath),
-    })
+    });
 
     setShouldRefreshList(!shouldRefreshList);
     setIsVisible(false);
-  }
+  };
 
   const deduplicateImportStatements = (contents: string) => {
-    const lines = contents.split("\n")
-    var newContents = ""
-    for(let i = 0; i < lines.length; i++){
-      if(lines[i].startsWith("import")){
-        if(lines[i].includes("{") && lines[i].includes("}")){
-          const importList = lines[i].split("{")[1].split("}")[0].split(",")
-          var newImports = []
-          var newImportString = ""
+    const lines = contents.split("\n");
+    var newContents = "";
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("import")) {
+        if (lines[i].includes("{") && lines[i].includes("}")) {
+          const importList = lines[i].split("{")[1].split("}")[0].split(",");
+          var newImports = [];
+          var newImportString = "";
           importList.forEach((imp) => {
-            const trimmedImport = imp.trim()
-            if(!newImports.includes(trimmedImport)){
-              newImportString += trimmedImport + ", "
-              newImports.push(trimmedImport)
+            const trimmedImport = imp.trim();
+            if (!newImports.includes(trimmedImport)) {
+              newImportString += trimmedImport + ", ";
+              newImports.push(trimmedImport);
             }
-          })
-          newContents += lines[i].split("{")[0] + "{" + newImportString.slice(0, -2) + "}" + lines[i].split("}")[1] + "\n"
+          });
+          newContents +=
+            lines[i].split("{")[0] + "{" + newImportString.slice(0, -2) + "}" + lines[i].split("}")[1] + "\n";
         }
-      } else{
-        newContents += lines[i] + "\n"
+      } else {
+        newContents += lines[i] + "\n";
       }
     }
-    return newContents
-  }
+    return newContents;
+  };
 
   const checkForConflicts = (inputValue: string) => {
-    if(endpointPathIfEditing == ""){
+    if (endpointPathIfEditing == "") {
       if (endpoints.includes(inputValue)) {
-        return false
+        return false;
       }
     }
-    return true
-  }
+    return true;
+  };
 
   function cronToEnglish(cron) {
     try {
-        return cronstrue.toString(cron);
+      return cronstrue.toString(cron);
     } catch (e) {
-        return 'Invalid cron expression';
+      return "Invalid cron expression";
     }
   }
 
-  const cleanInputValue = (methodToUse: string, inputValue: string) => { 
+  const cleanInputValue = (methodToUse: string, inputValue: string) => {
     var cleanInputValue = inputValue;
     if (inputValue == "") {
       throw "Please fill out all fields";
     }
-    
-    if(cleanInputValue.endsWith("/")){
-      cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1)
+
+    if (cleanInputValue.endsWith("/")) {
+      cleanInputValue = cleanInputValue.substring(0, cleanInputValue.length - 1);
     }
 
-    if(!cleanInputValue.startsWith("/")){
-      cleanInputValue = "/" + cleanInputValue
+    if (!cleanInputValue.startsWith("/")) {
+      cleanInputValue = "/" + cleanInputValue;
     }
 
-    if(!isCron && cleanInputValue.startsWith("/cron")){
-      throw "/cron is reserved for scheduled jobs"
-      return
+    if (!isCron && cleanInputValue.startsWith("/cron")) {
+      throw "/cron is reserved for scheduled jobs";
+      return;
     }
 
-    if(cleanInputValue.endsWith("/d") || cleanInputValue.includes("/d/")){
-      throw "The /d path is reserved for built-in endpoints. Please choose a different path."
+    if (cleanInputValue.endsWith("/d") || cleanInputValue.includes("/d/")) {
+      throw "The /d path is reserved for built-in endpoints. Please choose a different path.";
     }
 
-    const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
-    if(!regex.test(cleanInputValue)){
-      throw "Invalid path"
+    const regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/;
+    if (!regex.test(cleanInputValue)) {
+      throw "Invalid path";
     }
 
     if (cleanInputValue.endsWith(".ts")) {
       cleanInputValue = cleanInputValue.slice(0, -3);
     }
 
-    if(cleanInputValue.startsWith("/")){
-      cleanInputValue = cleanInputValue.substring(1)
+    if (cleanInputValue.startsWith("/")) {
+      cleanInputValue = cleanInputValue.substring(1);
     }
-  
-    if(isCron){
-      cleanInputValue = "cron/" + cleanInputValue
+
+    if (isCron) {
+      cleanInputValue = "cron/" + cleanInputValue;
     }
 
     return cleanInputValue.replace(/\/+$/, "");
-  }
+  };
 
   //HACK not the best way of doing this... but it works since the wizard can only be triggered when the file is open
   useEffect(() => {
-    setAuthRequired(currentFileProperties.hasPassportAuth)
-  }, [currentFileProperties])
+    setAuthRequired(currentFileProperties.hasPassportAuth);
+  }, [currentFileProperties]);
 
   useEffect(() => {
     if (isVisible) {
-      if(endpointPathIfEditing){
-        setSelectedMethod(endpointPathIfEditing.split("/")[0])
-        var endpointPath = "/" + endpointPathIfEditing.split("/").slice(1).join("/")
-        if(isCron){ 
+      if (endpointPathIfEditing) {
+        setSelectedMethod(endpointPathIfEditing.split("/")[0]);
+        var endpointPath = "/" + endpointPathIfEditing.split("/").slice(1).join("/");
+        if (isCron) {
           //clean up the path
-          endpointPath = endpointPath.replace("/cron/", "") 
+          endpointPath = endpointPath.replace("/cron/", "");
           //set the existing cron expression
           const cronFunction = fullScheduledFunctions.find((func) => {
-            return func.path.split("cron/")[1] == endpointPath
-          })
-          if(cronFunction){
-            setCronExpression(cronFunction.cron)
-            setCronIdIfEditing(cronFunction.id)
+            return func.path.split("cron/")[1] == endpointPath;
+          });
+          if (cronFunction) {
+            setCronExpression(cronFunction.cron);
+            setCronIdIfEditing(cronFunction.id);
           }
         }
-        setInputValue(endpointPath)
-      } else{
+        setInputValue(endpointPath);
+      } else {
         setInputValue("");
         setAuthRequired(false);
       }
-    } else{
+    } else {
       setInputValue("");
       setAuthRequired(false);
     }
@@ -252,36 +259,36 @@ export default function APIWizard({
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               <>
                 <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                {endpointPathIfEditing == "" ? "New" : "Edit"} {isCron ? "job" : "endpoint"}
+                  {endpointPathIfEditing == "" ? "New" : "Edit"} {isCron ? "job" : "endpoint"}
                 </h3>
                 {isCron ? (
                   <>
-                  <div className="w-full h-4"></div>
-                  {/* cron input */}
-                  <div className="text-sm text-gray-400 mb-0.5">Cron expression</div>
-                  <input 
-                    type="text"
-                    value={cronExpression}
-                    onChange={(e) => {
-                      setCronExpression(e.target.value)
-                    }}
-                    className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
-                    placeholder="0 0 * * *"
-                  />
-                  <div className="text-sm text-gray-300 mb-1 mt-1.5">{cronToEnglish(cronExpression)}</div>
+                    <div className="w-full h-4"></div>
+                    {/* cron input */}
+                    <div className="text-sm text-gray-400 mb-0.5">Cron expression</div>
+                    <input
+                      type="text"
+                      value={cronExpression}
+                      onChange={(e) => {
+                        setCronExpression(e.target.value);
+                      }}
+                      className="w-full bg-transparent border-[#525363] w-80 border rounded outline-0 focus:border-[#68697a] p-2"
+                      placeholder="0 0 * * *"
+                    />
+                    <div className="text-sm text-gray-300 mb-1 mt-1.5">{cronToEnglish(cronExpression)}</div>
                   </>
                 ) : (
-                  <div className="mt-2"><Checkbox
-                    id="requireAuth"
-                    label="Require Authentication"
-                    isChecked={authRequired}
-                    setIsChecked={setAuthRequired}
-                  /></div>
+                  <div className="mt-2">
+                    <Checkbox
+                      id="requireAuth"
+                      label="Require Authentication"
+                      isChecked={authRequired}
+                      setIsChecked={setAuthRequired}
+                    />
+                  </div>
                 )}
 
-                {isCron && (
-                    <div className="text-sm text-gray-400 mb-[-10px] mt-2">Job name</div>
-                )}
+                {isCron && <div className="text-sm text-gray-400 mb-[-10px] mt-2">Job name</div>}
 
                 <div className="mt-3 mb-2 flex">
                   {!isCron && (
@@ -299,18 +306,22 @@ export default function APIWizard({
                     type="text"
                     value={inputValue}
                     onChange={(e) => {
-                      if(endpointPathIfEditing == "/"){ return }
-                      var regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/
-                      var slashedUrl = e.target.value
-                      if(isCron){
-                        regex = /^[a-zA-Z0-9]+$/
-                      } else{
-                        if(!slashedUrl.startsWith("/")) { slashedUrl = "/" + slashedUrl }
+                      if (endpointPathIfEditing == "/") {
+                        return;
                       }
-                      if(!regex.test(slashedUrl)){
-                        setValidUrl(false)
-                      } else{
-                        setValidUrl(true)
+                      var regex = /^(\/|(\/((:[a-zA-Z][a-zA-Z0-9_]*)|([a-zA-Z0-9-_]+)))+)$/;
+                      var slashedUrl = e.target.value;
+                      if (isCron) {
+                        regex = /^[a-zA-Z0-9]+$/;
+                      } else {
+                        if (!slashedUrl.startsWith("/")) {
+                          slashedUrl = "/" + slashedUrl;
+                        }
+                      }
+                      if (!regex.test(slashedUrl)) {
+                        setValidUrl(false);
+                      } else {
+                        setValidUrl(true);
                       }
                       setInputValue(slashedUrl);
                     }}
@@ -320,12 +331,12 @@ export default function APIWizard({
                     onKeyDown={(event: any) => {
                       if (event.key == "Enter") {
                         toast.promise(createHandler(), {
-                          "loading": "Loading...",
-                          "success": "Done",
-                          "error": (e) => {
-                            return e || "An error occured"
-                          }
-                        })
+                          loading: "Loading...",
+                          success: "Done",
+                          error: (e) => {
+                            return e || "An error occured";
+                          },
+                        });
                       }
                     }}
                   />
@@ -336,14 +347,16 @@ export default function APIWizard({
                       type="button"
                       onClick={() => {
                         toast.promise(createHandler(), {
-                          "loading": "Loading...",
-                          "success": "Done",
-                          "error": (err) => {
-                            return err || "An error occured"
-                          }
-                        })
+                          loading: "Loading...",
+                          success: "Done",
+                          error: (err) => {
+                            return err || "An error occured";
+                          },
+                        });
                       }}
-                      className={`${validUrl ? "" : "opacity-70"} w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
+                      className={`${
+                        validUrl ? "" : "opacity-70"
+                      } w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-[#85869833] text-base font-medium text-white hover:bg-[#858698]  sm:ml-3 sm:w-auto sm:text-sm`}
                       disabled={!validUrl}
                     >
                       {validUrl ? "Next" : "Invalid input"}

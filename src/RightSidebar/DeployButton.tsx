@@ -17,14 +17,14 @@ export default function DeployButton({}: {}) {
   const [showStripeView, setShowStripeView] = useState(false);
 
   const { deploy } = useEndpointApi();
-  const { hasAddedPaymentMethod } = useSettingsApi()
-  const { environment } = useContext(SwizzleContext)
+  const { hasAddedPaymentMethod } = useSettingsApi();
+  const { environment } = useContext(SwizzleContext);
 
   const fetchPaymentMethod = async () => {
     const hasPaymentMethod = await hasAddedPaymentMethod();
     return hasPaymentMethod;
-  }
-  
+  };
+
   const teaseDeploy = () => {
     if (!isDeploymentInProgress) {
       setDeployProgress(8);
@@ -39,35 +39,34 @@ export default function DeployButton({}: {}) {
   const runDeploy = async () => {
     if (isDeploymentInProgress) return;
     const hasPaymentMethod = await fetchPaymentMethod();
-    if(!hasPaymentMethod){
+    if (!hasPaymentMethod) {
       setShowStripeView(true);
       return;
     }
 
-    if(environment == "prod"){
-      toast.error("Switch to Test to deploy your updated code")
-      return
+    if (environment == "prod") {
+      toast.error("Switch to Test to deploy your updated code");
+      return;
     }
-    if(isDeploymentInProgress){
-      toast.error("Deployment already in progress")
-      return
+    if (isDeploymentInProgress) {
+      toast.error("Deployment already in progress");
+      return;
     }
 
     setIsDeploymentInProgress(true);
 
     setTimeout(() => {
       var audio = new Audio("/deploy.mp3");
-      audio.play();    
+      audio.play();
     }, 2000);
 
     toast.promise(deploy(), {
       loading: "Sending...",
       success: () => {
-        return "Project is building and will be deployed in a few minutes"
+        return "Project is building and will be deployed in a few minutes";
       },
       error: "Error deploying",
     });
-
 
     const element = document.getElementById("deploy-progress-bar");
     if (element) {
@@ -95,18 +94,20 @@ export default function DeployButton({}: {}) {
     }, 3500);
   };
 
-
   useEffect(() => {
-    if(!shouldCancelHide){
+    if (!shouldCancelHide) {
       setTimeout(() => {
         setShowDeployInfo(false);
       }, 100);
     }
-  }, [shouldCancelHide])
+  }, [shouldCancelHide]);
 
-  const tryToClose = () => { //TODO: this isn't picking up the shouldCancelHide state correctly. Fix it to keep the deployment details open on mouse over
-    if(!shouldCancelHide){ setShowDeployInfo(false) }
-  }
+  const tryToClose = () => {
+    //TODO: this isn't picking up the shouldCancelHide state correctly. Fix it to keep the deployment details open on mouse over
+    if (!shouldCancelHide) {
+      setShowDeployInfo(false);
+    }
+  };
 
   return (
     <>
@@ -131,23 +132,31 @@ export default function DeployButton({}: {}) {
 
         <Button
           className={`text-sm py-1.5 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
-          children={<FontAwesomeIcon icon={faRocket} className="py-1"/>}
+          children={<FontAwesomeIcon icon={faRocket} className="py-1" />}
           onClick={() => {
-            runDeploy()
+            runDeploy();
           }}
-          onMouseEnter={() => {if(environment == "test"){ setShowDeployInfo(true)}}}
-          onMouseLeave={() => {setTimeout(() => { tryToClose() }, 100); }}
+          onMouseEnter={() => {
+            if (environment == "test") {
+              setShowDeployInfo(true);
+            }
+          }}
+          onMouseLeave={() => {
+            setTimeout(() => {
+              tryToClose();
+            }, 100);
+          }}
         />
 
-
-        <div className={`fixed left-2 mt-2 ${showDeployInfo ? "" : "pointer-events-none"}`} style={{zIndex: 51}}>
-          <DeployInfo setShouldShowDeployInfo={setShowDeployInfo} shouldShowDeployInfo={showDeployInfo} setShouldCancelHide={setShouldCancelHide} />
+        <div className={`fixed left-2 mt-2 ${showDeployInfo ? "" : "pointer-events-none"}`} style={{ zIndex: 51 }}>
+          <DeployInfo
+            setShouldShowDeployInfo={setShowDeployInfo}
+            shouldShowDeployInfo={showDeployInfo}
+            setShouldCancelHide={setShouldCancelHide}
+          />
         </div>
       </div>
-      <PaymentRequestModal 
-        isVisible={showStripeView}
-        setIsVisible={setShowStripeView}
-      />
+      <PaymentRequestModal isVisible={showStripeView} setIsVisible={setShowStripeView} />
     </>
   );
 }

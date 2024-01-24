@@ -1,4 +1,12 @@
-import { faMaximize, faMinimize, faPencil, faPlay, faSpinner, faTrash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMaximize,
+  faMinimize,
+  faPencil,
+  faPlay,
+  faSpinner,
+  faTrash,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
 import { useContext, useEffect, useState } from "react";
@@ -28,7 +36,13 @@ export type TestType = {
   endpoint: string;
 };
 
-export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebarOpen: boolean, setIsSidebarOpen: any}) {
+export default function TestWindow({
+  isSidebarOpen,
+  setIsSidebarOpen,
+}: {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: any;
+}) {
   const handleNewRequestClick = () => {
     setTestDoc({
       testName: "",
@@ -101,7 +115,7 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
       await runSingleTest(testDoc);
     }
     setRunningAllTests(false);
-    setHideTestResults({})
+    setHideTestResults({});
   };
 
   function getColorByStatus(statusCode: number) {
@@ -140,12 +154,16 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
         <div className="flex flex-col items-start">
           <div className="flex items-center">
             {isSidebarOpen && (
-              <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mr-1 cursor-pointer" onClick={() => {setIsSidebarOpen(false)}} />
+              <FontAwesomeIcon
+                icon={faXmark}
+                className="w-4 h-4 mr-1 cursor-pointer"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                }}
+              />
             )}
             {/* <FontAwesomeIcon icon={faFlask} className="mr-2" /> */}
-            <div className="font-bold text-base">
-              Tests
-            </div>
+            <div className="font-bold text-base">Tests</div>
           </div>
           {/* <div className="text-sm text-gray-400 mt-1">
             Mock requests in your{" "}
@@ -216,9 +234,9 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                     setTests((prevTests) => prevTests.filter((test) => test._id !== testDoc._id));
                     api
                       .deleteTest(activeCollection, testDoc._id)
-                      .then(() => { })
+                      .then(() => {})
                       .catch((error) => {
-                        toast.error("Error deleting test")
+                        toast.error("Error deleting test");
                         console.error("Error deleting test:", error);
                       });
                   }}
@@ -232,25 +250,30 @@ export default function TestWindow({isSidebarOpen, setIsSidebarOpen}: {isSidebar
                     <div className="flex items-center">
                       <Dot className="ml-0" color={getColorByStatus(testResults[testDoc._id])} />
                       <span>{statusText[testDoc._id]}</span>
-                      
-                      <FontAwesomeIcon icon={hideTestResults[testDoc._id] ? faMaximize : faMinimize} className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100" onClick={() => {
-                        // setTestResponses((prevResponses) => ({
-                        //   ...prevResponses,
-                        //   [testDoc._id]: null,
-                        // }));
-                        const newShowState = hideTestResults[testDoc._id] ? false : true;
-                        setHideTestResults((prevResponses) => ({
-                          ...prevResponses,
-                          [testDoc._id]: newShowState,
-                        }));
-                      }}/>
 
+                      <FontAwesomeIcon
+                        icon={hideTestResults[testDoc._id] ? faMaximize : faMinimize}
+                        className="mr-1 ml-auto w-3 h-3 cursor-pointer opacity-70 hover:opacity-100"
+                        onClick={() => {
+                          // setTestResponses((prevResponses) => ({
+                          //   ...prevResponses,
+                          //   [testDoc._id]: null,
+                          // }));
+                          const newShowState = hideTestResults[testDoc._id] ? false : true;
+                          setHideTestResults((prevResponses) => ({
+                            ...prevResponses,
+                            [testDoc._id]: newShowState,
+                          }));
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
-                {hideTestResults[testDoc._id] ? <></> : (
+                {hideTestResults[testDoc._id] ? (
+                  <></>
+                ) : (
                   <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">
-                  {testResponses[testDoc._id]}
+                    {testResponses[testDoc._id]}
                   </pre>
                 )}
               </div>

@@ -10,9 +10,17 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import TailwindModal from "../../Utilities/TailwindModal";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
 
-export default function PackageInfo({ isVisible, setIsVisible, location }: { isVisible: boolean; setIsVisible: any, location: string }) {
-  const [open, setOpen] = useState(false)
-  const [savedMessage, setSavedMessage] = useState("")
+export default function PackageInfo({
+  isVisible,
+  setIsVisible,
+  location,
+}: {
+  isVisible: boolean;
+  setIsVisible: any;
+  location: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
   const [installedPackages, setInstalledPackages] = useState<string[]>([]);
@@ -38,12 +46,20 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     "typescript",
     "@types/node",
     "@types/react",
-    "@types/react-dom"
-  ]
-  const requiredReactPackages = ["react", "react-dom", "react-scripts", "axios", "typescript", "react-router-dom", "react-auth-kit"]
+    "@types/react-dom",
+  ];
+  const requiredReactPackages = [
+    "react",
+    "react-dom",
+    "react-scripts",
+    "axios",
+    "typescript",
+    "react-router-dom",
+    "react-auth-kit",
+  ];
 
   const { npmSearch, getPackageJson, restartFrontend, restartBackend } = useEndpointApi();
-  const { updatePackage } = useDeploymentApi()
+  const { updatePackage } = useDeploymentApi();
 
   const { setPostMessage, domain, shouldRefreshList } = useContext(SwizzleContext);
 
@@ -51,7 +67,9 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
     if (domain == null || domain == undefined || domain == "") {
       return;
     }
-    if(!isVisible){ return }
+    if (!isVisible) {
+      return;
+    }
     getPackageJson(location).then((data) => {
       if (data == undefined || data.dependencies == undefined) {
         return;
@@ -74,18 +92,18 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       npmSearch(query).then((data) => {
         var items = data.map((item) => {
           return { label: item.package.name, value: item.package.name };
-        })
-        const manualInstall = { label: "Manual: 'npm install " + query + "'", value: query }
-        items = [manualInstall, ...items]
+        });
+        const manualInstall = { label: "Manual: 'npm install " + query + "'", value: query };
+        items = [manualInstall, ...items];
         setItems(items);
       });
     }, 200);
   }, [query]);
 
   const handleInputChange = (inputValue) => {
-    if(inputValue == ""){
-      setItems([])
-      setSelectedOption(null)
+    if (inputValue == "") {
+      setItems([]);
+      setSelectedOption(null);
     }
     setQuery(inputValue);
   };
@@ -110,15 +128,15 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
       return;
     }
     const response = await updatePackage([message], "install", folder);
-    if(response == null){ 
-      setSavedMessage(message)
-      setOpen(true)
-      return
-    } else{
-      if(location == "frontend"){
-        restartFrontend()
+    if (response == null) {
+      setSavedMessage(message);
+      setOpen(true);
+      return;
+    } else {
+      if (location == "frontend") {
+        restartFrontend();
       } else {
-        restartBackend()
+        restartBackend();
       }
     }
     setInstalledPackages([...installedPackages, message]);
@@ -126,32 +144,34 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   const forceAddPackageToProject = async () => {
     const response = await updatePackage([savedMessage], "install", location as any, "--legacy-peer-deps");
-    if(!Array.isArray(response) || response.length == 0){ 
-      toast.error("Failed to install " + savedMessage + ". If this package is needed, please email us at team@swizzle.co")
-      return
+    if (!Array.isArray(response) || response.length == 0) {
+      toast.error(
+        "Failed to install " + savedMessage + ". If this package is needed, please email us at team@swizzle.co",
+      );
+      return;
     }
     setInstalledPackages([...installedPackages, savedMessage]);
-  }
+  };
 
   const removePackageFromProject = async (message) => {
     await updatePackage([message], "remove", location as "frontend" | "backend");
-    if(location == "frontend"){
-      restartFrontend()
+    if (location == "frontend") {
+      restartFrontend();
     } else {
-      restartBackend()
+      restartBackend();
     }
     setInstalledPackages(installedPackages.filter((item) => item !== message));
   };
 
   const checkIfRequired = (packageName) => {
-    if(location =="backend"){
+    if (location == "backend") {
       return requiredNodePackages.includes(packageName);
     } else {
       return requiredReactPackages.includes(packageName);
     }
-  }
+  };
 
-  const selectRef = useRef()
+  const selectRef = useRef();
 
   const renderSearchField = () => {
     return (
@@ -163,61 +183,68 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
         options={items}
         placeholder="Add NPM Package..."
         styles={{
-          input: (provided, state) => ({
-            ...provided,
-            backgroundColor: "#32333b",
-            borderColor: "#525363",
-            boxShadow: "none",
-            color: "#D9D9D9",
-            fontSize: "0.875rem",
-            zIndex: 999999999,
-            background: "transparent",
-          } as CSSObjectWithLabel),
-          control: (provided, state) => ({
-            ...provided,
-            backgroundColor: "#32333b",
-            borderColor: "#525363",
-            boxShadow: "none",
-            color: "#D9D9D9",
-            fontSize: "0.875rem",
-            "&:hover": {
+          input: (provided, state) =>
+            ({
+              ...provided,
+              backgroundColor: "#32333b",
               borderColor: "#525363",
-            },
-          } as CSSObjectWithLabel),
-          indicatorSeparator: (provided, state) => ({
-            ...provided,
-            display: "none",
-          } as CSSObjectWithLabel),
-          menu: (provided, state) => ({
-            ...provided,
-            backgroundColor: "#32333b",
-            color: "#D9D9D9",
-            fontSize: "0.875rem",
-            zIndex: 1000,
-          } as CSSObjectWithLabel),
-          option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected ? "#525363" : state.isFocused ? "#525363" : "#32333b",
-            color: "#D9D9D9",
-            fontSize: "0.875rem",
-            zIndex: 1000,
-            ":active": {
-              ...provided[":active"],
-              backgroundColor: "#525363",
-            },
-          } as CSSObjectWithLabel),
-          singleValue: (provided, state) => ({
-            ...provided,
-            color: "#D9D9D9",
-            fontSize: "0.875rem",
-            zIndex: 1000,
-          } as CSSObjectWithLabel),
-          placeholder: (provided, state) => ({
-            ...provided,
-            color: "#D9D9D9",
-            fontSize: "0.875rem",
-            zIndex: 1000,
-          } as CSSObjectWithLabel),
+              boxShadow: "none",
+              color: "#D9D9D9",
+              fontSize: "0.875rem",
+              zIndex: 999999999,
+              background: "transparent",
+            }) as CSSObjectWithLabel,
+          control: (provided, state) =>
+            ({
+              ...provided,
+              backgroundColor: "#32333b",
+              borderColor: "#525363",
+              boxShadow: "none",
+              color: "#D9D9D9",
+              fontSize: "0.875rem",
+              "&:hover": {
+                borderColor: "#525363",
+              },
+            }) as CSSObjectWithLabel,
+          indicatorSeparator: (provided, state) =>
+            ({
+              ...provided,
+              display: "none",
+            }) as CSSObjectWithLabel,
+          menu: (provided, state) =>
+            ({
+              ...provided,
+              backgroundColor: "#32333b",
+              color: "#D9D9D9",
+              fontSize: "0.875rem",
+              zIndex: 1000,
+            }) as CSSObjectWithLabel,
+          option: (provided, state) =>
+            ({
+              ...provided,
+              backgroundColor: state.isSelected ? "#525363" : state.isFocused ? "#525363" : "#32333b",
+              color: "#D9D9D9",
+              fontSize: "0.875rem",
+              zIndex: 1000,
+              ":active": {
+                ...provided[":active"],
+                backgroundColor: "#525363",
+              },
+            }) as CSSObjectWithLabel,
+          singleValue: (provided, state) =>
+            ({
+              ...provided,
+              color: "#D9D9D9",
+              fontSize: "0.875rem",
+              zIndex: 1000,
+            }) as CSSObjectWithLabel,
+          placeholder: (provided, state) =>
+            ({
+              ...provided,
+              color: "#D9D9D9",
+              fontSize: "0.875rem",
+              zIndex: 1000,
+            }) as CSSObjectWithLabel,
         }}
       />
     );
@@ -225,75 +252,81 @@ export default function PackageInfo({ isVisible, setIsVisible, location }: { isV
 
   return (
     <>
-    <ToastWindow
-      isHintWindowVisible={isVisible}
-      showHintWindowIfOpen={() => setIsVisible(true)}
-      hideHintWindow={() => {}}
-      title={""}
-      titleClass="text-md font-bold"
-      isLarge={false}
-      overrideLeftMargin={4}
-      overrideTopMargin={0}
-      className="top-2"
-      content={
-        //table of packages
-        <div className="overflow-scroll max-h-[70vh]">
-          <div className="flex mb-2 space-between">
-            <div className="font-bold text-lg">{location == "frontend" ? "React" : "Node"} Packages</div>
-            <Button
-              text="Close"
-              onClick={() => {
-                setIsVisible(false);
-              }}
-              className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
-            />
+      <ToastWindow
+        isHintWindowVisible={isVisible}
+        showHintWindowIfOpen={() => setIsVisible(true)}
+        hideHintWindow={() => {}}
+        title={""}
+        titleClass="text-md font-bold"
+        isLarge={false}
+        overrideLeftMargin={4}
+        overrideTopMargin={0}
+        className="top-2"
+        content={
+          //table of packages
+          <div className="overflow-scroll max-h-[70vh]">
+            <div className="flex mb-2 space-between">
+              <div className="font-bold text-lg">{location == "frontend" ? "React" : "Node"} Packages</div>
+              <Button
+                text="Close"
+                onClick={() => {
+                  setIsVisible(false);
+                }}
+                className="px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
+              />
+            </div>
+            <div onClick={() => (selectRef.current as any)?.focus()}>{renderSearchField()}</div>
+            <div className="flex flex-col items-center justify-center mt-3">
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th className="text-left">Current Packages</th>
+                    <th className="text-left"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {installedPackages.map((packageName) => {
+                    return (
+                      <tr key={packageName}>
+                        <td className={checkIfRequired(packageName) ? "opacity-70" : ""}>{packageName}</td>
+                        <td
+                          className={`opacity-70 hover:opacity-100 cursor-pointer flex ${
+                            checkIfRequired(packageName) ? "opacity-30 hover:opacity-50" : ""
+                          }`}
+                        >
+                          <FontAwesomeIcon
+                            className="ml-auto mr-0"
+                            icon={faTrash}
+                            onClick={() => {
+                              if (checkIfRequired(packageName)) {
+                                toast.error(packageName + " is required for this project and cannot be removed");
+                                return;
+                              }
+                              toast.promise(removePackageFromProject(packageName), {
+                                loading: "Removing " + packageName,
+                                success: "Removed " + packageName,
+                                error: "Failed to remove " + packageName,
+                              });
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div onClick={() => (selectRef.current as any)?.focus()}>{renderSearchField()}</div>
-          <div className="flex flex-col items-center justify-center mt-3">
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th className="text-left">Current Packages</th>
-                  <th className="text-left"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {installedPackages.map((packageName) => {
-                  return (
-                    <tr key={packageName}>
-                      <td className={checkIfRequired(packageName) ? "opacity-70" : ""}>{packageName}</td>
-                      <td className={`opacity-70 hover:opacity-100 cursor-pointer flex ${checkIfRequired(packageName) ? "opacity-30 hover:opacity-50" : ""}`}>
-                        <FontAwesomeIcon
-                          className="ml-auto mr-0"
-                          icon={faTrash}
-                          onClick={() => {
-                            if(checkIfRequired(packageName)){
-                              toast.error(packageName + " is required for this project and cannot be removed")
-                              return
-                            }
-                            toast.promise(removePackageFromProject(packageName), {
-                              loading: "Removing " + packageName,
-                              success: "Removed " + packageName,
-                              error: "Failed to remove " + packageName,
-                            });
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      }
-      position={"bottom-left"}
-    />
+        }
+        position={"bottom-left"}
+      />
       <TailwindModal
         title="Dependency Warning"
         subtitle="There is a dependency issue with this package. If you proceed, it may cause issues with your project. It's recommended to find a different package, but you can continue anyway if you need to."
         confirmButtonText="Continue Anyway"
-        confirmButtonAction={() => { forceAddPackageToProject() }}
+        confirmButtonAction={() => {
+          forceAddPackageToProject();
+        }}
         open={open}
         setOpen={setOpen}
       />
