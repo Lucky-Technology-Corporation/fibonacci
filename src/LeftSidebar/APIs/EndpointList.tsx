@@ -1,7 +1,8 @@
-import { faClock, faGear, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
+import { faBoltLightning, faChevronDown, faChevronRight, faClock, faGear, faPuzzlePiece, faXmarkCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Tooltip } from "react-tooltip";
 import useEndpointApi from "../../API/EndpointAPI";
 import PackageInfo from "../../RightSidebar/Sections/PackageInfo";
 import SecretInfo from "../../RightSidebar/Sections/SecretInfo";
@@ -14,6 +15,7 @@ import { Method } from "../../Utilities/Method";
 import { Page } from "../../Utilities/Page";
 import APIWizard from "./APIWizard";
 import EndpointItem from "./EndpointItem";
+import FileItem from "./FileItem";
 import HelperItem from "./HelperItem";
 import HelperWizard from "./HelperWizard";
 // import HelperWizard from "./HelperWizard";
@@ -31,6 +33,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
   const [fullScheduledFunctions, setFullScheduledFunctions] = useState<any[]>([]);
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState<boolean>(false);
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState<boolean>(false);
+  const [showTriggerEndpoints, setShowTriggerEndpoints] = useState<boolean>(false);
 
   const [isCron, setIsCron] = useState<boolean>(false);
 
@@ -42,7 +45,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
     { id: "cron", name: "+ Scheduled Job"}
   ];
 
-  const { activeProject, testDomain, selectedTab, activeEndpoint, setActiveEndpoint, setActiveFile, shouldRefreshList, fullEndpointList, setFullEndpointList, setPostMessage } =
+  const { activeProject, testDomain, selectedTab, activeEndpoint, setActiveEndpoint, setActiveFile, activeFile, shouldRefreshList, fullEndpointList, setFullEndpointList, setPostMessage } =
     useContext(SwizzleContext);
 
 
@@ -92,12 +95,6 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
       temporaryFixOldTsConfigs()
     }
   }, [testDomain])
-
-  useEffect(() => {
-    if(selectedTab == Page.Apis && activeEndpoint == undefined && endpoints && endpoints.length > 0){
-      setActiveEndpoint(endpoints[0])
-    }
-  }, [selectedTab])
 
   useEffect(() => {
     console.log("refreshing endpoint list", testDomain, activeProject)
@@ -176,6 +173,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
 
   useEffect(() => {
     if (selectedTab == Page.Apis && endpoints && endpoints.length > 0 && activeEndpoint == undefined) {
+      console.log("setting active endpoint to first in the list", endpoints, activeEndpoint)
       setActiveEndpoint(endpoints[0]);
     }
   }, [selectedTab, endpoints]);
@@ -250,12 +248,40 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         />
       </div>
 
-      <div className="endpoints-list">
-        <div className="font-semibold ml-2 mt-2 flex pb-1 opacity-70">
-          <FontAwesomeIcon icon={faGear} className="w-3 h-3 my-auto mr-1" />
-          <div className="flex items-center">Endpoints</div>
-        </div>
 
+      <Tooltip id="triggers-tab-tooltip" className={`fixed z-50`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
+      <a className="w-full" data-tooltip-id="triggers-tab-tooltip" data-tooltip-content={"Functions that are called when specific things happen"} data-tooltip-place="right">
+        <div className="font-semibold ml-2 mt-0 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300 cursor-pointer" onClick={() => {setShowTriggerEndpoints(p => !p)}}>
+          <FontAwesomeIcon icon={faBoltLightning} className="w-3 h-3 my-auto mr-1" />
+          <div className="flex items-center">Triggers</div>
+          <div className="ml-2">
+            {showTriggerEndpoints ? <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3 my-auto" /> : <FontAwesomeIcon icon={faChevronRight} className="w-3 h-3 my-auto" />}
+          </div>
+        </div>  
+      </a>
+
+      <div className={`ml-1 mb-1 ${showTriggerEndpoints ? "" : "hidden"}`}>
+        <div className={searchFilter != "" ? ("new user signup".includes(searchFilter.toLowerCase()) ? "" : "hidden") : ""}>
+          <FileItem
+            key={"signup_callback.ts"}
+            path={("New user signup")}
+            active={"!trigger!/backend/swizzle-dependencies/signup_callback.ts" == activeEndpoint}
+            onClick={() => {
+              setActiveEndpoint("!trigger!/backend/swizzle-dependencies/signup_callback.ts")
+            }}
+            disableDelete={true}
+          />
+        </div>
+      </div>
+
+      <div className="endpoints-list pt-2">
+        <Tooltip id="endpoints-tab-tooltip" className={`fixed z-50`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
+        <a className="w-full" data-tooltip-id="endpoints-tab-tooltip" data-tooltip-content={"Functions that are called from your frontend"} data-tooltip-place="right">
+          <div className="font-semibold ml-2 mt-2 flex pb-1 text-gray-400 hover:text-gray-300">
+            <FontAwesomeIcon icon={faGear} className="w-3 h-3 my-auto mr-1" />
+            <div className="flex items-center">Endpoints</div>
+          </div>
+        </a>
         <div className="ml-1">
           {endpoints.filter((v) => !v.startsWith("get/cron")).map((endpoint, index) => (
             <EndpointItem
@@ -282,10 +308,13 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
 
         {helperList.length > 0 && (
           <>
-        <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 opacity-70">
-          <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
-          <div className="flex items-center">Helpers</div>
-        </div>
+          <Tooltip id="helpers-tab-tooltip" className={`fixed z-50`} style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }} />
+          <a className="w-full" data-tooltip-id="helpers-tab-tooltip" data-tooltip-content={"Functions that can be used in endpoints or other helpers"} data-tooltip-place="right">
+            <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 text-gray-400 hover:text-gray-300">
+              <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
+              <div className="flex items-center">Helpers</div>
+            </div>
+          </a>
         <div className="ml-1">
           {helperList.map((helper, index) => {
             return (

@@ -4,7 +4,8 @@ export enum Method {
   PUT = "PUT",
   DELETE = "DELETE",
   PATCH = "PATCH",
-  HELPER = "Helper"
+  HELPER = "Helper",
+  TRIGGER = "Trigger"
 }
 export const methodToColor = (method?: Method, methodString?: string) => {
   if(methodString){

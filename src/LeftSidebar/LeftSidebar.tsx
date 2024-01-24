@@ -85,7 +85,17 @@ export default function LeftSidebar({
         type: "openFile",
         fileName: `/backend/helpers/${fileName}`,
       });
-      setActiveEndpoint(activeEndpoint.replace("!helper!", ""));
+    } else if(fileName.startsWith("!trigger!")){
+      var triggerFileName = activeEndpoint.replace("!trigger!", "");
+      if (currentFileProperties && currentFileProperties.fileUri) {
+        const currentFile = currentFileProperties.fileUri.replace("file:///swizzle/code/", "");
+        if (currentFile == triggerFileName) return;
+      }
+      console.log("open", triggerFileName)
+      setPostMessage({
+        type: "openFile",
+        fileName: `${triggerFileName}`,
+      });
     } else {
       //Check if we're already on the endpoint
       if (currentFileProperties && currentFileProperties.fileUri) {
@@ -120,7 +130,9 @@ export default function LeftSidebar({
       } else if(currentFileProperties.fileUri.includes("user-dependencies/")){
         const newEndpoint = filenameToEndpoint(currentFileProperties.fileUri.split("user-dependencies/")[1])
         setActiveEndpoint(newEndpoint);
-      } else{
+      } else if(currentFileProperties.fileUri.includes("swizzle-dependencies/")){
+        //no op
+      }else{
         setActiveEndpoint(null)
       }
     }

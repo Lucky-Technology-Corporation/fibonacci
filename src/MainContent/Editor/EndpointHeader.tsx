@@ -1,4 +1,4 @@
-import { faArrowLeft, faBug, faClock, faCloud, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faBoltLightning, faBug, faClock, faGear, faPuzzlePiece, faSearch, faUndo, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from 'react-autosuggest';
@@ -49,6 +49,9 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
       if(activeEndpoint.includes("!helper!")){
         setMethod(Method.HELPER)
         setPath(activeEndpoint.replace("!helper!", ""))
+      } else if(activeEndpoint.includes("!trigger!")){
+        setMethod(Method.TRIGGER)
+        setPath(activeEndpoint.includes("signup_callback") ? "New user signup" : activeEndpoint.replace("!trigger!", ""))
       } else{
         const splitEndpoint = activeEndpoint.split("/");
         setMethod(splitEndpoint[0].toUpperCase() as Method);
@@ -603,7 +606,7 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
             {selectedTab == Page.Hosting ? (
               <div className="flex align-middle pr-2 font-normal font-mono w-full">
                 <img src="/world.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
-                <div className="my-auto">{path}</div>
+                <div className="my-auto">{path == "frontend/src/AppContext.tsx" ? "Global App Context" : path}</div>
               </div>
             ) : (selectedTab == Page.Apis ? (
               <div className="flex align-middle pr-2 font-normal font-mono">
@@ -611,8 +614,8 @@ export default function EndpointHeader({selectedTab, currentFileProperties, setC
                   <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
                 ) : (
                   <>
-                    <FontAwesomeIcon icon={faCloud} className="w-3 h-3 my-auto mr-2" />
-                    <span className={`${methodToColor(method)} my-auto font-semibold mr-1 `}>{method}</span> 
+                    <FontAwesomeIcon icon={method == Method.TRIGGER ? faBoltLightning : method == Method.HELPER ? faPuzzlePiece : faGear} className="w-3 h-3 my-auto mr-2" />
+                    <span className={`${methodToColor(method)} my-auto font-semibold mr-1 `}>{method == Method.TRIGGER ? "" : method == Method.HELPER ? "" : method}</span> 
                   </>
                 )}
                 <div className="my-auto">{path.startsWith("/cron/") ? path.replace("/cron/", "") : path}</div>
