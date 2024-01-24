@@ -107,9 +107,6 @@ export default function ProjectSelector({
 
 
   const createNewProject = (projectName: string) => {
-    toast.error("Project creation is disabled temporarily while we scale our infrastructure. Please check back later.")
-    return
-
     if (projectName.includes("_") || projectName.includes("-")) {
       toast.error("Project name cannot contain underscores or dashes");
       return;

@@ -296,12 +296,20 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     
                             for(var i = 0; i < lines.length; i++){
                                 var currentLine = lines[i];
+
                                 if(currentLine.includes("ERROR in src/RouteList.tsx")){
                                     if(!didRestartRecently){
                                         setDidRestartRecently(true)
                                         toast("Restarting frontend to refresh route list cache...")
                                         endpointApi.restartFrontend()
                                     }
+                                }
+
+                                if(currentLine.startsWith("Error: Cannot find module") && currentLine.includes("imported from /swizzle/code/server.ts")){
+                                    var fileName = currentLine.split("Error: Cannot find module '")[1].split("' imported from /swizzle/code/server.ts")[0]
+                                    fileName = fileName.replace("/swizzle/code/user-dependencies/", "")
+                                    console.log("remove", fileName, "from server.ts")
+                                    endpointApi.removeRouteFromList(fileName)
                                 }
 
                                 if(didRestartRecently && currentLine.includes("No issues found.")){

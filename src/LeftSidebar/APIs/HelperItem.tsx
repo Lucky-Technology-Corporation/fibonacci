@@ -1,6 +1,9 @@
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import useEndpointApi from "../../API/EndpointAPI";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import EndpointContextMenu from "./EndpointContextMenu";
 
 export default function HelperItem({
   active = false,
@@ -48,19 +51,19 @@ export default function HelperItem({
         <div className="flex relative">
           <div className="font-normal">{path}</div>
 
-          {/* <FontAwesomeIcon
+          <FontAwesomeIcon
             icon={faEllipsisV}
             className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
             onClick={(e) =>{ e.preventDefault(); setShowContextMenu(!showContextMenu)}}
-          /> */}
+          />
 
-          {/* <EndpointContextMenu
+          <EndpointContextMenu
             showContextMenu={showContextMenu}
             setShowContextMenu={setShowContextMenu}
             path={path}
             runDeleteProcess={() => { runDeleteProcess(path) } }
-            editFile={() => {}}
-          /> */}
+            editFile={null}
+          />
 
         </div>
       </div>

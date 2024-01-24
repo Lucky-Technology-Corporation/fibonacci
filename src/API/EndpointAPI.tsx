@@ -172,6 +172,28 @@ export default function useEndpointApi() {
     }
   }
 
+  const removeRouteFromList = async (path: string) => {
+    try {
+      if (testDomain == null || testDomain == undefined || testDomain == "") {
+        return [];
+      }
+      if (testDomain.includes("localhost")) {
+        return [];
+      }
+      const response = await axios.post(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/codegen/backend/serverts/delete`, 
+      {
+        filename: path
+      }, 
+      {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  }
+
   const restartBackend = async () => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
@@ -680,6 +702,7 @@ export default function useEndpointApi() {
     scheduleFunction,
     getScheduledFunctions,
     removeScheduledFunction,
-    updateScheduledFunction
+    updateScheduledFunction,
+    removeRouteFromList
   };
 }
