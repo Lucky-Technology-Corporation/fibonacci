@@ -97,7 +97,7 @@ export default function useSettingsApi() {
 
   const getSecrets = async () => {
     try {
-      if (activeProject == null) {
+      if (activeProject == null || activeProject == "") {
         return null;
       }
       const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {

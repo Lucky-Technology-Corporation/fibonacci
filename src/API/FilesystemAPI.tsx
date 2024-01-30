@@ -123,13 +123,6 @@ export default function useFilesystemApi() {
         path = path.substring(1);
       }
       const componentName = /[^/]*$/.exec(pathToFile(path))[0]; //path after last slash
-      // const componentName = path
-      //   .replace(/\//g, "_")
-      //   .replace(".tsx", "")
-      //   .replace(".ts", "")
-      //   .replace(/\./g, "_")
-      //   .replace(/^(.)/, (match, p1) => p1.toUpperCase())
-      //   .replace(/_([a-z])/g, (match, p1) => "_" + p1.toUpperCase());
 
       const newRoute = `<SwizzleRoute path="${page}" element={<${componentName} />} />`;
 
