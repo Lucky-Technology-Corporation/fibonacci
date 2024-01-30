@@ -38,8 +38,8 @@ export default function PaymentRequestModal({
               </h3>
               <div className="mt-1">
                 <div className="text-sm text-[#D9D9D9]">
-                  $9 / month per project
-                  {hasPaymentMethod ? ". To cancel charges, delete your project." : "after 7-day free trial"}
+                  $12 / month per project
+                  {hasPaymentMethod ? ". To cancel charges, delete your project." : " after 7-day free trial"}
                 </div>
                 {/* <ul className='list-disc ml-4 my-2'>
                     <li>$0.50 / 100k requests</li>

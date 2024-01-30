@@ -108,8 +108,8 @@ export default function CheckoutForm({ setIsVisible }: { setIsVisible?: (isVisib
             <CardElement options={CARD_OPTIONS} />
           </div>
           <div className="flex">
-            <div className={`my-auto ${!hasPaymentMethod ? "hidden" : ""}`}>
-              <a href="#" onClick={() => setIsVisible(false)} className="text-gray-400 text-sm">
+            <div className={`my-auto`}>
+              <a href="#" onClick={() => setIsVisible(false)} className={`text-gray-400 text-sm  ${!hasPaymentMethod ? "hidden" : ""}`}>
                 Cancel
               </a>
               <a

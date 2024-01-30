@@ -239,13 +239,18 @@ export default function EditAuthMethodView({ method }: { method: string }) {
                 }}
               />
             </div>
-            <div>
+            <div className="flex space-between align-middle mt-4 w-full">
               <div
                 className="text-sm font-medium mt-4 text-red-400 cursor-pointer"
                 onClick={() => setShowDeleteModal(true)}
               >
                 Remove Email
               </div>
+              <Button
+                className="ml-auto text-sm px-4 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                onClick={saveNewDetails}
+                text="Update"
+              />
             </div>
           </div>
           <TailwindModal

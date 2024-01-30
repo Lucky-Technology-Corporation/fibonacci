@@ -118,6 +118,7 @@ export default function TaskCommandHeader() {
         <div className={`py-2 ml-2 my-auto ${isEditing && "hidden"}`}>
           {fullTaskQueue.length - taskQueue.length + 1} of {fullTaskQueue.length} tasks
         </div>
+        <a onClick={() => { setTaskQueue([]) }} className={`text-gray-400 text-sm ml-3 my-auto cursor-pointer ${isEditing && "hidden"}`}>Cancel</a>
         <Button
           className={`text-sm ml-4 px-5 py-2 ml-2 my-auto font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`}
           onClick={() => {
