@@ -84,6 +84,8 @@ export interface SwizzleContextType {
   setActiveAuthPage: Dispatch<SetStateAction<string>>;
   shouldRefreshAuth: boolean;
   setShouldRefreshAuth: Dispatch<SetStateAction<boolean>>;
+  codeMode: string;
+  setCodeMode: Dispatch<SetStateAction<string>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -123,6 +125,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [frontendRestarting, setFrontendRestarting] = useState<boolean>(false);
   const [activeAuthPage, setActiveAuthPage] = useState<string>("list");
   const [shouldRefreshAuth, setShouldRefreshAuth] = useState<boolean>(false);
+  const [codeMode, setCodeMode] = useState("ai");
 
   //Content handler
   const [selectedTab, setSelectedTab] = useState<Page>(Page.Logs);
@@ -216,6 +219,8 @@ export const GlobalContextProvider = ({ children }) => {
         setActiveAuthPage,
         shouldRefreshAuth,
         setShouldRefreshAuth,
+        codeMode,
+        setCodeMode,
       }}
     >
       {children}

@@ -2,8 +2,10 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
+import useJarvis from "../../API/JarvisAPI";
 import TestWindow from "../../RightSidebar/TestWindow/TestWindow";
 import Button from "../../Utilities/Button";
 import { endpointToFilename, filenameToEndpoint, formatPath } from "../../Utilities/EndpointParser";
@@ -30,6 +32,7 @@ export default function Editor({
   const currentFileRef = useRef(null);
   const renameRef = useRef(null);
   const endpointListRef = useRef([]);
+  const promptRef = useRef(null);
 
   const [theiaUrl, setTheiaUrl] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
@@ -56,9 +59,28 @@ export default function Editor({
     setRefreshTheia,
     setSelectedText,
     setFileErrors,
+    fileErrors,
+    codeMode,
+    setCodeMode,
   } = useContext(SwizzleContext);
-  const { getFermatJwt, getFile, writeFile } = useEndpointApi();
+  const { getFermatJwt, getFile, writeFile, getPackageJson } = useEndpointApi();
+  const { updatePackage } = useDeploymentApi()
   const { patchPreviewComponent, setPreviewComponentFromPath, deleteEndpoint, createNewEndpoint } = useFilesystemApi();
+
+  useEffect(() => {
+    //steal focus from theia
+    console.log("focusing", codeMode);
+    if (promptRef.current == null) return;
+    console.log("got it");
+    promptRef.current.focus();
+    if (codeMode == "ai") {
+      setTimeout(() => {
+        if (codeMode == "ai") {
+          promptRef.current.focus();
+        }
+      }, 500);
+    }
+  }, [promptRef.current, codeMode]);
 
   useEffect(() => {
     if (postMessage == null) return;
@@ -326,6 +348,9 @@ export default function Editor({
   };
   const getParentWidth = () => {
     if (selectedTab == Page.Hosting) {
+      if (codeMode == "ai") {
+        return "1px";
+      }
       if (isSidebarOpen) {
         return "calc(60% - 24px)";
       } else {
@@ -377,9 +402,221 @@ export default function Editor({
     previewIframeRef.current.contentWindow.location.reload();
   };
 
-  return testDomain == undefined ? (
-    <div className="m-auto mt-4">Something went wrong</div>
-  ) : (
+  const { editFrontend, fixProblems } = useJarvis();
+  const [promptQuery, setPromptQuery] = useState("");
+  const [messageHistory, setMessageHistory] = useState<any[]>([]);
+  const lastProblemFix = useRef(0)
+
+  const runQueryFromState = () => {
+    console.log(promptQuery);
+    toast.promise(editFrontend(promptQuery, path, activeFile, messageHistory), {
+      loading: "Thinking...",
+      success: (data) => {
+        //Replace text in editor
+        setPostMessage({
+          type: "replaceText",
+          content: data.new_code,
+        });
+
+        //Save history
+        setMessageHistory(data.messages);
+
+        //Save the file after 100ms to give the editor time to update
+        setTimeout(() => {
+          setPostMessage({
+            type: "saveFile",
+          });
+        }, 100);
+
+        //Find uninstalled packages
+        findAndInstallRequiredPackages(data.new_code)
+
+        //Find backend endpoints
+        findAndCreateEndpoints(data.new_code)
+
+        //Reload the preview in case (?)
+        setTimeout(() => {
+          setUrl(url => url.split("?")[0] + "?refresh=" + Math.random());
+        }, 750)
+
+        //CHeck for problems 500ms after the save
+        setTimeout(() => {
+          setPostMessage({
+            type: "getFileErrors",
+          });
+        }, 600);
+
+        setPromptQuery("")
+
+        return "Done";
+      },
+      error: (e) => {
+        console.error(e);
+        return "Something went wrong, please try again.";
+      },
+    });
+  };
+
+  const findAndCreateEndpoints = async (newCode: string) => {
+    const regex = /api\.(get|post|put|delete)\('([^']+)'/g;
+    const methodPaths = [];
+    let match;
+  
+    // Use regex.exec in a loop to find all matches
+    while ((match = regex.exec(newCode)) !== null) {
+      // match[1] contains the captured HTTP method, match[2] contains the captured path
+      if (match[1] && match[2]) {
+        const methodPath = `${match[1]}/${match[2]}`;
+        methodPaths.push(methodPath);
+      }
+    }
+
+    var missingEndpoints = [];
+    methodPaths.forEach((givenEndpoint) => {
+      const isMatch = endpointListRef.current.some((existingEndpoint) => {
+        const existingSegments = existingEndpoint.split('/');
+        const givenSegments = givenEndpoint.split('/');
+      
+        // Check if the segments count matches, excluding the method part for flexibility
+        if (existingSegments.length !== givenSegments.length) {
+          return false;
+        }
+      
+        // Compare each segment; treat segments with ':' as wildcard matches
+        for (let i = 0; i < existingSegments.length; i++) {
+          if (existingSegments[i] !== givenSegments[i] && !existingSegments[i].startsWith(':')) {
+            return false; // Segment does not match and is not a wildcard
+          }
+        }
+      
+        return true; // All segments match or are accounted for by wildcards
+      });
+      if(!isMatch){
+        missingEndpoints.push(givenEndpoint)
+      }
+    })
+
+    for(var i = 0; i < missingEndpoints.length; i++){
+    }
+  
+  }
+
+  const findAndInstallRequiredPackages = async (newCode: string) => {
+    const importRegex = /import\s+(?:[a-zA-Z{}\s*,]*\s+from\s+)?['"]([^'"]+)['"]/g;
+    const packages = new Set();
+    let match;
+    while ((match = importRegex.exec(newCode)) !== null) {
+        const packageName = match[1];
+        // Check if it's a package (not a relative import)
+        if (!packageName.startsWith('.') && !packageName.startsWith('/')) {
+            // Handle scoped packages
+            const scopedPackageMatch = packageName.match(/^@[^\/]+\/[^\/]+/);
+            const simplePackageMatch = packageName.match(/^[^\/]+/);
+            const finalMatch = scopedPackageMatch || simplePackageMatch;
+            if (finalMatch) {
+                packages.add(finalMatch[0]);
+            }
+        }
+    }
+
+    const packageArray = Array.from(packages);
+
+    const installedPackages = await getPackageJson("frontend").then((data) => {
+      if (data == undefined || data.dependencies == undefined) {
+        return;
+      }
+      const dependencies = Object.keys(data.dependencies).map((key) => {
+        return key;
+      });
+      return dependencies;
+    });
+
+
+    packageArray.forEach((packageName: string) => {
+      if(!installedPackages.includes(packageName)){
+        toast.promise(updatePackage([packageName], "install", "frontend"), {
+          loading: "Installing " + packageName + "...",
+          success: (data) => {
+            return packageName + " installed";
+          },
+          error: (e) => {
+            console.error(e);
+            return "Something went wrong, please try again.";
+          },
+        });
+      }
+    })
+  }
+
+  useEffect(() => {
+    return
+    //this isnt working well.
+    if (fileErrors == undefined) return;
+    if (fileErrors == "") return;
+    if(Date.now() - lastProblemFix.current < 5000){
+      return
+    }
+    lastProblemFix.current = Date.now()
+
+    var severeErrors = []
+    const parsed = JSON.parse(fileErrors)
+    if(parsed.length == 0){
+      return
+    }
+    parsed.forEach((error) => {
+      if(error.severity == 1){
+        severeErrors.push(error)
+      }
+    })
+
+    if(severeErrors.length == 0){
+      return
+    }
+
+    const currentCode = messageHistory[messageHistory.length - 1].content
+    console.log(currentCode)
+
+    toast.promise(fixProblems(currentCode, JSON.stringify(severeErrors)), {
+      loading: "Debugging and fixing problems...",
+      success: (data) => {
+        if(data.new_code == undefined || data.new_code == ""){
+          return "No problems found"
+        }
+        //Replace text in editor
+        setPostMessage({
+          type: "replaceText",
+          content: data.new_code,
+        });
+
+        //Save the file after 100ms to give the editor time to update
+        setTimeout(() => {
+          setPostMessage({
+            type: "saveFile",
+          });
+        }, 100);
+
+        //TODO: This might be an infinite loop. Figure this out
+        //CHeck for problems 500ms after the save
+        // setTimeout(() => {
+        //   setPostMessage({
+        //     type: "getFileErrors",
+        //   });
+        // }, 600);
+
+        return "Done";
+      },
+      error: (e) => {
+        console.error(e);
+        return "Something went wrong, please try again.";
+      },
+    });
+  }, [fileErrors]);
+
+  if (testDomain == undefined) {
+    return <div className="m-auto mt-4">Something went wrong</div>;
+  }
+
+  return (
     <div className="flex flex-row">
       <div
         className={`bg-black bg-opacity-70 absolute w-full h-full top-0 left-0 right-0 bottom-0 z-50 pointer-events-none ${
@@ -447,6 +684,7 @@ export default function Editor({
             marginRight: "-48px",
             display: "block", // This ensures the iframe takes up the full width
             marginTop: "4px",
+            pointerEvents: (codeMode == "ai" && selectedTab == Page.Hosting) ? "none" : "auto",
           }}
         />
 
@@ -461,13 +699,13 @@ export default function Editor({
             width: getLogsWidth(),
             bottom: "24px",
             position: "absolute",
-            display: isDebugging ? "none" : "",
+            display: isDebugging || codeMode == "ai" ? "none" : "",
           }}
         />
       </div>
       {selectedTab == Page.Hosting ? (
         <div
-          className={`flex flex-col ${isSidebarOpen ? "w-[40%]" : "w-0 hidden"}`}
+          className={`flex flex-col ${codeMode == "ai" ? "w-[98%]" : isSidebarOpen ? "w-[40%]" : "w-0 hidden"}`}
           style={{ height: "calc(100vh - 12px)" }}
         >
           {(activeFile || "").includes("frontend/src/components") && (
@@ -498,15 +736,44 @@ export default function Editor({
           )}
           {selectedTab == Page.Hosting &&
             (activeFile || "").includes("frontend/") &&
-            !(activeFile || "").includes("frontend/src/components") && (
+            !(activeFile || "").includes("frontend/src/components") &&
+            (codeMode == "ai" ? (
+              <>
+                <div className="pt-3 px-1 flex-wrap no-focus-ring">
+                  <div className="flex flex-row h-10">
+                    <input
+                      ref={promptRef}
+                      className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2 py-1"
+                      value={promptQuery}
+                      placeholder="Describe what you want"
+                      onChange={(e) => {
+                        setPromptQuery(e.target.value);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key == "Enter") {
+                          runQueryFromState();
+                        }
+                      }}
+                    />
+                    <Button
+                      text="Go"
+                      className="text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                      onClick={() => {
+                        runQueryFromState();
+                      }}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
               <div className="pt-3 px-1 flex-wrap no-focus-ring">
                 <div className="mb-1 font-bold">
                   <FontAwesomeIcon icon={faXmark} className="w-3 h-3 mr-1 cursor-pointer" onClick={closePreview} />{" "}
                   Preview
                 </div>
-                <div className="flex flex-row h-8">
+                <div className="flex flex-row h-10">
                   <input
-                    className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2"
+                    className="flex-1 mr-2 mr-4 mr-0 flex-1 rounded bg-transparent border-[#525363] border text-sm px-2 h-[34px] mt-2.5"
                     value={path}
                     onChange={(e) => {
                       setPath(e.target.value);
@@ -519,6 +786,7 @@ export default function Editor({
                   />
                   <Button
                     text="Update"
+                    className="text-sm px-5 py-1 mt-2.5 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
                     onClick={() => {
                       if (testDomain + path == url) {
                         setUrl(testDomain + path + "?refresh=" + Math.random());
@@ -529,7 +797,8 @@ export default function Editor({
                   />
                 </div>
               </div>
-            )}
+            ))}
+
           <iframe
             ref={previewIframeRef}
             src={url}
@@ -547,22 +816,6 @@ export default function Editor({
               borderRadius: "8px",
             }}
           />
-          {/* {frontendRestarting && (
-            <div 
-              style={{ 
-                position: 'fixed', 
-                top: "8px", 
-                right: "0px", 
-                width: "calc(40vw - 82px)", 
-                height: "100vh", 
-                zIndex: 9999, 
-                background: '#000000aa', // Transparent background
-                color: '#fff'
-              }}
-            >
-              <div className="mt-40 w-full text-center font-bold text-lg">Restarting...</div>
-            </div>
-          )} */}
         </div>
       ) : (
         <div

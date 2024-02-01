@@ -39,7 +39,7 @@ export default function useDeploymentApi() {
       );
       return response.data;
     } catch (e) {
-      if (e.response.status == 404) {
+      if ((e.response || {}).status == 404) {
         location.reload();
       }
       return null;

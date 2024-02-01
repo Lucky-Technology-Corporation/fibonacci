@@ -274,7 +274,7 @@ export default function EndpointHeader({
           doc.title.toLowerCase().includes(value.toLowerCase()) ||
           doc.description.toLowerCase().includes(value.toLowerCase()),
       );
-      setSuggestions([...ai_options, ...actions, ...docs]);
+      setSuggestions([...actions, ...docs]);
     } else if (selectedTab == Page.Hosting) {
       const actions = swizzleActionOptions.filter(
         (action) =>
@@ -293,7 +293,7 @@ export default function EndpointHeader({
           const parsedEndpoint = new ParsedActiveEndpoint(endpoint);
           return { type: "endpoint", ...parsedEndpoint };
         });
-      setSuggestions([...ai_options, ...actions, ...docs, ...filteredList]);
+      setSuggestions([...actions, ...docs, ...filteredList]);
     } else if (selectedTab == Page.Db) {
       setSuggestions([...db_ai_options]);
     }
