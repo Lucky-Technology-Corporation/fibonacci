@@ -497,6 +497,7 @@ export default function Editor({
     })
 
     for(var i = 0; i < missingEndpoints.length; i++){
+
     }
   
   }
@@ -549,68 +550,75 @@ export default function Editor({
   }
 
   useEffect(() => {
-    return
-    //this isnt working well.
-    if (fileErrors == undefined) return;
-    if (fileErrors == "") return;
-    if(Date.now() - lastProblemFix.current < 5000){
-      return
-    }
-    lastProblemFix.current = Date.now()
+    const runFixer = async () => {
+      if (fileErrors == undefined) return;
+      if (fileErrors == "") return;
 
-    var severeErrors = []
-    const parsed = JSON.parse(fileErrors)
-    if(parsed.length == 0){
-      return
-    }
-    parsed.forEach((error) => {
-      if(error.severity == 1){
-        severeErrors.push(error)
+      var severeErrors = []
+      const parsed = JSON.parse(fileErrors)
+      if(parsed.length == 0){
+        return
       }
-    })
-
-    if(severeErrors.length == 0){
-      return
-    }
-
-    const currentCode = messageHistory[messageHistory.length - 1].content
-    console.log(currentCode)
-
-    toast.promise(fixProblems(currentCode, JSON.stringify(severeErrors)), {
-      loading: "Debugging and fixing problems...",
-      success: (data) => {
-        if(data.new_code == undefined || data.new_code == ""){
-          return "No problems found"
+      parsed.forEach((error) => {
+        if(error.severity == 1){
+          severeErrors.push(error)
         }
-        //Replace text in editor
-        setPostMessage({
-          type: "replaceText",
-          content: data.new_code,
-        });
+      })
 
-        //Save the file after 100ms to give the editor time to update
-        setTimeout(() => {
+      if(severeErrors.length == 0){
+        return
+      }
+
+      console.log("severeErrors", severeErrors)
+
+      var currentCode = (messageHistory[messageHistory.length - 1] || {}).content
+      if(currentCode == undefined || currentCode == ""){
+        if(selectedTab == Page.Hosting){
+          currentCode = await getFile(activeFile)
+        } else {
+          console.error("Unimplemented for backend")
+          return 
+        }
+      }
+
+      toast.promise(fixProblems(currentCode, JSON.stringify(severeErrors)), {
+        loading: "Debugging and fixing problems...",
+        success: (data) => {
+          if(data.new_code == undefined || data.new_code == ""){
+            return "No problems found"
+          }
+          //Replace text in editor
           setPostMessage({
-            type: "saveFile",
+            type: "replaceText",
+            content: data.new_code,
           });
-        }, 100);
 
-        //TODO: This might be an infinite loop. Figure this out
-        //CHeck for problems 500ms after the save
-        // setTimeout(() => {
-        //   setPostMessage({
-        //     type: "getFileErrors",
-        //   });
-        // }, 600);
+          //Save the file after 100ms to give the editor time to update
+          setTimeout(() => {
+            setPostMessage({
+              type: "saveFile",
+            });
+          }, 100);
 
-        return "Done";
-      },
-      error: (e) => {
-        console.error(e);
-        return "Something went wrong, please try again.";
-      },
-    });
+          //TODO: This might be an infinite loop. Figure this out
+          //CHeck for problems 500ms after the save
+          // setTimeout(() => {
+          //   setPostMessage({
+          //     type: "getFileErrors",
+          //   });
+          // }, 600);
+
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong, please try again.";
+        },
+      });
+    }
+    runFixer()
   }, [fileErrors]);
+
 
   if (testDomain == undefined) {
     return <div className="m-auto mt-4">Something went wrong</div>;

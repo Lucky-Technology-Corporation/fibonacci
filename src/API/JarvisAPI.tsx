@@ -31,15 +31,36 @@ export default function useJarvis() {
     }
   };
 
-  const fixProblems = async (currentCode: string, fileErrors: string) => {
+  const createEndpoint = async (currentCode: string, missingEndpoint: string) => {
     try {
       var body = {
-        currentCode: currentCode,
-        fileErrors: fileErrors,
+        current_code: currentCode,
+        missing_endpoint: missingEndpoint,
       };
 
       const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/fix?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/endpoint/create?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  const fixProblems = async (currentCode: string, fileErrors: string) => {
+    try {
+      var body = {
+        current_code: currentCode,
+        file_errors: fileErrors,
+      };
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/fix?env=${environment}`,
         body,
         {
           withCredentials: true,
