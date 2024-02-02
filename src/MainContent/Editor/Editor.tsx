@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
+import useJarvis from "../../API/JarvisAPI";
 import TestWindow from "../../RightSidebar/TestWindow/TestWindow";
 import Button from "../../Utilities/Button";
 import { endpointToFilename, filenameToEndpoint, formatPath } from "../../Utilities/EndpointParser";
@@ -65,6 +66,7 @@ export default function Editor({
   } = useContext(SwizzleContext);
   const { getFermatJwt, getFile, writeFile, getPackageJson } = useEndpointApi();
   const { updatePackage } = useDeploymentApi();
+  const { fixProblems } = useJarvis()
   const { patchPreviewComponent, setPreviewComponentFromPath, deleteEndpoint, createNewEndpoint } = useFilesystemApi();
 
   // useEffect(() => {
@@ -326,27 +328,6 @@ export default function Editor({
     setUrl(testDomain + path + "?refresh=" + Math.random());
   }, [shouldRefreshList])
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [iframeRect, setIframeRect] = useState({ top: 0, left: 0, width: 0, height: 0 });
-
-  const handleDragStart = () => {
-    setIsDragging(true);
-    if (previewIframeRef.current) {
-      setIframeRect(previewIframeRef.current.getBoundingClientRect());
-    }
-  };
-
-  const handleDragEnd = () => {
-    previewIframeRef.current.contentWindow.postMessage({ type: "drag-coordinates", x: -1, y: -1 }, "*");
-    setIsDragging(false);
-  };
-
-  const handleDragOver = (event) => {
-    const x = event.clientX - iframeRect.left;
-    const y = event.clientY - iframeRect.top;
-    previewIframeRef.current.contentWindow.postMessage({ type: "drag-coordinates", x, y }, "*");
-  };
-
   const closePreview = () => {
     setIsSidebarOpen(false);
   };
@@ -568,7 +549,6 @@ export default function Editor({
               marginRight: "16px",
               marginLeft: "4px",
               marginTop: "12px",
-              pointerEvents: isDragging ? "none" : "auto",
               borderRadius: "8px",
             }}
           />

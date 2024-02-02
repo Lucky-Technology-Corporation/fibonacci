@@ -4,12 +4,13 @@ import {
   faBug,
   faClock,
   faGear,
+  faImage,
   faPuzzlePiece,
   faUndo,
-  faXmark,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import Autosuggest from "react-autosuggest";
 import toast from "react-hot-toast";
 import useDeploymentApi from "../../API/DeploymentAPI";
@@ -66,23 +67,20 @@ export default function EndpointHeader({
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
   const [prompt, setPrompt] = useState<string>("");
-  const [AICommand, setAICommand] = useState<string>("ask");
   const [response, setResponse] = useState<ReactNode | undefined>(null);
   const [isUndoVisible, setIsUndoVisible] = useState<boolean>(false);
   const [isWaitingForText, setIsWaitingForText] = useState<boolean>(false);
   const [oldCode, setOldCode] = useState<string>("");
-  const [pendingRequest, setPendingRequest] = useState<string>("");
   const [highlighted, setHighlighted] = useState<boolean>(false);
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
-  const [didRunAutocheck, setDidRunAutocheck] = useState(false);
+  const [problemButtonText, setProblemButtonText] = useState<string>("Look for problems");
 
   const { getPackageJson, getFile, promptDbHelper } = useEndpointApi();
   const { updatePackage } = useDeploymentApi();
   const { upsertImport } = useFilesystemApi();
-  const { editFrontend, createMissingBackendEndpoint, fixProblems } = useJarvis();
+  const { editFrontend, createMissingBackendEndpoint, fixProblems, createPageFromImage } = useJarvis();
   const [messageHistory, setMessageHistory] = useState<any[]>([]);
-  const lastProblemFix = useRef(0)
 
   const runQuery = () => {
     if(selectedTab == Page.Hosting){
@@ -101,27 +99,8 @@ export default function EndpointHeader({
           //Save history
           setMessageHistory(data.messages);
 
-          //Save the file after 100ms to give the editor time to update
-          setTimeout(() => {
-            setPostMessage({
-              type: "saveFile",
-            });
-          }, 100);
-
-          //Find uninstalled packages
-          findAndInstallRequiredPackages(data.new_code, "frontend")
-
-          //Find backend endpoints
-          findAndCreateEndpoints(data.new_code)
-
-          //CHeck for problems 500ms after the save
-          setTimeout(() => {
-            setPostMessage({
-              type: "getFileErrors",
-            });
-          }, 600);
-
-          setPrompt("")
+          //Run common post processing tasks
+          runAiFrontendPostProcessing(data.new_code)
 
           return "Done";
         },
@@ -160,6 +139,83 @@ export default function EndpointHeader({
       });
     }
   };
+
+  const runAiFrontendPostProcessing = (newCode: string) => {
+    //Save the file after 100ms to give the editor time to update
+    setTimeout(() => {
+      setPostMessage({
+        type: "saveFile",
+      });
+    }, 100);
+
+    //Find uninstalled packages
+    findAndInstallRequiredPackages(newCode, "frontend")
+
+    //Find backend endpoints
+    findAndCreateEndpoints(newCode)
+
+    //CHeck for problems 500ms after the save
+    setTimeout(() => {
+      setPostMessage({
+        type: "getFileErrors",
+      });
+    }, 600);
+
+    setPrompt("")
+  }
+
+  function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+  }
+
+  const uploadImage = async () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files[0];
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64data = reader.result;
+        var base64String = ""
+        if (base64data instanceof ArrayBuffer) {
+          const stringOutput = arrayBufferToBase64(base64data);
+          base64String = "data:image/png;base64," + stringOutput;
+        } else {
+          base64String = base64data as string;
+        }
+        console.log("submitting", base64String)
+        createPageFromData(base64String)
+      };
+      reader.readAsDataURL(file);
+    };
+    fileInput.click();
+  }
+
+  const createPageFromData = async (base64: string) => {
+    toast.promise(createPageFromImage(base64), {
+      loading: "Parsing image and writing code...",
+      success: (data) => {
+        setPostMessage({
+          type: "replaceText",
+          content: data.new_code,
+        });
+
+        runAiFrontendPostProcessing(data.new_code)
+        return "Done";
+      },
+      error: (e) => {
+        console.error(e);
+        return "Something went wrong, please try again.";
+      },
+    });
+  }
 
   const findAndCreateEndpoints = async (newCode: string) => {
     const regex = /api\.(get|post|put|delete)\('([^']+)'/g;
@@ -255,8 +311,8 @@ export default function EndpointHeader({
 
 
     packageArray.forEach((packageName: string) => {
-      if(!installedPackages.includes(packageName)){
-        toast.promise(updatePackage([packageName], "install", "frontend"), {
+      if(installedPackages && !installedPackages.includes(packageName)){
+        toast.promise(updatePackage([packageName], "install", location as 'frontend' | 'backend'), {
           loading: "Installing " + packageName + "...",
           success: (data) => {
             return packageName + " installed";
@@ -270,75 +326,99 @@ export default function EndpointHeader({
     })
   }
 
-  useEffect(() => {
-    const runFixer = async () => {
-      if (fileErrors == undefined) return;
-      if (fileErrors == "") return;
-
-      var severeErrors = []
-      const parsed = JSON.parse(fileErrors)
-      if(parsed.length == 0){
-        return
-      }
-      parsed.forEach((error) => {
-        if(error.severity == 1){
-          severeErrors.push(error)
-        }
-      })
-
-      if(severeErrors.length == 0){
-        return
-      }
-
-      console.log("severeErrors", severeErrors)
-
-      var currentCode = (messageHistory[messageHistory.length - 1] || {}).content
-      if(currentCode == undefined || currentCode == ""){
-        if(selectedTab == Page.Hosting){
-          currentCode = await getFile(activeFile)
-        } else {
-          console.error("Unimplemented for backend")
-          return 
-        }
-      }
-
-      toast.promise(fixProblems(currentCode, JSON.stringify(severeErrors)), {
-        loading: "Debugging and fixing problems...",
-        success: (data) => {
-          if(data.new_code == undefined || data.new_code == ""){
-            return "No problems found"
-          }
-          //Replace text in editor
-          setPostMessage({
-            type: "replaceText",
-            content: data.new_code,
-          });
-
-          //Save the file after 100ms to give the editor time to update
-          setTimeout(() => {
-            setPostMessage({
-              type: "saveFile",
-            });
-          }, 100);
-
-          //TODO: This might be an infinite loop. Figure this out
-          //CHeck for problems 500ms after the save
-          // setTimeout(() => {
-          //   setPostMessage({
-          //     type: "getFileErrors",
-          //   });
-          // }, 600);
-
-          return "Done";
-        },
-        error: (e) => {
-          console.error(e);
-          return "Something went wrong, please try again.";
-        },
+  const problemButtonHandler = () => {
+    if(problemButtonText == "Look for problems"){
+      setPostMessage({
+        type: "getFileErrors",
       });
+      toast("Scanned for problems")
+    } else{
+      runFixer()
     }
-    runFixer()
+  }
+
+  useEffect(() => {
+    if (fileErrors == undefined || fileErrors == ""){
+      setProblemButtonText("Look for problems")
+      return
+    } 
+
+    var severeErrors = []
+    const parsed = JSON.parse(fileErrors)
+    if(parsed.length == 0){
+      return
+    }
+    parsed.forEach((error) => {
+      if(error.severity == 1){
+        severeErrors.push(error)
+      }
+    })
+
+    if(severeErrors.length == 0){
+      setProblemButtonText("Look for problems")
+    } else{
+      setProblemButtonText("Fix problems")
+    }
   }, [fileErrors]);
+
+  const runFixer = async () => {
+    if (fileErrors == undefined) return;
+    if (fileErrors == "") return;
+
+    var severeErrors = []
+    const parsed = JSON.parse(fileErrors)
+    if(parsed.length == 0){
+      return
+    }
+    parsed.forEach((error) => {
+      if(error.severity == 1){
+        severeErrors.push(error)
+      }
+    })
+
+    if(severeErrors.length == 0){
+      return
+    }
+
+    var currentCode = (messageHistory[messageHistory.length - 1] || {}).content
+    if(currentCode == undefined || currentCode == ""){
+      if(selectedTab == Page.Hosting){
+        currentCode = await getFile(activeFile)
+      } else {
+        console.error("Unimplemented for backend")
+        return 
+      }
+    }
+
+    toast.promise(fixProblems(currentCode, JSON.stringify(severeErrors)), {
+      loading: "Debugging and fixing problems...",
+      success: (data) => {
+        if(data.new_code == undefined || data.new_code == ""){
+          return "No problems found"
+        }
+        //Replace text in editor
+        setPostMessage({
+          type: "replaceText",
+          content: data.new_code,
+        });
+
+        //Save the file after 100ms to give the editor time to update
+        setTimeout(() => {
+          setPostMessage({
+            type: "saveFile",
+          });
+        }, 100);
+
+        setFileErrors("")
+
+        return "Done";
+      },
+      error: (e) => {
+        console.error(e);
+        return "Something went wrong, please try again.";
+      },
+    });
+  }
 
   useEffect(() => {
     if (activeEndpoint && selectedTab == Page.Apis) {
@@ -394,33 +474,6 @@ export default function EndpointHeader({
   const [suggestions, setSuggestions] = useState(docOptions);
 
   const onSuggestionsFetchRequested = ({ value }) => {
-    const ai_options = [
-      {
-        type: "ai",
-        image: "ai_selection",
-        title: value,
-        description: "Update selected code",
-        ai_type: -1,
-      },
-      {
-        type: "ai",
-        image: "wand",
-        title: value,
-        description: "Ask AI",
-        ai_type: 0,
-      },
-    ];
-
-    const db_ai_options = [
-      {
-        type: "ai",
-        image: "ai_snippet",
-        title: value,
-        description: "Ask AI",
-        ai_type: 2,
-      },
-    ];
-
     if (selectedTab == Page.Apis) {
       const actions = swizzleActionOptions.filter(
         (action) =>
@@ -455,7 +508,6 @@ export default function EndpointHeader({
       setSuggestions([...actions, ...docs, ...filteredList]);
     } else if (selectedTab == Page.Db) {
       setSuggestions([])
-      // setSuggestions([...db_ai_options]);
     }
   };
 
@@ -772,13 +824,13 @@ export default function EndpointHeader({
       <div className="flex-col magic-bar">
         <div className="pt-3 ml-1 flex">
           {selectedTab != Page.Db && (
-            <div className="w-6 mx-1 cursor-pointer mt-1">
+            <div className="w-6 flex align-middle mr-1 cursor-pointer mt-1">
               <FontAwesomeIcon className="w-4 h-4 m-auto py-0.5 opacity-70" icon={faArrowLeft} onClick={goBack} />
             </div>
           )}
 
           {selectedTab == Page.Hosting ? (
-            <div className="flex align-middle pr-2 font-normal font-mono w-full">
+            <div className="flex align-middle pr-2 font-normal font-mono">
               <img src="/world.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
               <div className="my-auto">{path == "frontend/src/AppContext.tsx" ? "Global App Context" : path}</div>
             </div>
@@ -802,6 +854,15 @@ export default function EndpointHeader({
           ) : (
             <></>
           )}
+          <Button
+            text={problemButtonText}
+            className={`${problemButtonText == "Fix problems" && "text-red-400"} mr-1 ml-auto text-sm px-2.5 py-1 mt-2.5 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`}
+            onClick={problemButtonHandler}
+          />
+          {
+            //Move close sidebar button here
+            <></>
+          }
         </div>
         <div
           className={`flex justify-between mb-2 text-lg font-bold pt-2 max-h-[52px] ${
@@ -867,17 +928,6 @@ export default function EndpointHeader({
               inputProps={{
                 onKeyDown: (event) => {
                   if (event.key == "Enter") {
-                    // if (selectedTab == Page.Db) {
-                    //   runQuery(prompt, "db");
-                    //   return;
-                    // }
-                    // if (!highlighted) {
-                    //   if (selectedText != null && selectedText != "") {
-                    //     runQuery(prompt, "selection", selectedText);
-                    //   } else {
-                    //     runQuery(prompt, "snippet");
-                    //   }
-                    // }
                     runQuery()
                     return;
                   }
@@ -906,6 +956,17 @@ export default function EndpointHeader({
               className="ml-0 mr-4 grow"
             />
           </div>
+          
+          {(selectedTab == Page.Hosting && prompt == "") && (
+            <Button
+              children={<FontAwesomeIcon icon={faImage} />}
+              className="text-sm mr-1 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              onClick={() => {
+                uploadImage()
+              }}
+            />
+          )}
+          
           {prompt != "" ? (
             <Button
               text="Go"
@@ -917,7 +978,7 @@ export default function EndpointHeader({
           ) : (
             selectedTab == Page.Db && (
               <Button
-                className="text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                className={`text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ${!activeCollection && "hidden"}`}
                 text="+ Add Entry"
                 onClick={() => {
                   setShouldCreateObject(true)

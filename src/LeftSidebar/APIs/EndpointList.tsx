@@ -87,33 +87,33 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
     }
   }, [isVisible]);
 
-  const temporaryFixOldTsConfigs = async () => {
-    try {
-      var needsUpdate = false;
-      const parsed = await getFile("backend/tsconfig.json");
-      if (parsed.compilerOptions.module !== "NodeNext") {
-        parsed.compilerOptions.module = "NodeNext";
-        needsUpdate = true;
-      }
-      if (parsed.compilerOptions.moduleResolution !== "NodeNext") {
-        parsed.compilerOptions.moduleResolution = "NodeNext";
-        needsUpdate = true;
-      }
-      if (needsUpdate == false) {
-        return;
-      }
-      const updatedData = JSON.stringify(parsed, null, 2);
-      await writeFile("backend/tsconfig.json", updatedData);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  // const temporaryFixOldTsConfigs = async () => {
+  //   try {
+  //     var needsUpdate = false;
+  //     const parsed = await getFile("backend/tsconfig.json");
+  //     if (parsed.compilerOptions.module !== "NodeNext") {
+  //       parsed.compilerOptions.module = "NodeNext";
+  //       needsUpdate = true;
+  //     }
+  //     if (parsed.compilerOptions.moduleResolution !== "NodeNext") {
+  //       parsed.compilerOptions.moduleResolution = "NodeNext";
+  //       needsUpdate = true;
+  //     }
+  //     if (needsUpdate == false) {
+  //       return;
+  //     }
+  //     const updatedData = JSON.stringify(parsed, null, 2);
+  //     await writeFile("backend/tsconfig.json", updatedData);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // };
 
-  useEffect(() => {
-    if (testDomain) {
-      temporaryFixOldTsConfigs();
-    }
-  }, [testDomain]);
+  // useEffect(() => {
+  //   if (testDomain) {
+  //     temporaryFixOldTsConfigs();
+  //   }
+  // }, [testDomain]);
 
   useEffect(() => {
     console.log("refreshing endpoint list", testDomain, activeProject);

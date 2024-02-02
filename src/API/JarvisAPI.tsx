@@ -7,6 +7,24 @@ const NEXT_PUBLIC_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 export default function useJarvis() {
   const { activeProject, environment } = useContext(SwizzleContext);
 
+  const createPageFromImage = async (base64: string) => {
+    try {
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/image?env=${environment}`,
+        {
+          base64: base64,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
   const editFrontend = async (prompt: string, pagePath: string, activeFile: string, history?: any[]) => {
     try {
       var body = {
@@ -73,5 +91,5 @@ export default function useJarvis() {
     }
   };
 
-  return { editFrontend, fixProblems, createMissingBackendEndpoint };
+  return { editFrontend, fixProblems, createMissingBackendEndpoint, createPageFromImage };
 }
