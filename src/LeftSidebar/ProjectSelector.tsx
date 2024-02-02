@@ -274,7 +274,8 @@ export default function ProjectSelector({
         <Dropdown
           children={projects}
           onSelect={(id: string) => {
-            setCurrentProject(id);
+            sessionStorage.setItem("activeProject", id);
+            location.reload();
           }}
           lastChild={{
             id: "_create_new_project",

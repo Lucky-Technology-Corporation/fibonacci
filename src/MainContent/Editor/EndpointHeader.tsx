@@ -5,20 +5,20 @@ import {
   faClock,
   faGear,
   faPuzzlePiece,
-  faSearch,
   faUndo,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import Autosuggest from "react-autosuggest";
 import toast from "react-hot-toast";
+import useDeploymentApi from "../../API/DeploymentAPI";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
+import useJarvis from "../../API/JarvisAPI";
 import { ParsedActiveEndpoint } from "../../Utilities/ActiveEndpointHelper";
 import Button from "../../Utilities/Button";
 import { copyText } from "../../Utilities/Copyable";
-import { replaceCodeBlocks } from "../../Utilities/DataCaster";
 import { endpointToFilename } from "../../Utilities/EndpointParser";
 import FloatingModal from "../../Utilities/FloatingModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -60,6 +60,8 @@ export default function EndpointHeader({
     fileErrors,
     setSwizzleActionDispatch,
     activePage,
+    setShouldCreateObject,
+    setShouldRefreshList
   } = useContext(SwizzleContext);
   const [method, setMethod] = useState<Method>(Method.GET);
   const [path, setPath] = useState<string>("");
@@ -75,13 +77,268 @@ export default function EndpointHeader({
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
   const [didRunAutocheck, setDidRunAutocheck] = useState(false);
 
-  //save query info for re-render when we get fileErrors
-  const [promptQuery, setPromptQuery] = useState<string>("");
-  const [queryType, setQueryType] = useState<string>("");
-  const [isWaitingForErrors, setIsWaitingForErrors] = useState<boolean>(false);
-
-  const { promptAiEditor, getAutocheckResponse, promptDbHelper } = useEndpointApi();
+  const { getPackageJson, getFile, promptDbHelper } = useEndpointApi();
+  const { updatePackage } = useDeploymentApi();
   const { upsertImport } = useFilesystemApi();
+  const { editFrontend, createMissingBackendEndpoint, fixProblems } = useJarvis();
+  const [messageHistory, setMessageHistory] = useState<any[]>([]);
+  const lastProblemFix = useRef(0)
+
+  const runQuery = () => {
+    if(selectedTab == Page.Hosting){
+      toast.promise(editFrontend(prompt, path, activeFile, messageHistory), {
+        loading: "Thinking...",
+        success: (data) => {
+          //Replace text in editor
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          });
+
+          //Setup undo
+          setupUndo(data.old_code);
+
+          //Save history
+          setMessageHistory(data.messages);
+
+          //Save the file after 100ms to give the editor time to update
+          setTimeout(() => {
+            setPostMessage({
+              type: "saveFile",
+            });
+          }, 100);
+
+          //Find uninstalled packages
+          findAndInstallRequiredPackages(data.new_code, "frontend")
+
+          //Find backend endpoints
+          findAndCreateEndpoints(data.new_code)
+
+          //CHeck for problems 500ms after the save
+          setTimeout(() => {
+            setPostMessage({
+              type: "getFileErrors",
+            });
+          }, 600);
+
+          setPrompt("")
+
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong, please try again.";
+        },
+      });
+    } else if(selectedTab == Page.Db){
+      if (prompt == "") {
+        setCurrentDbQuery("_reset");
+        return;
+      }
+      return toast.promise(promptDbHelper(prompt, activeCollection), {
+        loading: "Thinking...",
+        success: (data) => {
+          setResponse(
+            <AIResponseWithChat
+              descriptionIn={data.pending_operation_description}
+              operationIn={data.pending_operation}
+              historyIn={[
+                { role: "user", content: prompt },
+                { role: "assistant", content: data.pending_operation },
+              ]}
+              activeCollection={activeCollection}
+              onApprove={() => {
+                setPrompt("");
+                setResponse(null);
+                setCurrentDbQuery(data.pending_operation);
+              }}
+            />,
+          );
+          return "Done";
+        },
+        error: "Failed",
+      });
+    }
+  };
+
+  const findAndCreateEndpoints = async (newCode: string) => {
+    const regex = /api\.(get|post|put|delete)\('([^']+)'/g;
+    const methodPaths = [];
+    let match;
+  
+    // Use regex.exec in a loop to find all matches
+    while ((match = regex.exec(newCode)) !== null) {
+      // match[1] contains the captured HTTP method, match[2] contains the captured path
+      if (match[1] && match[2]) {
+        const methodPath = `${match[1]}${match[2]}`;
+        methodPaths.push(methodPath);
+      }
+    }
+
+    var missingEndpoints = [];
+    methodPaths.forEach((givenEndpoint) => {
+      console.log("checking if " + givenEndpoint + " exists in " + fullEndpointList)
+      const isMatch = fullEndpointList.some((existingEndpoint) => {
+        const existingSegments = existingEndpoint.split('/');
+        const givenSegments = givenEndpoint.split('/');
+      
+        // Check if the segments count matches, excluding the method part for flexibility
+        if (existingSegments.length !== givenSegments.length) {
+          return false;
+        }
+      
+        // Compare each segment; treat segments with ':' as wildcard matches
+        for (let i = 0; i < existingSegments.length; i++) {
+          if (existingSegments[i] !== givenSegments[i] && !existingSegments[i].startsWith(':')) {
+            return false; // Segment does not match and is not a wildcard
+          }
+        }
+      
+        return true; // All segments match or are accounted for by wildcards
+      });
+      if(!isMatch){
+        missingEndpoints.push(givenEndpoint)
+      }
+    })
+
+    for(var i = 0; i < missingEndpoints.length; i++){
+      console.log("creating " + missingEndpoints[i] + "...")
+      const segments = missingEndpoints[i].split('/')
+      const method = segments[0].toUpperCase()
+      const path = segments.slice(1).join('/')
+      toast.promise(createMissingBackendEndpoint(newCode, missingEndpoints[i]), {
+        loading: "Creating " + method + " " + path + "...",
+        success: (data) => {
+          //Find uninstalled packages
+          findAndInstallRequiredPackages(data.new_code, "backend")
+          setShouldRefreshList(p => !p)
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong.";
+        },
+      });
+    }
+  
+  }
+
+  const findAndInstallRequiredPackages = async (newCode: string, location: string) => {
+    const importRegex = /import\s+(?:[a-zA-Z{}\s*,]*\s+from\s+)?['"]([^'"]+)['"]/g;
+    const packages = new Set();
+    let match;
+    while ((match = importRegex.exec(newCode)) !== null) {
+        const packageName = match[1];
+        // Check if it's a package (not a relative import)
+        if (!packageName.startsWith('.') && !packageName.startsWith('/')) {
+            // Handle scoped packages
+            const scopedPackageMatch = packageName.match(/^@[^\/]+\/[^\/]+/);
+            const simplePackageMatch = packageName.match(/^[^\/]+/);
+            const finalMatch = scopedPackageMatch || simplePackageMatch;
+            if (finalMatch) {
+                packages.add(finalMatch[0]);
+            }
+        }
+    }
+
+    const packageArray = Array.from(packages);
+
+    const installedPackages = await getPackageJson(location).then((data) => {
+      if (data == undefined || data.dependencies == undefined) {
+        return;
+      }
+      const dependencies = Object.keys(data.dependencies).map((key) => {
+        return key;
+      });
+      return dependencies;
+    });
+
+
+    packageArray.forEach((packageName: string) => {
+      if(!installedPackages.includes(packageName)){
+        toast.promise(updatePackage([packageName], "install", "frontend"), {
+          loading: "Installing " + packageName + "...",
+          success: (data) => {
+            return packageName + " installed";
+          },
+          error: (e) => {
+            console.error(e);
+            return "Something went wrong, please try again.";
+          },
+        });
+      }
+    })
+  }
+
+  useEffect(() => {
+    const runFixer = async () => {
+      if (fileErrors == undefined) return;
+      if (fileErrors == "") return;
+
+      var severeErrors = []
+      const parsed = JSON.parse(fileErrors)
+      if(parsed.length == 0){
+        return
+      }
+      parsed.forEach((error) => {
+        if(error.severity == 1){
+          severeErrors.push(error)
+        }
+      })
+
+      if(severeErrors.length == 0){
+        return
+      }
+
+      console.log("severeErrors", severeErrors)
+
+      var currentCode = (messageHistory[messageHistory.length - 1] || {}).content
+      if(currentCode == undefined || currentCode == ""){
+        if(selectedTab == Page.Hosting){
+          currentCode = await getFile(activeFile)
+        } else {
+          console.error("Unimplemented for backend")
+          return 
+        }
+      }
+
+      toast.promise(fixProblems(currentCode, JSON.stringify(severeErrors)), {
+        loading: "Debugging and fixing problems...",
+        success: (data) => {
+          if(data.new_code == undefined || data.new_code == ""){
+            return "No problems found"
+          }
+          //Replace text in editor
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          });
+
+          //Save the file after 100ms to give the editor time to update
+          setTimeout(() => {
+            setPostMessage({
+              type: "saveFile",
+            });
+          }, 100);
+
+          //TODO: This might be an infinite loop. Figure this out
+          //CHeck for problems 500ms after the save
+          // setTimeout(() => {
+          //   setPostMessage({
+          //     type: "getFileErrors",
+          //   });
+          // }, 600);
+
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong, please try again.";
+        },
+      });
+    }
+    runFixer()
+  }, [fileErrors]);
 
   useEffect(() => {
     if (activeEndpoint && selectedTab == Page.Apis) {
@@ -106,114 +363,9 @@ export default function EndpointHeader({
         setPath(activeFile.replace("frontend/src/components/", ""));
       }
     }
+
+    setMessageHistory([]); //replace this with a store for each file later
   }, [activeEndpoint, activeFile, activePage, selectedTab]);
-
-  const runQuery = async (promptQuery: string, queryType: string, selectedText?: string) => {
-    if (queryType == "db") {
-      if (promptQuery == "") {
-        setCurrentDbQuery("_reset");
-        return;
-      }
-      return toast.promise(promptDbHelper(promptQuery, activeCollection), {
-        loading: "Thinking...",
-        success: (data) => {
-          setResponse(
-            <AIResponseWithChat
-              descriptionIn={data.pending_operation_description}
-              operationIn={data.pending_operation}
-              historyIn={[
-                { role: "user", content: promptQuery },
-                { role: "assistant", content: data.pending_operation },
-              ]}
-              activeCollection={activeCollection}
-              onApprove={() => {
-                setResponse(null);
-                setCurrentDbQuery(data.pending_operation);
-              }}
-            />,
-          );
-          return "Done";
-        },
-        error: "Failed",
-      });
-    } else {
-      //find file errors if they exist
-      setPromptQuery(promptQuery);
-      setQueryType(queryType);
-      setSelectedText(selectedText);
-      setFileErrors("");
-      setIsWaitingForErrors(true);
-      setPostMessage({
-        type: "getFileErrors",
-      });
-      // toast("Scanning for build errors...")
-    }
-  };
-
-  useEffect(() => {
-    if (!isWaitingForErrors) return;
-    setIsWaitingForErrors(false);
-    runQueryFromState();
-  }, [fileErrors]);
-
-  const runQueryFromState = () => {
-    console.log(promptQuery);
-    toast.promise(promptAiEditor(promptQuery, queryType, selectedText, undefined, undefined, fileErrors), {
-      loading: "Thinking...",
-      success: (data) => {
-        if (queryType == "edit") {
-          setResponse(
-            <AIResponseWithChat
-              descriptionIn={"The selected code will be replaced with the following"}
-              operationIn={data.new_code}
-              historyIn={[
-                { role: "user", content: promptQuery },
-                { role: "assistant", content: data.new_code },
-              ]}
-              selectedText={selectedText}
-              onApprove={() => {
-                setResponse(null);
-                setPostMessage({
-                  type: "replaceText",
-                  content: data.new_code,
-                });
-                setupUndo(data.old_code);
-                setTimeout(() => {
-                  setPostMessage({
-                    type: "saveFile",
-                  });
-                }, 100);
-              }}
-            />,
-          );
-        } else if (queryType == "snippet") {
-          setResponse(<div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.new_code) }} />);
-        } else if (queryType == "selection") {
-          //open window and confirm
-          setResponse(
-            <AIResponseWithChat
-              descriptionIn={"The selected code will be replaced with the following"}
-              operationIn={data.new_code}
-              historyIn={[
-                { role: "user", content: promptQuery },
-                { role: "assistant", content: data.new_code },
-              ]}
-              selectedText={selectedText}
-              onApprove={() => {
-                setResponse(null);
-                setPostMessage({
-                  type: "replaceSelectedText",
-                  content: data.new_code,
-                });
-              }}
-            />,
-          );
-        }
-        return "Done";
-      },
-      error: "Failed",
-    });
-  };
 
   const setupUndo = (oldCode: string) => {
     setIsUndoVisible(true);
@@ -226,6 +378,12 @@ export default function EndpointHeader({
       content: oldCode,
     });
     setIsUndoVisible(false);
+
+    setTimeout(() => {
+      setPostMessage({
+        type: "saveFile",
+      });
+    }, 250);
   };
 
   useEffect(() => {
@@ -234,6 +392,7 @@ export default function EndpointHeader({
   }, [currentFileProperties]);
 
   const [suggestions, setSuggestions] = useState(docOptions);
+
   const onSuggestionsFetchRequested = ({ value }) => {
     const ai_options = [
       {
@@ -295,7 +454,8 @@ export default function EndpointHeader({
         });
       setSuggestions([...actions, ...docs, ...filteredList]);
     } else if (selectedTab == Page.Db) {
-      setSuggestions([...db_ai_options]);
+      setSuggestions([])
+      // setSuggestions([...db_ai_options]);
     }
   };
 
@@ -333,19 +493,6 @@ export default function EndpointHeader({
             </div>
             <div className="text-xs font-normal mt-1">{suggestion.description}</div>
           </div>
-          {/* This is a little confusing UI wise, come back later maybe */}
-          {/* {(suggestions.some(s => s.type == "action") && suggestion.ai_type == 0) &&
-          <div className="">
-            <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
-            <div className="mt-2 pl-3 pr-3 pb-1 text-xs opacity-70">Swizzle Actions</div>
-          </div>
-        }
-         {(suggestions.some(s => s.type == "doc" || s.type == "externalDoc"  || s.type == "link") && !suggestions.some(s => s.type == "action")) &&
-          <div className="">
-            <div style={{height: "1px"}} className="w-full mt-0 bg-gray-500" />
-            <div className="mt-2 pl-3 pr-3 pb-1 text-xs opacity-70">Code Templates</div>
-          </div>
-        } */}
         </>
       );
     } else if (suggestion.type == "endpoint") {
@@ -407,53 +554,43 @@ export default function EndpointHeader({
   useEffect(() => {
     if (selectedText && isWaitingForText) {
       setIsWaitingForText(false);
-      runQuery(pendingRequest, "selection", selectedText);
+      //TEXT RECEIVED
     }
   }, [selectedText]);
 
   const onSuggestionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
-    if (suggestion.type == "ai") {
-      if (suggestion.ai_type == -1) {
-        setPendingRequest(suggestion.title);
-        getHighlightedText();
-      } else if (suggestion.ai_type == 0) {
-        runQuery(suggestion.title, "snippet");
-      } else if (suggestion.ai_type == 2) {
-        runQuery(suggestion.title, "db");
+    if (suggestion.type == "endpoint") {
+      var apiDepth = "../";
+      if (activeFile.includes("frontend/src")) {
+        const pathParts = activeFile.split("frontend/src")[1].split("/");
+        const pathLength = pathParts.length - 3;
+        console.log(pathLength);
+        console.log(pathParts);
+        for (let i = 0; i < pathLength; i++) {
+          apiDepth += "../";
+        }
       }
-    } else {
-      if (suggestion.type == "endpoint") {
-        var apiDepth = "../";
-        if (activeFile.includes("frontend/src")) {
-          const pathParts = activeFile.split("frontend/src")[1].split("/");
-          const pathLength = pathParts.length - 3;
-          console.log(pathLength);
-          console.log(pathParts);
-          for (let i = 0; i < pathLength; i++) {
-            apiDepth += "../";
-          }
-        }
 
-        const importsToAdd = [
-          { import: "useState", from: "react", named: true },
-          { import: "useEffect", from: "react", named: true },
-          { import: "api", from: apiDepth + "Api", named: false },
-        ];
+      const importsToAdd = [
+        { import: "useState", from: "react", named: true },
+        { import: "useEffect", from: "react", named: true },
+        { import: "api", from: apiDepth + "Api", named: false },
+      ];
 
-        const apiCall = `api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`;
-        var stateVariableName =
-          suggestion.fullPath
-            .split("/")
-            .slice(1)
-            .map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
-            .join("") + "Result";
-        if (stateVariableName == "Result") {
-          stateVariableName = "result";
-        }
+      const apiCall = `api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`;
+      var stateVariableName =
+        suggestion.fullPath
+          .split("/")
+          .slice(1)
+          .map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
+          .join("") + "Result";
+      if (stateVariableName == "Result") {
+        stateVariableName = "result";
+      }
 
-        const setStateVariableName = "set" + stateVariableName.charAt(0).toUpperCase() + stateVariableName.slice(1);
-        const stateVariableDeclaration = `const [${stateVariableName}, ${setStateVariableName}] = useState(null);`;
-        const useEffect = `useEffect(() => {
+      const setStateVariableName = "set" + stateVariableName.charAt(0).toUpperCase() + stateVariableName.slice(1).replace(/:/g, "");
+      const stateVariableDeclaration = `const [${stateVariableName}, ${setStateVariableName}] = useState(null);`;
+      const useEffect = `useEffect(() => {
   ${apiCall}.then((result) => {
     ${setStateVariableName}(result.data)
   }).catch((error) => {
@@ -461,128 +598,119 @@ export default function EndpointHeader({
   })
 }, [])`;
 
-        var file = activeFile;
-        if (selectedTab != Page.Hosting) {
-          toast.error("Sorry, something got mixed up. Try refreshing the page.");
-          return;
-        }
+      var file = activeFile;
+      if (selectedTab != Page.Hosting) {
+        toast.error("Sorry, something got mixed up. Try refreshing the page.");
+        return;
+      }
 
-        toast.promise(
-          upsertImport(file, importsToAdd).then((code) => {
-            if (code != null) {
-              copyText(`${stateVariableDeclaration}\n\n${useEffect}`, true);
-              setPostMessage({ type: "replaceText", content: code });
-            }
-
-            setTimeout(() => {
-              setPostMessage({ type: "saveFile" });
-            }, 250);
-          }),
-          {
-            loading: "Thinking...",
-            success: "Copied code to clipboard",
-            error: (e) => {
-              console.log(e);
-              return "Failed. Make sure there are no syntax errors in your code before adding API calls.";
-            },
-          },
-        );
-      } else if (suggestion.type == "doc") {
-        const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0];
-        copyText(copyable, true);
-        if (suggestion.link) {
-          toast((t) => (
-            <span>
-              Copied example
-              <button
-                onClick={() => window.open(suggestion.link, "_blank")}
-                className="ml-2 p-1 cursor-pointer bg-[#85869833] hover:bg-[#85869855] rounded"
-              >
-                Open docs
-              </button>
-            </span>
-          ));
-        }
-        const importsToAdd = [{ import: suggestion.import, from: "swizzle-js", named: true }];
-        const file = "backend/user-dependencies/" + endpointToFilename(activeEndpoint);
+      toast.promise(
         upsertImport(file, importsToAdd).then((code) => {
           if (code != null) {
+            copyText(`${stateVariableDeclaration}\n\n${useEffect}`, true);
             setPostMessage({ type: "replaceText", content: code });
           }
+
           setTimeout(() => {
             setPostMessage({ type: "saveFile" });
           }, 250);
-        });
-      } else if (suggestion.type == "externalDoc") {
-        const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0];
-        copyText(copyable, true);
-        if (suggestion.link) {
-          toast((t) => (
-            <span>
-              Copied example
-              <button
-                onClick={() => window.open(suggestion.link, "_blank")}
-                className="ml-2 p-1 cursor-pointer bg-[#85869833] hover:bg-[#85869855] rounded"
-              >
-                Open Docs
-              </button>
-            </span>
-          ));
+        }),
+        {
+          loading: "Thinking...",
+          success: "Copied code to clipboard",
+          error: (e) => {
+            console.log(e);
+            return "Failed. Make sure there are no syntax errors in your code before adding API calls.";
+          },
+        },
+      );
+    } else if (suggestion.type == "doc") {
+      const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0];
+      copyText(copyable, true);
+      if (suggestion.link) {
+        toast((t) => (
+          <span>
+            Copied example
+            <button
+              onClick={() => window.open(suggestion.link, "_blank")}
+              className="ml-2 p-1 cursor-pointer bg-[#85869833] hover:bg-[#85869855] rounded"
+            >
+              Open docs
+            </button>
+          </span>
+        ));
+      }
+      const importsToAdd = [{ import: suggestion.import, from: "swizzle-js", named: true }];
+      const file = "backend/user-dependencies/" + endpointToFilename(activeEndpoint);
+      upsertImport(file, importsToAdd).then((code) => {
+        if (code != null) {
+          setPostMessage({ type: "replaceText", content: code });
+        }
+        setTimeout(() => {
+          setPostMessage({ type: "saveFile" });
+        }, 250);
+      });
+    } else if (suggestion.type == "externalDoc") {
+      const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0];
+      copyText(copyable, true);
+      if (suggestion.link) {
+        toast((t) => (
+          <span>
+            Copied example
+            <button
+              onClick={() => window.open(suggestion.link, "_blank")}
+              className="ml-2 p-1 cursor-pointer bg-[#85869833] hover:bg-[#85869855] rounded"
+            >
+              Open Docs
+            </button>
+          </span>
+        ));
+      }
+
+      var newImportStatement: any = `import { ${suggestion.import} } from '${suggestion.importFrom}';`;
+      setPostMessage({
+        type: "upsertImport",
+        content: newImportStatement + "\n",
+        importStatement: newImportStatement,
+      });
+    } else if (suggestion.type == "link") {
+      window.open(suggestion.link, "_blank");
+    } else if (suggestion.type == "action") {
+      if (suggestion.title == "Save") {
+        setPostMessage({ type: "saveFile" });
+      } else if (suggestion.title == "Switch Auth") {
+        var toImport = "";
+        if (currentFileProperties.hasPassportAuth) {
+          toImport = "optionalAuthentication";
+        } else {
+          toImport = "requiredAuthentication";
         }
 
-        var newImportStatement: any = `import { ${suggestion.import} } from '${suggestion.importFrom}';`;
-        setPostMessage({
-          type: "upsertImport",
-          content: newImportStatement + "\n",
-          importStatement: newImportStatement,
-        });
-      } else if (suggestion.type == "link") {
-        window.open(suggestion.link, "_blank");
-      } else if (suggestion.type == "action") {
-        if (suggestion.title == "Save") {
-          setPostMessage({ type: "saveFile" });
-        } else if (suggestion.title == "Autocheck") {
-          runAutocheck();
-        } else if (suggestion.title == "Switch Auth") {
-          var toImport = "";
-          if (currentFileProperties.hasPassportAuth) {
-            toImport = "optionalAuthentication";
+        const importsToAdd = [{ import: toImport, from: "swizzle-js", named: true }];
+        const file = "backend/user-dependencies/" + endpointToFilename(activeEndpoint);
+        upsertImport(file, importsToAdd).then((code) => {
+          var codeWithMiddlewareReplaced = "";
+          if (code.includes("requiredAuthentication, async")) {
+            codeWithMiddlewareReplaced = code.replace("requiredAuthentication, async", "optionalAuthentication, async");
           } else {
-            toImport = "requiredAuthentication";
+            codeWithMiddlewareReplaced = code.replace("optionalAuthentication, async", "requiredAuthentication, async");
           }
 
-          const importsToAdd = [{ import: toImport, from: "swizzle-js", named: true }];
-          const file = "backend/user-dependencies/" + endpointToFilename(activeEndpoint);
-          upsertImport(file, importsToAdd).then((code) => {
-            var codeWithMiddlewareReplaced = "";
-            if (code.includes("requiredAuthentication, async")) {
-              codeWithMiddlewareReplaced = code.replace(
-                "requiredAuthentication, async",
-                "optionalAuthentication, async",
-              );
-            } else {
-              codeWithMiddlewareReplaced = code.replace(
-                "optionalAuthentication, async",
-                "requiredAuthentication, async",
-              );
-            }
+          if (code != null) {
+            setPostMessage({ type: "replaceText", content: codeWithMiddlewareReplaced });
+          }
 
-            if (code != null) {
-              setPostMessage({ type: "replaceText", content: codeWithMiddlewareReplaced });
-            }
+          setTimeout(() => {
+            setPostMessage({ type: "saveFile" });
+          }, 500);
 
-            setTimeout(() => {
-              setPostMessage({ type: "saveFile" });
-            }, 500);
-
-            setCurrentFileProperties({
-              ...currentFileProperties,
-              hasPassportAuth: !currentFileProperties.hasPassportAuth,
-            });
+          setCurrentFileProperties({
+            ...currentFileProperties,
+            hasPassportAuth: !currentFileProperties.hasPassportAuth,
           });
-        } else {
-          setSwizzleActionDispatch(suggestion.title);
-        }
+        });
+      } else {
+        setSwizzleActionDispatch(suggestion.title);
       }
     }
     setPrompt("");
@@ -618,51 +746,6 @@ export default function EndpointHeader({
       window.removeEventListener("keydown", keyHandler);
     };
   }, []);
-
-  const runAutocheck = () => {
-    setDidRunAutocheck(true);
-    setPostMessage({
-      type: "getFileErrors",
-    });
-  };
-
-  useEffect(() => {
-    if (!didRunAutocheck) {
-      return;
-    }
-    if (fileErrors != "") {
-      toast.promise(getAutocheckResponse(fileErrors), {
-        loading: "Running autocheck...",
-        success: (data) => {
-          if (data == "") {
-            toast.error("Error running autocheck");
-            return;
-          }
-          setAutocheckResponse(
-            <div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />,
-          );
-          return "Done";
-        },
-        error: "Error running autocheck",
-      });
-    } else {
-      toast.promise(getAutocheckResponse(), {
-        loading: "Running autocheck...",
-        success: (data) => {
-          if (data == "") {
-            toast.error("Error running autocheck");
-            return;
-          }
-          setAutocheckResponse(
-            <div dangerouslySetInnerHTML={{ __html: replaceCodeBlocks(data.recommendation_text) }} />,
-          );
-          return "Done";
-        },
-        error: "Error running autocheck",
-      });
-    }
-    setDidRunAutocheck(false);
-  }, [fileErrors]);
 
   if (taskQueue.length > 0) {
     return <TaskCommandHeader />;
@@ -729,7 +812,7 @@ export default function EndpointHeader({
         >
           {/* <div className={`w-[1px] h-[36px] bg-[#525363] mx-4 ${selectedTab == Page.Db ? "hidden" : ""}`}></div> */}
           {/* Undo shows only when isUndoVisible is true */}
-          {selectedTab != Page.Db && (
+          {/* {selectedTab != Page.Db && (
             <div className="w-10 mr-2">
               <IconTextButton
                 textHidden={true}
@@ -740,9 +823,9 @@ export default function EndpointHeader({
                 text=""
               />
             </div>
-          )}
+          )} */}
           {(selectedTab == Page.Apis || isDebugging) && (
-            <div className="w-10 mr-2">
+            <div className="w-10 mr-0">
               <IconTextButton
                 textHidden={true}
                 onClick={() => {
@@ -756,7 +839,7 @@ export default function EndpointHeader({
 
           {isUndoVisible && (
             <Button
-              className={`text-sm mr-3 px-3 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+              className={`text-sm mr-0 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
               children={<FontAwesomeIcon icon={faUndo} />}
               onClick={() => {
                 undoLastChange();
@@ -764,7 +847,7 @@ export default function EndpointHeader({
             />
           )}
 
-          <div className={`grow ${selectedTab == Page.Db ? `mr-32 ml-4 ${!activeCollection && "hidden"}` : ""}`}>
+          <div className={`grow ${selectedTab == Page.Db ? `mr-4 ml-4 ${!activeCollection && "hidden"}` : "mr-2 ml-2"}`}>
             <Autosuggest
               ref={storeInputRef}
               suggestions={suggestions}
@@ -784,26 +867,26 @@ export default function EndpointHeader({
               inputProps={{
                 onKeyDown: (event) => {
                   if (event.key == "Enter") {
-                    if (selectedTab == Page.Db) {
-                      runQuery(prompt, "db");
-                      return;
-                    }
-                    if (!highlighted) {
-                      if (selectedText != null && selectedText != "") {
-                        runQuery(prompt, "selection", selectedText);
-                      } else {
-                        runQuery(prompt, "snippet");
-                      }
-                    }
-                    setPrompt("");
+                    // if (selectedTab == Page.Db) {
+                    //   runQuery(prompt, "db");
+                    //   return;
+                    // }
+                    // if (!highlighted) {
+                    //   if (selectedText != null && selectedText != "") {
+                    //     runQuery(prompt, "selection", selectedText);
+                    //   } else {
+                    //     runQuery(prompt, "snippet");
+                    //   }
+                    // }
+                    runQuery()
                     return;
                   }
                 },
                 placeholder: `${
                   selectedTab == Page.Apis
-                    ? "Update code with AI"
+                    ? "Describe what you want"
                     : selectedTab == Page.Hosting
-                    ? "Connect endpoints and update code"
+                    ? "Describe what you want"
                     : selectedTab == Page.Db
                     ? "Cmd + K: search and update your database"
                     : ""
@@ -814,22 +897,35 @@ export default function EndpointHeader({
                   setPostMessage({ type: "getSelectedText" });
                 },
                 className:
-                  "grow mx-2 ml-0 mr-0 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-1.5",
+                  "grow mx-2 ml-0 mr-4 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-1.5",
                 style: {
-                  width: "calc(100% - 1rem)",
+                  width: "100%",
                 },
               }}
-              className="ml-0 mr-0 grow"
+              style={{ width: "100%" }}
+              className="ml-0 mr-4 grow"
             />
           </div>
-
-          {/* <Button
+          {prompt != "" ? (
+            <Button
               text="Go"
-              className="text-sm px-5 py-1 font-medium rounded-md flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              className="text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
               onClick={() => {
                 runQuery();
               }}
-            /> */}
+            />
+          ) : (
+            selectedTab == Page.Db && (
+              <Button
+                className="text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                text="+ Add Entry"
+                onClick={() => {
+                  setShouldCreateObject(true)
+                }}
+                style={{ paddingTop: "0.4rem", paddingBottom: "0.4rem" }}
+              />
+            )
+          )}
         </div>
       </div>
 

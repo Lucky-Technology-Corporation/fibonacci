@@ -31,7 +31,7 @@ export default function useJarvis() {
     }
   };
 
-  const createEndpoint = async (currentCode: string, missingEndpoint: string) => {
+  const createMissingBackendEndpoint = async (currentCode: string, missingEndpoint: string) => {
     try {
       var body = {
         current_code: currentCode,
@@ -39,7 +39,7 @@ export default function useJarvis() {
       };
 
       const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/endpoint/create?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/endpoint?env=${environment}`,
         body,
         {
           withCredentials: true,
@@ -50,7 +50,7 @@ export default function useJarvis() {
       console.error(e);
       return null;
     }
-  }
+  };
 
   const fixProblems = async (currentCode: string, fileErrors: string) => {
     try {
@@ -73,5 +73,5 @@ export default function useJarvis() {
     }
   };
 
-  return { editFrontend, fixProblems };
+  return { editFrontend, fixProblems, createMissingBackendEndpoint };
 }

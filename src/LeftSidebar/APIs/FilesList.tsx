@@ -114,7 +114,7 @@ export default function FilesList({ active }: { active: boolean }) {
   useEffect(() => {
     //set the active file to the first page
     if (fileTree && selectedTab == Page.Hosting && activeFile == undefined) {
-      setToFirstPage()
+      setToFirstPage();
     }
   }, [selectedTab]);
 
@@ -126,7 +126,7 @@ export default function FilesList({ active }: { active: boolean }) {
       setActiveFile("frontend/src/pages/" + pageRelativePath);
       setActivePage(formatPath(page.path, page.name, true));
     }
-  }
+  };
 
   const getFilePathArray = () => {
     if (!fileTree) return;
@@ -324,7 +324,7 @@ export default function FilesList({ active }: { active: boolean }) {
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-      <div className="mx-1 mt-1 text-center flex flex-row w-full">
+      {/* <div className="mx-1 mt-1 text-center flex flex-row w-full">
         <div
           className={`w-1/2 mx-1 text-sm p-1.5 py-2 my-1 ${
             codeMode == "ai" ? "bg-[#85869822]" : ""
@@ -348,7 +348,7 @@ export default function FilesList({ active }: { active: boolean }) {
         >
           Code
         </div>
-      </div>
+      </div> */}
 
       {codeMode == "ai" ? (
         <>

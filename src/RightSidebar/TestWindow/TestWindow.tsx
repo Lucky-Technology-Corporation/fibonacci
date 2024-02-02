@@ -1,11 +1,11 @@
 import {
+  faChevronRight,
   faMaximize,
   faMinimize,
   faPencil,
   faPlay,
   faSpinner,
   faTrash,
-  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getReasonPhrase } from "http-status-codes";
@@ -154,12 +154,17 @@ export default function TestWindow({
         <div className="flex flex-col items-start">
           <div className="flex items-center">
             {isSidebarOpen && (
-              <FontAwesomeIcon
-                icon={faXmark}
-                className="w-4 h-4 mr-1 cursor-pointer"
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                }}
+              // <FontAwesomeIcon
+              //   icon={faXmark}
+              //   className="w-4 h-4 mr-1 cursor-pointer"
+              //   onClick={() => {
+              //     setIsSidebarOpen(false);
+              //   }}
+              // />
+              <Button
+                className="ml-auto mr-2 text-sm px-2.5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                children={<FontAwesomeIcon icon={faChevronRight} className="w-3 h-3 cursor-pointer" />}
+                onClick={() => setIsSidebarOpen(false)}
               />
             )}
             {/* <FontAwesomeIcon icon={faFlask} className="mr-2" /> */}

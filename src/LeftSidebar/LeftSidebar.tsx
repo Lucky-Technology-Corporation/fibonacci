@@ -236,40 +236,58 @@ export default function LeftSidebar({
           <DeployButton />
         </div>
 
-        <SectionTitle
-          icon="/monitor.svg"
-          text="Project"
-          active={selectedTab == Page.Logs}
-          onClick={() => {
-            if (selectedTab == Page.Logs) {
-              setSelectedTab(null);
-            } else {
-              setSelectedTab(Page.Logs);
-            }
-          }}
+        <Tooltip
+          id="backend-tab-tooltip"
+          className={`fixed z-50 ${ideReady && "hidden"}`}
+          style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
         />
-        <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
-
-        <div className="py-1 w-full">
-          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
-        </div>
-
-        <div className="auth-method w-full">
-          <SectionTitle
-            icon="/auth.svg"
-            text="Users"
-            active={selectedTab == Page.Auth}
-            onClick={() => {
-              if (selectedTab == Page.Auth) {
-                setSelectedTab(null);
-              } else {
-                setSelectedTab(Page.Auth);
-              }
-            }}
-            className="user-tab"
-          />
-          <AuthSettings active={selectedTab == Page.Auth} className="" />
-        </div>
+        <a
+          className="w-full"
+          data-tooltip-id="backend-tab-tooltip"
+          data-tooltip-content={"Your IDE is loading..."}
+          data-tooltip-place="right"
+        >
+          <div className="w-full">
+            <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
+              <SectionTitle
+                icon="/world.svg"
+                text="Frontend"
+                active={selectedTab == Page.Hosting}
+                onClick={() => {
+                  if (selectedTab == Page.Hosting) {
+                    setSelectedTab(null);
+                  } else {
+                    setSelectedTab(Page.Hosting);
+                  }
+                }}
+                className="frontend-tab"
+              />
+            </div>
+            <div className={`flex ${ideReady && "hidden"} ${refreshHidden && "pointer-events-none"}`}>
+              <Button
+                moreClasses="ml-auto mr-1 z-40 mt-[-30px] mt-1 text-white cursor-hover !px-2 !bg-[#333336] !hover:bg-[#fff]"
+                text="Reload"
+                children={
+                  refreshHidden ? (
+                    <FontAwesomeIcon icon={faSpinner} color="#ddd" />
+                  ) : (
+                    <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />
+                  )
+                }
+                onClick={() => {
+                  setRefreshTheia(true);
+                  toast("Reloading IDE...");
+                  spin();
+                  setRefreshHidden(true);
+                  setTimeout(() => {
+                    setRefreshHidden(false);
+                  }, 10000);
+                }}
+              />
+            </div>
+          </div>
+        </a>
+        <FilesList active={selectedTab == Page.Hosting} />
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
@@ -332,62 +350,27 @@ export default function LeftSidebar({
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
 
-        <Tooltip
-          id="backend-tab-tooltip"
-          className={`fixed z-50 ${ideReady && "hidden"}`}
-          style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
-        />
-        <a
-          className="w-full"
-          data-tooltip-id="backend-tab-tooltip"
-          data-tooltip-content={"Your IDE is loading..."}
-          data-tooltip-place="right"
-        >
-          <div className="w-full">
-            <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
-              <SectionTitle
-                icon="/world.svg"
-                text="Frontend"
-                active={selectedTab == Page.Hosting}
-                onClick={() => {
-                  if (selectedTab == Page.Hosting) {
-                    setSelectedTab(null);
-                  } else {
-                    setSelectedTab(Page.Hosting);
-                  }
-                }}
-                className="frontend-tab"
-              />
-            </div>
-            <div className={`flex ${ideReady && "hidden"} ${refreshHidden && "pointer-events-none"}`}>
-              <Button
-                moreClasses="ml-auto mr-1 z-40 mt-[-30px] mt-1 text-white cursor-hover !px-2 !bg-[#333336] !hover:bg-[#fff]"
-                text="Reload"
-                children={
-                  refreshHidden ? (
-                    <FontAwesomeIcon icon={faSpinner} color="#ddd" />
-                  ) : (
-                    <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />
-                  )
-                }
-                onClick={() => {
-                  setRefreshTheia(true);
-                  toast("Reloading IDE...");
-                  spin();
-                  setRefreshHidden(true);
-                  setTimeout(() => {
-                    setRefreshHidden(false);
-                  }, 10000);
-                }}
-              />
-            </div>
-          </div>
-        </a>
-        <FilesList active={selectedTab == Page.Hosting} />
+        <div className="auth-method w-full">
+          <SectionTitle
+            icon="/auth.svg"
+            text="Users"
+            active={selectedTab == Page.Auth}
+            onClick={() => {
+              if (selectedTab == Page.Auth) {
+                setSelectedTab(null);
+              } else {
+                setSelectedTab(Page.Auth);
+              }
+            }}
+            className="user-tab"
+          />
+          <AuthSettings active={selectedTab == Page.Auth} className="" />
+        </div>
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
+
 
         <SectionTitle
           icon="/database.svg"
@@ -425,6 +408,25 @@ export default function LeftSidebar({
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
         </div>
+
+        <SectionTitle
+          icon="/monitor.svg"
+          text="Project"
+          active={selectedTab == Page.Logs}
+          onClick={() => {
+            if (selectedTab == Page.Logs) {
+              setSelectedTab(null);
+            } else {
+              setSelectedTab(Page.Logs);
+            }
+          }}
+        />
+        <LogsList active={selectedTab == Page.Logs} activePage={activeLogsPage} setActivePage={setActiveLogsPage} />
+
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
+
 
         {/* <SectionTitle
           icon="/paintbrush.svg"

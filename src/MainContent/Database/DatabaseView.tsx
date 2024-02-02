@@ -18,7 +18,7 @@ import RowDetail from "./RowDetail";
 export default function DatabaseView({ activeCollection }: { activeCollection: string }) {
   const { getDocuments, deleteCollection, updateDocument, runMongoQuery } = useDatabaseApi();
 
-  const { activeProject, environment, currentDbQuery, setCurrentDbQuery } = useContext(SwizzleContext);
+  const { activeProject, environment, currentDbQuery, setCurrentDbQuery, shouldCreateObject, setShouldCreateObject } = useContext(SwizzleContext);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [shouldShowSaveHint, setShouldShowSaveHint] = useState(false);
   const [isJSONEditorVisible, setIsJSONEditorVisible] = useState(false);
@@ -106,6 +106,13 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       setIsJSONEditorVisible(true);
     }
   };
+
+  useEffect(() => {
+    if(shouldCreateObject) {
+      createObjectHandler("json")
+      setShouldCreateObject(false)
+    }
+  }, [shouldCreateObject]);
 
   const openNewDocumentWithData = (data: any) => {
     setJSONEditorData(data);
@@ -289,7 +296,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
       <div className="text-sm w-64 absolute top-4 right-3">
         <DatabaseEditorHint isVisible={shouldShowSaveHint} />
       </div>
-      <div className={`absolute top-5 right-10 flex mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
+      {/* <div className={`absolute top-5 right-10 flex mt-1 mr-[-16px] text-sm ${shouldShowSaveHint ? "hidden" : ""}`}>
         <Button
           className="text-sm px-5 mb-[-4px] mt-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#333336] hover:bg-[#3b3b40] border-[#525363] border"
           text="+ Add Entry"
@@ -298,7 +305,7 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
           }}
           style={{ paddingTop: "0.4rem", paddingBottom: "0.4rem" }}
         />
-      </div>
+      </div> */}
 
       <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>
         <table className="table-auto my-4 ml-4 block" style={{ tableLayout: "auto" }}>
@@ -402,14 +409,12 @@ export default function DatabaseView({ activeCollection }: { activeCollection: s
 
       <div className={` ${isRefreshing ? "opacity-50" : "opacity-100"}`}>
         <div className="pagination-controls flex justify-center items-center py-4 mb-4">
-          {data && data.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalDocs={totalDocs}
-              handlePageChange={setCurrentPage}
-              handleRefresh={handleRefresh}
-            />
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalDocs={totalDocs}
+            handlePageChange={setCurrentPage}
+            handleRefresh={handleRefresh}
+          />
         </div>
       </div>
     </div>
