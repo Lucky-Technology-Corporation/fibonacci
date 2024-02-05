@@ -93,9 +93,24 @@ export default function EndpointHeader({
     if(selectedTab == Page.Hosting){
       var promptToUse = promptOverride || prompt
       isLoading.current = true
-      toast.promise(editFrontend(promptToUse, path, activeFile, messageHistory), {
-        loading: "Thinking...",
-        success: (data) => {
+      
+      const toastId = toast.loading((t) => (
+        <div>
+          Thinking...
+          <button onClick={() => {
+            toast.dismiss(t.id);
+            isLoading.current = false; // Stop loading indicator
+          }} className="rounded mx-1 p-1 bg-gray-200">
+            Cancel
+          </button>
+        </div>
+      ));
+    
+      editFrontend(promptToUse, path, activeFile, messageHistory)
+        .then((data) => {
+          toast.dismiss(toastId);
+          if(isLoading.current == false){ return }
+
           //Replace text in editor
           setPostMessage({
             type: "replaceText",
@@ -116,14 +131,15 @@ export default function EndpointHeader({
             }
             isLoading.current = false
           })
-          return "Done";
-        },
-        error: (e) => {
-          isLoading.current = false
+        })
+        .catch((e) => {
           console.error(e);
-          return "Something went wrong, please try again.";
-        },
-      });
+          toast.error('Something went wrong, please try again.', { id: toastId });
+        })
+        .finally(() => {
+          isLoading.current = false; // Ensure loading state is cleared
+        });
+
     } else if(selectedTab == Page.Db){
       if (prompt == "") {
         setCurrentDbQuery("_reset");
@@ -472,6 +488,7 @@ export default function EndpointHeader({
     }
     setMicOn(false)
     setMessageHistory([]); //replace this with a store for each file later
+    setProblemButtonText("Look for problems")
   }, [activeEndpoint, activeFile, activePage, selectedTab]);
 
   const setupUndo = (oldCode: string) => {
