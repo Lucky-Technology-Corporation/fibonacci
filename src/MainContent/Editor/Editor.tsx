@@ -324,9 +324,10 @@ export default function Editor({
     }
   }, [activeFile]);
 
-  useEffect(() => {
-    setUrl(testDomain + path + "?refresh=" + Math.random());
-  }, [shouldRefreshList])
+  // useEffect(() => {
+  //   console.log("refresh preview")
+  //   setUrl(testDomain + path + "?refresh=" + Math.random());
+  // }, [shouldRefreshList])
 
   const closePreview = () => {
     setIsSidebarOpen(false);

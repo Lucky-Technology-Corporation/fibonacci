@@ -5,12 +5,14 @@ import {
   faClock,
   faGear,
   faImage,
+  faMicrophone,
+  faMicrophoneSlash,
   faPuzzlePiece,
   faUndo,
   faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import Autosuggest from "react-autosuggest";
 import toast from "react-hot-toast";
 import useDeploymentApi from "../../API/DeploymentAPI";
@@ -29,6 +31,7 @@ import { Page } from "../../Utilities/Page";
 import AIResponseWithChat from "./AIResponseWithChat";
 import { docOptions, frontendDocOptions, swizzleActionOptions } from "./HeaderDocOptions";
 import TaskCommandHeader from "./TaskCommandHeader";
+import GoogleSpeechRecognition from './google-cloud-speech/src/speech-recognition';
 
 export default function EndpointHeader({
   selectedTab,
@@ -75,6 +78,8 @@ export default function EndpointHeader({
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [autocheckResponse, setAutocheckResponse] = useState<ReactNode | undefined>();
   const [problemButtonText, setProblemButtonText] = useState<string>("Look for problems");
+  const [micOn, setMicOn] = useState<boolean>(false);
+  const micWasOn = useRef<boolean>(false);
 
   const { getPackageJson, getFile, promptDbHelper } = useEndpointApi();
   const { updatePackage } = useDeploymentApi();
@@ -82,9 +87,13 @@ export default function EndpointHeader({
   const { editFrontend, createMissingBackendEndpoint, fixProblems, createPageFromImage } = useJarvis();
   const [messageHistory, setMessageHistory] = useState<any[]>([]);
 
-  const runQuery = () => {
+  const isLoading = useRef(false);
+  
+  const runQuery = (promptOverride?: string) => {
     if(selectedTab == Page.Hosting){
-      toast.promise(editFrontend(prompt, path, activeFile, messageHistory), {
+      var promptToUse = promptOverride || prompt
+      isLoading.current = true
+      toast.promise(editFrontend(promptToUse, path, activeFile, messageHistory), {
         loading: "Thinking...",
         success: (data) => {
           //Replace text in editor
@@ -100,11 +109,17 @@ export default function EndpointHeader({
           setMessageHistory(data.messages);
 
           //Run common post processing tasks
-          runAiFrontendPostProcessing(data.new_code)
-
+          runAiFrontendPostProcessing(data.new_code).then(() => {
+            if(micWasOn.current == true){
+              micWasOn.current = false
+              toggleMic()
+            }
+            isLoading.current = false
+          })
           return "Done";
         },
         error: (e) => {
+          isLoading.current = false
           console.error(e);
           return "Something went wrong, please try again.";
         },
@@ -114,9 +129,12 @@ export default function EndpointHeader({
         setCurrentDbQuery("_reset");
         return;
       }
-      return toast.promise(promptDbHelper(prompt, activeCollection), {
+      isLoading.current = true
+
+      toast.promise(promptDbHelper(prompt, activeCollection), {
         loading: "Thinking...",
         success: (data) => {
+          isLoading.current = false
           setResponse(
             <AIResponseWithChat
               descriptionIn={data.pending_operation_description}
@@ -133,14 +151,18 @@ export default function EndpointHeader({
               }}
             />,
           );
+          isLoading.current = false
           return "Done";
         },
-        error: "Failed",
+        error: () => {
+          isLoading.current = false
+          return "Something went wrong, please try again.";
+        }
       });
     }
   };
 
-  const runAiFrontendPostProcessing = (newCode: string) => {
+  const runAiFrontendPostProcessing = async (newCode: string) => {
     //Save the file after 100ms to give the editor time to update
     setTimeout(() => {
       setPostMessage({
@@ -149,10 +171,10 @@ export default function EndpointHeader({
     }, 100);
 
     //Find uninstalled packages
-    findAndInstallRequiredPackages(newCode, "frontend")
+    await findAndInstallRequiredPackages(newCode, "frontend")
 
     //Find backend endpoints
-    findAndCreateEndpoints(newCode)
+    await findAndCreateEndpoints(newCode)
 
     //CHeck for problems 500ms after the save
     setTimeout(() => {
@@ -162,6 +184,8 @@ export default function EndpointHeader({
     }, 600);
 
     setPrompt("")
+
+    return true
   }
 
   function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -258,15 +282,15 @@ export default function EndpointHeader({
     })
 
     for(var i = 0; i < missingEndpoints.length; i++){
-      console.log("creating " + missingEndpoints[i] + "...")
       const segments = missingEndpoints[i].split('/')
       const method = segments[0].toUpperCase()
       const path = segments.slice(1).join('/')
-      toast.promise(createMissingBackendEndpoint(newCode, missingEndpoints[i]), {
+      await toast.promise(createMissingBackendEndpoint(newCode, missingEndpoints[i]), {
         loading: "Creating " + method + " " + path + "...",
         success: (data) => {
           //Find uninstalled packages
           findAndInstallRequiredPackages(data.new_code, "backend")
+          //add to list on console
           setShouldRefreshList(p => !p)
           return "Done";
         },
@@ -310,9 +334,9 @@ export default function EndpointHeader({
     });
 
 
-    packageArray.forEach((packageName: string) => {
+    return packageArray.forEach(async (packageName: string) => {
       if(installedPackages && !installedPackages.includes(packageName)){
-        toast.promise(updatePackage([packageName], "install", location as 'frontend' | 'backend'), {
+        await toast.promise(updatePackage([packageName], "install", location as 'frontend' | 'backend'), {
           loading: "Installing " + packageName + "...",
           success: (data) => {
             return packageName + " installed";
@@ -380,6 +404,9 @@ export default function EndpointHeader({
       return
     }
 
+    //Interrput dictation to fix problems
+    setMicOn(false)
+
     var currentCode = (messageHistory[messageHistory.length - 1] || {}).content
     if(currentCode == undefined || currentCode == ""){
       if(selectedTab == Page.Hosting){
@@ -443,7 +470,7 @@ export default function EndpointHeader({
         setPath(activeFile.replace("frontend/src/components/", ""));
       }
     }
-
+    setMicOn(false)
     setMessageHistory([]); //replace this with a store for each file later
   }, [activeEndpoint, activeFile, activePage, selectedTab]);
 
@@ -511,6 +538,48 @@ export default function EndpointHeader({
     }
   };
 
+  const srRef = useRef(null);
+
+  const toggleMic = () => {
+    if(micOn){
+      if(srRef.current != null){
+        srRef.current.stopListening();
+        srRef.current = null;
+      }
+      micWasOn.current = false
+      setMicOn(false)
+    } else{
+      startAudioCapture();
+      setMicOn(true)
+    }
+  }
+  async function startAudioCapture() {
+    // var start = new Audio("/start.mp3");
+    // var stop = new Audio("/stop.mp3");
+    
+    const GOOGLE_API_KEY = 'AIzaSyAC_RAyFgGrr1o1lO2_z2P0bOU3a6-vUSE';
+    const speechRecognition = new GoogleSpeechRecognition(GOOGLE_API_KEY);
+    srRef.current = speechRecognition;
+
+    await speechRecognition.startListening(async () => {
+      const result = await speechRecognition.stopListening();
+      setMicOn(false)
+
+      if(srRef.current == null){ return }
+      if(result.results == undefined){ return }
+
+      const transcript = result.results[0].alternatives[0].transcript;
+      if(transcript != undefined && transcript != ""){
+        micWasOn.current = true //turns mic back on once its done
+        setPrompt(transcript)
+        runQuery(transcript)
+      }
+
+    });
+  }
+
+
+    
   const onSuggestionsClearRequested = () => {
     setSuggestions(docOptions);
   };
@@ -947,7 +1016,7 @@ export default function EndpointHeader({
                   setPostMessage({ type: "getSelectedText" });
                 },
                 className:
-                  "grow mx-2 ml-0 mr-4 bg-[#252629] border-[#525363] border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-1.5",
+                  `grow mx-2 ml-0 mr-4 ${micOn ? "bg-[#3c2727] border-[#7a3531] " : "bg-[#252629] border-[#525363]"} border rounded font-sans text-sm font-normal outline-0 focus:bg-[#28273c] focus:border-[#4e52aa] p-1.5`,
                 style: {
                   width: "100%",
                 },
@@ -958,19 +1027,30 @@ export default function EndpointHeader({
           </div>
           
           {(selectedTab == Page.Hosting && prompt == "") && (
+            <>
+            {!micOn && (
+              <Button
+                children={<FontAwesomeIcon icon={faImage} />}
+                className="text-sm mr-1 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+                onClick={() => {
+                  uploadImage()
+                }}
+              /> 
+            )}
             <Button
-              children={<FontAwesomeIcon icon={faImage} />}
-              className="text-sm mr-1 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              children={<FontAwesomeIcon icon={micOn ? faMicrophoneSlash : faMicrophone} />}
+              className={`text-sm mr-1 ml-1 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer ${micOn ? "bg-[#3c2727] border-[#7a3531]" : "bg-[#85869833] border-[#525363]"} hover:bg-[#85869855] border`}
               onClick={() => {
-                uploadImage()
+                toggleMic()
               }}
             />
+            </>
           )}
           
           {prompt != "" ? (
             <Button
               text="Go"
-              className="text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
+              className={`${isLoading.current == true && "opacity-70 pointer-events-none"} text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`}
               onClick={() => {
                 runQuery();
               }}
