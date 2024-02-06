@@ -549,7 +549,7 @@ export default function FilesList({ active }: { active: boolean }) {
             >
               <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
                 <FontAwesomeIcon icon={faGlobe} className="w-3 h-3 my-auto mr-1" />
-                <div className="flex items-center">State</div>
+                <div className="flex items-center">Global State</div>
               </div>
             </a>
             <div className="ml-1">

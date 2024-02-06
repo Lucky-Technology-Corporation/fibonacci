@@ -62,6 +62,18 @@ export default function APIWizard({
       throw "That endpoint already exists";
     }
 
+    try{
+      if (isCron) {
+        if (endpointPathIfEditing != "") {
+          await endpointApi.updateScheduledFunction(cronIdIfEditing, newEndpointPath, cronExpression);
+        } else {
+          await endpointApi.scheduleFunction(newEndpointPath, cronExpression);
+        }
+      }
+    } catch (e) {
+      throw "Invalid cron expression. Please edit this job and try again.";
+    }
+
     //If we're editing an existing endpoint, copy the contents over to a new file
     var contentsToCopy = "";
     if (endpointPathIfEditing != "") {
@@ -104,14 +116,6 @@ export default function APIWizard({
 
     //Make the new file
     await filesystemApi.createNewEndpoint(newEndpointPath, methodToUse, authRequired, contentsToCopy);
-
-    if (isCron) {
-      if (endpointPathIfEditing != "") {
-        await endpointApi.updateScheduledFunction(cronIdIfEditing, newEndpointPath, cronExpression);
-      } else {
-        await endpointApi.scheduleFunction(newEndpointPath, cronExpression);
-      }
-    }
 
     setPostMessage({
       type: "openFile",

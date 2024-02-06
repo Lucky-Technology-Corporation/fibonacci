@@ -164,6 +164,8 @@ export default function Editor({
     if (line == "") {
       return;
     }
+
+    console.log("routerLine", line, uri);
     if (uri.includes("backend/user-dependencies")) {
       //split method and path
       const parts = line.split("router.")[1].split("(");

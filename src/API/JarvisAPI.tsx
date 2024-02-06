@@ -25,27 +25,64 @@ export default function useJarvis() {
     }
   }
 
-  const editFrontend = async (prompt: string, pagePath: string, activeFile: string, history?: any[]) => {
+  const createComponentFromImage = async (base64: string) => {  
     try {
-      var body = {
-        prompt: prompt,
-        page_path: pagePath,
-        file_path: activeFile,
-        history: history,
-      };
-
       const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/edit?env=${environment}`,
-        body,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/component/image?env=${environment}`,
+        {
+          base64: base64,
+        },
         {
           withCredentials: true,
         },
       );
-
       return response.data;
     } catch (e) {
       console.error(e);
       return null;
+    }
+  }
+
+  const editFrontend = async (prompt: string, pagePath: string, activeFile: string, history?: any[]) => {
+    if(activeFile.includes("frontend/src/pages/")) {
+      try {
+        const response = await axios.post(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/edit?env=${environment}`,
+          {
+            prompt: prompt,
+            page_path: pagePath,
+            file_path: activeFile,
+            history: history,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+
+        return response.data;
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    } else if(activeFile.includes("frontend/src/components")){
+      try {
+        const response = await axios.post(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/component/edit?env=${environment}`,
+          {
+            prompt: prompt,
+            file_path: activeFile,
+            history: history,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+
+        return response.data;
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
     }
   };
 
@@ -91,5 +128,5 @@ export default function useJarvis() {
     }
   };
 
-  return { editFrontend, fixProblems, createMissingBackendEndpoint, createPageFromImage };
+  return { editFrontend, fixProblems, createMissingBackendEndpoint, createPageFromImage, createComponentFromImage };
 }

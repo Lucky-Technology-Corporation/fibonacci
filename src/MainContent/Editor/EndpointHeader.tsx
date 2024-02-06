@@ -84,7 +84,7 @@ export default function EndpointHeader({
   const { getPackageJson, getFile, promptDbHelper } = useEndpointApi();
   const { updatePackage } = useDeploymentApi();
   const { upsertImport } = useFilesystemApi();
-  const { editFrontend, createMissingBackendEndpoint, fixProblems, createPageFromImage } = useJarvis();
+  const { editFrontend, createMissingBackendEndpoint, fixProblems, createPageFromImage, createComponentFromImage } = useJarvis();
   const [messageHistory, setMessageHistory] = useState<any[]>([]);
 
   const isLoading = useRef(false);
@@ -239,22 +239,41 @@ export default function EndpointHeader({
   }
 
   const createPageFromData = async (base64: string) => {
-    toast.promise(createPageFromImage(base64), {
-      loading: "Parsing image and writing code...",
-      success: (data) => {
-        setPostMessage({
-          type: "replaceText",
-          content: data.new_code,
-        });
+    if(activeFile.includes("frontend/src/pages")){
+      toast.promise(createPageFromImage(base64), {
+        loading: "Parsing image and writing code...",
+        success: (data) => {
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          });
 
-        runAiFrontendPostProcessing(data.new_code)
-        return "Done";
-      },
-      error: (e) => {
-        console.error(e);
-        return "Something went wrong, please try again.";
-      },
-    });
+          runAiFrontendPostProcessing(data.new_code)
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong, please try again.";
+        },
+      });
+    } else if(activeFile.includes("frontend/src/components")){
+      toast.promise(createComponentFromImage(base64), {
+        loading: "Parsing image and writing code...",
+        success: (data) => {
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          });
+
+          runAiFrontendPostProcessing(data.new_code)
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong, please try again.";
+        },
+      });
+    }
   }
 
   const findAndCreateEndpoints = async (newCode: string) => {
@@ -910,8 +929,8 @@ export default function EndpointHeader({
       <div className="flex-col magic-bar">
         <div className="pt-3 ml-1 flex">
           {selectedTab != Page.Db && (
-            <div className="w-6 flex align-middle mr-1 cursor-pointer mt-1">
-              <FontAwesomeIcon className="w-4 h-4 m-auto py-0.5 opacity-70" icon={faArrowLeft} onClick={goBack} />
+            <div className="w-6 flex align-middle mr-1 cursor-pointer">
+              <FontAwesomeIcon className="w-4 h-4 m-auto opacity-70" icon={faArrowLeft} onClick={goBack} />
             </div>
           )}
 
