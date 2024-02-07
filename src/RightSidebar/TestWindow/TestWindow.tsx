@@ -249,7 +249,7 @@ export default function TestWindow({
               </div>
             </div>
             {testResponses[testDoc._id] && (
-              <div className="bg-[#272727] p-1 rounded">
+              <div className="bg-[#272727] p-1 mb-3 rounded">
                 <div className="px-1 text-sm font-semibold">
                   <div className="mb-1">
                     <div className="flex items-center">
@@ -277,7 +277,7 @@ export default function TestWindow({
                 {hideTestResults[testDoc._id] ? (
                   <></>
                 ) : (
-                  <pre className="font-mono text-xs ml-2 mb-1 mt-2 whitespace-normal break-words">
+                  <pre className="font-mono text-xs ml-2 mb-3 mt-2 whitespace-normal break-words">
                     {testResponses[testDoc._id]}
                   </pre>
                 )}
