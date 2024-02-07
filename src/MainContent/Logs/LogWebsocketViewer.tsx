@@ -635,7 +635,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
       }
     } else {
       if (props.isSidebarOpen) {
-        return "356px";
+        return "400px";
       } else {
         return "8px";
       }

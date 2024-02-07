@@ -149,7 +149,7 @@ export default function TestWindow({
     );
   }
   return (
-    <div className={`mt-4 overflow-scroll z-[100]`}>
+    <div className={`mt-4 overflow-scroll z-[100] w-full`}>
       <div className="flex items-center justify-between px-4 pl-2 py-2 pb-1">
         <div className="flex flex-col items-start">
           <div className="flex items-center">

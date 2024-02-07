@@ -116,7 +116,7 @@ export default function NewTestWindow({
   };
 
   return (
-    <div className={`mt-4`} ref={myRef}>
+    <div className={`mt-4 z-[100] overflow-scroll w-full`} ref={myRef}>
       <div className="flex flex-col justify-between px-4 py-2 pb-4">
         <div className="flex items-center pb-2">
           <FontAwesomeIcon icon={faFlask} className="mr-2" />

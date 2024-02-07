@@ -354,7 +354,7 @@ export default function Editor({
       }
     } else {
       if (isSidebarOpen) {
-        return "calc(100% - 366px)";
+        return "calc(100vw - 640px)";
       } else {
         return "calc(100% - 32px)";
       }
@@ -558,8 +558,7 @@ export default function Editor({
         </div>
       ) : (
         <div
-          className={`flex flex-col ${isSidebarOpen ? "w-[500px]" : "w-0 hidden"}`}
-          style={{ height: "calc(100vh - 12px)" }}
+          className={`flex flex-col z-[100] ${isSidebarOpen ? "min-w-[400px] max-w-[400px]" : "w-0 hidden"}`}
         >
           <TestWindow isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         </div>
