@@ -20,7 +20,7 @@ export default function EditAuthMethodView({ method }: { method: string }) {
     if (isLoading.current) return;
     isLoading.current = true;
     toast.promise(
-      getSecrets().then((secrets) => {
+      getSecrets("backend").then((secrets) => {
         if (secrets == null) return;
         Object.keys(secrets.test).forEach((secretKey: string) => {
           if (method == "google" && secretKey == "GOOGLE_APP_ID") {
@@ -58,7 +58,7 @@ export default function EditAuthMethodView({ method }: { method: string }) {
       secretName = "SWIZZLE_EMAIL_PASSWORD";
     }
 
-    toast.promise(deleteSecret(secretName), {
+    toast.promise(deleteSecret("backend", secretName), {
       loading: "Deleting...",
       success: () => {
         setShouldRefreshAuth((prev) => !prev);
@@ -85,7 +85,7 @@ export default function EditAuthMethodView({ method }: { method: string }) {
     secrets.test["TOKEN_EXPIRY"] = expiry;
     secrets.prod["TOKEN_EXPIRY"] = expiry;
 
-    toast.promise(saveSecrets(secrets), {
+    toast.promise(saveSecrets("backend", secrets), {
       loading: "Saving...",
       success: "Saved",
       error: "Error saving",

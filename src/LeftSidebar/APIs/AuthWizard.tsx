@@ -40,7 +40,7 @@ export default function AuthWizard({
   async function addAuthMethod() {
     if (authId == "google" || authId == "facebook") {
       var authIdKey = authId == "google" ? "GOOGLE_APP_ID" : "FACEBOOK_APP_ID";
-      const existingSecrets = await getSecrets();
+      const existingSecrets = await getSecrets("backend");
       if (existingSecrets) {
         if (existingSecrets.test[authIdKey] || existingSecrets.prod[authIdKey]) {
           setActiveAuthPage(authId);
@@ -53,7 +53,7 @@ export default function AuthWizard({
       test: inputState,
       prod: inputState,
     };
-    await saveSecrets(secrets);
+    await saveSecrets("backend", secrets);
     setShouldRefresh((r) => !r);
     setActiveAuthPage(authId);
   }

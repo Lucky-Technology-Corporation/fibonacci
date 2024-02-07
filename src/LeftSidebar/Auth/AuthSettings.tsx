@@ -21,7 +21,7 @@ export default function AuthSettings({ active, className = "" }: { active: boole
   const { getSecrets, saveSecrets } = useSettingsApi();
 
   useEffect(() => {
-    getSecrets().then((secrets) => {
+    getSecrets("backend").then((secrets) => {
       if (secrets == null) return;
       setAuthMethods([]);
       Object.keys(secrets.test).forEach((secretKey: string) => {
@@ -56,7 +56,7 @@ export default function AuthSettings({ active, className = "" }: { active: boole
         ALLOW_NEW_SIGNUPS: value.toString(),
       },
     };
-    saveSecrets(secrets);
+    saveSecrets("backend", secrets);
   };
 
   //Fetch from backend and populate it here.

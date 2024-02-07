@@ -251,7 +251,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
         </div>
       </div>
       <PackageInfo isVisible={shouldShowPackagesWindow} setIsVisible={setShouldShowPackagesWindow} location="backend" />
-      <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
+      <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} location="backend" />
 
       <div className="flex ml-2 my-1 mr-2 mb-3">
         <input

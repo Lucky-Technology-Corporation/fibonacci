@@ -23,7 +23,7 @@ export default function SecretInput({ name, secretName, desc, inputState, setInp
 
   async function isSecretFilled(secretName: string, environment: "test" | "prod"): Promise<boolean> {
     try {
-      const secrets = await api.getSecrets();
+      const secrets = await api.getSecrets("backend");
 
       if (!secrets) {
         console.error("Failsed to retrieve secrets");

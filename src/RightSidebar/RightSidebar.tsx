@@ -322,7 +322,7 @@ export default function RightSidebar() {
               text="Secrets"
               className="secrets-button"
             />
-            <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} />
+            <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} location="backend" />
             <div className="h-4" />
             <IconTextButton
               textHidden={true}
