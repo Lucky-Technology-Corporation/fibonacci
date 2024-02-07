@@ -755,15 +755,10 @@ export default function EndpointHeader({
         }
       }
 
-      const importsToAdd = [
-        { import: "useState", from: "react", named: true },
-        { import: "useEffect", from: "react", named: true },
-        { import: "api", from: apiDepth + "Api", named: false },
-      ];
-
       const apiCall = `api.${suggestion.method.toLowerCase()}("${suggestion.fullPath}")`;
       var stateVariableName =
         suggestion.fullPath
+          .replace(/\:/g, "")
           .split("/")
           .slice(1)
           .map((part, index) => (index === 0 ? part : part.charAt(0).toUpperCase() + part.slice(1)))
@@ -772,7 +767,7 @@ export default function EndpointHeader({
         stateVariableName = "result";
       }
 
-      const setStateVariableName = "set" + stateVariableName.charAt(0).toUpperCase() + stateVariableName.slice(1).replace(/:/g, "");
+      const setStateVariableName = "set" + stateVariableName.charAt(0).toUpperCase() + stateVariableName.slice(1);
       const stateVariableDeclaration = `const [${stateVariableName}, ${setStateVariableName}] = useState(null);`;
       const useEffect = `useEffect(() => {
   ${apiCall}.then((result) => {
@@ -782,32 +777,13 @@ export default function EndpointHeader({
   })
 }, [])`;
 
-      var file = activeFile;
       if (selectedTab != Page.Hosting) {
         toast.error("Sorry, something got mixed up. Try refreshing the page.");
         return;
       }
 
-      toast.promise(
-        upsertImport(file, importsToAdd).then((code) => {
-          if (code != null) {
-            copyText(`${stateVariableDeclaration}\n\n${useEffect}`, true);
-            setPostMessage({ type: "replaceText", content: code });
-          }
+      copyText(`${stateVariableDeclaration}\n\n${useEffect}`, false);
 
-          setTimeout(() => {
-            setPostMessage({ type: "saveFile" });
-          }, 250);
-        }),
-        {
-          loading: "Thinking...",
-          success: "Copied code to clipboard",
-          error: (e) => {
-            console.log(e);
-            return "Failed. Make sure there are no syntax errors in your code before adding API calls.";
-          },
-        },
-      );
     } else if (suggestion.type == "doc") {
       const copyable = suggestion.description.split("text-ellipsis'>")[1].split("</span>")[0];
       copyText(copyable, true);

@@ -9,7 +9,7 @@ import FullPageModal from "../../Utilities/FullPageModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import ToastWindow from "../../Utilities/Toast/ToastWindow";
 
-export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boolean; setIsVisible: any }) {
+export default function SecretInfo({ isVisible, setIsVisible, location }: { isVisible: boolean; setIsVisible: any; location: string }) {
   interface Secret {
     name: string;
     testValue: string;
@@ -36,19 +36,23 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     "TOKEN_EXPIRY",
     "ALLOW_NEW_SIGNUPS",
   ];
+
   useEffect(() => {
     if (isVisible) {
-      getSecrets().then((secrets) => {
+      getSecrets(location).then((secrets) => {
         if (secrets == null) return;
 
-        const shapedSecretArray = Object.keys(secrets.test)
+        var shapedSecretArray = Object.keys(secrets.test)
           .map((key) => ({
             name: key,
             testValue: secrets.test[key],
             productionValue: secrets.prod[key] == true ? "(hidden for security)" : secrets.prod[key],
           }))
           .filter((secret) => !secret.name.startsWith("SWIZZLE_"))
-          .filter((secret) => !authSecrets.includes(secret.name));
+        
+        if(location == "backend"){
+          shapedSecretArray = shapedSecretArray.filter((secret) => !authSecrets.includes(secret.name));
+        }
 
         setSecrets(shapedSecretArray);
         setRemoteSavedSecrets(shapedSecretArray);
@@ -58,7 +62,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
 
   const deleteSingleSecret = (name: string) => {
     setSecrets(secrets.filter((secret) => secret.name != name));
-    toast.promise(deleteSecret(name), {
+    toast.promise(deleteSecret(location, name), {
       loading: "Deleting secret...",
       success: () => {
         return "Secret deleted";
@@ -108,7 +112,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
       },
       { test: {}, prod: {} },
     );
-    return saveSecrets(newSecrets);
+    return saveSecrets(location, newSecrets);
   };
 
   const setNewSecrets = (name: string, testValue: string, prodValue: string) => {
@@ -120,7 +124,7 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
         [name]: prodValue,
       },
     };
-    return saveSecrets(secrets);
+    return saveSecrets(location, secrets);
   };
 
   const createNewSecret = () => {

@@ -95,7 +95,7 @@ export default function useSettingsApi() {
     }
   };
 
-  const getSecrets = async () => {
+  const getSecrets = async (location: string) => {
     try {
       if (activeProject == null || activeProject == "") {
         return null;
@@ -110,7 +110,7 @@ export default function useSettingsApi() {
     }
   };
 
-  const saveSecrets = async (newSecrets: any) => {
+  const saveSecrets = async (location: string, newSecrets: any) => {
     try {
       if (activeProject == null) {
         return null;
@@ -130,7 +130,7 @@ export default function useSettingsApi() {
     }
   };
 
-  const deleteSecret = async (secretName: string) => {
+  const deleteSecret = async (location: string, secretName: string) => {
     try {
       if (activeProject == null) {
         return null;
