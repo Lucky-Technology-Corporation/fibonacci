@@ -33,7 +33,6 @@ export default function SecretInfo({ isVisible, setIsVisible }: { isVisible: boo
     "GOOGLE_APP_ID",
     "FACEBOOK_APP_ID",
     "SWIZZLE_EMAIL_PASSWORD",
-    "DOMAIN",
     "TOKEN_EXPIRY",
     "ALLOW_NEW_SIGNUPS",
   ];
