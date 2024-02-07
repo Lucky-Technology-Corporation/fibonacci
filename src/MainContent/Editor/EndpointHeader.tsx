@@ -84,6 +84,7 @@ export default function EndpointHeader({
   const { getPackageJson, getFile, promptDbHelper } = useEndpointApi();
   const { updatePackage } = useDeploymentApi();
   const { upsertImport } = useFilesystemApi();
+  const { promptAiEditor } = useEndpointApi()
   const { editFrontend, createMissingBackendEndpoint, fixProblems, createPageFromImage, createComponentFromImage } = useJarvis();
   const [messageHistory, setMessageHistory] = useState<any[]>([]);
 
@@ -127,7 +128,7 @@ export default function EndpointHeader({
           runAiFrontendPostProcessing(data.new_code).then(() => {
             if(micWasOn.current == true){
               micWasOn.current = false
-              toggleMic()
+              // toggleMic()
             }
             isLoading.current = false
           })
@@ -175,6 +176,29 @@ export default function EndpointHeader({
           return "Something went wrong, please try again.";
         }
       });
+    } else if(selectedTab == Page.Apis){
+      toast.promise(promptAiEditor(prompt, "edit", undefined, messageHistory, undefined, undefined), {
+        loading: "Thinking...",
+        success: (data) => {
+
+          setPostMessage({
+            type: "replaceText",
+            content: data.new_code,
+          });
+
+          //Setup undo
+          setupUndo(data.old_code);
+
+          //Save history
+          setMessageHistory(data.messages);
+
+          return "Done";
+        },
+        error: (e) => {
+          console.error(e);
+          return "Something went wrong, please try again.";
+        },
+      })  
     }
   };
 
@@ -277,18 +301,21 @@ export default function EndpointHeader({
   }
 
   const findAndCreateEndpoints = async (newCode: string) => {
-    const regex = /api\.(get|post|put|delete)\('([^']+)'/g;
+    const regex = /api\s*\.\s*(get|post|put|delete)\s*\(\s*(['"`])([\s\S]*?)\2.*?\)/g;
     const methodPaths = [];
     let match;
   
     // Use regex.exec in a loop to find all matches
     while ((match = regex.exec(newCode)) !== null) {
       // match[1] contains the captured HTTP method, match[2] contains the captured path
-      if (match[1] && match[2]) {
-        const methodPath = `${match[1]}${match[2]}`;
+      if (match[1] && match[3]) {
+        const cleanPath = match[3].replace(/\${/g, ":").replace(/}/g, "");
+        const methodPath = `${match[1]}${cleanPath}`;
         methodPaths.push(methodPath);
       }
     }
+
+    console.log("matched", methodPaths)
 
     var missingEndpoints = [];
     methodPaths.forEach((givenEndpoint) => {
@@ -959,11 +986,11 @@ export default function EndpointHeader({
           ) : (
             <></>
           )}
-          <Button
+          {/* <Button
             text={problemButtonText}
             className={`${problemButtonText == "Fix problems" && "text-red-400"} mr-1 ml-auto text-sm px-2.5 py-1 mt-2.5 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`}
             onClick={problemButtonHandler}
-          />
+          /> */}
           {
             //Move close sidebar button here
             <></>
@@ -1085,7 +1112,7 @@ export default function EndpointHeader({
           
           {prompt != "" ? (
             <Button
-              text="Go"
+              text="Edit File"
               className={`${isLoading.current == true && "opacity-70 pointer-events-none"} text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`}
               onClick={() => {
                 runQuery();

@@ -65,7 +65,7 @@ class GoogleSpeechRecognition {
       let speechDetected = false;
       let silenceStart = performance.now();
       const silenceThreshold = 0.05; // Adjust based on your needs
-      const pauseDuration = 5000; // 1 second of silence
+      const pauseDuration = 3000; // 1 second of silence
 
       
       this.processor.onaudioprocess = e => {

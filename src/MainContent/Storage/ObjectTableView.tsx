@@ -272,7 +272,7 @@ export default function ObjectTableView() {
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-                shouldBlockEdits={["_swizzle_uid", "access", "createdAt", "fileName"]}
+                shouldBlockEdits={["_swizzle_uid", "access", "createdAt", "fileName", "_id"]}
                 shouldHideFields={["data"]}
                 setJsonToEdit={() => {}}
                 setKeyForRowBeingEdited={() => {}}

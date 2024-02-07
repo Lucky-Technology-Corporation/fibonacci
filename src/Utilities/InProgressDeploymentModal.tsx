@@ -11,7 +11,7 @@ interface ModalProps {
 export default function InProgressDeploymentModal({
   isOpen,
   onClose,
-  title = "Setting up your project",
+  title = "Resuming your environment...",
   confirmText = "Close",
 }: ModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -65,11 +65,7 @@ export default function InProgressDeploymentModal({
               <div className="mt-2">
                 <ul className="text-sm text-[#D9D9D9]">
                   <li className="mt-2 ml-8">
-                    If this is a new project, your dashboard will be ready in ~5 minutes.
-                    <br />
-                    <br />
-                    If this is an existing project, your test environment was put to sleep due to inactivity and will
-                    resume in ~2 minutes.{" "}
+                    Test environments are suspended after 10 minutes of inactivity. They take a few moments to resume.
                     <span className="font-medium text-green-500">
                       Your production environment is always available to customers.
                     </span>

@@ -70,7 +70,7 @@ export default function useJarvis() {
           `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/component/edit?env=${environment}`,
           {
             prompt: prompt,
-            file_path: activeFile,
+            file_path: activeFile.replace("frontend/src/components/", ""),
             history: history,
           },
           {
