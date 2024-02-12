@@ -88,6 +88,8 @@ export interface SwizzleContextType {
   setCodeMode: Dispatch<SetStateAction<string>>;
   shouldCreateObject: boolean;
   setShouldCreateObject: Dispatch<SetStateAction<boolean>>;
+  projectDeploymentFailure: boolean;
+  setProjectDeploymentFailure: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -139,6 +141,8 @@ export const GlobalContextProvider = ({ children }) => {
   //Code generation task list
   const [taskQueue, setTaskQueue] = useState<any>([]);
   const [fullTaskQueue, setFullTaskQueue] = useState<any>([]);
+
+  const [projectDeploymentFailure, setProjectDeploymentFailure] = useState<boolean>(false);
 
   return (
     <SwizzleContext.Provider
@@ -224,7 +228,9 @@ export const GlobalContextProvider = ({ children }) => {
         codeMode,
         setCodeMode,
         shouldCreateObject,
-        setShouldCreateObject
+        setShouldCreateObject,
+        projectDeploymentFailure, 
+        setProjectDeploymentFailure
       }}
     >
       {children}

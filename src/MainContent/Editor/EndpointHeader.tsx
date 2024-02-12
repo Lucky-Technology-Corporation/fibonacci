@@ -1008,7 +1008,7 @@ export default function EndpointHeader({
 
           {isUndoVisible && (
             <Button
-              className={`text-sm mr-0 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
+              className={`text-sm ml-2 mr-0 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869877] border-[#525363] border`}
               children={<FontAwesomeIcon icon={faUndo} />}
               onClick={() => {
                 undoLastChange();

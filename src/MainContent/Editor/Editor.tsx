@@ -13,18 +13,17 @@ import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
 import EndpointHeader from "./EndpointHeader";
+import InlineAssistantUI from "./InlineAssistantUI";
 
 export default function Editor({
   currentFileProperties,
   setCurrentFileProperties,
   selectedTab,
-  focusOnHeader,
   headerRef,
 }: {
   currentFileProperties: any;
   setCurrentFileProperties: (properties: any) => void;
   selectedTab: Page;
-  focusOnHeader: () => void;
   headerRef: any;
 }) {
   const iframeRef = useRef(null);
@@ -41,6 +40,7 @@ export default function Editor({
   const [previewComponent, setPreviewComponent] = useState<string>("");
   const [injectedLog, setInjectedLog] = useState<any>([]);
   const [isDebugging, setIsDebugging] = useState<boolean>(false);
+  const [inlineAiPosition, setInlineAiPosition] = useState<{x: number, y: number, line: number, column: number}>(null);
 
   const {
     frontendRestarting,
@@ -136,8 +136,7 @@ export default function Editor({
     }
 
     if (event.data.type === "openAi") {
-      console.log(event.data);
-      focusOnHeader();
+      openInlineUI(event.data.cursorPosition, event.data.textInsertPosition);
     }
 
     if (event.data.type === "selectedText") {
@@ -158,6 +157,19 @@ export default function Editor({
     }
   };
 
+  const openInlineUI = (cursorXY, textInsertPosition) => {
+    const convertedX = cursorXY.x - 100;
+    const convertedY = cursorXY.y - 100;
+
+    setInlineAiPosition({
+      x: convertedX,
+      y: convertedY,
+      line: textInsertPosition.line,
+      column: textInsertPosition.column
+    })
+  }
+
+  //This method reacts to when the user changes the route inside the file
   const reactToRouterLineEvent = async (event) => {
     const line = event.data.routerLine || "";
     const uri = event.data.fileUri || "";
@@ -165,7 +177,6 @@ export default function Editor({
       return;
     }
 
-    console.log("routerLine", line, uri);
     if (uri.includes("backend/user-dependencies")) {
       //split method and path
       const parts = line.split("router.")[1].split("(");
@@ -563,6 +574,8 @@ export default function Editor({
           <TestWindow isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         </div>
       )}
+
+      <InlineAssistantUI position={inlineAiPosition} setPosition={setInlineAiPosition} currentFileProperties={currentFileProperties}  />
     </div>
   );
 }

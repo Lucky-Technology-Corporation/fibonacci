@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { SwizzleContext } from "./GlobalContext";
 
 interface ModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export default function InProgressDeploymentModal({
   confirmText = "Close",
 }: ModalProps) {
   const [currentStep, setCurrentStep] = useState(0);
+  const { projectDeploymentFailure } = useContext(SwizzleContext);
 
   useEffect(() => {
     if (isOpen) {
@@ -52,7 +54,7 @@ export default function InProgressDeploymentModal({
           <div className="bg-[#32333b] px-4 pt-5 pb-2 sm:p-6 sm:pb-4">
             <div className="mt-3 text-center sm:mt-0 sm:text-left">
               <h3 className="text-lg leading-6 font-medium text-[#D9D9D9]" id="modal-title">
-                <svg className="animate-spin h-5 w-5 mr-3 inline-block" viewBox="0 0 24 24">
+                <svg className={`${projectDeploymentFailure ? "" : "animate-spin"} h-5 w-5 mr-3 inline-block`} viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path
                     className="opacity-75"
@@ -60,16 +62,22 @@ export default function InProgressDeploymentModal({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                {title}
+                {projectDeploymentFailure ? "Yikes!" : title}
               </h3>
               <div className="mt-2">
                 <ul className="text-sm text-[#D9D9D9]">
+                  {projectDeploymentFailure ? (
+                    <li className="mt-2 ml-8">
+                    Something is wrong with your project test environment. Your production environment is unaffected. Please email <a href="mailto:support@swizzle.co">support@swizzle.co</a>
+                  </li>
+                  ) : (
                   <li className="mt-2 ml-8">
                     Test environments are suspended after 10 minutes of inactivity. They take a few moments to resume.
                     <span className="font-medium text-green-500">
                       Your production environment is always available to customers.
                     </span>
                   </li>
+                  )}
                   {/* {currentStep >= 1 && <li className="mt-2 ml-8">Creating test environment...</li>}
                         {currentStep >= 1 && <li className="mt-2 ml-8">Creating test environment...</li>}
                         {currentStep >= 2 && <li className="mt-2 ml-8">Provisioning SSL certificates...</li>}

@@ -128,5 +128,26 @@ export default function useJarvis() {
     }
   };
 
-  return { editFrontend, fixProblems, createMissingBackendEndpoint, createPageFromImage, createComponentFromImage };
+  const addSnippet = async (prompt: string, currentCode: string) => {
+    try {
+      var body = {
+        current_code: currentCode,
+        prompt: prompt,
+      };
+
+      const response = await axios.post(
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/fix?env=${environment}`,
+        body,
+        {
+          withCredentials: true,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  }
+
+  return { editFrontend, fixProblems, createMissingBackendEndpoint, createPageFromImage, createComponentFromImage, addSnippet };
 }

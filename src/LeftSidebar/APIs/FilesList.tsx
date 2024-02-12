@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 import useEndpointApi from "../../API/EndpointAPI";
 import PackageInfo from "../../RightSidebar/Sections/PackageInfo";
+import SecretInfo from "../../RightSidebar/Sections/SecretInfo";
 import Dropdown from "../../Utilities/Dropdown";
 import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -37,6 +38,7 @@ export default function FilesList({ active }: { active: boolean }) {
   const [shouldShowPackagesWindow, setShouldShowPackagesWindow] = useState<boolean>(false);
   const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
   const [folderPath, setFolderPath] = useState<string>("");
+  const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState<boolean>(false);
 
   const {
     testDomain,
@@ -405,6 +407,17 @@ export default function FilesList({ active }: { active: boolean }) {
                 <IconTextButton
                   textHidden={true}
                   onClick={() => {
+                    setShouldShowSecretsWindow(true);
+                  }}
+                  className="p-[0.57rem]"
+                  icon={<img src="/lock.svg" className="w-4 h-4 m-auto" />}
+                  text="Secrets"
+                />
+              </div>
+              <div className="w-10 ml-2 mt-3">
+                <IconTextButton
+                  textHidden={true}
+                  onClick={() => {
                     setShouldShowPackagesWindow(true);
                   }}
                   icon={<img src="/box.svg" className="w-4 h-4 m-auto" />}
@@ -419,6 +432,7 @@ export default function FilesList({ active }: { active: boolean }) {
             setIsVisible={setShouldShowPackagesWindow}
             location="frontend"
           />
+          <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} location="frontend" />
 
           <div className="flex ml-2 my-1 mr-2 mb-3">
             <input

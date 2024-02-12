@@ -103,7 +103,7 @@ export default function SecretInfo({ isVisible, setIsVisible, location }: { isVi
         if (locallyChangedSecrets.includes(secret.name + "-testValue")) {
           acc.test[secret.name] = secret.testValue;
         }
-        if (locallyChangedSecrets.includes(secret.name + "-productionValue")) {
+        if (locallyChangedSecrets.includes(secret.name + "-productionValue") || (location == "frontend" && locallyChangedSecrets.includes(secret.name + "-testValue"))) {
           if (secret.productionValue != "(hidden for security)") {
             acc.prod[secret.name] = secret.productionValue;
           }
@@ -195,7 +195,17 @@ export default function SecretInfo({ isVisible, setIsVisible, location }: { isVi
                 />
               </div>
             </div>
-
+            <div className="mt-2">
+              <Button
+                text="+ New Secret"
+                onClick={() => {
+                  //confirm changes...
+                  setNewSecretVisible(true);
+                  closeWindow();
+                }}
+                className="px-5 py-1 mt-4 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
+              />
+            </div>
             <div className="flex flex-col items-center justify-center mt-5">
               {secrets.map((secret) => {
                 return (
@@ -242,23 +252,12 @@ export default function SecretInfo({ isVisible, setIsVisible, location }: { isVi
                         placeholder="Production value"
                         value={secret.productionValue}
                         onChange={(e) => updateSecret(secret.name, "productionValue", e.target.value)}
-                        disabled={true}
+                        disabled={secret.productionValue == "(hidden for security)"}
                       />
                     </div>
                   </div>
                 );
               })}
-            </div>
-            <div>
-              <Button
-                text="+ New Secret"
-                onClick={() => {
-                  //confirm changes...
-                  setNewSecretVisible(true);
-                  closeWindow();
-                }}
-                className="px-5 py-1 mb-2 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border ml-auto"
-              />
             </div>
           </div>
         }

@@ -42,6 +42,7 @@ export default function ProjectSelector({
     setIdeReady,
     hasPaymentMethod,
     setHasPaymentMethod,
+    setProjectDeploymentFailure
   } = useContext(SwizzleContext);
 
   const startPolling = async (projectId) => {
@@ -54,16 +55,19 @@ export default function ProjectSelector({
         setIsModalOpen(false);
         setIsCreatingProject(false);
         await setCurrentProject(projectId);
-        location.reload();
+        setTimeout(() => {
+          location.reload();
+        }, 1500)
       } else if (deploymentStatus === "DEPLOYMENT_FAILURE") {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
         setIsModalOpen(false);
         setIsCreatingProject(false);
-        toast.error("Deployment failed");
-        setTimeout(() => {
-          location.reload();
-        }, 250);
+        setProjectDeploymentFailure(true)
+        // toast.error("There's an issue with this project. Please email support@swizzle.co");
+        // setTimeout(() => {
+        //   location.reload();
+        // }, 250);
       }
     }, POLLING_INTERVAL);
   };

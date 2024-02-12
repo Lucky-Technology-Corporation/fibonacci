@@ -163,7 +163,7 @@ export default function AnalyticsPage({ setActiveLogsPage }: { setActiveLogsPage
             </div>
           </div>
 
-          <div className={`ml-10 space-y-1 ${environment == "test" ? "opacity-70" : ""}`}>
+          <div className={`ml-10 space-y-1 ${!prodDeployed ? "opacity-70" : ""}`}>
             <div className="flex">
               <Dot className="ml-0" color={prodDeployed ? "green" : "yellow"} />
               Production API
@@ -256,7 +256,7 @@ export default function AnalyticsPage({ setActiveLogsPage }: { setActiveLogsPage
         ) : (
           <div className="">
             <div className="flex flex-col items-center justify-center mt-48 opacity-70">
-              You'll see analytics here once you've deployed your API.
+              You'll see analytics here once you've deployed your project.
             </div>
           </div>
         )}

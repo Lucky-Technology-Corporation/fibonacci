@@ -72,10 +72,13 @@ export default function useSettingsApi() {
       const response = await axios.delete(`${NEXT_PUBLIC_BASE_URL}/projects/${projectId}`, {
         withCredentials: true,
       });
+      if(response.status != 200) {
+        throw new Error("Failed to delete project");
+      }
       return response.data;
     } catch (e: any) {
       console.error(e);
-      return null;
+      throw new Error("Failed to delete project");
     }
   };
 
@@ -95,15 +98,52 @@ export default function useSettingsApi() {
     }
   };
 
+  const parseFrontendEnv = (frontendEnv: string) => {
+    try{
+      const index = frontendEnv.indexOf("{")
+      var stringifiedObject = frontendEnv.substring(index)
+      stringifiedObject = stringifiedObject.split("module.exports")[0]
+      const javascriptObject = (new Function(`return (${stringifiedObject});`))();
+      return javascriptObject
+    } catch(e){
+      console.error("Misformatted webpack config", e)
+    }
+  }
+
+  function mergeFrontendEnv(secretsObject, frontendEnv) {
+      try{
+        var mergedFrontendEnv = {...frontendEnv}
+        Object.keys(secretsObject.test).forEach((key) => {
+          if(secretsObject.test[key] != null && secretsObject.test[key] != ""){
+            mergedFrontendEnv.test[key] = secretsObject.test[key]
+          }
+        })
+        Object.keys(secretsObject.prod).forEach((key) => {
+          if(secretsObject.prod[key] != null && secretsObject.prod[key] != ""){
+            mergedFrontendEnv.prod[key] = secretsObject.prod[key]
+          }
+        })
+
+        return mergedFrontendEnv
+      } catch(e){
+        console.error("Failed to merge frontend env", e)
+      }
+  }
+
   const getSecrets = async (location: string) => {
     try {
       if (activeProject == null || activeProject == "") {
         return null;
       }
-      const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {
-        withCredentials: true,
-      });
-      return response.data;
+      if(location == "backend"){
+        const response = await axios.get(`${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`, {
+          withCredentials: true,
+        });
+        return response.data;
+      } else if(location == "frontend"){
+        const frontendEnv = await endpointApi.getFile("frontend/frontendEnv.js");
+        return parseFrontendEnv(frontendEnv)
+      }
     } catch (e: any) {
       console.error(e);
       return null;
@@ -111,19 +151,29 @@ export default function useSettingsApi() {
   };
 
   const saveSecrets = async (location: string, newSecrets: any) => {
+    console.log("save", location, newSecrets)
     try {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.patch(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`,
-        newSecrets,
-        {
-          withCredentials: true,
-        },
-      );
-      endpointApi.restartBackend();
-      return response.data;
+      if(location == "backend"){
+        const response = await axios.patch(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets?env=${environment}`,
+          newSecrets,
+          {
+            withCredentials: true,
+          },
+        );
+        endpointApi.restartBackend();
+        return response.data;
+      } else if(location == "frontend"){
+        const frontendEnv = await endpointApi.getFile("frontend/frontendEnv.js");
+        const frontendEnvObject = parseFrontendEnv(frontendEnv)
+        const newFrontendEnv = mergeFrontendEnv(newSecrets, frontendEnvObject)
+        const newFrontendEnvFile = "var frontendEnv = " + JSON.stringify(newFrontendEnv, null, 2) + "\nmodule.exports = { frontendEnv }"
+        console.log("writing", newFrontendEnvFile)
+        await endpointApi.writeFile("frontend/frontendEnv.js", newFrontendEnvFile);
+      }
     } catch (e: any) {
       console.error(e);
       return null;
@@ -135,14 +185,28 @@ export default function useSettingsApi() {
       if (activeProject == null) {
         return null;
       }
-      const response = await axios.delete(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`,
-        {
-          withCredentials: true,
-        },
-      );
-      endpointApi.restartBackend();
-      return response.data;
+      if(location == "backend"){
+        const response = await axios.delete(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/secrets/${secretName}?env=${environment}`,
+          {
+            withCredentials: true,
+          },
+        );
+        endpointApi.restartBackend();
+        return response.data;
+      } else if(location == "frontend"){
+        const frontendEnv = await endpointApi.getFile("frontend/frontendEnv.js");
+        var frontendEnvObject = parseFrontendEnv(frontendEnv)
+        console.log(frontendEnvObject.prod[secretName])
+        console.log(frontendEnvObject.test[secretName])
+        console.log(frontendEnvObject.test)
+        console.log(frontendEnvObject.prod)
+
+        delete frontendEnvObject.test[secretName]
+        delete frontendEnvObject.prod[secretName]
+        const newFrontendEnvFile = "var frontendEnv = " + JSON.stringify(frontendEnvObject, null, 2) + "\nmodule.exports = { frontendEnv }"
+        await endpointApi.writeFile("frontend/frontendEnv.js", newFrontendEnvFile);
+      }
     } catch (e: any) {
       console.error(e);
       return null;

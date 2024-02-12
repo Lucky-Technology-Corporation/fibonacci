@@ -66,7 +66,6 @@ export default function CenterContent({
             currentFileProperties={currentFileProperties}
             setCurrentFileProperties={setCurrentFileProperties}
             selectedTab={selectedTab}
-            focusOnHeader={focusOnHeader}
             headerRef={headerRef}
           />
         </div>
