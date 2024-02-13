@@ -27,7 +27,7 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
       fileContent.split("\n").forEach((line: string) => {
         lineIterator += 1
         if(lineIterator == position.line){
-          var lineWithComment = line.substring(0, position.column) + "/* SNIPPET GOES HERE */" + line.substring(position.column)
+          var lineWithComment = line.substring(0, position.column) + " /* SNIPPET GOES HERE */ " + line.substring(position.column)
           fileContentWithComment += lineWithComment
         } else{
           fileContentWithComment += line
@@ -39,6 +39,10 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
 
   useEffect(() => {
     if(position != null){
+      setPostMessage({
+        type: "saveFileWithoutFormatting"
+      })
+      
       getCodeAndAddComment().then(content => {
         setCodeContent(content)
       })
@@ -49,6 +53,7 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
   }, [position])
 
   const runAi = () => {
+
     const filePath = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
     toast.promise(addSnippet(prompt, codeContent, filePath), {
       loading: "Thinking...",
