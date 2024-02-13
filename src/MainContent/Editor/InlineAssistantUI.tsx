@@ -1,10 +1,11 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import useEndpointApi from "../../API/EndpointAPI"
 import useJarvis from "../../API/JarvisAPI"
 import Button from "../../Utilities/Button"
+import { SwizzleContext } from "../../Utilities/GlobalContext"
 
 export default function InlineAssistantUI({position, setPosition, currentFileProperties}:  {position: {x: number, y: number, line: number, column: number}, setPosition: any, currentFileProperties: any}){
 
@@ -13,6 +14,9 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
   
   const { getFile } = useEndpointApi()
   const { addSnippet } = useJarvis()
+
+  const inputRef = useRef(null)
+  const { setPostMessage } = useContext(SwizzleContext)
 
   const getCodeAndAddComment = async () => {
     var fileContentWithComment = ""
@@ -38,14 +42,23 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
       getCodeAndAddComment().then(content => {
         setCodeContent(content)
       })
+      if(inputRef && inputRef.current){
+        inputRef.current.focus()
+      }
     }
   }, [position])
 
   const runAi = () => {
-    toast.promise(addSnippet(prompt, codeContent), {
+    const filePath = currentFileProperties.fileUri.replace("file:///swizzle/code/", "")
+    toast.promise(addSnippet(prompt, codeContent, filePath), {
       loading: "Thinking...",
-      success: () => {
-        //reload file if we used euler, replaceText if we're doing that instead
+      success: (data) => {
+        console.log(data)
+        setPostMessage({
+          type: "replaceText",
+          content: data.new_code,
+        });
+        setPosition(null)
         return "Success"
       },
       error: "An error occured"
@@ -55,7 +68,7 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
 
   if(position == null) return <></>
   return (
-    <div style={{position: "fixed", top: (position.y + 200) + "px", left: (position.x + 200) + "px" }}>
+    <div style={{position: "fixed", top: (position.y + 200) + "px", left: (position.x + 321) + "px" }}>
       <div className="bg-[#252629] border border-[#525363] w-[50vw] rounded-lg shadow-lg p-4">
       <div className="flex">
         <FontAwesomeIcon icon={faXmark} className="text-[#D9D9D9] cursor-pointer my-auto mr-1" onClick={() => {
@@ -65,7 +78,8 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
       </div>
         <div className="flex mt-2">
           <input
-            className="w-full bg-transparent border rounded outline-0 py-1 px-2 border-[#525363] focus:border-[#68697a]"
+            ref={inputRef}
+            className="bg-transparent border rounded outline-0 py-1 px-2 border-[#525363] focus:border-[#68697a]"
             placeholder={"Prompt AI"}
             value={prompt}
             onChange={(e) => { setPrompt(e.target.value) }}
@@ -73,6 +87,9 @@ export default function InlineAssistantUI({position, setPosition, currentFilePro
               if (event.key == "Enter") {
                 runAi()
               }
+            }}
+            style={{
+              flexGrow: 1,
             }}
           />
           <Button

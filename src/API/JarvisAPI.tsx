@@ -182,15 +182,28 @@ export default function useJarvis() {
     }
   };
 
-  const addSnippet = async (prompt: string, currentCode: string) => {
+  const addSnippet = async (prompt: string, currentCode: string, filePath: string) => {
+    var fileType = ""
+    if(filePath.includes("frontend/src/pages/")){
+      fileType = "page"
+    } else if(filePath.includes("frontend/src/components/")){
+      fileType = "component"
+    } else if(filePath.includes("backend/user-dependencies/")){
+      fileType = "endpoint"
+    } else if(filePath.includes("backend/helpers/")){
+      fileType = "helper"
+    }
+
     try {
       var body = {
         current_code: currentCode,
         prompt: prompt,
+        file_type: fileType,
+        file_path: filePath,
       };
 
       const response = await axios.post(
-        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/page/fix?env=${environment}`,
+        `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/snippet?env=${environment}`,
         body,
         {
           withCredentials: true,
