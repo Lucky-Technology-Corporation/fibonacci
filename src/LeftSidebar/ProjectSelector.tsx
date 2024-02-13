@@ -57,7 +57,7 @@ export default function ProjectSelector({
         await setCurrentProject(projectId);
         setTimeout(() => {
           location.reload();
-        }, 1500)
+        }, 3000)
       } else if (deploymentStatus === "DEPLOYMENT_FAILURE") {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
