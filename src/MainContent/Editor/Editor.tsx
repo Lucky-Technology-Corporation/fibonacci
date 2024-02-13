@@ -136,6 +136,10 @@ export default function Editor({
     }
 
     if (event.data.type === "openAi") {
+      if(event.data.cursorPosition == null || event.data.textInsertPosition == null){
+        console.log("no cursor position or text insert position", event.data)
+        return
+      }
       openInlineUI(event.data.cursorPosition, event.data.textInsertPosition);
     }
 

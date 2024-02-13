@@ -85,7 +85,7 @@ export default function EndpointHeader({
   const { updatePackage } = useDeploymentApi();
   const { upsertImport } = useFilesystemApi();
   const { promptAiEditor } = useEndpointApi()
-  const { editFrontend, createMissingBackendEndpoint, fixProblems, createPageFromImage, createComponentFromImage } = useJarvis();
+  const { editFrontend, editBackend, createMissingBackendEndpoint, fixProblems, createPageFromImage, createComponentFromImage } = useJarvis();
   const [messageHistory, setMessageHistory] = useState<any[]>([]);
 
   const isLoading = useRef(false);
@@ -177,10 +177,11 @@ export default function EndpointHeader({
         }
       });
     } else if(selectedTab == Page.Apis){
-      toast.promise(promptAiEditor(prompt, "edit", undefined, messageHistory, undefined, undefined), {
+      const fileName = currentFileProperties.fileUri.split("file:///swizzle/code")[1]
+      toast.promise(editBackend(prompt, activeEndpoint, fileName, messageHistory), {
         loading: "Thinking...",
         success: (data) => {
-
+          console.log(data)
           setPostMessage({
             type: "replaceText",
             content: data.new_code,

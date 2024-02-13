@@ -86,6 +86,60 @@ export default function useJarvis() {
     }
   };
 
+  const editBackend = async (prompt: string, activeEndpoint: string, activeFile: string, history?: any[]) => {
+    if(activeFile.includes("backend/user-dependencies/")) { //endpoint
+
+      const endpointParts = activeEndpoint.split("/");
+      const method = endpointParts[0];
+      const path = "/" + endpointParts.slice(1).join("/");
+
+      var activeFileParsed = activeFile
+      if(activeFileParsed.startsWith("/")){
+        activeFileParsed = activeFileParsed.substring(1)
+      }
+
+      try {
+        const response = await axios.post(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/endpoint/edit?env=${environment}`,
+          {
+            prompt: prompt,
+            endpoint_path: path,
+            endpoint_method: method,
+            file_path: activeFileParsed,
+            history: history,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+
+        return response.data;
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    } else if(activeFile.includes("backend/helpers/")) { //helper
+      try {
+        const response = await axios.post(
+          `${NEXT_PUBLIC_BASE_URL}/projects/${activeProject}/jarvis/helper/edit?env=${environment}`,
+          {
+            prompt: prompt,
+            file_path: activeFileParsed,
+            history: history,
+          },
+          {
+            withCredentials: true,
+          },
+        );
+
+        return response.data;
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    }
+  };
+
   const createMissingBackendEndpoint = async (currentCode: string, missingEndpoint: string) => {
     try {
       var body = {
@@ -149,5 +203,5 @@ export default function useJarvis() {
     }
   }
 
-  return { editFrontend, fixProblems, createMissingBackendEndpoint, createPageFromImage, createComponentFromImage, addSnippet };
+  return { editFrontend, editBackend, fixProblems, createMissingBackendEndpoint, createPageFromImage, createComponentFromImage, addSnippet };
 }
