@@ -23,19 +23,22 @@ export default function AuthSettings({ active, className = "" }: { active: boole
   useEffect(() => {
     getSecrets("backend").then((secrets) => {
       if (secrets == null) return;
-      setAuthMethods([]);
+      setAuthMethods([{ id: "email", name: "Email/Password Login" }]);
+      setAllowingNewSignups(true);
+
       Object.keys(secrets.test).forEach((secretKey: string) => {
         if (secretKey == "GOOGLE_APP_ID") {
           setAuthMethods((methods) => [...methods, { id: "google", name: "Google Login" }]);
         } else if (secretKey == "FACEBOOK_APP_ID") {
           setAuthMethods((methods) => [...methods, { id: "facebook", name: "Facebook Login" }]);
         } else if (secretKey == "SWIZZLE_EMAIL_PASSWORD") {
-          setAuthMethods((methods) => [...methods, { id: "email", name: "Email/Password Login" }]);
+          if(secrets.test[secretKey] == "false"){
+            setAuthMethods((methods) => methods.filter((method) => method.id != "email"));
+          }
+          // setAuthMethods((methods) => [...methods, { id: "email", name: "Email/Password Login" }]);
         } else if (secretKey == "ALLOW_NEW_SIGNUPS") {
           if (secrets.test[secretKey] == "false") {
             setAllowingNewSignups(false);
-          } else {
-            setAllowingNewSignups(true);
           }
         }
       });
