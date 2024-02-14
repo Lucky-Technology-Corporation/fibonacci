@@ -16,7 +16,7 @@ export default function EditAuthMethodView({ method }: { method: string }) {
 
   const isLoading = useRef<boolean>(false);
   useEffect(() => {
-    if (method == null || method == "" || method == "email") return;
+    if (method == null || method == "") return;
     if (isLoading.current) return;
     isLoading.current = true;
     toast.promise(
@@ -244,7 +244,7 @@ export default function EditAuthMethodView({ method }: { method: string }) {
                 className="text-sm font-medium mt-4 text-red-400 cursor-pointer"
                 onClick={() => setShowDeleteModal(true)}
               >
-                Remove Email
+                Remove Email & Password
               </div>
               <Button
                 className="ml-auto text-sm px-4 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
