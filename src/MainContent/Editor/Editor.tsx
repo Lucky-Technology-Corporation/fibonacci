@@ -8,7 +8,7 @@ import useFilesystemApi from "../../API/FilesystemAPI";
 import useJarvis from "../../API/JarvisAPI";
 import TestWindow from "../../RightSidebar/TestWindow/TestWindow";
 import Button from "../../Utilities/Button";
-import { endpointToFilename, filenameToEndpoint, formatPath } from "../../Utilities/EndpointParser";
+import { endpointToFilename, filenameToEndpoint } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import { Page } from "../../Utilities/Page";
 import LogWebsocketViewer from "../Logs/LogWebsocketViewer";
@@ -62,7 +62,8 @@ export default function Editor({
     fileErrors,
     codeMode,
     setCodeMode,
-    shouldRefreshList
+    shouldRefreshList,
+    activePage
   } = useContext(SwizzleContext);
   const { getFermatJwt, getFile, writeFile, getPackageJson } = useEndpointApi();
   const { updatePackage } = useDeploymentApi();
@@ -329,17 +330,16 @@ export default function Editor({
   }, [activeProject, testDomain]);
 
   useEffect(() => {
-    if (activeFile != undefined && activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")) {
-      const path = formatPath(activeFile, activeFile);
-      setPath(path);
-      setUrl(testDomain + path);
+    if (activePage != undefined && activePage != "") {
+      setPath(activePage);
+      setUrl(testDomain + activePage);
     } else if (activeFile != undefined && activeFile.includes("frontend/src/components/")) {
       setPreviewComponentFromPath(activeFile).then((component) => {
         setPreviewComponent(component);
       });
       setUrl(testDomain + "/d/component_preview");
     }
-  }, [activeFile]);
+  }, [activePage, activeFile]);
 
   // useEffect(() => {
   //   console.log("refresh preview")

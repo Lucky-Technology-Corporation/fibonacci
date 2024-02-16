@@ -528,7 +528,7 @@ export default function EndpointHeader({
     }
     if (activeFile && selectedTab == Page.Hosting) {
       if (activeFile.includes("/src/pages")) {
-        setPath(activePage);
+        setPath(activePage); 
       } else {
         setPath(activeFile.replace("frontend/src/components/", ""));
       }

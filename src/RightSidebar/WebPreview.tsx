@@ -10,7 +10,7 @@ export default function WebPreview({
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
 }) {
-  const { testDomain, setShouldOverlay, activeFile } = useContext(SwizzleContext);
+  const { testDomain, setShouldOverlay, activeFile, activePage } = useContext(SwizzleContext);
 
   const handleResizeStart = (e) => {
     e.stopPropagation();
@@ -26,14 +26,12 @@ export default function WebPreview({
   const [path, setPath] = useState<string>("");
 
   useEffect(() => {
-    if (activeFile != undefined && activeFile.includes("frontend/src/pages/") && activeFile.includes(".tsx")) {
-      const path = activeFile.includes("SwizzleHomePage.tsx")
-        ? ""
-        : activeFile.split("frontend/src/pages/")[1].split(".tsx")[0].replace(/_/g, "/").toLowerCase();
-      setPath("/" + path);
-      setUrl(testDomain + "/" + path);
+    if (activePage != undefined && activePage != "") {
+      console.log("activePage", activePage);
+      setPath(activePage);
+      setUrl(testDomain + activePage);
     }
-  }, [isVisible, activeFile]);
+  }, [isVisible, activePage]);
 
   if (!isVisible) {
     return <></>;

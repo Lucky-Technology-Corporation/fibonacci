@@ -281,7 +281,10 @@ export default function FilesList({ active }: { active: boolean }) {
             active={"frontend/src/" + (fullPath.endsWith("/") ? fullPath.slice(0, -1) : fullPath) === activeFile}
             onClick={() => {
               if (node.path.includes("src/pages")) {
-                setActivePage(formatPath(node.path, node.name, true));
+                const newActivePage = pageInformation && pageInformation[node.path]
+                ? "/" + /[^/]*$/.exec(pageInformation[node.path].realPath)[0]
+                : undefined
+                setActivePage(newActivePage);
               }
               setActiveFile("frontend/src/" + (fullPath.endsWith("/") ? fullPath.slice(0, -1) : fullPath));
             }}
