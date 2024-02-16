@@ -162,6 +162,33 @@ export default function useEndpointApi() {
     }
   };
 
+  const uploadFile = async (file: any) => {
+    try {
+      if (activeProject == null || activeProject == "") {
+        console.error("No active project");
+        return null;
+      }
+      const fileName = file.name;
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post(
+        `${testDomain.replace("https://", "https://fermat.")}/code/upload`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading the file:", error);
+      return null;
+    }
+  };
+
+
   const deleteFile = async (fileName: string, location: string) => {
     try {
       if (testDomain == null || testDomain == undefined || testDomain == "") {
@@ -744,5 +771,6 @@ export default function useEndpointApi() {
     removeScheduledFunction,
     updateScheduledFunction,
     removeRouteFromList,
+    uploadFile
   };
 }

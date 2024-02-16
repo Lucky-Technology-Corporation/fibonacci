@@ -2,7 +2,6 @@ import { ReactNode, useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useEndpointApi from "../../API/EndpointAPI";
 import useFilesystemApi from "../../API/FilesystemAPI";
-import Checkbox from "../../Utilities/Checkbox";
 import { changeRelativeImportDepth, pathLengthDifference, pathToFile } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 
@@ -226,7 +225,7 @@ export default function FileWizard({
                     {fileType == "file" ? " Component" : " Page"}
                   </h3>
                 </div>
-                <div className="my-2">
+                {/* <div className="my-2">
                   {fileType == "file" ? (
                     <></>
                   ) : (
@@ -240,7 +239,7 @@ export default function FileWizard({
                       />
                     </div>
                   )}
-                </div>
+                </div> */}
                 {overrideRender ? (
                   overrideRender
                 ) : (

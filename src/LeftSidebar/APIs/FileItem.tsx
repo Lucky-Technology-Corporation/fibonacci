@@ -47,6 +47,8 @@ export default function FileItem({
           <div className={`font-normal ${isPrivate ? "text-blue-200" : ""}`}>
             {pagePath ? pagePath : formatPath(fullPath, path)}
           </div>
+
+          {/* Unused now that we dont do private pages */}
           {isPrivate ? (
             <>
               <Tooltip id="my-tooltip" className="fixed z-50" />
@@ -62,14 +64,16 @@ export default function FileItem({
             <div className=""></div>
           )}
 
-          <FontAwesomeIcon
-            icon={faEllipsisV}
-            className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
-            onClick={(e) => {
-              e.preventDefault();
-              setShowContextMenu(!showContextMenu);
-            }}
-          />
+          {!disableDelete && pagePath != "/" && (
+            <FontAwesomeIcon
+              icon={faEllipsisV}
+              className={`ml-auto px-2 opacity-70 hover:opacity-100 rounded transition-all cursor-pointer h-4`}
+              onClick={(e) => {
+                e.preventDefault();
+                setShowContextMenu(!showContextMenu);
+              }}
+            />
+          )}
 
           <FileContextMenu
             showContextMenu={showContextMenu}

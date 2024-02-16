@@ -8,4 +8,5 @@ export enum Page {
   Hosting = "hosting",
   Notifications = "notifications",
   AppCode = "appcode",
+  Types = "types"
 }

@@ -47,7 +47,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
 
     //Don't connect if we don't have the right data
     if (!activeProject || !testDomain) return;
-    if (selectedTab != Page.Apis && selectedTab != Page.Hosting) {
+    if (selectedTab != Page.Apis && selectedTab != Page.Hosting  && selectedTab != Page.Types) {
       if (ws) {
         ws.close();
         setLog([]);
@@ -425,7 +425,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
       ws.close();
     }
 
-    if (!activeProject || !testDomain || !(selectedTab == Page.Apis || selectedTab == Page.Hosting)) return;
+    if (!activeProject || !testDomain || !(selectedTab == Page.Apis || selectedTab == Page.Hosting || selectedTab == Page.Types)) return;
 
     var fermatJwt = await endpointApi.getFermatJwt();
     fermatJwt = fermatJwt.replace("Bearer ", "");
@@ -633,6 +633,8 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
       } else {
         return "8px";
       }
+    } else if(selectedTab == Page.Types){
+      return "8px";
     } else {
       if (props.isSidebarOpen) {
         return "400px";

@@ -49,12 +49,12 @@ export default function CenterContent({
     >
       <div
         style={{
-          opacity: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "1" : "0",
-          pointerEvents: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "auto" : "none",
-          height: selectedTab === Page.Apis || selectedTab === Page.Hosting ? "" : "1px",
+          opacity: selectedTab === Page.Apis || selectedTab === Page.Hosting || selectedTab === Page.Types ? "1" : "0",
+          pointerEvents: selectedTab === Page.Apis || selectedTab === Page.Hosting || selectedTab === Page.Types ? "auto" : "none",
+          height: selectedTab === Page.Apis || selectedTab === Page.Hosting || selectedTab === Page.Types ? "" : "1px",
         }}
       >
-        {(shouldOverlay || (selectedTab !== Page.Apis && selectedTab !== Page.Hosting)) && (
+        {(shouldOverlay || (selectedTab !== Page.Apis && selectedTab !== Page.Hosting && selectedTab !== Page.Types)) && (
           <div className="absolute top-0 left-0 w-full h-full z-10"></div>
         )}
         <div

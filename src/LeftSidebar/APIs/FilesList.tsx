@@ -1,20 +1,21 @@
 import {
   faChevronDown,
   faChevronRight,
+  faCloudArrowUp,
   faFile,
   faFolderClosed,
   faFolderOpen,
   faGlobe,
-  faPuzzlePiece,
-  faXmarkCircle,
+  faPuzzlePiece
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 import useEndpointApi from "../../API/EndpointAPI";
 import PackageInfo from "../../RightSidebar/Sections/PackageInfo";
 import SecretInfo from "../../RightSidebar/Sections/SecretInfo";
+import Button from "../../Utilities/Button";
 import Dropdown from "../../Utilities/Dropdown";
 import { formatPath } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
@@ -39,6 +40,8 @@ export default function FilesList({ active }: { active: boolean }) {
   const [showContextMenu, setShowContextMenu] = useState<boolean>(false);
   const [folderPath, setFolderPath] = useState<string>("");
   const [shouldShowSecretsWindow, setShouldShowSecretsWindow] = useState<boolean>(false);
+  const [showState, setShowState] = useState<boolean>(false);
+  const [showAssets, setShowAssets] = useState<boolean>(false);
 
   const {
     testDomain,
@@ -49,8 +52,6 @@ export default function FilesList({ active }: { active: boolean }) {
     setShouldRefreshList,
     setActivePage,
     setPostMessage,
-    codeMode,
-    setCodeMode,
     shouldSetToFirstEntry
   } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
@@ -335,73 +336,13 @@ export default function FilesList({ active }: { active: boolean }) {
     }
   };
 
+  const fileInputRef = useRef(null);
+
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-      {/* <div className="mx-1 mt-1 text-center flex flex-row w-full">
-        <div
-          className={`w-1/2 mx-1 text-sm p-1.5 py-2 my-1 ${
-            codeMode == "ai" ? "bg-[#85869822]" : ""
-          } hover:bg-[#85869833] cursor-pointer rounded`}
-          onClick={() => {
-            setCodeMode("ai")
-            if(activeFile.includes("frontend/src/components")){
-              setToFirstPage()
-            }
-          }}
-        >
-          Assistant
-        </div>
-        <div
-          className={`w-1/2 mx-1 mr-2 text-sm p-1.5 py-2 my-1 ${
-            codeMode == "code" ? "bg-[#85869822]" : ""
-          } hover:bg-[#85869833] cursor-pointer rounded`}
-          onClick={() => {
-            setCodeMode("code");
-          }}
-        >
-          Code
-        </div>
-      </div> */}
 
-      {codeMode == "ai" ? (
-        <>
-          <div className="ml-1 mr-1 flex">
-            <Dropdown
-              className=""
-              onSelect={(item: any) => {
-                setFileType(item);
-                setIsVisible(true);
-              }}
-              children={methods.filter((method) => method.id == "page")}
-              direction="left"
-              title={"New"}
-              selectorClass="w-full py-1.5 !mt-1.5 !mb-1"
-            />
-          </div>
-          <div className="pages-list">
-            <Tooltip
-              id="page-tab-tooltip"
-              className={`fixed z-50`}
-              style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
-            />
-            <a
-              className="w-full"
-              data-tooltip-id="page-tab-tooltip"
-              data-tooltip-content={"Pages accessed by via URL"}
-              data-tooltip-place="right"
-            >
-              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
-                <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
-                <div className="flex items-center">Pages</div>
-              </div>
-            </a>
 
-            <div className="ml-1">{fileTree ? renderSection(fileTree, "pages") : null}</div>
-          </div>
-        </>
-      ) : (
-        <>
           <div className="ml-1 mr-1 flex">
             <Dropdown
               className=""
@@ -446,7 +387,7 @@ export default function FilesList({ active }: { active: boolean }) {
           />
           <SecretInfo isVisible={shouldShowSecretsWindow} setIsVisible={setShouldShowSecretsWindow} location="frontend" />
 
-          <div className="flex ml-2 my-1 mr-2 mb-3">
+          {/* <div className="flex ml-2 my-1 mr-2 mb-3">
             <input
               className="w-full bg-transparent border-[#525363] border-0 rounded outline-0 focus:border-[#68697a]"
               placeholder="Filter"
@@ -462,7 +403,49 @@ export default function FilesList({ active }: { active: boolean }) {
               }`}
               onClick={() => setSearchFilter("")}
             />
+          </div> */}
+
+
+          <div className="pages-list">
+            <Tooltip
+              id="page-tab-tooltip"
+              className={`fixed z-50`}
+              style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
+            />
+            <a
+              className="w-full"
+              data-tooltip-id="page-tab-tooltip"
+              data-tooltip-content={"Pages accessed by via URL"}
+              data-tooltip-place="right"
+            >
+              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
+                <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
+                <div className="flex items-center">Pages</div>
+              </div>
+            </a>
+
+            <div className="ml-1">{fileTree ? renderSection(fileTree, "pages") : null}</div>
           </div>
+          <div className="components-list">
+            <Tooltip
+              id="component-tab-tooltip"
+              className={`fixed z-50`}
+              style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
+            />
+            <a
+              className="w-full"
+              data-tooltip-id="component-tab-tooltip"
+              data-tooltip-content={"Components you can reuse in pages or other components"}
+              data-tooltip-place="right"
+            >
+              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 text-gray-400 hover:text-gray-300">
+                <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
+                <div className="flex items-center">Components</div>
+              </div>
+            </a>
+            <div className="ml-1">{fileTree ? renderSection(fileTree, "components") : null}</div>
+          </div>
+
 
           <Tooltip
             id="required-tab-tooltip"
@@ -573,12 +556,21 @@ export default function FilesList({ active }: { active: boolean }) {
               data-tooltip-content={"State variables accessible anywhere in your app"}
               data-tooltip-place="right"
             >
-              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
+              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300 cursor-pointer" onClick={() => {
+                setShowState(!showState);
+              }}>
                 <FontAwesomeIcon icon={faGlobe} className="w-3 h-3 my-auto mr-1" />
                 <div className="flex items-center">Global State</div>
+                <div className="ml-2">
+                {showState ? (
+                  <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3 my-auto" />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronRight} className="w-3 h-3 my-auto" />
+                )}
+              </div>
               </div>
             </a>
-            <div className="ml-1">
+            <div className={`ml-1 ${showState ? "" : "hidden"}`}>
               <FileItem
                 key={"AppContext.tsx"}
                 path={"Context.tsx"}
@@ -591,47 +583,53 @@ export default function FilesList({ active }: { active: boolean }) {
             </div>
           </div>
 
-          <div className="pages-list">
+          <div className="asset-list">
             <Tooltip
-              id="page-tab-tooltip"
+              id="asset-tab-tooltip"
               className={`fixed z-50`}
               style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
             />
             <a
               className="w-full"
-              data-tooltip-id="page-tab-tooltip"
-              data-tooltip-content={"Pages accessed by via URL"}
+              data-tooltip-id="asset-tab-tooltip"
+              data-tooltip-content={"State variables accessible anywhere in your app"}
               data-tooltip-place="right"
             >
-              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
-                <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
-                <div className="flex items-center">Pages</div>
+              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300 cursor-pointer" onClick={() => {
+                setShowAssets(!showAssets);
+              }}>
+                <FontAwesomeIcon icon={faCloudArrowUp} className="w-3 h-3 my-auto mr-1" />
+                <div className="flex items-center">Assets</div>
+                <div className="ml-2">
+                {showAssets ? (
+                  <FontAwesomeIcon icon={faChevronDown} className="w-3 h-3 my-auto" />
+                ) : (
+                  <FontAwesomeIcon icon={faChevronRight} className="w-3 h-3 my-auto" />
+                )}
+              </div>
               </div>
             </a>
+            <div className={`ml-1 ${showAssets ? "" : "hidden"}`}>
+              <Button
+                text="Upload"
+                onClick={() => {
+                  fileInputRef.current.click()
+                }}
+              />
+              <input type="file" ref={fileInputRef} style={{display: "none"}} />
+              {/* <FileItem
+                key={"AppContext.tsx"}
+                path={"Context.tsx"}
+                active={"frontend/src/AppContext.tsx" == activeFile}
+                onClick={() => {
+                  setActiveFile("frontend/src/AppContext.tsx");
+                }}
+                disableDelete={true}
+              /> */}
+            </div>
+          </div>
 
-            <div className="ml-1">{fileTree ? renderSection(fileTree, "pages") : null}</div>
-          </div>
-          <div className="components-list">
-            <Tooltip
-              id="component-tab-tooltip"
-              className={`fixed z-50`}
-              style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
-            />
-            <a
-              className="w-full"
-              data-tooltip-id="component-tab-tooltip"
-              data-tooltip-content={"Components you can reuse in pages or other components"}
-              data-tooltip-place="right"
-            >
-              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 text-gray-400 hover:text-gray-300">
-                <FontAwesomeIcon icon={faPuzzlePiece} className="w-3 h-3 my-auto mr-1" />
-                <div className="flex items-center">Components</div>
-              </div>
-            </a>
-            <div className="ml-1">{fileTree ? renderSection(fileTree, "components") : null}</div>
-          </div>
-        </>
-      )}
+
 
       <FileWizard
         pathIfEditing={fileToEdit}

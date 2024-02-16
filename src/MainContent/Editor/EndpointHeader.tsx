@@ -960,6 +960,11 @@ export default function EndpointHeader({
               )}
               <div className="my-auto">{path.startsWith("/cron/") ? path.replace("/cron/", "") : path}</div>
             </div>
+          ) : selectedTab == Page.Types ? (
+            <div className="flex align-middle pr-2 font-normal font-mono">
+              <img src="/shape.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
+              <div className="my-auto">Project types</div>
+            </div>
           ) : (
             <></>
           )}
@@ -1017,7 +1022,7 @@ export default function EndpointHeader({
             />
           )}
 
-          <div className={`grow ${selectedTab == Page.Db ? `mr-4 ml-4 ${!activeCollection && "hidden"}` : "mr-2 ml-2"}`}>
+          <div className={`grow ${selectedTab == Page.Types && "hidden"} ${selectedTab == Page.Db ? `mr-4 ml-4 ${!activeCollection && "hidden"}` : "mr-2 ml-2"}`}>
             <Autosuggest
               ref={storeInputRef}
               suggestions={suggestions}

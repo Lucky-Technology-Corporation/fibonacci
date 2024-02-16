@@ -49,6 +49,8 @@ export default function LeftSidebar({
     setSelectedTab,
     activeCollection,
     setActiveCollection,
+    setCurrentFileProperties,
+    setActiveHelper
   } = useContext(SwizzleContext);
 
   const [refreshHidden, setRefreshHidden] = useState(true);
@@ -288,11 +290,7 @@ export default function LeftSidebar({
           </div>
         </a>
         <FilesList active={selectedTab == Page.Hosting} />
-
-        <div className="py-1 w-full">
-          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
-        </div>
-
+ 
         <Tooltip
           id="backend-tab-tooltip"
           className={`fixed z-50 ${ideReady && "hidden"}`}
@@ -345,6 +343,66 @@ export default function LeftSidebar({
           </div>
         </a>
         <EndpointList currentFileProperties={currentFileProperties} />
+
+        <Tooltip
+          id="types-tab-tooltip"
+          className={`fixed z-50 ${ideReady && "hidden"}`}
+          style={{ backgroundColor: "rgb(209 213 219)", color: "#000" }}
+        />
+        <a
+          className="w-full"
+          data-tooltip-id="types-tab-tooltip"
+          data-tooltip-content={"Your IDE is loading..."}
+          data-tooltip-place="right"
+        >
+          <div className="w-full">
+            <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
+              <SectionTitle
+                icon="/shape.svg"
+                text="Types"
+                active={selectedTab == Page.Types}
+                onClick={() => {
+                  if (selectedTab == Page.Types) {
+                    setSelectedTab(null);
+                  } else {
+                    setSelectedTab(Page.Types);
+                    setCurrentFileProperties({
+                      fileUri: "file:///swizzle/code/types/index.ts",
+                    });
+                    setActiveHelper("!types!")
+                    setPostMessage({
+                      type: "openFile",
+                      fileName: `/types/index.ts`,
+                    });
+                  }
+                }}
+                className="types-tab"
+              />
+            </div>
+            <div className={`flex ${ideReady && "hidden"} ${refreshHidden && "pointer-events-none"}`}>
+              <Button
+                moreClasses="ml-auto mr-1 z-40 mt-[-30px] mt-1 text-white cursor-hover !px-2 !bg-[#333336] !hover:bg-[#fff]"
+                text="Reload"
+                children={
+                  refreshHidden ? (
+                    <FontAwesomeIcon icon={faSpinner} color="#ddd" />
+                  ) : (
+                    <FontAwesomeIcon ref={refreshSpinner} icon={faRefresh} color="#ffffff" />
+                  )
+                }
+                onClick={() => {
+                  setRefreshTheia(true);
+                  toast("Reloading IDE...");
+                  spin();
+                  setRefreshHidden(true);
+                  setTimeout(() => {
+                    setRefreshHidden(false);
+                  }, 10000);
+                }}
+              />
+            </div>
+          </div>
+        </a>
 
         <div className="py-1 w-full">
           <div className="h-[1px] bg-gray-700 w-full mt-4"></div>

@@ -143,6 +143,7 @@ export default function ObjectTableView() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadFileHandler = () => {
+    console.log(fileInputRef.current)
     fileInputRef.current?.click();
   };
   const handleFileChange = async (e) => {
@@ -222,7 +223,7 @@ export default function ObjectTableView() {
             text={"Upload"}
             onClick={uploadFileHandler}
           />
-          <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} />
+          <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{position: "absolute", width: "1px", height: "1px", margin: "-1px", overflow: "hidden"}}  /> 
         </div>
       </div>
       <div className="max-w-full overflow-x-auto" style={{ width: "calc(100vw - 240px - 32px)" }}>
@@ -272,7 +273,7 @@ export default function ObjectTableView() {
                 showDetailView={(e: React.MouseEvent<SVGSVGElement>) => {
                   showDetailView(row, e.clientX, e.clientY);
                 }}
-                shouldBlockEdits={["_swizzle_uid", "access", "createdAt", "fileName", "_id"]}
+                shouldBlockEdits={["_swizzle_uid", "access", "createdAt", "fileName", "_id", "fileExtension"]}
                 shouldHideFields={["data"]}
                 setJsonToEdit={() => {}}
                 setKeyForRowBeingEdited={() => {}}

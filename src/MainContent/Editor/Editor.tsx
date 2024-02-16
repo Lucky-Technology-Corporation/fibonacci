@@ -60,8 +60,6 @@ export default function Editor({
     setSelectedText,
     setFileErrors,
     fileErrors,
-    codeMode,
-    setCodeMode,
     shouldRefreshList,
     activePage
   } = useContext(SwizzleContext);
@@ -367,7 +365,9 @@ export default function Editor({
       } else {
         return "calc(100% - 32px)";
       }
-    } else {
+    } else if(selectedTab == Page.Types){
+      return "calc(100% - 32px)"; 
+    }else {
       if (isSidebarOpen) {
         return "calc(100vw - 640px)";
       } else {
@@ -377,6 +377,15 @@ export default function Editor({
   };
 
   const [heightString, setHeightString] = useState("calc(100% - 200px)");
+
+  useEffect(() => {
+    if(selectedTab == Page.Types){
+      setHeightString("calc(100% - 166px)") 
+    } else{
+      setHeightString("calc(100% - 200px)");
+    }
+  }, [selectedTab]);
+
   useEffect(() => {
     if (isDebugging) {
       //This is horrible but its the only way to prevent theia from pushing everything up. im doing it twice just in case the debugger takes a second
@@ -445,7 +454,7 @@ export default function Editor({
           width: getParentWidth(),
           pointerEvents:
             environment == "test"
-              ? selectedTab == Page.Apis || selectedTab == Page.Hosting
+              ? selectedTab == Page.Apis || selectedTab == Page.Hosting || selectedTab == Page.Types
                 ? "auto"
                 : "none"
               : "none",
@@ -571,12 +580,13 @@ export default function Editor({
             }}
           />
         </div>
-      ) : (
+      ) : (selectedTab == Page.Apis && (
         <div
           className={`flex flex-col z-[100] ${isSidebarOpen ? "min-w-[400px] max-w-[400px]" : "w-0 hidden"}`}
         >
           <TestWindow isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
         </div>
+        )
       )}
 
       <InlineAssistantUI position={inlineAiPosition} setPosition={setInlineAiPosition} currentFileProperties={currentFileProperties}  />
