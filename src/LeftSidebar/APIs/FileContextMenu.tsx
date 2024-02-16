@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import useFilesystemApi from "../../API/FilesystemAPI";
-import { capitalizeAfterLastSlash, formatPath } from "../../Utilities/EndpointParser";
+import { capitalizeAfterLastSlash } from "../../Utilities/EndpointParser";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
 import TailwindModal from "../../Utilities/TailwindModal";
 
@@ -15,6 +15,7 @@ export default function FileContextMenu({
   fullPath,
   isPrivate,
   editFile,
+  pagePath
 }: {
   showContextMenu: boolean;
   setShowContextMenu: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,9 +24,10 @@ export default function FileContextMenu({
   fullPath: string;
   isPrivate: boolean;
   editFile: () => void;
+  pagePath?: string;
 }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const { setPostMessage, setShouldRefreshList, shouldRefreshList } = useContext(SwizzleContext);
+  const { setPostMessage, setShouldRefreshList, shouldRefreshList, setShouldSetToFirstEntry } = useContext(SwizzleContext);
   const filesystemApi = useFilesystemApi();
 
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -58,14 +60,13 @@ export default function FileContextMenu({
 
       //clean up codegen
       if (fileNameParsed.includes("/pages/")) {
-        const urlPath = formatPath(fullPath, path, true);
-        await filesystemApi.deletePage(urlPath);
+        await filesystemApi.deletePage(pagePath);
       } else {
         const relativeFilePath = fileNameParsed.split("/components/")[1];
         await filesystemApi.deleteComponent(relativeFilePath);
         await filesystemApi.setPreviewComponentFromPath("")
       }
-
+      setShouldSetToFirstEntry(p => !p)
       setShouldRefreshList(!shouldRefreshList);
     } catch (e) {
       throw "Error deleting endpoint";

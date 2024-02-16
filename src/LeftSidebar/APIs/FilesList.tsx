@@ -51,6 +51,7 @@ export default function FilesList({ active }: { active: boolean }) {
     setPostMessage,
     codeMode,
     setCodeMode,
+    shouldSetToFirstEntry
   } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
@@ -111,7 +112,14 @@ export default function FilesList({ active }: { active: boolean }) {
         toast.error("Error fetching pages");
         console.error(e);
       });
+
   }, [testDomain, shouldRefreshList]);
+
+  useEffect(() => {
+    if(selectedTab == Page.Hosting){
+      setToFirstPage()
+    }
+  }, [shouldSetToFirstEntry]);
 
   useEffect(() => {
     //set the active file to the first page
@@ -121,12 +129,13 @@ export default function FilesList({ active }: { active: boolean }) {
   }, [selectedTab]);
 
   const setToFirstPage = () => {
+    console.log("Set to first page")
     const pages = filterIfNeeded(fileTree.children.find((child) => child.name === "pages").children);
     if (pages.length > 0) {
       const page = pages[0];
       var pageRelativePath = page.path.includes("/pages") ? page.path.split("/pages/")[1] : page.path;
       setActiveFile("frontend/src/pages/" + pageRelativePath);
-      setActivePage(formatPath(page.path, page.name, true));
+      setActivePage(formatPath(page.path, page.name, true)); //TODO: check if this works for dashes
     }
   };
 

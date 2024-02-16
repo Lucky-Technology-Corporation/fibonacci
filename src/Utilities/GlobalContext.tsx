@@ -90,6 +90,8 @@ export interface SwizzleContextType {
   setShouldCreateObject: Dispatch<SetStateAction<boolean>>;
   projectDeploymentFailure: boolean;
   setProjectDeploymentFailure: Dispatch<SetStateAction<boolean>>;
+  shouldSetToFirstEntry: boolean;
+  setShouldSetToFirstEntry: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SwizzleContext = createContext<SwizzleContextType>(undefined);
@@ -143,6 +145,8 @@ export const GlobalContextProvider = ({ children }) => {
   const [fullTaskQueue, setFullTaskQueue] = useState<any>([]);
 
   const [projectDeploymentFailure, setProjectDeploymentFailure] = useState<boolean>(false);
+
+  const [shouldSetToFirstEntry, setShouldSetToFirstEntry] = useState<boolean>(false);
 
   return (
     <SwizzleContext.Provider
@@ -230,7 +234,9 @@ export const GlobalContextProvider = ({ children }) => {
         shouldCreateObject,
         setShouldCreateObject,
         projectDeploymentFailure, 
-        setProjectDeploymentFailure
+        setProjectDeploymentFailure,
+        shouldSetToFirstEntry,
+        setShouldSetToFirstEntry
       }}
     >
       {children}

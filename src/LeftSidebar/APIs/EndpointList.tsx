@@ -65,6 +65,7 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
     fullEndpointList,
     setFullEndpointList,
     setPostMessage,
+    shouldSetToFirstEntry
   } = useContext(SwizzleContext);
 
   const editFileHandler = (path: string, isCron: boolean = false) => {
@@ -201,6 +202,12 @@ export default function EndpointList({ currentFileProperties }: { currentFilePro
       setActiveEndpoint(endpoints[0]);
     }
   }, [selectedTab, endpoints]);
+
+  useEffect(() => {
+    if(selectedTab == Page.Apis){
+      setActiveEndpoint(endpoints[0]);
+    }
+  }, [shouldSetToFirstEntry]);
 
   //Fetch from backend and populate it here.
   return (

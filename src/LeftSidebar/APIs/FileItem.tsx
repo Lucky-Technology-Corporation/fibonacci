@@ -79,6 +79,7 @@ export default function FileItem({
             fullPath={fullPath}
             isPrivate={isPrivate}
             editFile={editFile}
+            pagePath={pagePath}
           />
         </div>
       </div>
