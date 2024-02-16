@@ -21,7 +21,7 @@ export default function NotificationControls({ setShowSetUp }) {
 
   const send = async () => {
     if (allUsers) {
-      const docs = dbApi.getDocuments("_swizzle_users");
+      const docs = dbApi.getDocuments("users");
     }
 
     runAnimation();

@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import useDatabaseApi from "../../API/DatabaseAPI";
 import FullPageModal from "../../Utilities/FullPageModal";
 import { SwizzleContext } from "../../Utilities/GlobalContext";
+import { Page } from "../../Utilities/Page";
 import SectionAction from "../SectionAction";
 import CollectionItem from "./CollectionItem";
 
@@ -18,7 +19,7 @@ export default function CollectionList({
   const [isVisible, setIsVisible] = useState(false);
   const [collections, setCollections] = useState<string[]>([]);
   const { createCollection, getCollections } = useDatabaseApi();
-  const { activeProject, environment } = useContext(SwizzleContext);
+  const { activeProject, environment, setSelectedTab, setActiveAuthPage } = useContext(SwizzleContext);
 
   const refreshCollections = () => {
     getCollections().then((data) => {
@@ -69,6 +70,11 @@ export default function CollectionList({
           name={collection}
           active={activeCollection == collection}
           onClick={() => {
+            if(collection == "users"){
+              setSelectedTab(Page.Auth)
+              setActiveAuthPage("list")
+              return
+            }
             setActiveCollection(collection);
           }}
         />

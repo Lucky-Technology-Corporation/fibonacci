@@ -59,7 +59,7 @@ export default function UserTableView() {
   const [isCreatingUser, setIsCreatingUser] = useState<boolean>(false);
 
   const fetchData = (page: number) => {
-    getDocuments("_swizzle_users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
+    getDocuments("users", page, ITEMS_PER_PAGE, sortedByColumn, sortDirection)
       .then((data) => {
         if (data == null || data.documents == null) {
           setData([]);
@@ -127,7 +127,7 @@ export default function UserTableView() {
       toast.error("Please select a filter");
       return;
     }
-    runQuery(searchQuery, filterName, "_swizzle_users", sortedByColumn, sortDirection)
+    runQuery(searchQuery, filterName, "users", sortedByColumn, sortDirection)
       .then((data) => {
         setData(data.documents || []);
         setKeys(data.keys.sort() || []);
@@ -252,7 +252,7 @@ export default function UserTableView() {
           <tbody className="divide-y divide-[#85869833]">
             {data.map((row: any, _: number) => (
               <UserRow
-                collection={"_swizzle_users"}
+                collection={"users"}
                 key={row._id}
                 rowKey={row._id}
                 keys={keys}
@@ -271,7 +271,7 @@ export default function UserTableView() {
         <RowDetail
           data={rowDetailData}
           clickPosition={clickPosition}
-          collection={"_swizzle_users"}
+          collection={"users"}
           addHiddenRow={addHiddenRow}
           shouldHideCopy={true}
           deleteAction="deactivate"

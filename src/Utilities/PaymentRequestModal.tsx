@@ -38,7 +38,7 @@ export default function PaymentRequestModal({
               </h3>
               <div className="mt-1">
                 <div className="text-sm text-[#D9D9D9]">
-                  $12 / month per project
+                  $12 / month per project for test + Google Cloud pricing for production
                   {hasPaymentMethod ? ". To cancel charges, delete your project." : " after 7-day free trial"}
                 </div>
                 {/* <ul className='list-disc ml-4 my-2'>
