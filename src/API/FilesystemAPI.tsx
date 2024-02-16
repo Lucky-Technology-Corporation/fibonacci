@@ -212,6 +212,19 @@ export default function useFilesystemApi() {
   };
 
   const setPreviewComponentFromPath = async (componentPath: string) => {
+    //handle delete case
+    if(componentPath == ''){
+      const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
+      var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
+      const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
+      const newAssembly =
+        firstPart +
+        `{/* Component Preview Area Start */}\n{/* Component Preview Area End */}` +
+        secondPart;
+        await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
+      return "";
+    }
+
     const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
     const componentContents = await endpointApi.getFile(componentPath);
     if (fileContents) {

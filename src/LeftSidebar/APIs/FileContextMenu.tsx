@@ -63,6 +63,7 @@ export default function FileContextMenu({
       } else {
         const relativeFilePath = fileNameParsed.split("/components/")[1];
         await filesystemApi.deleteComponent(relativeFilePath);
+        await filesystemApi.setPreviewComponentFromPath("")
       }
 
       setShouldRefreshList(!shouldRefreshList);
