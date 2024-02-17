@@ -26,9 +26,10 @@ import FileWizard from "./FileWizard";
 
 export default function FilesList({ active }: { active: boolean }) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const { getFiles, getFile, writeFile, restartFrontend } = useEndpointApi();
+  const { getFiles, getFile, writeFile, restartFrontend, uploadFile } = useEndpointApi();
   const [searchFilter, setSearchFilter] = useState<string>("");
   const [fileTree, setFileTree] = useState(null);
+  const [publicAssets, setPublicAssets] = useState(null);
   const [expandedDirs, setExpandedDirs] = useState({});
   const [fileType, setFileType] = useState<string>("file");
   const [showServerFiles, setShowServerFiles] = useState<boolean>(false);
@@ -52,7 +53,7 @@ export default function FilesList({ active }: { active: boolean }) {
     setShouldRefreshList,
     setActivePage,
     setPostMessage,
-    shouldSetToFirstEntry
+    shouldSetToFirstEntry,
   } = useContext(SwizzleContext);
   const restrictedFiles = ["App.tsx", "App.css", "index.ts", "index.css"];
 
@@ -61,11 +62,25 @@ export default function FilesList({ active }: { active: boolean }) {
     { id: "file", name: "+ Component" },
   ];
 
+  const requiredFiles = ["index.html", "manifest.json", "output.css", "robots.txt", "swizzle-debug.js"]
+
   useEffect(() => {
     getFiles("files")
       .then((data) => {
         if (data && data.children) {
           setFileTree(data);
+        }
+      })
+      .catch((e) => {
+        toast.error("Error fetching components");
+        console.error(e);
+      });
+    
+    getFiles("public")
+      .then((data) => {
+        if (data && data.children) {
+          console.log("publicAssets", data)
+          setPublicAssets(data);
         }
       })
       .catch((e) => {
@@ -216,6 +231,15 @@ export default function FilesList({ active }: { active: boolean }) {
     }
   }, [isVisible]);
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    //upload file
+    await uploadFile(file);
+    setShouldRefreshList(p => !p)
+  };
+
+
   const renderFiles = (node, parentPath = "", searchActive = false) => {
     if (!node) return null;
     if (Array.isArray(node)) {
@@ -341,8 +365,6 @@ export default function FilesList({ active }: { active: boolean }) {
   //Fetch from backend and populate it here.
   return (
     <div className={`flex-col w-full px-1 text-sm ${active ? "" : "hidden"}`}>
-
-
           <div className="ml-1 mr-1 flex">
             <Dropdown
               className=""
@@ -418,7 +440,7 @@ export default function FilesList({ active }: { active: boolean }) {
               data-tooltip-content={"Pages accessed by via URL"}
               data-tooltip-place="right"
             >
-              <div className="font-semibold ml-2 mt-2 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
+              <div className="font-semibold ml-2 mt-1 flex pt-2 pb-1 flex text-gray-400 hover:text-gray-300">
                 <FontAwesomeIcon icon={faFile} className="w-3 h-3 my-auto mr-1" />
                 <div className="flex items-center">Pages</div>
               </div>
@@ -609,23 +631,29 @@ export default function FilesList({ active }: { active: boolean }) {
               </div>
               </div>
             </a>
-            <div className={`ml-1 ${showAssets ? "" : "hidden"}`}>
+            <div className={`${showAssets ? "" : "hidden"}`}>
               <Button
                 text="Upload"
                 onClick={() => {
                   fileInputRef.current.click()
                 }}
+                className="mx-2 mt-1 text-sm px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border"
               />
-              <input type="file" ref={fileInputRef} style={{display: "none"}} />
-              {/* <FileItem
-                key={"AppContext.tsx"}
-                path={"Context.tsx"}
-                active={"frontend/src/AppContext.tsx" == activeFile}
-                onClick={() => {
-                  setActiveFile("frontend/src/AppContext.tsx");
-                }}
-                disableDelete={true}
-              /> */}
+              <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{display: "none"}} />
+              <div className="ml-1">{publicAssets ? ( 
+                publicAssets.children.filter(c => !requiredFiles.includes(c.name)).map((child) => {
+                  return <FileItem
+                    key={child.path}
+                    fullPath={child.path}
+                    path={"/"+child.name}
+                    active={false}
+                    onClick={() => {
+                      console.log("open the file")
+                    }}
+                    disableDelete={false}
+                  />
+                })
+              ) : <div>{JSON.stringify(publicAssets)}</div>}</div>
             </div>
           </div>
 

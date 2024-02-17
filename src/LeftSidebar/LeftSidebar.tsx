@@ -377,6 +377,7 @@ export default function LeftSidebar({
                   }
                 }}
                 className="types-tab"
+                chevronNotExandable={true}
               />
             </div>
             <div className={`flex ${ideReady && "hidden"} ${refreshHidden && "pointer-events-none"}`}>
@@ -461,6 +462,7 @@ export default function LeftSidebar({
             }
           }}
           className="files-tab"
+          chevronNotExandable={true}
         />
 
         <div className="py-1 w-full">

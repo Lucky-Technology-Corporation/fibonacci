@@ -170,13 +170,13 @@ export default function useEndpointApi() {
       }
       const fileName = file.name;
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("upload", file);
       const response = await axios.post(
         `${testDomain.replace("https://", "https://fermat.")}/code/upload`,
         formData,
         {
-          withCredentials: true,
           headers: {
+            Authorization: await getFermatJwt(),
             "Content-Type": "multipart/form-data",
           },
         },
@@ -202,6 +202,8 @@ export default function useEndpointApi() {
         filePath = "/frontend/src/" + fileName;
       } else if (location == "helpers") {
         filePath = "/backend/helpers/" + fileName;
+      } else if(location == "public") {
+        filePath = "/frontend/public/" + fileName;
       }
 
       const response = await axios.delete(
@@ -519,6 +521,8 @@ export default function useEndpointApi() {
         path = "/frontend/src";
       } else if (fileTypes.toLowerCase() == "helpers") {
         path = "/backend/helpers";
+      } else if(fileTypes.toLowerCase() == "public") {
+        path = "/frontend/public"
       }
 
       const response = await axios.get(`${testDomain.replace("https://", "https://fermat.")}/code?path=${path}`, {

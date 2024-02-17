@@ -945,7 +945,7 @@ export default function EndpointHeader({
             </div>
           ) : selectedTab == Page.Apis ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
-              {path.startsWith("/cron") ? (
+              {(path || "").startsWith("/cron") ? (
                 <FontAwesomeIcon icon={faClock} className="w-3 h-3 my-auto mr-2" />
               ) : (
                 <>
@@ -958,7 +958,7 @@ export default function EndpointHeader({
                   </span>
                 </>
               )}
-              <div className="my-auto">{path.startsWith("/cron/") ? path.replace("/cron/", "") : path}</div>
+              <div className="my-auto">{(path || "").startsWith("/cron/") ? path.replace("/cron/", "") : path}</div>
             </div>
           ) : selectedTab == Page.Types ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
