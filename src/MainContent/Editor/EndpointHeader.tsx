@@ -941,7 +941,9 @@ export default function EndpointHeader({
           {selectedTab == Page.Hosting ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
               <img src="/world.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
-              <div className="my-auto">{path == "frontend/src/AppContext.tsx" ? "Global App Context" : path}</div>
+              <div className="my-auto">{path == "frontend/src/AppContext.tsx" ? (
+                <span className="font-sans"><span className="font-bold">Global context</span>&nbsp;These state variables can be used in any page or component</span>
+              ) : path}</div>
             </div>
           ) : selectedTab == Page.Apis ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
@@ -963,7 +965,7 @@ export default function EndpointHeader({
           ) : selectedTab == Page.Types ? (
             <div className="flex align-middle pr-2 font-normal font-mono">
               <img src="/shape.svg" className="inline-block w-3 h-3 mr-2 my-auto ml-0 opacity-100" />
-              <div className="my-auto">Project types</div>
+              <div className="my-auto font-sans"><span className="font-bold">Project types</span>&nbsp;These can be used in both frontend and backend</div>
             </div>
           ) : (
             <></>
