@@ -29,7 +29,15 @@ export default function CollectionList({
         return;
       }
       setCollections(data.collections);
-      setActiveCollection(data.collections[0]);
+      
+      if(data.collections[0] == "users" && data.collections.length > 1){
+        setActiveCollection(data.collections[1]);
+      } else if(data.collections[0] != "users"){
+        setActiveCollection(data.collections[0]);
+      } else{
+        setActiveCollection("");
+      }
+
     });
   };
 

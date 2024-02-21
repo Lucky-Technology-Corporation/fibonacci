@@ -124,6 +124,9 @@ export default function EndpointHeader({
           //Save history
           setMessageHistory(data.messages);
 
+          //Clear text
+          setPrompt("");
+
           //Run common post processing tasks
           runAiFrontendPostProcessing(data.new_code).then(() => {
             if(micWasOn.current == true){
@@ -192,6 +195,9 @@ export default function EndpointHeader({
 
           //Save history
           setMessageHistory(data.messages);
+
+          //Clear text
+          setPrompt("");
 
           return "Done";
         },
