@@ -331,7 +331,8 @@ export default function Editor({
     if (activePage != undefined && activePage != "") {
       setPath(activePage);
       setUrl(testDomain + activePage);
-    } else if (activeFile != undefined && activeFile.includes("frontend/src/components/")) {
+    } 
+    if (activeFile != undefined && activeFile.includes("frontend/src/components/")) {
       setPreviewComponentFromPath(activeFile).then((component) => {
         setPreviewComponent(component);
       });

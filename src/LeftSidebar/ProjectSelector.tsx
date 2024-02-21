@@ -120,8 +120,8 @@ export default function ProjectSelector({
       success: () => {
         gtagReportConversion();
         //play sound
-        var audio = new Audio("/deploy.mp3");
-        audio.play();
+        // var audio = new Audio("/deploy.mp3");
+        // audio.play();
         setTimeout(() => {
           window.location.reload();
         }, 3000);

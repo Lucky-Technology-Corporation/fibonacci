@@ -212,64 +212,70 @@ export default function useFilesystemApi() {
   };
 
   const setPreviewComponentFromPath = async (componentPath: string) => {
-    //handle delete case
-    if(componentPath == ''){
+
+    try{
+      if(componentPath == ''){
+        console.log("Deleting component preview")
+        const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
+        var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
+        const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
+        const newAssembly =
+          firstPart +
+          `{/* Component Preview Area Start */}\n{/* Component Preview Area End */}` +
+          secondPart;
+          await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
+        return "";
+      }
+
+      console.log("Setting component preview to", componentPath);
       const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
-      var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
-      const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
-      const newAssembly =
-        firstPart +
-        `{/* Component Preview Area Start */}\n{/* Component Preview Area End */}` +
-        secondPart;
+      const componentContents = await endpointApi.getFile(componentPath);
+      if (fileContents) {
+        var componentName = "";
+        var isNamed = false;
+        if (componentContents.includes("export default function ")) {
+          componentName = componentContents.split("export default function ")[1].split("(")[0].trim();
+        } else if (componentContents.includes("export default ")) {
+          componentName = componentContents.split("export default ")[1].split(/\s/)[0];
+        } else if (componentContents.includes("export function ")) {
+          isNamed = true;
+          componentName = componentContents.split("export function ")[1].split("(")[0].trim();
+        } else if (componentContents.includes("export const ")) {
+          isNamed = true;
+          componentName = componentContents.split("export const ")[1].split("=")[0].trim();
+        }
+        componentName = componentName.replace("{", "").replace("}", "").replace(";", "").trim();
+
+        var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
+        if (firstPart.includes("import ")) {
+          const regex = /^import.*\n/gm;
+          firstPart = firstPart.replace(regex, "");
+        }
+        const relativePath = "./" + componentPath.split("frontend/src/")[1].replace(".tsx", "");
+        if (isNamed) {
+          firstPart = "import { " + componentName + " } from '" + relativePath + "';\n" + firstPart;
+        } else {
+          firstPart = "import " + componentName + " from '" + relativePath + "';\n" + firstPart;
+        }
+
+        const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
+        const newAssembly =
+          firstPart +
+          `{/* Component Preview Area Start */}\n<` +
+          componentName +
+          ` />\n{/* Component Preview Area End */}` +
+          secondPart;
+        const file = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
+
+        if (file.includes(`<` + componentName)) {
+          return "<" + componentName + " />";
+        }
+
         await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
-      return "";
-    }
-
-    const fileContents = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
-    const componentContents = await endpointApi.getFile(componentPath);
-    if (fileContents) {
-      var componentName = "";
-      var isNamed = false;
-      if (componentContents.includes("export default function ")) {
-        componentName = componentContents.split("export default function ")[1].split("(")[0].trim();
-      } else if (componentContents.includes("export default ")) {
-        componentName = componentContents.split("export default ")[1].split(/\s/)[0];
-      } else if (componentContents.includes("export function ")) {
-        isNamed = true;
-        componentName = componentContents.split("export function ")[1].split("(")[0].trim();
-      } else if (componentContents.includes("export const ")) {
-        isNamed = true;
-        componentName = componentContents.split("export const ")[1].split("=")[0].trim();
-      }
-      componentName = componentName.replace("{", "").replace("}", "").replace(";", "").trim();
-
-      var firstPart = fileContents.split(`{/* Component Preview Area Start */}`)[0];
-      if (firstPart.includes("import ")) {
-        const regex = /^import.*\n/gm;
-        firstPart = firstPart.replace(regex, "");
-      }
-      const relativePath = "./" + componentPath.split("frontend/src/")[1].replace(".tsx", "");
-      if (isNamed) {
-        firstPart = "import { " + componentName + " } from '" + relativePath + "';\n" + firstPart;
-      } else {
-        firstPart = "import " + componentName + " from '" + relativePath + "';\n" + firstPart;
-      }
-
-      const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
-      const newAssembly =
-        firstPart +
-        `{/* Component Preview Area Start */}\n<` +
-        componentName +
-        ` />\n{/* Component Preview Area End */}` +
-        secondPart;
-      const file = await endpointApi.getFile("frontend/src/ComponentPreview.tsx");
-
-      if (file.includes(`<` + componentName)) {
         return "<" + componentName + " />";
       }
-
-      await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
-      return "<" + componentName + " />";
+    } catch(e){
+      console.error(e)
     }
     return "";
   };

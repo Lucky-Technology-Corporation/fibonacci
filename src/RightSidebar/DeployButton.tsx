@@ -55,10 +55,10 @@ export default function DeployButton({}: {}) {
 
     setIsDeploymentInProgress(true);
 
-    setTimeout(() => {
-      var audio = new Audio("/deploy.mp3");
-      audio.play();
-    }, 2000);
+    // setTimeout(() => {
+    //   var audio = new Audio("/deploy.mp3");
+    //   audio.play();
+    // }, 2000);
 
     toast.promise(deploy(), {
       loading: "Sending...",

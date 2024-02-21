@@ -101,8 +101,8 @@ export default function AssistantPage() {
       setNeedsAuth(rawResponse.needs_auth);
     }
 
-    var audio = new Audio("/newendpoint.mp3");
-    audio.play();
+    // var audio = new Audio("/newendpoint.mp3");
+    // audio.play();
 
     const sortByFeatureGroup = (a, b) => a.feature_group.localeCompare(b.feature_group);
     console.log("rawResponse", rawResponse);

@@ -91,7 +91,7 @@ export default function LogWebsocketViewer(props: LogWebsocketViewerProps) {
     }
     const newLine = (
       <span className={`font-mono text-sm ${color}`} key={`injected-${timestamp}`}>
-        {"[react " + errorMethod + "] " + props.injectedLog.message}
+        {props.injectedLog.message}
       </span>
     );
     setLog((prevLog) => [...prevLog, newLine]);

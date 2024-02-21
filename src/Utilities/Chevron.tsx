@@ -2,10 +2,12 @@ export default function Chevron({
   size = 16,
   active = false,
   tease = false,
+  stopHalfway = false,
 }: {
   size: number;
   active: boolean;
   tease?: boolean;
+  stopHalfway?: boolean;
 }) {
   return (
     <svg
@@ -13,7 +15,7 @@ export default function Chevron({
       width={size}
       height={size}
       fill="currentColor"
-      className={`bi bi-chevron-right ${active ? "rotate-90" : "rotate-[-90deg]"} ${tease ? "rotate-45" : ""}`}
+      className={`bi bi-chevron-right ${active ? (stopHalfway ? "" : "rotate-90") : "rotate-[-90deg]"} ${tease ? "rotate-45" : ""}`}
       viewBox="0 0 16 16"
       style={{ transition: "transform .2s" }}
     >
