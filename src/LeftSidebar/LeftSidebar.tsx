@@ -359,7 +359,7 @@ export default function LeftSidebar({
             <div className={!ideReady ? "pointer-events-none opacity-50" : ""}>
               <SectionTitle
                 icon="/shape.svg"
-                text="Types"
+                text="Shared Types"
                 active={selectedTab == Page.Types}
                 onClick={() => {
                   if (selectedTab == Page.Types) {
