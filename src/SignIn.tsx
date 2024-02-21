@@ -64,21 +64,21 @@ export default function SignIn() {
     }
   }, []);
 
-  const spotsRightNow = () => {
+  const loginText = () => {
     if(localStorage.getItem("swizzleSignedIn") == "true"){
-      return "0";
+      return "Sign in to continue";
     }
     const date = new Date();
     const hour = date.getHours();
     const spots = 32 - Math.floor(hour / 0.77);
-    return spots;
+    return spots + " spots left today";
   };
 
   return (
     <>
       <img src="/logo_offwhite.png" className="w-20 mt-8 mb-2 m-auto" />
       <div className="m-auto text-center text-3xl mb-2 font-bold">Swizzle</div>
-      <div className="m-auto text-center text-lg mb-8">{spotsRightNow()} spots left today</div>
+      <div className="m-auto text-center text-lg mb-8">{loginText()}</div>
       <div
         className="w-64 cursor-pointer text-center bg-black border-[#525363] hover:border-[#6f7082] hover:text-white border rounded-md p-3 text-lg font-medium m-auto"
         onClick={() => {
