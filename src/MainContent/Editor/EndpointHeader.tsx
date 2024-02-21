@@ -5,8 +5,6 @@ import {
   faClock,
   faGear,
   faImage,
-  faMicrophone,
-  faMicrophoneSlash,
   faPuzzlePiece,
   faUndo,
   faXmark
@@ -308,7 +306,7 @@ export default function EndpointHeader({
   }
 
   const findAndCreateEndpoints = async (newCode: string) => {
-    const regex = /api\s*\.\s*(get|post|put|delete)\s*\(\s*(['"`])([\s\S]*?)\2.*?\)/g;
+    const regex = /api\s*\.\s*(get|post|put|delete)\s*\(\s*(['"`])([\s\S]*?)\2(?:\s*,\s*{[\s\S]*?})?\s*\)/g;
     const methodPaths = [];
     let match;
   
@@ -1090,19 +1088,19 @@ export default function EndpointHeader({
                 }}
               /> 
             )}
-            <Button
+            {/* <Button
               children={<FontAwesomeIcon icon={micOn ? faMicrophoneSlash : faMicrophone} />}
               className={`text-sm mr-1 ml-1 px-3 py-1 font-medium rounded flex justify-center items-center cursor-pointer ${micOn ? "bg-[#3c2727] border-[#7a3531]" : "bg-[#85869833] border-[#525363]"} hover:bg-[#85869855] border`}
               onClick={() => {
                 toggleMic()
               }}
-            />
+            /> */}
             </>
           )}
           
           {prompt != "" ? (
             <Button
-              text="Edit File"
+              text="Go"
               className={`${isLoading.current == true && "opacity-70 pointer-events-none"} text-sm mr-1 px-5 py-1 font-medium rounded flex justify-center items-center cursor-pointer bg-[#85869833] hover:bg-[#85869855] border-[#525363] border`}
               onClick={() => {
                 runQuery();

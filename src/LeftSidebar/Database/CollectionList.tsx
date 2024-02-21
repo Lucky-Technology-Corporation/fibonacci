@@ -19,7 +19,7 @@ export default function CollectionList({
   const [isVisible, setIsVisible] = useState(false);
   const [collections, setCollections] = useState<string[]>([]);
   const { createCollection, getCollections } = useDatabaseApi();
-  const { activeProject, environment, setSelectedTab, setActiveAuthPage } = useContext(SwizzleContext);
+  const { activeProject, environment, setSelectedTab, setActiveAuthPage, selectedTab } = useContext(SwizzleContext);
 
   const refreshCollections = () => {
     getCollections().then((data) => {
@@ -62,6 +62,12 @@ export default function CollectionList({
     }
     refreshCollections();
   }, [activeProject, environment]);
+
+  useEffect(() => {
+    if(selectedTab == Page.Db){
+      refreshCollections();
+    }
+  }, [selectedTab])
 
   return (
     <div className={`flex-col w-full mt-1 px-2 ${active ? "" : "hidden"}`}>
