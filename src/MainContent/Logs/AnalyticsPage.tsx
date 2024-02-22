@@ -66,13 +66,13 @@ export default function AnalyticsPage({ setActiveLogsPage }: { setActiveLogsPage
 
   const { setIsOpen, setCurrentStep } = useTour();
 
-  useEffect(() => {
-    setIsHintHidden(localStorage.getItem("hintHidden") == "true");
-    if (!localStorage.getItem("didStartTour")) {
-      setIsOpen(true);
-      localStorage.setItem("didStartTour", "true");
-    }
-  }, []);
+  // useEffect(() => {
+  //   setIsHintHidden(localStorage.getItem("hintHidden") == "true");
+  //   if (!localStorage.getItem("didStartTour")) {
+  //     setIsOpen(true);
+  //     localStorage.setItem("didStartTour", "true");
+  //   }
+  // }, []);
 
   const processDataAndCreateGraph = (chartdata, title, categories) => {
     return (
@@ -204,45 +204,32 @@ export default function AnalyticsPage({ setActiveLogsPage }: { setActiveLogsPage
         <div className="flex w-full">
           <div className="mx-4 font-bold text-md mb-2">
             Getting started
-            <div className="m-auto ml-2 inline-flex items-center rounded-md bg-yellow-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-yellow-300 ring-1 ring-inset ring-yellow-300/20">
-              Alpha
+            <div className="m-auto ml-2 inline-flex items-center rounded-md bg-blue-300 bg-opacity-30 px-2 mt-1 py-0.5 text-xs font-medium text-blue-300 ring-1 ring-inset ring-blue-300/20">
+              Beta
             </div>
           </div>
           <FontAwesomeIcon icon={faXmark} className="w-4 h-4 mt-0.5 ml-auto mr-2 cursor-pointer" onClick={closeHint} />
         </div>
-        <div className="mx-4">
-          {/* Use the <a href="#" onClick={() => {setActiveLogsPage("assistant")}} rel="nofollow">Assistant</a> to set up a project without manually coding everything yourself.  */}
-          If you learn by reading, head over to{" "}
+        <div className="mx-4 mt-2">
+          Upload images or describe your UI with the bar above the code editor in 
+          <img src="/world.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
+          <span className="font-bold mr-1">Frontend. </span>
+          The AI can create endpoints in <img src="/cloud.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
+          <span className="font-bold mr-1">Backend </span> for you, or you can create them manually. You can also add types that are shared between the backend in frontend in <img src="/shape.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
+          <span className="font-bold mr-1">Shared Types</span>, which is useful to keep API requests error free.
+        </div>
+        
+        <div className="mx-4 mt-2">
+          Command + K on any line to add code inline with AI
+        </div>
+          <div className="mx-4 mt-2">
+          Read{" "}
           <a href="https://docs.swizzle.co/" target="_blank" rel="nofollow">
             the docs
           </a>
-          .
-          {/* Otherwise, <a href="#" onClick={() => { setCurrentStep(0); setIsOpen(true)}}>start the guided tour</a>. */}
+          {" "}for more.
         </div>
-        <div className="mx-4 mt-2">
-          Setup the accounts in
-          <img src="/auth.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
-          <span className="font-bold mr-1">Users.</span>
-        </div>
-        <div className="mx-4 mt-2">
-          Build the core logic in
-          <img src="/cloud.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
-          <span className="font-bold mr-1">Backend.</span>
-        </div>
-        <div className="mx-4 mt-2">
-          Build the interface in
-          <img src="/world.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
-          <span className="font-bold mr-1">Frontend.</span>
-        </div>
-        <div className="mx-4 mt-2">
-          Use the
-          <img src="/database.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
-          <span className="font-bold mr-1">Database</span>
-          to save data quickly and
-          <img src="/files.svg" className="w-3 h-3 inline-block align-middle mb-0.5 mx-1" />
-          <span className="font-bold mr-1">Storage</span>
-          to save big files.
-        </div>
+
       </div>
 
       <div className="no-focus-ring pt-2">

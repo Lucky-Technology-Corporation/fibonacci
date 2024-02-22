@@ -290,7 +290,10 @@ export default function LeftSidebar({
           </div>
         </a>
         <FilesList active={selectedTab == Page.Hosting} />
- 
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
+
         <Tooltip
           id="backend-tab-tooltip"
           className={`fixed z-50 ${ideReady && "hidden"}`}
@@ -343,6 +346,9 @@ export default function LeftSidebar({
           </div>
         </a>
         <EndpointList currentFileProperties={currentFileProperties} />
+        <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
 
         <Tooltip
           id="types-tab-tooltip"
@@ -449,6 +455,9 @@ export default function LeftSidebar({
           activeCollection={activeCollection}
           setActiveCollection={setActiveCollection}
         />
+       <div className="py-1 w-full">
+          <div className="h-[1px] bg-gray-700 w-full mt-4"></div>
+        </div>
 
         <SectionTitle
           icon="/files.svg"
