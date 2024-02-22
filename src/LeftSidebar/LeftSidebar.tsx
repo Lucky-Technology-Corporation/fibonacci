@@ -194,7 +194,7 @@ export default function LeftSidebar({
   useEffect(() => {
     setTimeout(() => {
       setRefreshHidden(false);
-    }, 10000);
+    }, 15000);
   }, []);
 
   return (
