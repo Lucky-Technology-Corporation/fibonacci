@@ -21,6 +21,8 @@ export default function ProjectSelector({
   const deploymentApi = useDeploymentApi();
   const { addEmailToAccount, hasAddedPaymentMethod } = useSettingsApi();
   const POLLING_INTERVAL = 5000;
+  const pendingProjectName = useRef("");
+  const shouldCreateProject = useRef(false);
   const pollingRef = useRef(null);
   const { createProject } = useDatabaseApi();
   const {
@@ -114,25 +116,34 @@ export default function ProjectSelector({
       toast.error("Project name cannot contain underscores or dashes");
       return;
     }
-    setIsCreatingProject(true);
-    toast.promise(createProject(projectName), {
-      loading: "Provisioning resources...",
-      success: () => {
-        gtagReportConversion();
-        //play sound
-        // var audio = new Audio("/deploy.mp3");
-        // audio.play();
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-        return "Kicked off project creation!";
-      },
-      error: () => {
-        setIsCreatingProject(false);
-        return "Failed to create project. You can only have 1 project at a time.";
-      },
-    });
+    setHasPaymentMethod(false)
+    pendingProjectName.current = projectName
+    shouldCreateProject.current = true
+    checkIfHasPaymentMethod()
   };
+
+  useEffect(() => {
+    if(hasPaymentMethod && shouldCreateProject.current && shouldCreateProject.current == true) {
+      setIsCreatingProject(true);
+      toast.promise(createProject(pendingProjectName.current), {
+        loading: "Provisioning resources...",
+        success: () => {
+          gtagReportConversion();
+          //play sound
+          // var audio = new Audio("/deploy.mp3");
+          // audio.play();
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+          return "Kicked off project creation!";
+        },
+        error: () => {
+          setIsCreatingProject(false);
+          return "Failed to create project. You can only have 1 project at a time.";
+        },
+      });
+    }
+  }, [hasPaymentMethod])
 
   const setCurrentProject = async (id: string) => {
     var project = projects.filter((p) => p.id == id)[0];
