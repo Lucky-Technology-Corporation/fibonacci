@@ -53,6 +53,10 @@ export default function EndpointHeader({
     setFileErrors,
     activeEndpoint,
     activeFile,
+    setActiveEndpoint,
+    setActiveFile, 
+    setActivePage,
+    setSelectedTab,
     ideReady,
     setPostMessage,
     fullEndpointList,
@@ -104,11 +108,21 @@ export default function EndpointHeader({
           </button>
         </div>
       ));
+
+      const stateObject = {
+        activePage: activePage,
+        activeFile: activeFile,
+      }
     
       editFrontend(promptToUse, path, activeFile, messageHistory)
         .then((data) => {
           toast.dismiss(toastId);
           if(isLoading.current == false){ return }
+          
+          setSelectedTab(Page.Hosting)
+          setActiveFile(stateObject.activeFile)
+          setActivePage(stateObject.activePage)
+          
 
           //Replace text in editor
           setPostMessage({
@@ -179,10 +193,17 @@ export default function EndpointHeader({
       });
     } else if(selectedTab == Page.Apis){
       const fileName = currentFileProperties.fileUri.split("file:///swizzle/code")[1]
+      const stateObject = {
+        activeEndpoint: activeEndpoint,
+      }
+
       toast.promise(editBackend(prompt, activeEndpoint, fileName, messageHistory), {
         loading: "Thinking...",
         success: (data) => {
-          console.log(data)
+
+          setSelectedTab(Page.Apis)
+          setActiveFile(stateObject.activeEndpoint)
+
           setPostMessage({
             type: "replaceText",
             content: data.new_code,
