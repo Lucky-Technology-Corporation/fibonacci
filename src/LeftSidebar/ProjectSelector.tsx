@@ -116,15 +116,19 @@ export default function ProjectSelector({
       toast.error("Project name cannot contain underscores or dashes");
       return;
     }
-    setHasPaymentMethod(false)
-    pendingProjectName.current = projectName
     shouldCreateProject.current = true
+    pendingProjectName.current = projectName
     checkIfHasPaymentMethod()
   };
 
   useEffect(() => {
+    console.log("hasPaymentMethod", hasPaymentMethod)
+    console.log("shouldCreateProject", shouldCreateProject.current)
+
     if(hasPaymentMethod && shouldCreateProject.current && shouldCreateProject.current == true) {
+      console.log("creating project")
       setIsCreatingProject(true);
+      shouldCreateProject.current = false
       toast.promise(createProject(pendingProjectName.current), {
         loading: "Provisioning resources...",
         success: () => {
@@ -143,7 +147,7 @@ export default function ProjectSelector({
         },
       });
     }
-  }, [hasPaymentMethod])
+  }, [hasPaymentMethod, shouldCreateProject.current])
 
   const setCurrentProject = async (id: string) => {
     var project = projects.filter((p) => p.id == id)[0];
