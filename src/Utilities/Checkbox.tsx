@@ -7,6 +7,7 @@ export default function Checkbox({
   isChecked,
   setIsChecked,
   onChange,
+  uncheckedClass = "",
 }: {
   id: string;
   label: string;
@@ -14,6 +15,7 @@ export default function Checkbox({
   isChecked: boolean;
   setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  uncheckedClass?: string;
 }) {
   return (
     <>
@@ -30,7 +32,7 @@ export default function Checkbox({
         }}
         checked={isChecked}
       />
-      <label className="cbx" htmlFor={id}>
+      <label className={`cbx ${!isChecked && uncheckedClass}`} htmlFor={id}>
         <span>
           <svg width="12px" height="10px" viewBox="0 0 12 10">
             <polyline points="1.5 6 4.5 9 10.5 1"></polyline>

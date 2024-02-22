@@ -73,12 +73,13 @@ export default function AuthSettings({ active, className = "" }: { active: boole
       >
         <Checkbox
           id={"allow_new_signups"}
-          label={"Allow New Signups"}
+          label={allowingNewSignups ? "Allowing new signups" : "Blocking new signups"}
           isChecked={allowingNewSignups}
           setIsChecked={setAllowingNewSignups}
           onChange={(e) => {
             changeAllowNewSignups(e.target.checked);
           }}
+          uncheckedClass="text-red-400"
         />
       </div>
       <div

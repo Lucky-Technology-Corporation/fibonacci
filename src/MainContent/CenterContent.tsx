@@ -1,3 +1,5 @@
+import { faFlask } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useRef } from "react";
 import { SwizzleContext } from "../Utilities/GlobalContext";
 import InProgressDeploymentModal from "../Utilities/InProgressDeploymentModal";
@@ -32,6 +34,7 @@ export default function CenterContent({
     currentFileProperties,
     setCurrentFileProperties,
     activeCollection,
+    environment
   } = useContext(SwizzleContext);
 
   const headerRef = useRef(null);
@@ -94,6 +97,9 @@ export default function CenterContent({
       </div>
       <div style={{ display: selectedTab === Page.Db ? "block" : "none" }}>
         <div className="m-4 mt-2 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+          {environment == "test" && (
+            <div className="py-1 bg-amber-500 rounded text-center font-bold text-black ml-4 mr-2 mt-2"><FontAwesomeIcon icon={faFlask} /> Test DB</div>
+          )}
           <EndpointHeader
             selectedTab={selectedTab}
             currentFileProperties={currentFileProperties}
@@ -108,6 +114,9 @@ export default function CenterContent({
       </div>
       <div style={{ display: selectedTab === Page.Storage ? "block" : "none" }}>
         <div className="m-4 ml-2 text-sm whitespace-pre-line max-h-[100vh] overflow-scroll">
+          {environment == "test" && (
+            <div className="py-1 bg-amber-500 rounded text-center font-bold text-black mb-4 ml-4 mr-2"><FontAwesomeIcon icon={faFlask} /> Test Bucket</div>
+          )}
           <ObjectTableView />
         </div>
       </div>
