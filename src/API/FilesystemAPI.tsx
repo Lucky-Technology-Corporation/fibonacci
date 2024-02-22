@@ -212,7 +212,6 @@ export default function useFilesystemApi() {
   };
 
   const setPreviewComponentFromPath = async (componentPath: string) => {
-
     try{
       if(componentPath == ''){
         console.log("Deleting component preview")
@@ -221,7 +220,7 @@ export default function useFilesystemApi() {
         const secondPart = fileContents.split(`{/* Component Preview Area End */}`)[1];
         const newAssembly =
           firstPart +
-          `{/* Component Preview Area Start */}\n{/* Component Preview Area End */}` +
+          `{/* Component Preview Area Start */}<></>\n{/* Component Preview Area End */}` +
           secondPart;
           await endpointApi.writeFile("frontend/src/ComponentPreview.tsx", newAssembly);
         return "";
