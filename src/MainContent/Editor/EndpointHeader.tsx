@@ -122,31 +122,33 @@ export default function EndpointHeader({
           setSelectedTab(Page.Hosting)
           setActiveFile(stateObject.activeFile)
           setActivePage(stateObject.activePage)
+          console.log("set to", stateObject.activeFile, stateObject.activePage)
           
+          setTimeout(() => {
+            //Replace text in editor
+            setPostMessage({
+              type: "replaceText",
+              content: data.new_code,
+            });
 
-          //Replace text in editor
-          setPostMessage({
-            type: "replaceText",
-            content: data.new_code,
-          });
+            //Setup undo
+            setupUndo(data.old_code);
 
-          //Setup undo
-          setupUndo(data.old_code);
+            //Save history
+            setMessageHistory(data.messages);
 
-          //Save history
-          setMessageHistory(data.messages);
+            //Clear text
+            setPrompt("");
 
-          //Clear text
-          setPrompt("");
-
-          //Run common post processing tasks
-          runAiFrontendPostProcessing(data.new_code).then(() => {
-            if(micWasOn.current == true){
-              micWasOn.current = false
-              // toggleMic()
-            }
-            isLoading.current = false
-          })
+            //Run common post processing tasks
+            runAiFrontendPostProcessing(data.new_code).then(() => {
+              if(micWasOn.current == true){
+                micWasOn.current = false
+                // toggleMic()
+              }
+              isLoading.current = false
+            })
+          }, 500)
         })
         .catch((e) => {
           console.error(e);
@@ -202,21 +204,24 @@ export default function EndpointHeader({
         success: (data) => {
 
           setSelectedTab(Page.Apis)
-          setActiveFile(stateObject.activeEndpoint)
+          setActiveEndpoint(stateObject.activeEndpoint)
+          console.log("set to", stateObject.activeEndpoint)
 
-          setPostMessage({
-            type: "replaceText",
-            content: data.new_code,
-          });
+          setTimeout(() => {
+            setPostMessage({
+              type: "replaceText",
+              content: data.new_code,
+            });
 
-          //Setup undo
-          setupUndo(data.old_code);
+            //Setup undo
+            setupUndo(data.old_code);
 
-          //Save history
-          setMessageHistory(data.messages);
+            //Save history
+            setMessageHistory(data.messages);
 
-          //Clear text
-          setPrompt("");
+            //Clear text
+            setPrompt("");
+          }, 500)
 
           return "Done";
         },

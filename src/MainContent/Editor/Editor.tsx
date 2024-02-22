@@ -176,6 +176,7 @@ export default function Editor({
   const reactToRouterLineEvent = async (event) => {
     const line = event.data.routerLine || "";
     const uri = event.data.fileUri || "";
+    console.log("line", line);
     if (line == "") {
       return;
     }
@@ -186,7 +187,15 @@ export default function Editor({
       const method = parts[0];
 
       //extract path out of the quotes and remove the leading slash if it exists
-      var path = parts[1].split("', ")[0].replace(/'/g, "").replace(/"/g, "");
+      var path;
+      if(parts[1].includes("', ")){
+        path = parts[1].split("', ")[0].replace(/'/g, "").replace(/"/g, "");
+      } else if(parts[1].includes('", ')){
+        path = parts[1].split('", ')[0].replace(/'/g, "").replace(/"/g, "");
+        console.log("path", path)
+      } else{
+        return;
+      }
       var noSlashPath = path;
       var doesNeedLeadingSlash = false;
 
