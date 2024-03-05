@@ -65,13 +65,7 @@ export default function SignIn() {
   }, []);
 
   const loginText = () => {
-    if(localStorage.getItem("swizzleSignedIn") == "true"){
-      return "Sign in to continue";
-    }
-    const date = new Date();
-    const hour = date.getHours();
-    const spots = 32 - Math.floor(hour / 0.77);
-    return spots + " spots left today";
+    return "Sign in to continue";
   };
 
   return (
